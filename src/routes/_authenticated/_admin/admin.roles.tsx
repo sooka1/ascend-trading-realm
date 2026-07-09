@@ -34,14 +34,12 @@ function AdminRoles() {
   });
 
   const groups = useMemo(() => {
-    const map = new Map<string, typeof data extends { catalog: infer C } ? C : never>();
     const cat = data?.catalog ?? [];
     const out: Record<string, typeof cat> = {};
     for (const p of cat) {
-      if (!out[p.group]) out[p.group] = [] as typeof cat;
-      (out[p.group] as typeof cat).push(p);
+      if (!out[p.group]) out[p.group] = [];
+      out[p.group].push(p);
     }
-    void map;
     return out;
   }, [data]);
 
