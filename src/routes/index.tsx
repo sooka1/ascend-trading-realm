@@ -564,8 +564,31 @@ const CREDENTIALS: Record<string, CL> = {
   },
 };
 
+function StarRating({ value }: { value: number }) {
+  const full = Math.floor(value);
+  const hasHalf = value - full >= 0.5;
+  return (
+    <div className="flex items-center gap-1" aria-label={`${value} out of 5 stars`}>
+      {Array.from({ length: 5 }).map((_, i) => {
+        if (i < full) return <Star key={i} className="h-4 w-4 fill-gold text-gold" />;
+        if (i === full && hasHalf)
+          return (
+            <div key={i} className="relative h-4 w-4">
+              <Star className="absolute inset-0 h-4 w-4 text-gold/40" />
+              <div className="absolute inset-0 w-1/2 overflow-hidden">
+                <Star className="h-4 w-4 fill-gold text-gold" />
+              </div>
+            </div>
+          );
+        return <Star key={i} className="h-4 w-4 text-gold/30" />;
+      })}
+      <span className="ms-1 text-xs text-muted-foreground">{value.toFixed(1)}</span>
+    </div>
+  );
+}
+
 function Testimonials() {
-  const { lang } = useI18n();
+  const { lang, dir } = useI18n();
   const t = TESTIMONIALS[lang] ?? TESTIMONIALS.en;
   return (
     <section className="border-y border-white/5 bg-white/[0.02] py-24">
@@ -575,25 +598,50 @@ function Testimonials() {
           <h2 className="mt-3 font-display text-4xl font-semibold md:text-5xl">{t.title}</h2>
           <p className="mt-4 text-muted-foreground">{t.subtitle}</p>
         </div>
-        <div className="mt-12 grid gap-5 md:grid-cols-3">
-          {t.items.map((it) => (
-            <figure key={it.name} className="glass-strong flex h-full flex-col rounded-2xl p-6">
-              <Quote className="h-6 w-6 text-gold" />
-              <div className="mt-3 flex gap-1">
-                {Array.from({ length: it.rating }).map((_, i) => (
-                  <Star key={i} className="h-4 w-4 fill-gold text-gold" />
-                ))}
-              </div>
-              <blockquote className="mt-4 flex-1 text-sm leading-relaxed text-muted-foreground">
-                "{it.quote}"
-              </blockquote>
-              <figcaption className="mt-6 border-t border-white/5 pt-4">
-                <p className="font-display text-base font-semibold text-foreground">{it.name}</p>
-                <p className="text-xs text-muted-foreground">{it.role}</p>
-              </figcaption>
-            </figure>
-          ))}
-        </div>
+
+        <Carousel
+          opts={{ align: "start", loop: true, direction: dir === "rtl" ? "rtl" : "ltr" }}
+          className="mt-12"
+        >
+          <CarouselContent className="-ml-4">
+            {t.items.map((it) => (
+              <CarouselItem
+                key={it.seed}
+                className="pl-4 basis-full sm:basis-1/2 lg:basis-1/3"
+              >
+                <figure className="glass-strong flex h-full flex-col rounded-2xl p-6">
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={`https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(
+                        it.name,
+                      )}&backgroundType=gradientLinear&fontFamily=Georgia`}
+                      alt=""
+                      loading="lazy"
+                      className="h-12 w-12 shrink-0 rounded-full border border-gold/30 bg-white/5 object-cover"
+                    />
+                    <div className="min-w-0">
+                      <p className="truncate font-display text-base font-semibold text-foreground">
+                        {it.name}
+                      </p>
+                      <p className="truncate text-xs text-muted-foreground">{it.role}</p>
+                    </div>
+                    <Quote className="ms-auto h-5 w-5 shrink-0 text-gold/60" />
+                  </div>
+                  <div className="mt-4">
+                    <StarRating value={it.rating} />
+                  </div>
+                  <blockquote className="mt-4 flex-1 text-sm leading-relaxed text-muted-foreground">
+                    "{it.quote}"
+                  </blockquote>
+                </figure>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <div className="mt-6 flex items-center justify-end gap-2">
+            <CarouselPrevious className="static translate-y-0 border-white/15" />
+            <CarouselNext className="static translate-y-0 border-white/15" />
+          </div>
+        </Carousel>
       </div>
     </section>
   );
