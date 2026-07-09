@@ -9,49 +9,52 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SupportRouteImport } from './routes/support'
-import { Route as PricingRouteImport } from './routes/pricing'
-import { Route as PlatformRouteImport } from './routes/platform'
-import { Route as PartnersRouteImport } from './routes/partners'
-import { Route as NewsRouteImport } from './routes/news'
+import { Route as TermsRouteImport } from './routes/terms'
+import { Route as SolutionsRouteImport } from './routes/solutions'
+import { Route as RiskRouteImport } from './routes/risk'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as PortfoliosRouteImport } from './routes/portfolios'
+import { Route as PerformanceRouteImport } from './routes/performance'
 import { Route as MarketsRouteImport } from './routes/markets'
-import { Route as InvestmentRouteImport } from './routes/investment'
+import { Route as LegalRouteImport } from './routes/legal'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as EducationRouteImport } from './routes/education'
-import { Route as EconomicCalendarRouteImport } from './routes/economic-calendar'
 import { Route as ContactRouteImport } from './routes/contact'
-import { Route as CompetitionsRouteImport } from './routes/competitions'
-import { Route as BlogRouteImport } from './routes/blog'
 import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AffiliateRouteImport } from './routes/affiliate'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedPortalRouteImport } from './routes/_authenticated/portal'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 
-const SupportRoute = SupportRouteImport.update({
-  id: '/support',
-  path: '/support',
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PricingRoute = PricingRouteImport.update({
-  id: '/pricing',
-  path: '/pricing',
+const SolutionsRoute = SolutionsRouteImport.update({
+  id: '/solutions',
+  path: '/solutions',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PlatformRoute = PlatformRouteImport.update({
-  id: '/platform',
-  path: '/platform',
+const RiskRoute = RiskRouteImport.update({
+  id: '/risk',
+  path: '/risk',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PartnersRoute = PartnersRouteImport.update({
-  id: '/partners',
-  path: '/partners',
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
-const NewsRoute = NewsRouteImport.update({
-  id: '/news',
-  path: '/news',
+const PortfoliosRoute = PortfoliosRouteImport.update({
+  id: '/portfolios',
+  path: '/portfolios',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PerformanceRoute = PerformanceRouteImport.update({
+  id: '/performance',
+  path: '/performance',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MarketsRoute = MarketsRouteImport.update({
@@ -59,9 +62,9 @@ const MarketsRoute = MarketsRouteImport.update({
   path: '/markets',
   getParentRoute: () => rootRouteImport,
 } as any)
-const InvestmentRoute = InvestmentRouteImport.update({
-  id: '/investment',
-  path: '/investment',
+const LegalRoute = LegalRouteImport.update({
+  id: '/legal',
+  path: '/legal',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FaqRoute = FaqRouteImport.update({
@@ -74,34 +77,14 @@ const EducationRoute = EducationRouteImport.update({
   path: '/education',
   getParentRoute: () => rootRouteImport,
 } as any)
-const EconomicCalendarRoute = EconomicCalendarRouteImport.update({
-  id: '/economic-calendar',
-  path: '/economic-calendar',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CompetitionsRoute = CompetitionsRouteImport.update({
-  id: '/competitions',
-  path: '/competitions',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BlogRoute = BlogRouteImport.update({
-  id: '/blog',
-  path: '/blog',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AffiliateRoute = AffiliateRouteImport.update({
-  id: '/affiliate',
-  path: '/affiliate',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -118,6 +101,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedPortalRoute = AuthenticatedPortalRouteImport.update({
+  id: '/portal',
+  path: '/portal',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -127,185 +115,177 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/affiliate': typeof AffiliateRoute
   '/auth': typeof AuthRoute
-  '/blog': typeof BlogRoute
-  '/competitions': typeof CompetitionsRoute
   '/contact': typeof ContactRoute
-  '/economic-calendar': typeof EconomicCalendarRoute
   '/education': typeof EducationRoute
   '/faq': typeof FaqRoute
-  '/investment': typeof InvestmentRoute
+  '/legal': typeof LegalRoute
   '/markets': typeof MarketsRoute
-  '/news': typeof NewsRoute
-  '/partners': typeof PartnersRoute
-  '/platform': typeof PlatformRoute
-  '/pricing': typeof PricingRoute
-  '/support': typeof SupportRoute
+  '/performance': typeof PerformanceRoute
+  '/portfolios': typeof PortfoliosRoute
+  '/privacy': typeof PrivacyRoute
+  '/risk': typeof RiskRoute
+  '/solutions': typeof SolutionsRoute
+  '/terms': typeof TermsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/portal': typeof AuthenticatedPortalRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/affiliate': typeof AffiliateRoute
   '/auth': typeof AuthRoute
-  '/blog': typeof BlogRoute
-  '/competitions': typeof CompetitionsRoute
   '/contact': typeof ContactRoute
-  '/economic-calendar': typeof EconomicCalendarRoute
   '/education': typeof EducationRoute
   '/faq': typeof FaqRoute
-  '/investment': typeof InvestmentRoute
+  '/legal': typeof LegalRoute
   '/markets': typeof MarketsRoute
-  '/news': typeof NewsRoute
-  '/partners': typeof PartnersRoute
-  '/platform': typeof PlatformRoute
-  '/pricing': typeof PricingRoute
-  '/support': typeof SupportRoute
+  '/performance': typeof PerformanceRoute
+  '/portfolios': typeof PortfoliosRoute
+  '/privacy': typeof PrivacyRoute
+  '/risk': typeof RiskRoute
+  '/solutions': typeof SolutionsRoute
+  '/terms': typeof TermsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/portal': typeof AuthenticatedPortalRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/about': typeof AboutRoute
-  '/affiliate': typeof AffiliateRoute
   '/auth': typeof AuthRoute
-  '/blog': typeof BlogRoute
-  '/competitions': typeof CompetitionsRoute
   '/contact': typeof ContactRoute
-  '/economic-calendar': typeof EconomicCalendarRoute
   '/education': typeof EducationRoute
   '/faq': typeof FaqRoute
-  '/investment': typeof InvestmentRoute
+  '/legal': typeof LegalRoute
   '/markets': typeof MarketsRoute
-  '/news': typeof NewsRoute
-  '/partners': typeof PartnersRoute
-  '/platform': typeof PlatformRoute
-  '/pricing': typeof PricingRoute
-  '/support': typeof SupportRoute
+  '/performance': typeof PerformanceRoute
+  '/portfolios': typeof PortfoliosRoute
+  '/privacy': typeof PrivacyRoute
+  '/risk': typeof RiskRoute
+  '/solutions': typeof SolutionsRoute
+  '/terms': typeof TermsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/portal': typeof AuthenticatedPortalRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/about'
-    | '/affiliate'
     | '/auth'
-    | '/blog'
-    | '/competitions'
     | '/contact'
-    | '/economic-calendar'
     | '/education'
     | '/faq'
-    | '/investment'
+    | '/legal'
     | '/markets'
-    | '/news'
-    | '/partners'
-    | '/platform'
-    | '/pricing'
-    | '/support'
+    | '/performance'
+    | '/portfolios'
+    | '/privacy'
+    | '/risk'
+    | '/solutions'
+    | '/terms'
     | '/dashboard'
+    | '/portal'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
-    | '/affiliate'
     | '/auth'
-    | '/blog'
-    | '/competitions'
     | '/contact'
-    | '/economic-calendar'
     | '/education'
     | '/faq'
-    | '/investment'
+    | '/legal'
     | '/markets'
-    | '/news'
-    | '/partners'
-    | '/platform'
-    | '/pricing'
-    | '/support'
+    | '/performance'
+    | '/portfolios'
+    | '/privacy'
+    | '/risk'
+    | '/solutions'
+    | '/terms'
     | '/dashboard'
+    | '/portal'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/about'
-    | '/affiliate'
     | '/auth'
-    | '/blog'
-    | '/competitions'
     | '/contact'
-    | '/economic-calendar'
     | '/education'
     | '/faq'
-    | '/investment'
+    | '/legal'
     | '/markets'
-    | '/news'
-    | '/partners'
-    | '/platform'
-    | '/pricing'
-    | '/support'
+    | '/performance'
+    | '/portfolios'
+    | '/privacy'
+    | '/risk'
+    | '/solutions'
+    | '/terms'
     | '/_authenticated/dashboard'
+    | '/_authenticated/portal'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
-  AffiliateRoute: typeof AffiliateRoute
   AuthRoute: typeof AuthRoute
-  BlogRoute: typeof BlogRoute
-  CompetitionsRoute: typeof CompetitionsRoute
   ContactRoute: typeof ContactRoute
-  EconomicCalendarRoute: typeof EconomicCalendarRoute
   EducationRoute: typeof EducationRoute
   FaqRoute: typeof FaqRoute
-  InvestmentRoute: typeof InvestmentRoute
+  LegalRoute: typeof LegalRoute
   MarketsRoute: typeof MarketsRoute
-  NewsRoute: typeof NewsRoute
-  PartnersRoute: typeof PartnersRoute
-  PlatformRoute: typeof PlatformRoute
-  PricingRoute: typeof PricingRoute
-  SupportRoute: typeof SupportRoute
+  PerformanceRoute: typeof PerformanceRoute
+  PortfoliosRoute: typeof PortfoliosRoute
+  PrivacyRoute: typeof PrivacyRoute
+  RiskRoute: typeof RiskRoute
+  SolutionsRoute: typeof SolutionsRoute
+  TermsRoute: typeof TermsRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/support': {
-      id: '/support'
-      path: '/support'
-      fullPath: '/support'
-      preLoaderRoute: typeof SupportRouteImport
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/pricing': {
-      id: '/pricing'
-      path: '/pricing'
-      fullPath: '/pricing'
-      preLoaderRoute: typeof PricingRouteImport
+    '/solutions': {
+      id: '/solutions'
+      path: '/solutions'
+      fullPath: '/solutions'
+      preLoaderRoute: typeof SolutionsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/platform': {
-      id: '/platform'
-      path: '/platform'
-      fullPath: '/platform'
-      preLoaderRoute: typeof PlatformRouteImport
+    '/risk': {
+      id: '/risk'
+      path: '/risk'
+      fullPath: '/risk'
+      preLoaderRoute: typeof RiskRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/partners': {
-      id: '/partners'
-      path: '/partners'
-      fullPath: '/partners'
-      preLoaderRoute: typeof PartnersRouteImport
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/news': {
-      id: '/news'
-      path: '/news'
-      fullPath: '/news'
-      preLoaderRoute: typeof NewsRouteImport
+    '/portfolios': {
+      id: '/portfolios'
+      path: '/portfolios'
+      fullPath: '/portfolios'
+      preLoaderRoute: typeof PortfoliosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/performance': {
+      id: '/performance'
+      path: '/performance'
+      fullPath: '/performance'
+      preLoaderRoute: typeof PerformanceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/markets': {
@@ -315,11 +295,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MarketsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/investment': {
-      id: '/investment'
-      path: '/investment'
-      fullPath: '/investment'
-      preLoaderRoute: typeof InvestmentRouteImport
+    '/legal': {
+      id: '/legal'
+      path: '/legal'
+      fullPath: '/legal'
+      preLoaderRoute: typeof LegalRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/faq': {
@@ -336,13 +316,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EducationRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/economic-calendar': {
-      id: '/economic-calendar'
-      path: '/economic-calendar'
-      fullPath: '/economic-calendar'
-      preLoaderRoute: typeof EconomicCalendarRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/contact': {
       id: '/contact'
       path: '/contact'
@@ -350,32 +323,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/competitions': {
-      id: '/competitions'
-      path: '/competitions'
-      fullPath: '/competitions'
-      preLoaderRoute: typeof CompetitionsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/blog': {
-      id: '/blog'
-      path: '/blog'
-      fullPath: '/blog'
-      preLoaderRoute: typeof BlogRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/auth': {
       id: '/auth'
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/affiliate': {
-      id: '/affiliate'
-      path: '/affiliate'
-      fullPath: '/affiliate'
-      preLoaderRoute: typeof AffiliateRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -399,6 +351,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/portal': {
+      id: '/_authenticated/portal'
+      path: '/portal'
+      fullPath: '/portal'
+      preLoaderRoute: typeof AuthenticatedPortalRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -411,10 +370,12 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedPortalRoute: typeof AuthenticatedPortalRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedPortalRoute: AuthenticatedPortalRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -424,22 +385,29 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AboutRoute: AboutRoute,
-  AffiliateRoute: AffiliateRoute,
   AuthRoute: AuthRoute,
-  BlogRoute: BlogRoute,
-  CompetitionsRoute: CompetitionsRoute,
   ContactRoute: ContactRoute,
-  EconomicCalendarRoute: EconomicCalendarRoute,
   EducationRoute: EducationRoute,
   FaqRoute: FaqRoute,
-  InvestmentRoute: InvestmentRoute,
+  LegalRoute: LegalRoute,
   MarketsRoute: MarketsRoute,
-  NewsRoute: NewsRoute,
-  PartnersRoute: PartnersRoute,
-  PlatformRoute: PlatformRoute,
-  PricingRoute: PricingRoute,
-  SupportRoute: SupportRoute,
+  PerformanceRoute: PerformanceRoute,
+  PortfoliosRoute: PortfoliosRoute,
+  PrivacyRoute: PrivacyRoute,
+  RiskRoute: RiskRoute,
+  SolutionsRoute: SolutionsRoute,
+  TermsRoute: TermsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

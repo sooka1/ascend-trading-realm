@@ -1,67 +1,62 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { Globe2, Rocket, ShieldCheck, Users } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageShell, PageHero } from "@/components/page-shell";
-import { AnimatedCounter } from "@/components/animated-counter";
-import { usePage } from "@/lib/i18n";
+import { Award, Compass, Handshake, Target } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "About HK Global Trading — Our story, mission and team" },
-      { name: "description", content: "HK Global Trading is a premium multi-asset broker and competition platform serving 2M+ traders across 184 countries." },
-      { property: "og:title", content: "About HK Global Trading" },
-      { property: "og:description", content: "The story behind the world's most competitive trading platform." },
+      { title: "About HK — HK Investment Management" },
+      { name: "description", content: "Learn about HK Investment Management: our mission, values and experienced team of portfolio managers." },
+      { property: "og:title", content: "About HK Investment Management" },
+      { property: "og:description", content: "Our mission is to help investors access professionally managed investment strategies." },
     ],
   }),
-  component: About,
+  component: AboutPage,
 });
 
-function About() {
-  const p = usePage().about;
+function AboutPage() {
+  const values = [
+    { icon: Target, t: "Client-first", b: "Your objectives shape every allocation. We are aligned with your outcomes." },
+    { icon: Compass, t: "Discipline", b: "Rules-based risk controls prevent emotion from moving the portfolio." },
+    { icon: Handshake, t: "Transparency", b: "Every position and every fee is reported — nothing hidden." },
+    { icon: Award, t: "Excellence", b: "A senior team with decades of institutional experience." },
+  ];
   return (
     <PageShell>
       <PageHero
-        eyebrow={p.hero.eyebrow}
-        title={<>{p.hero.titleA} <span className="text-gradient">{p.hero.titleB}</span></>}
-        subtitle={p.hero.subtitle}
+        eyebrow="About HK"
+        title={<>Professional investment management, built for the long term.</>}
+        subtitle="HK Investment Management helps investors access professionally managed investment strategies with transparency, disciplined risk management and long-term performance."
       />
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {[
-            { value: 2_400_000, suffix: "+", label: p.stats.clients },
-            { value: 184, suffix: "", label: p.stats.countries },
-            { value: 12, suffix: "B+", prefix: "$", label: p.stats.volume },
-            { value: 850, suffix: "+", label: p.stats.team },
-          ].map((s) => (
-            <div key={s.label} className="glass rounded-2xl p-6 text-center">
-              <div className="font-display text-3xl font-bold text-gradient">
-                <AnimatedCounter value={s.value} prefix={(s as any).prefix ?? ""} suffix={s.suffix} />
-              </div>
-              <div className="mt-2 text-sm text-muted-foreground">{s.label}</div>
-            </div>
-          ))}
+      <section className="mx-auto max-w-5xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="glass-strong rounded-3xl p-10">
+          <h2 className="font-display text-3xl font-semibold">Our mission</h2>
+          <p className="mt-4 text-muted-foreground">
+            Help investors access professionally managed investment strategies with transparency, disciplined risk
+            management, and long-term performance. We believe great investment outcomes come from clarity of process,
+            respect for risk, and a genuine partnership with our clients.
+          </p>
         </div>
-
-        <div className="mt-16 grid gap-6 lg:grid-cols-3">
-          {[
-            { icon: Rocket, title: p.values.missionT, body: p.values.missionB },
-            { icon: ShieldCheck, title: p.values.valuesT, body: p.values.valuesB },
-            { icon: Globe2, title: p.values.reachT, body: p.values.reachB },
-          ].map((v) => (
-            <div key={v.title} className="glass rounded-2xl p-6">
+      </section>
+      <section className="mx-auto max-w-7xl px-4 pb-24 sm:px-6 lg:px-8">
+        <h2 className="font-display text-3xl font-semibold">Our values</h2>
+        <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+          {values.map((v) => (
+            <div key={v.t} className="glass rounded-2xl p-6">
               <v.icon className="h-6 w-6 text-gold" />
-              <h3 className="mt-4 font-display text-xl font-semibold">{v.title}</h3>
-              <p className="mt-2 text-sm text-muted-foreground">{v.body}</p>
+              <h3 className="mt-4 font-display text-lg font-semibold">{v.t}</h3>
+              <p className="mt-2 text-sm text-muted-foreground">{v.b}</p>
             </div>
           ))}
         </div>
-
-        <div className="mt-16 glass-strong rounded-3xl p-8 md:p-12">
-          <div className="flex items-center gap-3 text-muted-foreground">
-            <Users className="h-5 w-5 text-gold" /> <span className="text-xs uppercase tracking-widest">{p.leadership.eyebrow}</span>
-          </div>
-          <h3 className="mt-3 font-display text-3xl font-bold">{p.leadership.title}</h3>
-          <p className="mt-4 max-w-3xl text-muted-foreground">{p.leadership.body}</p>
+        <div className="mt-12 flex flex-wrap gap-3">
+          <Button asChild className="bg-[var(--gradient-gold)] font-semibold text-background">
+            <Link to="/portfolios">Explore managed portfolios</Link>
+          </Button>
+          <Button asChild variant="outline" className="border-white/15">
+            <Link to="/contact">Talk to an advisor</Link>
+          </Button>
         </div>
       </section>
     </PageShell>
