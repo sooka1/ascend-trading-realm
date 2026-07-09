@@ -18,6 +18,8 @@ import {
   History,
   User as UserIcon,
   Lock,
+  Download,
+  Printer,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SECURITY_SNAPSHOT, type SecurityFinding, type Severity, type FindingStatus } from "@/lib/security-snapshot";
@@ -230,6 +232,8 @@ function AuditLogGate({ findings }: { findings: SecurityFinding[] }) {
 }
 
 function AuditLog({ findings }: { findings: SecurityFinding[] }) {
+  const escapeHtml = (s: string) =>
+    s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   const entries = useMemo(() => {
     const rows = findings.flatMap((f) =>
       (f.audit ?? []).map((a) => ({ ...a, findingId: f.id, findingTitle: f.title, severity: f.severity })),
@@ -239,11 +243,85 @@ function AuditLog({ findings }: { findings: SecurityFinding[] }) {
 
   if (entries.length === 0) return null;
 
+  const handleExportCsv = () => {
+    const header = ["at", "by", "action", "severity", "findingId", "findingTitle", "changes"];
+    const escape = (v: string) => `"${v.replace(/"/g, '""')}"`;
+    const lines = [header.join(",")];
+    for (const e of entries) {
+      lines.push([
+        e.at,
+        e.by,
+        e.action,
+        e.severity,
+        e.findingId,
+        e.findingTitle,
+        e.changes.join(" | "),
+      ].map((v) => escape(String(v))).join(","));
+    }
+    // BOM so Excel opens UTF-8/Arabic correctly
+    const blob = new Blob(["\ufeff" + lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `security-audit-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleExportPdf = () => {
+    const rows = entries
+      .map(
+        (e) => `
+        <tr>
+          <td>${new Date(e.at).toLocaleString("ar-EG")}</td>
+          <td>${escapeHtml(e.by)}</td>
+          <td>${SEV_META[e.severity].label}</td>
+          <td>${escapeHtml(e.action)}<br/><small>${escapeHtml(e.findingTitle)}</small></td>
+          <td><ul style="margin:0;padding-inline-start:16px">${e.changes.map((c) => `<li>${escapeHtml(c)}</li>`).join("")}</ul></td>
+        </tr>`,
+      )
+      .join("");
+    const html = `<!doctype html><html dir="rtl" lang="ar"><head><meta charset="utf-8"/>
+      <title>سجل التدقيق الأمني</title>
+      <style>
+        body{font-family:system-ui,'Segoe UI',Tahoma,sans-serif;padding:24px;color:#111}
+        h1{font-size:20px;margin:0 0 12px}
+        .meta{color:#555;font-size:12px;margin-bottom:16px}
+        table{width:100%;border-collapse:collapse;font-size:12px}
+        th,td{border:1px solid #ddd;padding:6px 8px;vertical-align:top;text-align:right}
+        th{background:#f3f4f6}
+        small{color:#666}
+        @media print{@page{size:A4;margin:14mm}}
+      </style></head><body>
+      <h1>سجل التدقيق — تطبيق الإصلاحات الأمنية</h1>
+      <div class="meta">تم التصدير في ${new Date().toLocaleString("ar-EG")} · عدد الإدخالات: ${entries.length}</div>
+      <table><thead><tr>
+        <th>التاريخ</th><th>المنفّذ</th><th>الخطورة</th><th>الإجراء / المشكلة</th><th>التغييرات</th>
+      </tr></thead><tbody>${rows}</tbody></table>
+      <script>window.onload=()=>{setTimeout(()=>window.print(),200)}</script>
+      </body></html>`;
+    const w = window.open("", "_blank");
+    if (!w) return;
+    w.document.open();
+    w.document.write(html);
+    w.document.close();
+  };
+
   return (
     <div className="mt-10">
-      <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-muted-foreground">
-        <History className="h-4 w-4" /> سجل التدقيق — تطبيق الإصلاحات
-      </h2>
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <h2 className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
+          <History className="h-4 w-4" /> سجل التدقيق — تطبيق الإصلاحات
+        </h2>
+        <div className="flex items-center gap-2">
+          <Button type="button" size="sm" variant="outline" onClick={handleExportCsv} className="border-white/15 bg-white/5 text-xs">
+            <Download className="h-3.5 w-3.5" /> CSV
+          </Button>
+          <Button type="button" size="sm" variant="outline" onClick={handleExportPdf} className="border-white/15 bg-white/5 text-xs">
+            <Printer className="h-3.5 w-3.5" /> PDF
+          </Button>
+        </div>
+      </div>
       <ol className="glass space-y-3 rounded-2xl border border-white/10 p-4">
         {entries.map((e, i) => (
           <li key={`${e.findingId}-${i}`} className="border-b border-white/5 pb-3 last:border-0 last:pb-0">
