@@ -145,6 +145,7 @@ function AdminUsers() {
 
   return (
     <AdminShell
+      eyebrow="Admin"
       title="إدارة المستخدمين"
       subtitle={
         data?.isSuper
@@ -182,7 +183,7 @@ function AdminUsers() {
         <AdminKpi label="معلّق" value={String(kpis.suspended)} tone="negative" />
       </div>
 
-      <AdminCard className="mt-6">
+      <AdminCard title="قائمة المستخدمين" className="mt-6">
         <form
           onSubmit={(e) => {
             e.preventDefault();
