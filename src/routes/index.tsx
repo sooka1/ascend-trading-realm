@@ -523,10 +523,10 @@ const CREDENTIALS: Record<string, CL> = {
     certsTitle: "الاعتمادات والشهادات القانونية",
     awardsTitle: "الجوائز والتقديرات العالمية",
     certs: [
-      { name: "ISO/IEC 27001", body: "شهادة معتمدة في أمن المعلومات لحماية بيانات العملاء." },
-      { name: "SOC 2 Type II", body: "تقرير مستقل يوثّق ضوابط الأمان والخصوصية والتوافر." },
-      { name: "GDPR Compliance", body: "التزام كامل بلائحة حماية البيانات الأوروبية." },
-      { name: "AML / KYC", body: "سياسات صارمة لمكافحة غسل الأموال ومعرفة العميل." },
+      { key: "iso27001", name: "ISO/IEC 27001", body: "شهادة معتمدة في أمن المعلومات لحماية بيانات العملاء." },
+      { key: "soc2", name: "SOC 2 Type II", body: "تقرير مستقل يوثّق ضوابط الأمان والخصوصية والتوافر." },
+      { key: "gdpr", name: "GDPR Compliance", body: "التزام كامل بلائحة حماية البيانات الأوروبية." },
+      { key: "aml", name: "AML / KYC", body: "سياسات صارمة لمكافحة غسل الأموال ومعرفة العميل." },
     ],
     awards: [
       { name: "Best Wealth Manager 2025", body: "جائزة أفضل شركة إدارة ثروات — Global Finance Awards." },
@@ -542,10 +542,10 @@ const CREDENTIALS: Record<string, CL> = {
     certsTitle: "Legal Certifications",
     awardsTitle: "Global Awards & Recognition",
     certs: [
-      { name: "ISO/IEC 27001", body: "Certified information-security management for client data protection." },
-      { name: "SOC 2 Type II", body: "Independent report on security, privacy and availability controls." },
-      { name: "GDPR Compliance", body: "Full alignment with the EU General Data Protection Regulation." },
-      { name: "AML / KYC", body: "Rigorous anti–money laundering and know-your-customer policies." },
+      { key: "iso27001", name: "ISO/IEC 27001", body: "Certified information-security management for client data protection." },
+      { key: "soc2", name: "SOC 2 Type II", body: "Independent report on security, privacy and availability controls." },
+      { key: "gdpr", name: "GDPR Compliance", body: "Full alignment with the EU General Data Protection Regulation." },
+      { key: "aml", name: "AML / KYC", body: "Rigorous anti–money laundering and know-your-customer policies." },
     ],
     awards: [
       { name: "Best Wealth Manager 2025", body: "Global Finance Awards — top wealth-management firm." },
@@ -561,10 +561,10 @@ const CREDENTIALS: Record<string, CL> = {
     certsTitle: "Certifications légales",
     awardsTitle: "Récompenses mondiales",
     certs: [
-      { name: "ISO/IEC 27001", body: "Gestion certifiée de la sécurité de l'information." },
-      { name: "SOC 2 Type II", body: "Contrôles indépendants de sécurité et de confidentialité." },
-      { name: "GDPR", body: "Conformité totale au règlement européen." },
-      { name: "AML / KYC", body: "Politiques strictes de lutte contre le blanchiment." },
+      { key: "iso27001", name: "ISO/IEC 27001", body: "Gestion certifiée de la sécurité de l'information." },
+      { key: "soc2", name: "SOC 2 Type II", body: "Contrôles indépendants de sécurité et de confidentialité." },
+      { key: "gdpr", name: "GDPR", body: "Conformité totale au règlement européen." },
+      { key: "aml", name: "AML / KYC", body: "Politiques strictes de lutte contre le blanchiment." },
     ],
     awards: [
       { name: "Best Wealth Manager 2025", body: "Global Finance Awards." },
@@ -580,10 +580,10 @@ const CREDENTIALS: Record<string, CL> = {
     certsTitle: "Certificaciones legales",
     awardsTitle: "Premios internacionales",
     certs: [
-      { name: "ISO/IEC 27001", body: "Gestión certificada de seguridad de la información." },
-      { name: "SOC 2 Type II", body: "Controles independientes de seguridad y privacidad." },
-      { name: "GDPR", body: "Cumplimiento pleno del reglamento europeo." },
-      { name: "AML / KYC", body: "Políticas estrictas contra el blanqueo de capitales." },
+      { key: "iso27001", name: "ISO/IEC 27001", body: "Gestión certificada de seguridad de la información." },
+      { key: "soc2", name: "SOC 2 Type II", body: "Controles independientes de seguridad y privacidad." },
+      { key: "gdpr", name: "GDPR", body: "Cumplimiento pleno del reglamento europeo." },
+      { key: "aml", name: "AML / KYC", body: "Políticas estrictas contra el blanqueo de capitales." },
     ],
     awards: [
       { name: "Best Wealth Manager 2025", body: "Global Finance Awards." },
@@ -599,10 +599,10 @@ const CREDENTIALS: Record<string, CL> = {
     certsTitle: "Yasal Sertifikalar",
     awardsTitle: "Uluslararası Ödüller",
     certs: [
-      { name: "ISO/IEC 27001", body: "Sertifikalı bilgi güvenliği yönetimi." },
-      { name: "SOC 2 Type II", body: "Bağımsız güvenlik ve gizlilik kontrolleri." },
-      { name: "GDPR", body: "AB veri koruma yönetmeliğine tam uyum." },
-      { name: "AML / KYC", body: "Sıkı kara para aklamayı önleme politikaları." },
+      { key: "iso27001", name: "ISO/IEC 27001", body: "Sertifikalı bilgi güvenliği yönetimi." },
+      { key: "soc2", name: "SOC 2 Type II", body: "Bağımsız güvenlik ve gizlilik kontrolleri." },
+      { key: "gdpr", name: "GDPR", body: "AB veri koruma yönetmeliğine tam uyum." },
+      { key: "aml", name: "AML / KYC", body: "Sıkı kara para aklamayı önleme politikaları." },
     ],
     awards: [
       { name: "Best Wealth Manager 2025", body: "Global Finance Awards." },
