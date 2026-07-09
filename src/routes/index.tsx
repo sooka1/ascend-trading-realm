@@ -471,11 +471,48 @@ type CL = {
   eyebrow: string;
   title: string;
   subtitle: string;
-  certs: { name: string; body: string }[];
+  certs: { key: CertKey; name: string; body: string }[];
   awards: { name: string; body: string }[];
   awardsTitle: string;
   certsTitle: string;
   disclaimer: string;
+  labels: {
+    updated: string;
+    view: string;
+    download: string;
+    verify: string;
+    verifyStatement: string;
+    close: string;
+    details: string;
+  };
+};
+
+type CertKey = "iso27001" | "soc2" | "gdpr" | "aml";
+
+const CERT_META: Record<
+  CertKey,
+  { updated: string; verifyUrl: string; verifyId: string }
+> = {
+  iso27001: {
+    updated: "2025-08-14",
+    verifyUrl: "https://www.iso.org/standard/27001",
+    verifyId: "HK-ISO27001-2025-0814",
+  },
+  soc2: {
+    updated: "2025-06-30",
+    verifyUrl: "https://www.aicpa-cima.com/topic/audit-assurance/audit-and-assurance-greater-than-soc-2",
+    verifyId: "HK-SOC2-TYPEII-2025-Q2",
+  },
+  gdpr: {
+    updated: "2025-09-01",
+    verifyUrl: "https://gdpr.eu/",
+    verifyId: "HK-GDPR-DPA-2025-09",
+  },
+  aml: {
+    updated: "2025-10-05",
+    verifyUrl: "https://www.fatf-gafi.org/",
+    verifyId: "HK-AML-KYC-2025-10",
+  },
 };
 
 const CREDENTIALS: Record<string, CL> = {
