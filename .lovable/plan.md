@@ -1,92 +1,68 @@
-# خطة التحويل إلى منصة استثمار على مستوى المؤسسات
+## Super Admin Control Center — Phased Plan
 
-طلبت "كل ما سبق" و"تنفيذ كامل". بصراحة تامة: ما طلبته يعادل **6-8 أسابيع** من العمل الهندسي لفريق كامل (RBAC كامل، CRM، CMS، نظام تذاكر، تقارير PDF/Excel، MFA، إشعارات SMS، تدقيق OWASP كامل، ...إلخ). لا يمكن تنفيذ كل ذلك في جلسة واحدة دون **كسر التطبيق العامل حالياً**.
+The scope you shared covers ~20 modules and hundreds of sub-features. Building it all in one turn would produce shallow screens. I'll deliver it as **6 phases**, each phase a shippable slice with polished screens, real data from your existing tables, and the same Noir & Gold / Bloomberg-lite design language already used across the investor portal. Confirm the plan and I'll execute Phase 1 immediately.
 
-سأنفذ العمل على **مراحل متتالية**، كل مرحلة قابلة للاختبار والاستخدام قبل الانتقال للتالية. تبدأ كل مرحلة بأمر منك: "ابدأ المرحلة N".
+### Foundation (shared, built once, reused by every phase)
 
-## المرحلة 1 — الأساس الأمني و RBAC (هذه الجلسة)
+- **`AdminShell` layout** — mirrors `PortalShell`: sticky sidebar, grouped nav (Overview, Operations, Finance, Users, System, Settings), gold-accent active state, mobile chip nav, page header with actions slot.
+- **`AdminCard`, `Kpi`, `StatusPill`, `DataTable`** primitives with search / filter / pagination / CSV export baked in.
+- **Route architecture**: expand `src/routes/_authenticated/_admin/` with `admin.<section>.tsx` files. Existing `admin.index / users / finance / audit` get re-skinned to use `AdminShell`.
+- **Server functions** in `src/lib/admin.functions.ts` (extend existing file). All reads go through `requireSupabaseAuth` + `has_role('admin' | 'super_admin')`. Aggregates computed server-side.
 
-الأهم والأخطر. بدونها كل ما يأتي بعدها هش.
+### Phase 1 — Executive Dashboard + System Monitoring
 
-- تدقيق كل جداول Supabase الـ14: التأكد من `GRANT` صحيح، RLS مُفعّل، سياسات مُحكمة لكل جدول.
-- إضافة أدوار enum: `super_admin`, `admin`, `portfolio_manager`, `compliance_officer`, `finance`, `support`, `investor` إلى `app_role`.
-- تعديل `has_role` ودالة `handle_new_user` لدعم الأدوار الجديدة.
-- إنشاء layout محمي `_admin` يستخدم `has_role` للتحقق من صلاحية الوصول لصفحات الإدارة.
-- إصلاح أي سياسة RLS مكشوفة (تشغيل `supabase--linter`).
-- تفعيل حماية كلمات المرور المسربة (HIBP).
+- `/admin` Executive Dashboard: KPIs (users, active subs, AUM, MRR, tickets open), live activity feed (from `finance_audit_log`), quick actions, revenue sparkline, subscription growth, recent finance requests.
+- `/admin/monitoring` System Monitoring: DB health via `pg_stat`, storage bucket usage, API latency proxy (server-fn timings), error-rate counters, queue status placeholder.
+- `/admin/analytics` Platform Analytics: DAU / MAU / retention / churn / geographic breakdown from `profiles` + `finance_audit_log`.
 
-## المرحلة 2 — بوابة المستثمر الكاملة
+### Phase 2 — Financial Operations
 
-- صفحات: `/portal/overview`, `/portal/reports`, `/portal/transactions`, `/portal/documents`, `/portal/notifications`, `/portal/support`, `/portal/security`, `/portal/profile`.
-- نظام تذاكر دعم (جدول `support_tickets` + `ticket_messages`).
-- مركز مستندات (Supabase Storage bucket + سياسات).
-- تصدير PDF للتقارير (react-pdf).
+- `/admin/finance` (re-skin existing) with tabs: Deposits · Withdrawals · Investment Requests · History.
+- `/admin/subscriptions` Subscription control: list + filter by status, upgrade/downgrade/cancel actions, renewal timeline.
+- `/admin/invoices` Invoice ledger derived from `subscriptions` + `deposits`.
+- `/admin/payments` Payment logs & manual review queue.
+- `/admin/accounting` Revenue / expenses / profit reports (monthly / quarterly / annual) with charts + CSV/PDF export.
 
-## المرحلة 3 — لوحة الإدارة (Admin)
+### Phase 3 — User, Role & Organization Management
 
-- `/admin/users` (إدارة/تعطيل/تعديل أدوار).
-- `/admin/portfolios` (عرض/تعديل محافظ جميع العملاء).
-- `/admin/finance` (موجود — تحسين).
-- `/admin/audit` (سجل التدقيق الكامل).
-- `/admin/support` (لوحة معالجة التذاكر).
-- `/admin/analytics` (KPIs عامة).
+- `/admin/users` (re-skin): advanced filters (role, status, KYC, last login), bulk actions, drawer with user detail (roles, sessions, activity, security).
+- `/admin/roles` RBAC: role matrix, create/clone role, permission groups, audit of role changes.
+- `/admin/organizations` (requires a new `organizations` table — see "Backend changes"): profile, status, subscription, admins, storage, activity, billing, documents.
 
-## المرحلة 4 — نظام التصميم والأداء
+### Phase 4 — Audit, Security & Notifications
 
-- توحيد جميع الألوان في styles.css كـ tokens وتجنّب استخدام قيم CSS مضمّنة مباشرة.
-- مكونات موحدة: `StatCard`, `DataTable`, `EmptyState`, `LoadingState`, `ErrorBoundary`.
-- Lazy loading للمسارات الثقيلة.
-- Image optimization, code splitting.
-- SEO لكل صفحة (schema.org, canonical, OG images).
+- `/admin/audit` (re-skin): full-featured, filter by actor/kind/date, export.
+- `/admin/security` Security Center: failed logins, MFA coverage, role changes, RLS status, active sessions.
+- `/admin/notifications` Notification Center: templates, scheduling, history, per-channel (email/push/in-app) filter — persists to `notifications` table.
 
-## المرحلة 5 — إضافات المؤسسة
+### Phase 5 — Marketing, Partners, Backups
 
-- MFA/2FA (TOTP).
-- سجل جلسات وأجهزة.
-- إشعارات: Email (موجود) + In-app (موجود). SMS عبر GatewayAPI (اختياري).
-- CMS بسيط (blog/news/announcements).
-- التقويم الاقتصادي وشريط الأسواق (يوجد ticker — نُحسّنه).
-- WCAG AA: aria-labels لكل الأيقونات، تباين، keyboard nav.
+- `/admin/marketing` Campaigns + newsletter queue (requires `marketing_campaigns` table).
+- `/admin/partners` Partner directory + commission report (requires `partners` table).
+- `/admin/backups` Backup center: history from `pg_cron` job runs, integrity check status, manual snapshot trigger via server fn.
 
-## المرحلة 6 — الضبط النهائي
+### Phase 6 — Settings, Search, Export, Performance polish
 
-- Playwright E2E للتدفقات الحرجة.
-- Rate limiting للنماذج العامة.
-- تقرير Lighthouse ومعالجة كل النقاط دون 95.
-- مراجعة نهائية OWASP Top 10.
+- `/admin/settings` General, branding, themes, localization, currencies, maintenance mode toggle.
+- Global admin `⌘K` search across users, requests, tickets, audit entries.
+- Universal CSV / print / PDF export helpers wired into every list.
+- Virtualization on tables >200 rows, server-side pagination, query-key caching.
 
----
+### Backend changes (batched into three migrations, one per relevant phase)
 
-## تفاصيل تقنية للمرحلة 1 (التي سأنفذها الآن عند الموافقة)
+- **Phase 3**: `organizations`, `organization_members` (+ RLS + GRANTs).
+- **Phase 4**: `notification_templates`, `notification_deliveries` (+ RLS).
+- **Phase 5**: `marketing_campaigns`, `partners`, `partner_commissions` (+ RLS).
 
-**Migration واحدة تُضيف:**
+Every migration follows the required 4-step order (CREATE → GRANT → ENABLE RLS → POLICY) and uses `has_role` for admin gates.
 
-```sql
--- توسيع app_role
-ALTER TYPE app_role ADD VALUE IF NOT EXISTS 'super_admin';
-ALTER TYPE app_role ADD VALUE IF NOT EXISTS 'portfolio_manager';
-ALTER TYPE app_role ADD VALUE IF NOT EXISTS 'compliance_officer';
-ALTER TYPE app_role ADD VALUE IF NOT EXISTS 'finance';
-ALTER TYPE app_role ADD VALUE IF NOT EXISTS 'support';
-ALTER TYPE app_role ADD VALUE IF NOT EXISTS 'investor';
+### Explicit exclusions (out-of-scope for a UI build)
 
--- دالة تجميع للتحقق من عدة أدوار
-CREATE OR REPLACE FUNCTION public.has_any_role(_user_id uuid, _roles app_role[])
-RETURNS boolean LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public
-AS $$ SELECT EXISTS (SELECT 1 FROM public.user_roles WHERE user_id=_user_id AND role = ANY(_roles)) $$;
-```
+- **Rate limiting** — no primitive on the backend; noted and skipped as per Lovable guidance.
+- **Real infra CPU/memory graphs** — the Cloudflare Worker runtime doesn't expose host metrics. Monitoring page shows what we *can* measure (DB, storage, error counts, server-fn timings) and clearly labels this.
+- **Actual payment gateways** (Stripe/PayPal) — I'll build the UI shells and DB queues; enabling live payments is a separate flow via `enable_stripe_payments` when you're ready.
+- **Automatic backups infrastructure** — the UI will surface `pg_cron` job runs; provisioning point-in-time recovery is a Lovable Cloud platform setting, not application code.
 
-**ملفات جديدة/معدلة:**
-- `src/routes/_authenticated/_admin/route.tsx` — بوابة تحقق `has_any_role(['admin','super_admin'])`.
-- نقل `admin.finance.tsx` تحت `_admin/`.
-- `src/lib/rbac.functions.ts` — server fn لجلب أدوار المستخدم الحالي.
-- `src/hooks/use-roles.ts` — hook للاستخدام في المكونات.
+### How I'll proceed
 
-**مخرجات مؤكدة:**
-- تشغيل `supabase--linter` بعد التعديلات.
-- typecheck يمر.
-- لا كسر لأي مسار موجود.
-
----
-
-**للبدء اكتب: "ابدأ المرحلة 1"** أو **"ابدأ المرحلة X"** لأي مرحلة أخرى تفضلها أولاً.
+I'll build **Phase 1 immediately** after you confirm this plan, keep every screen shippable, and check in after each phase before starting the next. If you want a different phase first (e.g. "start with Finance"), tell me and I'll reorder.

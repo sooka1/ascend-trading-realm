@@ -1,126 +1,268 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
-import { PageShell } from "@/components/page-shell";
-import { getAdminOverview } from "@/lib/admin.functions";
-import { Users, Wallet, ArrowDownToLine, LifeBuoy, ShieldCheck, ArrowLeftRight } from "lucide-react";
+import {
+  AdminShell,
+  AdminCard,
+  AdminKpi,
+  AdminQuickAction,
+  Sparkline,
+  StatusPill,
+  fmtInt,
+  fmtMoney,
+} from "@/components/admin-shell";
+import { getExecutiveDashboard } from "@/lib/admin.functions";
+import {
+  Users,
+  Wallet,
+  ArrowDownToLine,
+  LifeBuoy,
+  ShieldCheck,
+  ArrowLeftRight,
+  Activity,
+  TrendingUp,
+  CreditCard,
+  Landmark,
+  History,
+  Zap,
+  Bell,
+} from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/_admin/admin/")({
   head: () => ({
     meta: [
-      { title: "Admin — Overview" },
-      { name: "description", content: "Enterprise admin overview: users, requests, tickets." },
+      { title: "Admin — Executive Dashboard" },
+      { name: "description", content: "Executive control center: KPIs, live activity, revenue and subscriptions." },
     ],
   }),
   component: AdminIndex,
 });
 
 function AdminIndex() {
-  const fetchOverview = useServerFn(getAdminOverview);
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["admin", "overview"],
-    queryFn: () => fetchOverview(),
-    staleTime: 30_000,
+  const fetchDashboard = useServerFn(getExecutiveDashboard);
+  const { data, isLoading, error, refetch, isFetching } = useQuery({
+    queryKey: ["admin", "executive"],
+    queryFn: () => fetchDashboard(),
+    staleTime: 15_000,
+    refetchInterval: 60_000,
   });
 
+  const t = data?.totals;
+
   return (
-    <PageShell bare>
-      <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-        <p className="text-xs uppercase tracking-widest text-gold">Admin</p>
-        <h1 className="mt-1 font-display text-3xl font-semibold md:text-4xl">لوحة الإدارة</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          نظرة عامة على النشاط والطلبات المعلّقة والدعم.
-        </p>
-
-        {error ? (
-          <div className="glass mt-6 rounded-2xl p-6 text-sm text-red-300">
-            تعذّر تحميل البيانات: {(error as Error).message}
-          </div>
-        ) : null}
-
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <Stat icon={<Users className="h-4 w-4" />} label="المستخدمون" value={data?.users} loading={isLoading} />
-          <Stat icon={<Wallet className="h-4 w-4" />} label="إيداعات معلّقة" value={data?.pendingDeposits} loading={isLoading} accent="amber" />
-          <Stat icon={<ArrowDownToLine className="h-4 w-4" />} label="سحوبات معلّقة" value={data?.pendingWithdrawals} loading={isLoading} accent="amber" />
-          <Stat icon={<LifeBuoy className="h-4 w-4" />} label="تذاكر دعم مفتوحة" value={data?.openTickets} loading={isLoading} />
-          <Stat
-            icon={<ArrowLeftRight className="h-4 w-4" />}
-            label="إيداعات معتمدة (30 يوم)"
-            value={data ? Math.round(data.depositsApproved30d).toLocaleString() : undefined}
-            loading={isLoading}
-            accent="emerald"
-          />
-          <Stat
-            icon={<ArrowLeftRight className="h-4 w-4" />}
-            label="سحوبات معتمدة (30 يوم)"
-            value={data ? Math.round(data.withdrawalsApproved30d).toLocaleString() : undefined}
-            loading={isLoading}
-          />
-        </div>
-
-        <div className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          <NavCard to="/admin/users" title="إدارة المستخدمين" desc="الأدوار والصلاحيات" icon={<ShieldCheck className="h-4 w-4" />} />
-          <NavCard to="/admin/finance" title="طلبات مالية" desc="إيداع وسحب" icon={<Wallet className="h-4 w-4" />} />
-          <NavCard to="/admin/audit" title="سجل التدقيق" desc="أحدث العمليات" icon={<ArrowLeftRight className="h-4 w-4" />} />
-        </div>
-      </section>
-    </PageShell>
-  );
-}
-
-function Stat({
-  icon,
-  label,
-  value,
-  loading,
-  accent,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: number | string | undefined;
-  loading?: boolean;
-  accent?: "amber" | "emerald";
-}) {
-  const accentCls =
-    accent === "amber"
-      ? "text-amber-300"
-      : accent === "emerald"
-      ? "text-emerald-300"
-      : "text-foreground";
-  return (
-    <div className="glass rounded-2xl p-5">
-      <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-muted-foreground">
-        {icon}
-        {label}
-      </div>
-      <div className={`mt-3 font-display text-3xl font-semibold ${accentCls}`}>
-        {loading ? "—" : value ?? 0}
-      </div>
-    </div>
-  );
-}
-
-function NavCard({
-  to,
-  title,
-  desc,
-  icon,
-}: {
-  to: string;
-  title: string;
-  desc: string;
-  icon: React.ReactNode;
-}) {
-  return (
-    <Link
-      to={to}
-      className="glass group rounded-2xl p-5 transition-colors hover:border-gold/30"
+    <AdminShell
+      eyebrow="Executive Control Center"
+      title="لوحة القيادة التنفيذية"
+      subtitle="نظرة شاملة على أداء المنصة والعمليات المالية والنشاط الحيّ لحظة بلحظة."
+      actions={
+        <button
+          onClick={() => refetch()}
+          className="inline-flex items-center gap-2 rounded-md border border-white/10 bg-white/[0.03] px-3 py-1.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground transition hover:border-gold/40 hover:text-foreground"
+        >
+          <Activity className={`h-3.5 w-3.5 ${isFetching ? "animate-pulse text-gold" : ""}`} />
+          {isFetching ? "جارٍ التحديث" : "تحديث"}
+        </button>
+      }
     >
-      <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-gold">
-        {icon}
-        {title}
+      {error ? (
+        <div className="mb-6 rounded-xl border border-red-400/20 bg-red-400/[0.06] p-4 text-sm text-red-200">
+          تعذّر تحميل البيانات: {(error as Error).message}
+        </div>
+      ) : null}
+
+      {/* KPI grid */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <AdminKpi
+          icon={Users}
+          label="إجمالي المستخدمين"
+          value={isLoading ? "—" : fmtInt(t?.users)}
+          hint={t ? `+${fmtInt(t.newUsers30d)} خلال 30 يوماً` : undefined}
+        />
+        <AdminKpi
+          icon={CreditCard}
+          label="اشتراكات نشطة"
+          value={isLoading ? "—" : fmtInt(t?.activeSubscriptions)}
+          hint={t ? `${fmtInt(t.totalSubscriptions)} إجمالي` : undefined}
+          tone="positive"
+        />
+        <AdminKpi
+          icon={Landmark}
+          label="رأس مال تحت الإدارة"
+          value={isLoading ? "—" : fmtMoney(t?.aum)}
+          hint="Assets Under Management"
+          tone="positive"
+        />
+        <AdminKpi
+          icon={TrendingUp}
+          label="رأس مال جديد (30ي)"
+          value={isLoading ? "—" : fmtMoney(t?.newCapital30d)}
+          hint="Inflows via subscriptions"
+          tone="positive"
+        />
+        <AdminKpi
+          icon={Wallet}
+          label="إيداعات معلّقة"
+          value={isLoading ? "—" : fmtInt(t?.pendingDeposits)}
+          tone={t && t.pendingDeposits > 0 ? "warning" : "neutral"}
+        />
+        <AdminKpi
+          icon={ArrowDownToLine}
+          label="سحوبات معلّقة"
+          value={isLoading ? "—" : fmtInt(t?.pendingWithdrawals)}
+          tone={t && t.pendingWithdrawals > 0 ? "warning" : "neutral"}
+        />
+        <AdminKpi
+          icon={LifeBuoy}
+          label="تذاكر دعم مفتوحة"
+          value={isLoading ? "—" : fmtInt(t?.openTickets)}
+          tone={t && t.openTickets > 5 ? "warning" : "neutral"}
+        />
+        <AdminKpi
+          icon={ArrowLeftRight}
+          label="حركة معتمدة (30ي)"
+          value={isLoading ? "—" : fmtMoney((t?.depositsApproved30d ?? 0) + (t?.withdrawalsApproved30d ?? 0))}
+          hint={t ? `${fmtMoney(t.depositsApproved30d)} إيداع · ${fmtMoney(t.withdrawalsApproved30d)} سحب` : undefined}
+        />
       </div>
-      <p className="mt-2 text-sm text-muted-foreground">{desc}</p>
-    </Link>
+
+      {/* Trend charts */}
+      <div className="mt-6 grid gap-4 lg:grid-cols-3">
+        <AdminCard title="تدفق الإيداعات (30 يوماً)" icon={TrendingUp}>
+          <Sparkline data={(data?.series.deposits ?? []).map((r) => r.total)} height={64} />
+          <div className="mt-3 flex items-baseline justify-between">
+            <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+              الإجمالي
+            </span>
+            <span className="font-display text-2xl font-semibold text-emerald-300">
+              {fmtMoney(t?.depositsApproved30d)}
+            </span>
+          </div>
+        </AdminCard>
+        <AdminCard title="تدفق السحوبات (30 يوماً)" icon={ArrowDownToLine}>
+          <Sparkline data={(data?.series.withdrawals ?? []).map((r) => r.total)} height={64} />
+          <div className="mt-3 flex items-baseline justify-between">
+            <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+              الإجمالي
+            </span>
+            <span className="font-display text-2xl font-semibold">
+              {fmtMoney(t?.withdrawalsApproved30d)}
+            </span>
+          </div>
+        </AdminCard>
+        <AdminCard title="نمو الاشتراكات (30 يوماً)" icon={CreditCard}>
+          <Sparkline data={(data?.series.subscriptions ?? []).map((r) => r.total)} height={64} />
+          <div className="mt-3 flex items-baseline justify-between">
+            <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+              رأس مال جديد
+            </span>
+            <span className="font-display text-2xl font-semibold text-gold">
+              {fmtMoney(t?.newCapital30d)}
+            </span>
+          </div>
+        </AdminCard>
+      </div>
+
+      {/* Quick actions */}
+      <div className="mt-6">
+        <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+          إجراءات سريعة
+        </p>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <AdminQuickAction to="/admin/finance" icon={Wallet} label="مراجعة الطلبات المالية" hint="Deposits & withdrawals" />
+          <AdminQuickAction to="/admin/users" icon={ShieldCheck} label="إدارة المستخدمين والأدوار" hint="RBAC & access" />
+          <AdminQuickAction to="/admin/audit" icon={History} label="سجل التدقيق" hint="Recent audit trail" />
+          <AdminQuickAction to="/admin/monitoring" icon={Zap} label="صحة النظام" hint="DB · storage · errors" />
+        </div>
+      </div>
+
+      {/* Live activity + recent requests */}
+      <div className="mt-6 grid gap-4 lg:grid-cols-2">
+        <AdminCard
+          title="النشاط الحيّ"
+          icon={Activity}
+          action={<StatusPill tone="info">Live</StatusPill>}
+        >
+          {isLoading ? (
+            <SkeletonRows />
+          ) : (data?.activity ?? []).length === 0 ? (
+            <EmptyLine text="لا يوجد نشاط حديث." />
+          ) : (
+            <ul className="divide-y divide-white/[0.06]">
+              {(data!.activity as any[]).slice(0, 10).map((a) => (
+                <li key={a.id} className="flex items-start gap-3 py-2.5">
+                  <span className="mt-1.5 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-gold" />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm">
+                      <span className="font-mono text-[11px] uppercase tracking-wider text-gold">
+                        {a.action}
+                      </span>
+                      <span className="mx-2 text-muted-foreground">·</span>
+                      <span className="text-muted-foreground">{a.entity}</span>
+                    </p>
+                    <p className="mt-0.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                      {new Date(a.created_at).toLocaleString()}
+                    </p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </AdminCard>
+
+        <AdminCard title="أحدث طلبات الاستثمار" icon={Bell}>
+          {isLoading ? (
+            <SkeletonRows />
+          ) : (data?.recentRequests ?? []).length === 0 ? (
+            <EmptyLine text="لا توجد طلبات حديثة." />
+          ) : (
+            <ul className="divide-y divide-white/[0.06]">
+              {(data!.recentRequests as any[]).map((r) => (
+                <li key={r.id} className="flex items-center justify-between gap-3 py-2.5 text-sm">
+                  <div className="min-w-0">
+                    <p className="truncate">
+                      {fmtMoney(Number(r.amount), r.currency || "USD")}
+                    </p>
+                    <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                      {new Date(r.created_at).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <StatusPill
+                    tone={
+                      r.status === "approved"
+                        ? "positive"
+                        : r.status === "pending"
+                          ? "warning"
+                          : r.status === "rejected"
+                            ? "critical"
+                            : "neutral"
+                    }
+                  >
+                    {r.status}
+                  </StatusPill>
+                </li>
+              ))}
+            </ul>
+          )}
+        </AdminCard>
+      </div>
+    </AdminShell>
+  );
+}
+
+function SkeletonRows() {
+  return (
+    <ul className="space-y-2">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <li key={i} className="h-8 animate-pulse rounded bg-white/[0.03]" />
+      ))}
+    </ul>
+  );
+}
+
+function EmptyLine({ text }: { text: string }) {
+  return (
+    <p className="rounded-md border border-dashed border-white/10 px-4 py-6 text-center text-sm text-muted-foreground">
+      {text}
+    </p>
   );
 }

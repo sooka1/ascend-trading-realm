@@ -53,8 +53,10 @@ import { Route as AuthenticatedAppPortfolioRouteImport } from './routes/_authent
 import { Route as AuthenticatedAppActivityRouteImport } from './routes/_authenticated/app.activity'
 import { Route as AuthenticatedAdminAdminIndexRouteImport } from './routes/_authenticated/_admin/admin.index'
 import { Route as AuthenticatedAdminAdminUsersRouteImport } from './routes/_authenticated/_admin/admin.users'
+import { Route as AuthenticatedAdminAdminMonitoringRouteImport } from './routes/_authenticated/_admin/admin.monitoring'
 import { Route as AuthenticatedAdminAdminFinanceRouteImport } from './routes/_authenticated/_admin/admin.finance'
 import { Route as AuthenticatedAdminAdminAuditRouteImport } from './routes/_authenticated/_admin/admin.audit'
+import { Route as AuthenticatedAdminAdminAnalyticsRouteImport } from './routes/_authenticated/_admin/admin.analytics'
 
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
@@ -292,6 +294,12 @@ const AuthenticatedAdminAdminUsersRoute =
     path: '/admin/users',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
+const AuthenticatedAdminAdminMonitoringRoute =
+  AuthenticatedAdminAdminMonitoringRouteImport.update({
+    id: '/admin/monitoring',
+    path: '/admin/monitoring',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 const AuthenticatedAdminAdminFinanceRoute =
   AuthenticatedAdminAdminFinanceRouteImport.update({
     id: '/admin/finance',
@@ -302,6 +310,12 @@ const AuthenticatedAdminAdminAuditRoute =
   AuthenticatedAdminAdminAuditRouteImport.update({
     id: '/admin/audit',
     path: '/admin/audit',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminAdminAnalyticsRoute =
+  AuthenticatedAdminAdminAnalyticsRouteImport.update({
+    id: '/admin/analytics',
+    path: '/admin/analytics',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
 
@@ -346,8 +360,10 @@ export interface FileRoutesByFullPath {
   '/portal/support': typeof AuthenticatedPortalSupportRoute
   '/portal/transactions': typeof AuthenticatedPortalTransactionsRoute
   '/portal/updates': typeof AuthenticatedPortalUpdatesRoute
+  '/admin/analytics': typeof AuthenticatedAdminAdminAnalyticsRoute
   '/admin/audit': typeof AuthenticatedAdminAdminAuditRoute
   '/admin/finance': typeof AuthenticatedAdminAdminFinanceRoute
+  '/admin/monitoring': typeof AuthenticatedAdminAdminMonitoringRoute
   '/admin/users': typeof AuthenticatedAdminAdminUsersRoute
   '/admin/': typeof AuthenticatedAdminAdminIndexRoute
 }
@@ -392,8 +408,10 @@ export interface FileRoutesByTo {
   '/portal/support': typeof AuthenticatedPortalSupportRoute
   '/portal/transactions': typeof AuthenticatedPortalTransactionsRoute
   '/portal/updates': typeof AuthenticatedPortalUpdatesRoute
+  '/admin/analytics': typeof AuthenticatedAdminAdminAnalyticsRoute
   '/admin/audit': typeof AuthenticatedAdminAdminAuditRoute
   '/admin/finance': typeof AuthenticatedAdminAdminFinanceRoute
+  '/admin/monitoring': typeof AuthenticatedAdminAdminMonitoringRoute
   '/admin/users': typeof AuthenticatedAdminAdminUsersRoute
   '/admin': typeof AuthenticatedAdminAdminIndexRoute
 }
@@ -441,8 +459,10 @@ export interface FileRoutesById {
   '/_authenticated/portal/support': typeof AuthenticatedPortalSupportRoute
   '/_authenticated/portal/transactions': typeof AuthenticatedPortalTransactionsRoute
   '/_authenticated/portal/updates': typeof AuthenticatedPortalUpdatesRoute
+  '/_authenticated/_admin/admin/analytics': typeof AuthenticatedAdminAdminAnalyticsRoute
   '/_authenticated/_admin/admin/audit': typeof AuthenticatedAdminAdminAuditRoute
   '/_authenticated/_admin/admin/finance': typeof AuthenticatedAdminAdminFinanceRoute
+  '/_authenticated/_admin/admin/monitoring': typeof AuthenticatedAdminAdminMonitoringRoute
   '/_authenticated/_admin/admin/users': typeof AuthenticatedAdminAdminUsersRoute
   '/_authenticated/_admin/admin/': typeof AuthenticatedAdminAdminIndexRoute
 }
@@ -489,8 +509,10 @@ export interface FileRouteTypes {
     | '/portal/support'
     | '/portal/transactions'
     | '/portal/updates'
+    | '/admin/analytics'
     | '/admin/audit'
     | '/admin/finance'
+    | '/admin/monitoring'
     | '/admin/users'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
@@ -535,8 +557,10 @@ export interface FileRouteTypes {
     | '/portal/support'
     | '/portal/transactions'
     | '/portal/updates'
+    | '/admin/analytics'
     | '/admin/audit'
     | '/admin/finance'
+    | '/admin/monitoring'
     | '/admin/users'
     | '/admin'
   id:
@@ -583,8 +607,10 @@ export interface FileRouteTypes {
     | '/_authenticated/portal/support'
     | '/_authenticated/portal/transactions'
     | '/_authenticated/portal/updates'
+    | '/_authenticated/_admin/admin/analytics'
     | '/_authenticated/_admin/admin/audit'
     | '/_authenticated/_admin/admin/finance'
+    | '/_authenticated/_admin/admin/monitoring'
     | '/_authenticated/_admin/admin/users'
     | '/_authenticated/_admin/admin/'
   fileRoutesById: FileRoutesById
@@ -920,6 +946,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminAdminUsersRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/_admin/admin/monitoring': {
+      id: '/_authenticated/_admin/admin/monitoring'
+      path: '/admin/monitoring'
+      fullPath: '/admin/monitoring'
+      preLoaderRoute: typeof AuthenticatedAdminAdminMonitoringRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/_admin/admin/finance': {
       id: '/_authenticated/_admin/admin/finance'
       path: '/admin/finance'
@@ -934,20 +967,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminAdminAuditRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/_admin/admin/analytics': {
+      id: '/_authenticated/_admin/admin/analytics'
+      path: '/admin/analytics'
+      fullPath: '/admin/analytics'
+      preLoaderRoute: typeof AuthenticatedAdminAdminAnalyticsRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
   }
 }
 
 interface AuthenticatedAdminRouteRouteChildren {
+  AuthenticatedAdminAdminAnalyticsRoute: typeof AuthenticatedAdminAdminAnalyticsRoute
   AuthenticatedAdminAdminAuditRoute: typeof AuthenticatedAdminAdminAuditRoute
   AuthenticatedAdminAdminFinanceRoute: typeof AuthenticatedAdminAdminFinanceRoute
+  AuthenticatedAdminAdminMonitoringRoute: typeof AuthenticatedAdminAdminMonitoringRoute
   AuthenticatedAdminAdminUsersRoute: typeof AuthenticatedAdminAdminUsersRoute
   AuthenticatedAdminAdminIndexRoute: typeof AuthenticatedAdminAdminIndexRoute
 }
 
 const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
   {
+    AuthenticatedAdminAdminAnalyticsRoute:
+      AuthenticatedAdminAdminAnalyticsRoute,
     AuthenticatedAdminAdminAuditRoute: AuthenticatedAdminAdminAuditRoute,
     AuthenticatedAdminAdminFinanceRoute: AuthenticatedAdminAdminFinanceRoute,
+    AuthenticatedAdminAdminMonitoringRoute:
+      AuthenticatedAdminAdminMonitoringRoute,
     AuthenticatedAdminAdminUsersRoute: AuthenticatedAdminAdminUsersRoute,
     AuthenticatedAdminAdminIndexRoute: AuthenticatedAdminAdminIndexRoute,
   }
