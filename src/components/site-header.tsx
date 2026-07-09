@@ -4,19 +4,22 @@ import { Menu, X } from "lucide-react";
 import { HKLogo } from "./hk-logo";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n";
+import { LanguageSwitcher } from "./language-switcher";
 
 const NAV = [
-  { label: "Platform", to: "/platform" },
-  { label: "Markets", to: "/markets" },
-  { label: "Competitions", to: "/competitions" },
-  { label: "Education", to: "/education" },
-  { label: "Partners", to: "/partners" },
-  { label: "Pricing", to: "/pricing" },
-  { label: "About", to: "/about" },
+  { key: "nav.platform", to: "/platform" },
+  { key: "nav.markets", to: "/markets" },
+  { key: "nav.competitions", to: "/competitions" },
+  { key: "nav.education", to: "/education" },
+  { key: "nav.partners", to: "/partners" },
+  { key: "nav.pricing", to: "/pricing" },
+  { key: "nav.about", to: "/about" },
 ] as const;
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const t = useT();
   return (
     <header className="sticky top-0 z-50 border-b border-white/5 bg-background/70 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 px-4 sm:px-6 lg:px-8">
@@ -32,30 +35,34 @@ export function SiteHeader() {
               className="rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground"
               activeProps={{ className: "text-foreground bg-white/5" }}
             >
-              {item.label}
+              {t(item.key)}
             </Link>
           ))}
         </nav>
 
         <div className="hidden items-center gap-2 lg:flex">
+          <LanguageSwitcher />
           <Button variant="ghost" asChild>
-            <Link to="/auth">Log in</Link>
+            <Link to="/auth">{t("cta.login")}</Link>
           </Button>
           <Button
             asChild
             className="bg-[var(--gradient-brand)] text-white shadow-[var(--shadow-glow)] hover:opacity-95"
           >
-            <Link to="/auth">Open account</Link>
+            <Link to="/auth">{t("cta.open_account")}</Link>
           </Button>
         </div>
 
-        <button
-          className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-white/10 lg:hidden"
-          onClick={() => setOpen((v) => !v)}
-          aria-label="Toggle menu"
-        >
-          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
+        <div className="flex items-center gap-2 lg:hidden">
+          <LanguageSwitcher compact />
+          <button
+            className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-white/10"
+            onClick={() => setOpen((v) => !v)}
+            aria-label="Toggle menu"
+          >
+            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
       </div>
 
       <div
@@ -73,15 +80,15 @@ export function SiteHeader() {
               onClick={() => setOpen(false)}
               className="rounded-md px-3 py-2.5 text-sm text-muted-foreground hover:bg-white/5 hover:text-foreground"
             >
-              {item.label}
+              {t(item.key)}
             </Link>
           ))}
           <div className="mt-2 grid grid-cols-2 gap-2">
             <Button variant="outline" asChild>
-              <Link to="/auth" onClick={() => setOpen(false)}>Log in</Link>
+              <Link to="/auth" onClick={() => setOpen(false)}>{t("cta.login")}</Link>
             </Button>
             <Button asChild className="bg-[var(--gradient-brand)] text-white">
-              <Link to="/auth" onClick={() => setOpen(false)}>Open account</Link>
+              <Link to="/auth" onClick={() => setOpen(false)}>{t("cta.open_account")}</Link>
             </Button>
           </div>
         </div>
