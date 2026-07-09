@@ -16,6 +16,7 @@ const DICTS: Record<Lang, Dict> = {
   ar: {
     "nav.platform": "المنصة",
     "nav.markets": "الأسواق",
+    "nav.investment": "الاستثمار",
     "nav.competitions": "المسابقات",
     "nav.education": "التعليم",
     "nav.partners": "الشركاء",
@@ -66,6 +67,7 @@ const DICTS: Record<Lang, Dict> = {
   en: {
     "nav.platform": "Platform",
     "nav.markets": "Markets",
+    "nav.investment": "Investment",
     "nav.competitions": "Competitions",
     "nav.education": "Education",
     "nav.partners": "Partners",
@@ -114,6 +116,7 @@ const DICTS: Record<Lang, Dict> = {
   fr: {
     "nav.platform": "Plateforme",
     "nav.markets": "Marchés",
+    "nav.investment": "Investissement",
     "nav.competitions": "Compétitions",
     "nav.education": "Formation",
     "nav.partners": "Partenaires",
@@ -162,6 +165,7 @@ const DICTS: Record<Lang, Dict> = {
   es: {
     "nav.platform": "Plataforma",
     "nav.markets": "Mercados",
+    "nav.investment": "Inversión",
     "nav.competitions": "Competencias",
     "nav.education": "Educación",
     "nav.partners": "Socios",
@@ -210,6 +214,7 @@ const DICTS: Record<Lang, Dict> = {
   tr: {
     "nav.platform": "Platform",
     "nav.markets": "Piyasalar",
+    "nav.investment": "Yatırım",
     "nav.competitions": "Yarışmalar",
     "nav.education": "Eğitim",
     "nav.partners": "Ortaklar",
