@@ -180,7 +180,7 @@ function AdminUsers() {
         <AdminKpi label="إجمالي المستخدمين" value={String(kpis.total)} />
         <AdminKpi label="نشط" value={String(kpis.active)} tone="positive" />
         <AdminKpi label="بانتظار التفعيل" value={String(kpis.pending)} tone="warning" />
-        <AdminKpi label="معلّق" value={String(kpis.suspended)} tone="negative" />
+        <AdminKpi label="معلّق" value={String(kpis.suspended)} tone="critical" />
       </div>
 
       <AdminCard title="قائمة المستخدمين" className="mt-6">
@@ -248,7 +248,7 @@ function AdminUsers() {
                     const isBanned =
                       u.banned_until && new Date(u.banned_until).getTime() > Date.now();
                     const isPending = !u.email_confirmed_at;
-                    const statusTone: "positive" | "warning" | "negative" = isBanned
+                    const statusTone: "positive" | "warning" | "critical" = isBanned
                       ? "negative"
                       : isPending
                         ? "warning"
