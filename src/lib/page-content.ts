@@ -284,7 +284,7 @@ const ar: PageContent = {
   },
   partners: {
     meta: { title: "الشركاء — HK Global", desc: "شراكات White-label و IB والمؤسسات.", ogTitle: "كن شريكًا لـ HK", ogDesc: "White-label و IB والمؤسسات." },
-    hero: { eyebrow: "الشركاء", titleA: "انمُ مع شريك", titleB: "عالمي المستوى", titleC: "", subtitle: "ثلاثة مسارات شراكة للوسطاء والفنتك والمكاتب المؤسسية." },
+    hero: { eyebrow: "الشركاء", titleA: "انمُ مع", titleB: "شريك عالمي", titleC: "المستوى", subtitle: "ثلاثة مسارات شراكة للوسطاء والفنتك والمكاتب المؤسسية." },
     models: [
       { title: "الوسيط المُقدِّم", body: "أحِل عملاء واكسب حصة إيرادات مستمرة.", cta: "قدّم كـ IB" },
       { title: "العلامة البيضاء", body: "أطلق وساطتك على بنية HK في أقل من 30 يومًا.", cta: "اطلب عرضًا" },
@@ -492,7 +492,7 @@ const es: PageContent = {
     ago: "hace",
   },
   partners: { ...en.partners,
-    hero: { eyebrow: "Socios", titleA: "Crece con un socio", titleB: "de clase mundial", titleC: "", subtitle: "Tres vías de alianza." },
+    hero: { eyebrow: "Socios", titleA: "Crece con un", titleB: "socio de clase", titleC: "mundial", subtitle: "Tres vías de alianza." },
   },
   platform: { ...en.platform,
     hero: { eyebrow: "Plataforma", titleA: "La", titleB: "terminal de los pros", subtitle: "Todas las herramientas pro en una interfaz de alto rendimiento." },
@@ -556,7 +556,7 @@ const tr: PageContent = {
     impact: { high: "yüksek", medium: "orta", low: "düşük" },
   },
   education: { ...en.education,
-    hero: { eyebrow: "Eğitim", titleA: "", titleB: "HK Akademisi", subtitle: "Avantajını keskinleştir — HK müşterilerine ücretsiz." },
+    hero: { eyebrow: "Eğitim", titleA: "Karşınızda", titleB: "HK Akademisi", subtitle: "Avantajını keskinleştir — HK müşterilerine ücretsiz." },
     tracks: {
       coursesT: "Trading Kursları", coursesB: en.education.tracks.coursesB, coursesS: "220+ ders",
       videosT: "Video Kütüphanesi", videosB: en.education.tracks.videosB, videosS: "480 video",
