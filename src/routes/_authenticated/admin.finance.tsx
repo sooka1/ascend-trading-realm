@@ -185,7 +185,7 @@ function AdminFinance() {
                       ? `${(r as Dep).method}${(r as Dep).reference ? ` · ${(r as Dep).reference}` : ""}`
                       : `${(r as Wd).destination}${(r as Wd).iban ? ` · ${(r as Wd).iban}` : ""}`;
                     return (
-                      <React.Fragment key={r.id}>
+                      <Fragment key={r.id}>
                       <tr className="align-top">
                         <td className="px-4 py-3 text-xs text-muted-foreground">{new Date(r.created_at).toLocaleString()}</td>
                         <td className="px-4 py-3">
@@ -250,7 +250,7 @@ function AdminFinance() {
                           </td>
                         </tr>
                       )}
-                      </React.Fragment>
+                      </Fragment>
                     );
                   })
                 )}
