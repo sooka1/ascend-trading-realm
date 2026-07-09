@@ -6,10 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { ShieldCheck, Trophy, Zap, Loader2 } from "lucide-react";
+import { ShieldCheck, Trophy, Zap, Loader2, Eye, EyeOff, AlertCircle, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { toast } from "sonner";
+import { z } from "zod";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -29,6 +30,8 @@ function Auth() {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPw, setShowPw] = useState(false);
+  const [errors, setErrors] = useState<{ email?: string; password?: string; fullName?: string; form?: string }>({});
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -37,8 +40,36 @@ function Auth() {
     });
   }, [navigate]);
 
+  const loginSchema = z.object({
+    email: z.string().trim().min(1, "Email is required").email("Enter a valid email").max(255),
+    password: z.string().min(6, "Password must be at least 6 characters").max(72, "Password is too long"),
+  });
+  const registerSchema = loginSchema.extend({
+    fullName: z.string().trim().min(2, "Please enter your full name").max(100, "Name is too long"),
+    password: z
+      .string()
+      .min(8, "Use at least 8 characters")
+      .max(72, "Password is too long")
+      .regex(/[A-Za-z]/, "Include at least one letter")
+      .regex(/[0-9]/, "Include at least one number"),
+  });
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setErrors({});
+    const parsed =
+      mode === "login"
+        ? loginSchema.safeParse({ email, password })
+        : registerSchema.safeParse({ email, password, fullName });
+    if (!parsed.success) {
+      const fieldErrors: typeof errors = {};
+      for (const issue of parsed.error.issues) {
+        const key = issue.path[0] as keyof typeof fieldErrors;
+        if (key && !fieldErrors[key]) fieldErrors[key] = issue.message;
+      }
+      setErrors(fieldErrors);
+      return;
+    }
     setLoading(true);
     try {
       if (mode === "login") {
@@ -61,6 +92,7 @@ function Auth() {
       }
     } catch (err) {
       const message = err instanceof Error ? err.message : "Something went wrong";
+      setErrors({ form: message });
       toast.error(message);
     } finally {
       setLoading(false);
@@ -87,7 +119,7 @@ function Auth() {
 
   return (
     <PageShell>
-      <section className="relative mx-auto grid min-h-[calc(100vh-4rem)] max-w-7xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:px-8">
+      <section className="relative mx-auto grid min-h-[calc(100vh-4rem)] max-w-7xl gap-10 px-4 py-6 sm:px-6 sm:py-16 lg:grid-cols-2 lg:px-8">
         <div className="hidden flex-col justify-between lg:flex">
           <Link to="/"><HKLogo size="lg" /></Link>
           <div>
@@ -114,15 +146,32 @@ function Auth() {
         </div>
 
         <div className="mx-auto flex w-full max-w-md items-center">
-          <div className="glass-strong w-full rounded-3xl p-8">
-            <div className="mb-6 flex lg:hidden"><Link to="/"><HKLogo /></Link></div>
+          <div className="w-full rounded-none border-0 bg-transparent p-0 sm:glass-strong sm:rounded-3xl sm:border sm:p-8">
+            <div className="mb-4 flex items-center justify-between lg:hidden">
+              <Link to="/" aria-label="Back to home" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5">
+                <ArrowLeft className="h-4 w-4" />
+              </Link>
+              <Link to="/"><HKLogo /></Link>
+              <span className="h-10 w-10" aria-hidden />
+            </div>
+            <div className="mb-4 lg:hidden">
+              <h1 className="font-display text-2xl font-bold leading-tight">
+                {mode === "login" ? "Welcome back" : "Open your account"}
+              </h1>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {mode === "login"
+                  ? "Sign in to access your trading terminal."
+                  : "Join in under 5 minutes. No commitment."}
+              </p>
+            </div>
             <div className="grid grid-cols-2 gap-1 rounded-lg bg-white/[0.03] p-1">
               {(["login", "register"] as const).map((m) => (
                 <button
                   key={m}
-                  onClick={() => setMode(m)}
+                  type="button"
+                  onClick={() => { setMode(m); setErrors({}); }}
                   className={cn(
-                    "rounded-md py-2 text-sm font-medium capitalize transition",
+                    "rounded-md py-2.5 text-sm font-medium capitalize transition",
                     mode === m ? "bg-[var(--gradient-brand)] text-white" : "text-muted-foreground hover:text-foreground",
                   )}
                 >
@@ -134,18 +183,33 @@ function Auth() {
             <form
               className="mt-6 space-y-4"
               onSubmit={handleSubmit}
+              noValidate
             >
+              {errors.form && (
+                <div
+                  role="alert"
+                  className="flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive"
+                >
+                  <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+                  <span>{errors.form}</span>
+                </div>
+              )}
               {mode === "register" && (
                 <div>
                   <Label htmlFor="fullname">Full name</Label>
                   <Input
                     id="fullname"
                     placeholder="Alex Rivera"
-                    className="mt-1.5 bg-white/5"
+                    className={cn("mt-1.5 h-12 bg-white/5 text-base sm:h-10 sm:text-sm", errors.fullName && "border-destructive focus-visible:ring-destructive")}
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    required
+                    autoComplete="name"
+                    aria-invalid={!!errors.fullName}
+                    aria-describedby={errors.fullName ? "fullname-error" : undefined}
                   />
+                  {errors.fullName && (
+                    <p id="fullname-error" className="mt-1.5 text-xs text-destructive">{errors.fullName}</p>
+                  )}
                 </div>
               )}
               <div>
@@ -153,32 +217,54 @@ function Auth() {
                 <Input
                   id="email"
                   type="email"
+                  inputMode="email"
                   placeholder="you@example.com"
-                  className="mt-1.5 bg-white/5"
+                  className={cn("mt-1.5 h-12 bg-white/5 text-base sm:h-10 sm:text-sm", errors.email && "border-destructive focus-visible:ring-destructive")}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  required
                   autoComplete="email"
+                  aria-invalid={!!errors.email}
+                  aria-describedby={errors.email ? "email-error" : undefined}
                 />
+                {errors.email && (
+                  <p id="email-error" className="mt-1.5 text-xs text-destructive">{errors.email}</p>
+                )}
               </div>
               <div>
                 <Label htmlFor="pw">Password</Label>
-                <Input
-                  id="pw"
-                  type="password"
-                  placeholder="••••••••"
-                  className="mt-1.5 bg-white/5"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  minLength={6}
-                  autoComplete={mode === "login" ? "current-password" : "new-password"}
-                />
+                <div className="relative mt-1.5">
+                  <Input
+                    id="pw"
+                    type={showPw ? "text" : "password"}
+                    placeholder="••••••••"
+                    className={cn("h-12 bg-white/5 pr-11 text-base sm:h-10 sm:text-sm", errors.password && "border-destructive focus-visible:ring-destructive")}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    autoComplete={mode === "login" ? "current-password" : "new-password"}
+                    aria-invalid={!!errors.password}
+                    aria-describedby={errors.password ? "pw-error" : mode === "register" ? "pw-hint" : undefined}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPw((v) => !v)}
+                    aria-label={showPw ? "Hide password" : "Show password"}
+                    className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-muted-foreground hover:text-foreground"
+                  >
+                    {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+                {errors.password ? (
+                  <p id="pw-error" className="mt-1.5 text-xs text-destructive">{errors.password}</p>
+                ) : mode === "register" ? (
+                  <p id="pw-hint" className="mt-1.5 text-xs text-muted-foreground">
+                    Use 8+ characters with a mix of letters and numbers.
+                  </p>
+                ) : null}
               </div>
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-[var(--gradient-brand)] text-white shadow-[var(--shadow-glow)]"
+                className="h-12 w-full bg-[var(--gradient-brand)] text-base text-white shadow-[var(--shadow-glow)] sm:h-10 sm:text-sm"
               >
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {mode === "login" ? "Log in" : "Create account"}
@@ -194,7 +280,7 @@ function Auth() {
                 variant="outline"
                 onClick={handleGoogle}
                 disabled={loading}
-                className="w-full border-white/15 bg-white/5"
+                className="h-12 w-full border-white/15 bg-white/5 text-base sm:h-10 sm:text-sm"
               >
                 <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24" aria-hidden>
                   <path fill="#EA4335" d="M12 10.2v3.9h5.4c-.24 1.4-1.66 4.1-5.4 4.1-3.25 0-5.9-2.7-5.9-6s2.65-6 5.9-6c1.85 0 3.09.79 3.8 1.47l2.6-2.5C16.83 3.7 14.7 2.7 12 2.7 6.9 2.7 2.8 6.8 2.8 12s4.1 9.3 9.2 9.3c5.31 0 8.83-3.73 8.83-8.99 0-.6-.07-1.06-.15-1.51H12z"/>
