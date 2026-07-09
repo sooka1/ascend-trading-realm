@@ -20,7 +20,7 @@ import { MarketTicker } from "@/components/market-ticker";
 import { AnimatedCounter } from "@/components/animated-counter";
 import { Button } from "@/components/ui/button";
 import { AnimatedChart } from "@/components/animated-chart";
-import { useLang } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n";
 import { LANDING, type LandingContent } from "@/lib/landing-t";
 
 export const Route = createFileRoute("/")({
@@ -43,7 +43,7 @@ export const Route = createFileRoute("/")({
 });
 
 function useContent(): LandingContent {
-  const { lang } = useLang();
+  const { lang } = useI18n();
   return LANDING[lang];
 }
 
