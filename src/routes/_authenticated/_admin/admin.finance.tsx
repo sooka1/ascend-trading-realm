@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { CheckCircle2, XCircle, Clock, ShieldAlert, History } from "lucide-react";
 
-export const Route = createFileRoute("/_authenticated/admin/finance")({
+export const Route = createFileRoute("/_authenticated/_admin/admin/finance")({
   head: () => ({
     meta: [
       { title: "Admin — Finance Requests" },
