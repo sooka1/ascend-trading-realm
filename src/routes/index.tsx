@@ -18,6 +18,9 @@ import {
   Quote,
   Star,
   ScrollText,
+  Download,
+  ExternalLink,
+  CalendarCheck,
 } from "lucide-react";
 import { PageShell } from "@/components/page-shell";
 import { MarketTicker } from "@/components/market-ticker";
@@ -31,6 +34,15 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { useI18n } from "@/lib/i18n";
 import { LANDING, type LandingContent } from "@/lib/landing-t";
 import heroVideo from "@/assets/hero-bg.mp4.asset.json";
