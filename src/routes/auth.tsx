@@ -458,6 +458,16 @@ function ConfirmEmailPanel({
           {state.loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {state.cooldown > 0 ? `Resend in ${state.cooldown}s` : "Resend confirmation email"}
         </Button>
+        {state.cooldown > 0 && (
+          <p
+            role="timer"
+            aria-live="polite"
+            className="text-center text-xs text-muted-foreground"
+          >
+            You can request another email in{" "}
+            <span className="font-medium text-foreground tabular-nums">{state.cooldown}s</span>.
+          </p>
+        )}
         <Button
           type="button"
           variant="outline"
