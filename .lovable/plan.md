@@ -33,7 +33,7 @@
 
 ## المرحلة 4 — نظام التصميم والأداء
 
-- توحيد جميع الألوان في `src/styles.css` كـ tokens (تجنّب استخدام bg-[var(TOKEN)] مباشرة).
+- توحيد جميع الألوان في styles.css كـ tokens وتجنّب استخدام قيم CSS مضمّنة مباشرة.
 - مكونات موحدة: `StatCard`, `DataTable`, `EmptyState`, `LoadingState`, `ErrorBoundary`.
 - Lazy loading للمسارات الثقيلة.
 - Image optimization, code splitting.
