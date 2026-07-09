@@ -3,6 +3,7 @@ import { BadgeCheck, LineChart, Lock, ShieldCheck, TrendingUp, Users } from "luc
 import { PageShell, PageHero } from "@/components/page-shell";
 import { Button } from "@/components/ui/button";
 import { useT } from "@/lib/i18n";
+import { InvestmentRequestForm } from "@/components/investment-request-form";
 
 export const Route = createFileRoute("/investment")({
   head: () => ({
@@ -126,6 +127,10 @@ function InvestmentPage() {
           <TrendingUp className="mt-0.5 h-4 w-4 shrink-0 text-gold" />
           <p>{t("inv.risk")}</p>
         </div>
+      </section>
+
+      <section id="request" className="mx-auto max-w-7xl px-4 pb-24 sm:px-6 lg:px-8">
+        <InvestmentRequestForm />
       </section>
     </PageShell>
   );
