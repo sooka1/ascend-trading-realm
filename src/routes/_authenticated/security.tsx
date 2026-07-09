@@ -1,5 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { canViewSecurityAudit } from "@/lib/security-audit.functions";
 import { PageShell } from "@/components/page-shell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -14,6 +17,7 @@ import {
   Clock,
   History,
   User as UserIcon,
+  Lock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SECURITY_SNAPSHOT, type SecurityFinding, type Severity, type FindingStatus } from "@/lib/security-snapshot";
@@ -167,7 +171,7 @@ function SecurityPanel() {
         </div>
 
         {/* Global audit log */}
-        <AuditLog findings={findings} />
+        <AuditLogGate findings={findings} />
 
         {/* Scanner strip */}
         <div className="mt-10">
