@@ -27,6 +27,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedSecurityRouteImport } from './routes/_authenticated/security'
 import { Route as AuthenticatedPortalRouteImport } from './routes/_authenticated/portal'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
@@ -123,6 +124,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedSecurityRoute = AuthenticatedSecurityRouteImport.update({
+  id: '/security',
+  path: '/security',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedPortalRoute = AuthenticatedPortalRouteImport.update({
   id: '/portal',
   path: '/portal',
@@ -177,6 +183,7 @@ export interface FileRoutesByFullPath {
   '/app': typeof AuthenticatedAppRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/portal': typeof AuthenticatedPortalRoute
+  '/security': typeof AuthenticatedSecurityRoute
   '/app/activity': typeof AuthenticatedAppActivityRoute
   '/app/portfolio': typeof AuthenticatedAppPortfolioRoute
   '/app/profile': typeof AuthenticatedAppProfileRoute
@@ -202,6 +209,7 @@ export interface FileRoutesByTo {
   '/app': typeof AuthenticatedAppRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/portal': typeof AuthenticatedPortalRoute
+  '/security': typeof AuthenticatedSecurityRoute
   '/app/activity': typeof AuthenticatedAppActivityRoute
   '/app/portfolio': typeof AuthenticatedAppPortfolioRoute
   '/app/profile': typeof AuthenticatedAppProfileRoute
@@ -229,6 +237,7 @@ export interface FileRoutesById {
   '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/portal': typeof AuthenticatedPortalRoute
+  '/_authenticated/security': typeof AuthenticatedSecurityRoute
   '/_authenticated/app/activity': typeof AuthenticatedAppActivityRoute
   '/_authenticated/app/portfolio': typeof AuthenticatedAppPortfolioRoute
   '/_authenticated/app/profile': typeof AuthenticatedAppProfileRoute
@@ -256,6 +265,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/dashboard'
     | '/portal'
+    | '/security'
     | '/app/activity'
     | '/app/portfolio'
     | '/app/profile'
@@ -281,6 +291,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/dashboard'
     | '/portal'
+    | '/security'
     | '/app/activity'
     | '/app/portfolio'
     | '/app/profile'
@@ -307,6 +318,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app'
     | '/_authenticated/dashboard'
     | '/_authenticated/portal'
+    | '/_authenticated/security'
     | '/_authenticated/app/activity'
     | '/_authenticated/app/portfolio'
     | '/_authenticated/app/profile'
@@ -461,6 +473,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/security': {
+      id: '/_authenticated/security'
+      path: '/security'
+      fullPath: '/security'
+      preLoaderRoute: typeof AuthenticatedSecurityRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/portal': {
       id: '/_authenticated/portal'
       path: '/portal'
@@ -525,12 +544,14 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAppRoute: typeof AuthenticatedAppRouteWithChildren
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedPortalRoute: typeof AuthenticatedPortalRoute
+  AuthenticatedSecurityRoute: typeof AuthenticatedSecurityRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAppRoute: AuthenticatedAppRouteWithChildren,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedPortalRoute: AuthenticatedPortalRoute,
+  AuthenticatedSecurityRoute: AuthenticatedSecurityRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
