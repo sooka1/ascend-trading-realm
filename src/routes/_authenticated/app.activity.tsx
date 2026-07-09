@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ArrowDownLeft, ArrowUpRight } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/app/activity")({
-  head: () => ({ meta: [{ title: "Activity — HK Invest" }] }),
+  head: () => ({ meta: [{ title: "النشاط — HK Invest" }] }),
   component: ActivityMobile,
 });
 
@@ -33,13 +33,13 @@ function ActivityMobile() {
   }, []);
   return (
     <div className="px-4 pt-6">
-      <h1 className="font-display text-2xl font-semibold">Activity</h1>
-      <p className="mt-1 text-xs text-muted-foreground">Latest 50 transactions</p>
+      <h1 className="font-display text-2xl font-semibold">النشاط</h1>
+      <p className="mt-1 text-xs text-muted-foreground">أحدث 50 عملية</p>
       <ul className="mt-5 divide-y divide-white/5 rounded-2xl border border-white/10 bg-[color:var(--surface)]">
         {loading ? (
-          <li className="p-4 text-sm text-muted-foreground">Loading…</li>
+          <li className="p-4 text-sm text-muted-foreground">جارٍ التحميل…</li>
         ) : txs.length === 0 ? (
-          <li className="p-4 text-sm text-muted-foreground">No activity yet.</li>
+          <li className="p-4 text-sm text-muted-foreground">لا يوجد نشاط بعد.</li>
         ) : (
           txs.map((t) => {
             const isBuy = t.side === "buy";

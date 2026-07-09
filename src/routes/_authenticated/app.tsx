@@ -23,8 +23,8 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/_authenticated/app")({
   head: () => ({
     meta: [
-      { title: "HK Invest — Mobile" },
-      { name: "description", content: "Your investment portfolio on the go." },
+      { title: "HK Invest — الجوّال" },
+      { name: "description", content: "محفظتك الاستثمارية أينما كنت." },
     ],
   }),
   component: MobileAppLayout,
@@ -86,7 +86,7 @@ function MobileHome() {
   const first = snapshots[0];
   const cumulative = latest && first ? ((latest.equity - first.equity) / first.equity) * 100 : 0;
   const todayPnl = latest?.pnl ?? 0;
-  const name = profile?.display_name ?? profile?.email?.split("@")[0] ?? "Investor";
+  const name = profile?.display_name ?? profile?.email?.split("@")[0] ?? "مستثمر";
   const alloc = Object.entries(latest?.allocation ?? {});
 
   return (
@@ -95,7 +95,7 @@ function MobileHome() {
 
       <main className="space-y-5 px-4 pt-4">
         {loading ? (
-          <p className="py-10 text-center text-sm text-muted-foreground">Loading…</p>
+          <p className="py-10 text-center text-sm text-muted-foreground">جارٍ التحميل…</p>
         ) : !portfolio ? (
           <EmptyMobile />
         ) : (
@@ -131,12 +131,12 @@ function MobileTopBar({ name }: { name: string }) {
       <div className="flex min-w-0 items-center gap-3">
         <HKLogo showWordmark={false} size="sm" />
         <div className="min-w-0">
-          <p className="text-[10px] uppercase tracking-widest text-muted-foreground">Welcome back</p>
+          <p className="text-[10px] uppercase tracking-widest text-muted-foreground">أهلاً بعودتك</p>
           <p className="truncate text-sm font-semibold">{name}</p>
         </div>
       </div>
       <button
-        aria-label="Notifications"
+        aria-label="الإشعارات"
         className="relative grid h-10 w-10 shrink-0 place-items-center rounded-full border border-white/10 bg-white/5"
       >
         <Bell className="h-4 w-4" />
@@ -166,11 +166,11 @@ function BalanceCard({
       <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-gold/20 blur-3xl" aria-hidden />
       <div className="relative flex items-center justify-between text-white/80">
         <span className="text-[10px] uppercase tracking-widest">{portfolioName}</span>
-        <button onClick={onToggle} aria-label={hidden ? "Show balance" : "Hide balance"} className="grid h-7 w-7 place-items-center rounded-full bg-white/10">
+        <button onClick={onToggle} aria-label={hidden ? "إظهار الرصيد" : "إخفاء الرصيد"} className="grid h-7 w-7 place-items-center rounded-full bg-white/10">
           {hidden ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
         </button>
       </div>
-      <p className="relative mt-3 text-[11px] uppercase tracking-widest text-white/70">Total balance</p>
+      <p className="relative mt-3 text-[11px] uppercase tracking-widest text-white/70">الرصيد الإجمالي</p>
       <p className="relative mt-1 font-display text-4xl font-semibold tracking-tight text-white">
         {hidden ? "••••••" : fmt(equity)}
       </p>
@@ -186,7 +186,7 @@ function BalanceCard({
         </span>
         <span className="text-white/70">
           {todayPnl >= 0 ? "+" : ""}
-          {fmt(todayPnl)} <span className="text-white/50">total P&amp;L</span>
+          {fmt(todayPnl)} <span className="text-white/50">إجمالي الربح/الخسارة</span>
         </span>
       </div>
     </div>
@@ -195,10 +195,10 @@ function BalanceCard({
 
 function QuickActions() {
   const actions = [
-    { icon: Plus, label: "Deposit", onClick: () => toast("Deposit — contact your advisor") },
-    { icon: ArrowUpRight, label: "Withdraw", onClick: () => toast("Withdraw — request via portal") },
-    { icon: Repeat, label: "Transfer", onClick: () => toast("Transfer — coming soon") },
-    { icon: FileText, label: "Reports", to: "/portal" as const },
+    { icon: Plus, label: "إيداع", onClick: () => toast("للإيداع — تواصل مع المستشار") },
+    { icon: ArrowUpRight, label: "سحب", onClick: () => toast("للسحب — قدّم الطلب عبر البوابة") },
+    { icon: Repeat, label: "تحويل", onClick: () => toast("التحويل — قريبًا") },
+    { icon: FileText, label: "التقارير", to: "/portal" as const },
   ];
   return (
     <div className="grid grid-cols-4 gap-2">
@@ -252,7 +252,7 @@ function MiniEquityChart({ snapshots }: { snapshots: Snapshot[] }) {
   return (
     <div className="rounded-3xl border border-white/10 bg-[color:var(--surface)] p-4">
       <div className="flex items-center justify-between">
-        <p className="text-[11px] uppercase tracking-widest text-muted-foreground">Performance</p>
+        <p className="text-[11px] uppercase tracking-widest text-muted-foreground">الأداء</p>
         <div className="flex rounded-full bg-white/5 p-0.5 text-[10px]">
           {(["1W", "1M", "3M", "ALL"] as const).map((r) => (
             <button
@@ -283,7 +283,7 @@ function MiniEquityChart({ snapshots }: { snapshots: Snapshot[] }) {
           <path d={path.d} fill="none" stroke="url(#mob-stroke)" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       ) : (
-        <p className="py-6 text-center text-xs text-muted-foreground">No data yet</p>
+        <p className="py-6 text-center text-xs text-muted-foreground">لا توجد بيانات بعد</p>
       )}
     </div>
   );
@@ -295,7 +295,7 @@ function AllocationCard({ entries }: { entries: [string, unknown][] }) {
   return (
     <div className="rounded-3xl border border-white/10 bg-[color:var(--surface)] p-4">
       <div className="flex items-center justify-between">
-        <p className="text-[11px] uppercase tracking-widest text-muted-foreground">Allocation</p>
+        <p className="text-[11px] uppercase tracking-widest text-muted-foreground">التوزيع</p>
         <Wallet className="h-4 w-4 text-muted-foreground" />
       </div>
       <div className="mt-3 flex h-2 w-full overflow-hidden rounded-full bg-white/5">
@@ -320,13 +320,13 @@ function ActivityCard({ txs }: { txs: Transaction[] }) {
   return (
     <div className="rounded-3xl border border-white/10 bg-[color:var(--surface)] p-4">
       <div className="flex items-center justify-between">
-        <p className="text-sm font-semibold">Recent activity</p>
+        <p className="text-sm font-semibold">آخر النشاط</p>
         <Link to="/app/activity" className="flex items-center gap-1 text-xs text-gold">
-          See all <ChevronRight className="h-3 w-3" />
+          عرض الكل <ChevronRight className="h-3 w-3" />
         </Link>
       </div>
       {txs.length === 0 ? (
-        <p className="mt-4 text-xs text-muted-foreground">No transactions yet.</p>
+        <p className="mt-4 text-xs text-muted-foreground">لا توجد عمليات بعد.</p>
       ) : (
         <ul className="mt-3 divide-y divide-white/5">
           {txs.slice(0, 4).map((t) => {
@@ -363,7 +363,7 @@ function TrustFooter() {
   return (
     <div className="flex items-center gap-3 rounded-2xl border border-white/5 bg-white/[0.02] p-3 text-[11px] text-muted-foreground">
       <ShieldCheck className="h-4 w-4 shrink-0 text-gold" />
-      <p>Bank-grade encryption. Segregated custody. Read-only mobile access.</p>
+      <p>تشفير بمستوى البنوك. حفظ منفصل للأصول. وصول للقراءة فقط عبر الجوال.</p>
     </div>
   );
 }
@@ -372,18 +372,18 @@ function EmptyMobile() {
   return (
     <div className="rounded-3xl border border-white/10 bg-[color:var(--surface)] p-6 text-center">
       <span className="inline-flex items-center gap-1 rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-[11px] text-gold">
-        <Sparkles className="h-3 w-3" /> Get started
+        <Sparkles className="h-3 w-3" /> ابدأ الآن
       </span>
-      <h2 className="mt-3 font-display text-2xl font-semibold">No portfolio yet</h2>
+      <h2 className="mt-3 font-display text-2xl font-semibold">لا توجد محفظة بعد</h2>
       <p className="mt-2 text-sm text-muted-foreground">
-        Create a demo portfolio from the desktop dashboard, or speak with an advisor to open a managed account.
+        أنشئ محفظة تجريبية من لوحة التحكم على سطح المكتب، أو تواصل مع مستشار لفتح حساب مُدار.
       </p>
       <div className="mt-4 flex flex-col gap-2">
         <Button asChild className="bg-[var(--gradient-gold)] font-semibold text-background">
-          <Link to="/dashboard">Open full dashboard</Link>
+          <Link to="/dashboard">فتح لوحة التحكم الكاملة</Link>
         </Button>
         <Button asChild variant="outline" className="border-white/15">
-          <Link to="/contact">Talk to an advisor</Link>
+          <Link to="/contact">تحدث مع مستشار</Link>
         </Button>
       </div>
     </div>
