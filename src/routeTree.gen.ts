@@ -27,6 +27,10 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedPortalRouteImport } from './routes/_authenticated/portal'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
+import { Route as AuthenticatedAppProfileRouteImport } from './routes/_authenticated/app.profile'
+import { Route as AuthenticatedAppPortfolioRouteImport } from './routes/_authenticated/app.portfolio'
+import { Route as AuthenticatedAppActivityRouteImport } from './routes/_authenticated/app.activity'
 
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
@@ -117,6 +121,28 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAppRoute = AuthenticatedAppRouteImport.update({
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAppProfileRoute = AuthenticatedAppProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AuthenticatedAppRoute,
+} as any)
+const AuthenticatedAppPortfolioRoute =
+  AuthenticatedAppPortfolioRouteImport.update({
+    id: '/portfolio',
+    path: '/portfolio',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppActivityRoute =
+  AuthenticatedAppActivityRouteImport.update({
+    id: '/activity',
+    path: '/activity',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -134,8 +160,12 @@ export interface FileRoutesByFullPath {
   '/risk': typeof RiskRoute
   '/solutions': typeof SolutionsRoute
   '/terms': typeof TermsRoute
+  '/app': typeof AuthenticatedAppRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/portal': typeof AuthenticatedPortalRoute
+  '/app/activity': typeof AuthenticatedAppActivityRoute
+  '/app/portfolio': typeof AuthenticatedAppPortfolioRoute
+  '/app/profile': typeof AuthenticatedAppProfileRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -153,8 +183,12 @@ export interface FileRoutesByTo {
   '/risk': typeof RiskRoute
   '/solutions': typeof SolutionsRoute
   '/terms': typeof TermsRoute
+  '/app': typeof AuthenticatedAppRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/portal': typeof AuthenticatedPortalRoute
+  '/app/activity': typeof AuthenticatedAppActivityRoute
+  '/app/portfolio': typeof AuthenticatedAppPortfolioRoute
+  '/app/profile': typeof AuthenticatedAppProfileRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -174,8 +208,12 @@ export interface FileRoutesById {
   '/risk': typeof RiskRoute
   '/solutions': typeof SolutionsRoute
   '/terms': typeof TermsRoute
+  '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/portal': typeof AuthenticatedPortalRoute
+  '/_authenticated/app/activity': typeof AuthenticatedAppActivityRoute
+  '/_authenticated/app/portfolio': typeof AuthenticatedAppPortfolioRoute
+  '/_authenticated/app/profile': typeof AuthenticatedAppProfileRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -195,8 +233,12 @@ export interface FileRouteTypes {
     | '/risk'
     | '/solutions'
     | '/terms'
+    | '/app'
     | '/dashboard'
     | '/portal'
+    | '/app/activity'
+    | '/app/portfolio'
+    | '/app/profile'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -214,8 +256,12 @@ export interface FileRouteTypes {
     | '/risk'
     | '/solutions'
     | '/terms'
+    | '/app'
     | '/dashboard'
     | '/portal'
+    | '/app/activity'
+    | '/app/portfolio'
+    | '/app/profile'
   id:
     | '__root__'
     | '/'
@@ -234,8 +280,12 @@ export interface FileRouteTypes {
     | '/risk'
     | '/solutions'
     | '/terms'
+    | '/_authenticated/app'
     | '/_authenticated/dashboard'
     | '/_authenticated/portal'
+    | '/_authenticated/app/activity'
+    | '/_authenticated/app/portfolio'
+    | '/_authenticated/app/profile'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -385,15 +435,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/app': {
+      id: '/_authenticated/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AuthenticatedAppRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/app/profile': {
+      id: '/_authenticated/app/profile'
+      path: '/profile'
+      fullPath: '/app/profile'
+      preLoaderRoute: typeof AuthenticatedAppProfileRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/portfolio': {
+      id: '/_authenticated/app/portfolio'
+      path: '/portfolio'
+      fullPath: '/app/portfolio'
+      preLoaderRoute: typeof AuthenticatedAppPortfolioRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/activity': {
+      id: '/_authenticated/app/activity'
+      path: '/activity'
+      fullPath: '/app/activity'
+      preLoaderRoute: typeof AuthenticatedAppActivityRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
   }
 }
 
+interface AuthenticatedAppRouteChildren {
+  AuthenticatedAppActivityRoute: typeof AuthenticatedAppActivityRoute
+  AuthenticatedAppPortfolioRoute: typeof AuthenticatedAppPortfolioRoute
+  AuthenticatedAppProfileRoute: typeof AuthenticatedAppProfileRoute
+}
+
+const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
+  AuthenticatedAppActivityRoute: AuthenticatedAppActivityRoute,
+  AuthenticatedAppPortfolioRoute: AuthenticatedAppPortfolioRoute,
+  AuthenticatedAppProfileRoute: AuthenticatedAppProfileRoute,
+}
+
+const AuthenticatedAppRouteWithChildren =
+  AuthenticatedAppRoute._addFileChildren(AuthenticatedAppRouteChildren)
+
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAppRoute: typeof AuthenticatedAppRouteWithChildren
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedPortalRoute: typeof AuthenticatedPortalRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAppRoute: AuthenticatedAppRouteWithChildren,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedPortalRoute: AuthenticatedPortalRoute,
 }
