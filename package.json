@@ -9,7 +9,8 @@
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "check:i18n": "bun run scripts/check-i18n-coverage.ts"
   },
   "dependencies": {
     "@fontsource/inter": "^5.2.8",
