@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { ArrowDownToLine, ArrowUpFromLine, CheckCircle2, Clock, Package as PackageIcon, ShieldCheck, Wallet, XCircle } from "lucide-react";
+import { ArrowDownToLine, ArrowUpFromLine, Bell, BellDot, CheckCircle2, Clock, Package as PackageIcon, ShieldCheck, Wallet, XCircle } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/investor")({
@@ -24,6 +24,7 @@ type Pkg = { id: string; name: string; description: string | null; min_amount: n
 type Sub = { id: string; package_id: string; amount: number; currency: string; status: string; started_at: string | null; ends_at: string | null; created_at: string };
 type Dep = { id: string; amount: number; currency: string; method: string; reference: string | null; status: string; created_at: string };
 type Wd = { id: string; amount: number; currency: string; destination: string; iban: string | null; status: string; created_at: string };
+type Notif = { id: string; title: string; body: string | null; read_at: string | null; created_at: string };
 
 const depositSchema = z.object({
   amount: z.coerce.number().positive().max(10_000_000),
@@ -45,6 +46,7 @@ function InvestorPortal() {
   const [subs, setSubs] = useState<Sub[]>([]);
   const [deps, setDeps] = useState<Dep[]>([]);
   const [wds, setWds] = useState<Wd[]>([]);
+  const [notifs, setNotifs] = useState<Notif[]>([]);
   const [loading, setLoading] = useState(true);
 
   async function load() {
@@ -52,16 +54,18 @@ function InvestorPortal() {
     const id = userRes.user?.id ?? null;
     setUid(id);
     if (!id) return setLoading(false);
-    const [{ data: pk }, { data: sb }, { data: dp }, { data: wd }] = await Promise.all([
+    const [{ data: pk }, { data: sb }, { data: dp }, { data: wd }, { data: nt }] = await Promise.all([
       supabase.from("packages").select("*").eq("active", true).order("sort_order"),
       supabase.from("subscriptions").select("*").eq("user_id", id).order("created_at", { ascending: false }),
       supabase.from("deposits").select("*").eq("user_id", id).order("created_at", { ascending: false }),
       supabase.from("withdrawals").select("*").eq("user_id", id).order("created_at", { ascending: false }),
+      supabase.from("notifications").select("*").eq("user_id", id).order("created_at", { ascending: false }).limit(50),
     ]);
     setPackages((pk ?? []) as Pkg[]);
     setSubs((sb ?? []) as Sub[]);
     setDeps((dp ?? []) as Dep[]);
     setWds((wd ?? []) as Wd[]);
+    setNotifs((nt ?? []) as Notif[]);
     setLoading(false);
   }
 
@@ -78,6 +82,21 @@ function InvestorPortal() {
   const pendingDeposits = deps.filter((d) => d.status === "pending").reduce((s, d) => s + Number(d.amount), 0);
   const activePackage = subs.find((s) => s.status === "active") ?? subs[0];
   const activePkgMeta = packages.find((p) => p.id === activePackage?.package_id);
+  const unreadCount = notifs.filter((n) => !n.read_at).length;
+
+  async function markRead(id: string) {
+    const { error } = await supabase.from("notifications").update({ read_at: new Date().toISOString() }).eq("id", id);
+    if (error) return toast.error(error.message);
+    setNotifs((prev) => prev.map((n) => (n.id === id ? { ...n, read_at: new Date().toISOString() } : n)));
+  }
+
+  async function markAllRead() {
+    if (!uid || unreadCount === 0) return;
+    const now = new Date().toISOString();
+    const { error } = await supabase.from("notifications").update({ read_at: now }).eq("user_id", uid).is("read_at", null);
+    if (error) return toast.error(error.message);
+    setNotifs((prev) => prev.map((n) => (n.read_at ? n : { ...n, read_at: now })));
+  }
 
   async function submitDeposit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -137,6 +156,45 @@ function InvestorPortal() {
             sub={activePackage ? `${activePackage.status}` : "لا يوجد اشتراك"}
           />
           <StatCard icon={<ShieldCheck className="h-5 w-5" />} label="حالة الحساب" value={uid ? "موثّق" : "—"} sub="KYC" />
+        </div>
+
+        <div className="mt-8 glass rounded-3xl p-6">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              {unreadCount > 0 ? <BellDot className="h-5 w-5 text-gold" /> : <Bell className="h-5 w-5 text-gold" />}
+              <h2 className="font-display text-lg font-semibold">مركز الإشعارات</h2>
+              {unreadCount > 0 && (
+                <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] text-amber-300">{unreadCount} جديد</span>
+              )}
+            </div>
+            {unreadCount > 0 && (
+              <Button size="sm" variant="ghost" onClick={markAllRead} className="text-xs">تعليم الكل كمقروء</Button>
+            )}
+          </div>
+          {notifs.length === 0 ? (
+            <p className="mt-4 text-sm text-muted-foreground">لا توجد إشعارات بعد.</p>
+          ) : (
+            <ul className="mt-4 divide-y divide-white/5">
+              {notifs.slice(0, 10).map((n) => {
+                const unread = !n.read_at;
+                return (
+                  <li key={n.id} className={`flex items-start justify-between gap-3 py-3 ${unread ? "" : "opacity-70"}`}>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        {unread && <span className="h-2 w-2 rounded-full bg-gold" aria-hidden />}
+                        <p className="text-sm font-medium">{n.title}</p>
+                      </div>
+                      {n.body && <p className="mt-1 text-xs text-muted-foreground">{n.body}</p>}
+                      <p className="mt-1 text-[11px] text-muted-foreground">{new Date(n.created_at).toLocaleString()}</p>
+                    </div>
+                    {unread && (
+                      <Button size="sm" variant="ghost" onClick={() => markRead(n.id)} className="text-xs">تعليم كمقروء</Button>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          )}
         </div>
 
         <div className="mt-8 grid gap-6 lg:grid-cols-2">
