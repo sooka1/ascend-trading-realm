@@ -84,11 +84,31 @@ export const listUsersWithRoles = createServerFn({ method: "GET" })
         (rolesByUser[r.user_id] ??= []).push(r.role);
       });
     }
+    // Enrich with auth metadata (banned_until, last_sign_in_at, email_confirmed_at)
+    const authMeta: Record<
+      string,
+      { banned_until: string | null; last_sign_in_at: string | null; email_confirmed_at: string | null }
+    > = {};
+    try {
+      const { data: authList } = await supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 200 });
+      for (const u of authList?.users ?? []) {
+        authMeta[u.id] = {
+          banned_until: (u as any).banned_until ?? null,
+          last_sign_in_at: u.last_sign_in_at ?? null,
+          email_confirmed_at: u.email_confirmed_at ?? null,
+        };
+      }
+    } catch {
+      /* non-fatal */
+    }
     return {
       isSuper: auth.isSuper,
       users: (profiles ?? []).map((p) => ({
         ...p,
         roles: rolesByUser[p.id] ?? [],
+        banned_until: authMeta[p.id]?.banned_until ?? null,
+        last_sign_in_at: authMeta[p.id]?.last_sign_in_at ?? null,
+        email_confirmed_at: authMeta[p.id]?.email_confirmed_at ?? null,
       })),
     };
   });
