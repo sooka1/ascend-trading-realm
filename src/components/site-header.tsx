@@ -6,6 +6,9 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useT } from "@/lib/i18n";
 import { LanguageSwitcher } from "./language-switcher";
+import { useAuth } from "@/hooks/use-auth";
+import { supabase } from "@/integrations/supabase/client";
+import { LayoutDashboard } from "lucide-react";
 
 const NAV = [
   { key: "nav.platform", to: "/platform" },
@@ -20,6 +23,12 @@ const NAV = [
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const t = useT();
+  const { user } = useAuth();
+
+  async function handleSignOut() {
+    await supabase.auth.signOut();
+  }
+
   return (
     <header className="sticky top-0 z-50 border-b border-white/5 bg-background/70 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 px-4 sm:px-6 lg:px-8">
@@ -42,15 +51,30 @@ export function SiteHeader() {
 
         <div className="hidden items-center gap-2 lg:flex">
           <LanguageSwitcher />
-          <Button variant="ghost" asChild>
-            <Link to="/auth">{t("cta.login")}</Link>
-          </Button>
-          <Button
-            asChild
-            className="bg-[var(--gradient-brand)] text-white shadow-[var(--shadow-glow)] hover:opacity-95"
-          >
-            <Link to="/auth">{t("cta.open_account")}</Link>
-          </Button>
+          {user ? (
+            <>
+              <Button variant="ghost" asChild>
+                <Link to="/dashboard">
+                  <LayoutDashboard className="mr-2 h-4 w-4" /> Dashboard
+                </Link>
+              </Button>
+              <Button variant="outline" className="border-white/15" onClick={handleSignOut}>
+                Sign out
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button variant="ghost" asChild>
+                <Link to="/auth">{t("cta.login")}</Link>
+              </Button>
+              <Button
+                asChild
+                className="bg-[var(--gradient-brand)] text-white shadow-[var(--shadow-glow)] hover:opacity-95"
+              >
+                <Link to="/auth">{t("cta.open_account")}</Link>
+              </Button>
+            </>
+          )}
         </div>
 
         <div className="flex items-center gap-2 lg:hidden">
@@ -84,12 +108,25 @@ export function SiteHeader() {
             </Link>
           ))}
           <div className="mt-2 grid grid-cols-2 gap-2">
-            <Button variant="outline" asChild>
-              <Link to="/auth" onClick={() => setOpen(false)}>{t("cta.login")}</Link>
-            </Button>
-            <Button asChild className="bg-[var(--gradient-brand)] text-white">
-              <Link to="/auth" onClick={() => setOpen(false)}>{t("cta.open_account")}</Link>
-            </Button>
+            {user ? (
+              <>
+                <Button variant="outline" asChild>
+                  <Link to="/dashboard" onClick={() => setOpen(false)}>Dashboard</Link>
+                </Button>
+                <Button className="bg-[var(--gradient-brand)] text-white" onClick={() => { setOpen(false); handleSignOut(); }}>
+                  Sign out
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button variant="outline" asChild>
+                  <Link to="/auth" onClick={() => setOpen(false)}>{t("cta.login")}</Link>
+                </Button>
+                <Button asChild className="bg-[var(--gradient-brand)] text-white">
+                  <Link to="/auth" onClick={() => setOpen(false)}>{t("cta.open_account")}</Link>
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </div>
