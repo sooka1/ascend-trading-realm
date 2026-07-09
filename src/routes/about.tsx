@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Globe2, Rocket, ShieldCheck, Users } from "lucide-react";
 import { PageShell, PageHero } from "@/components/page-shell";
 import { AnimatedCounter } from "@/components/animated-counter";
+import { usePage } from "@/lib/i18n";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -16,21 +17,21 @@ export const Route = createFileRoute("/about")({
 });
 
 function About() {
+  const p = usePage().about;
   return (
     <PageShell>
       <PageHero
-        eyebrow="About us"
-        title={<>Built by traders, <span className="text-gradient">for traders</span></>}
-        subtitle="Founded in 2019, HK Global Trading unifies institutional-grade execution with a world-class competition ecosystem — trusted by more than 2 million clients worldwide."
+        eyebrow={p.hero.eyebrow}
+        title={<>{p.hero.titleA} <span className="text-gradient">{p.hero.titleB}</span></>}
+        subtitle={p.hero.subtitle}
       />
-
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {[
-            { value: 2_400_000, suffix: "+", label: "Active clients" },
-            { value: 184, suffix: "", label: "Countries" },
-            { value: 12, suffix: "B+", prefix: "$", label: "Monthly volume" },
-            { value: 850, suffix: "+", label: "Team members" },
+            { value: 2_400_000, suffix: "+", label: p.stats.clients },
+            { value: 184, suffix: "", label: p.stats.countries },
+            { value: 12, suffix: "B+", prefix: "$", label: p.stats.volume },
+            { value: 850, suffix: "+", label: p.stats.team },
           ].map((s) => (
             <div key={s.label} className="glass rounded-2xl p-6 text-center">
               <div className="font-display text-3xl font-bold text-gradient">
@@ -43,9 +44,9 @@ function About() {
 
         <div className="mt-16 grid gap-6 lg:grid-cols-3">
           {[
-            { icon: Rocket, title: "Our mission", body: "Give every trader — from first click to portfolio manager — an unfair edge through technology, education and competition." },
-            { icon: ShieldCheck, title: "Our values", body: "Transparent pricing, uncompromising security, and a fanatical bias toward client outcomes over house P&L." },
-            { icon: Globe2, title: "Our reach", body: "Local expertise on five continents, 24/7 multilingual support, and licenses across leading global regulators." },
+            { icon: Rocket, title: p.values.missionT, body: p.values.missionB },
+            { icon: ShieldCheck, title: p.values.valuesT, body: p.values.valuesB },
+            { icon: Globe2, title: p.values.reachT, body: p.values.reachB },
           ].map((v) => (
             <div key={v.title} className="glass rounded-2xl p-6">
               <v.icon className="h-6 w-6 text-gold" />
@@ -57,13 +58,10 @@ function About() {
 
         <div className="mt-16 glass-strong rounded-3xl p-8 md:p-12">
           <div className="flex items-center gap-3 text-muted-foreground">
-            <Users className="h-5 w-5 text-gold" /> <span className="text-xs uppercase tracking-widest">Leadership</span>
+            <Users className="h-5 w-5 text-gold" /> <span className="text-xs uppercase tracking-widest">{p.leadership.eyebrow}</span>
           </div>
-          <h3 className="mt-3 font-display text-3xl font-bold">A team forged on trading floors</h3>
-          <p className="mt-4 max-w-3xl text-muted-foreground">
-            Our leadership brings decades of experience from Goldman Sachs, Jane Street, Coinbase and Interactive Brokers.
-            We build for traders because we are traders — and every product decision passes through a live P&amp;L.
-          </p>
+          <h3 className="mt-3 font-display text-3xl font-bold">{p.leadership.title}</h3>
+          <p className="mt-4 max-w-3xl text-muted-foreground">{p.leadership.body}</p>
         </div>
       </section>
     </PageShell>

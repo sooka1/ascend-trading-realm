@@ -1,12 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { BookOpen, Calculator, GraduationCap, PlayCircle, Video } from "lucide-react";
 import { PageShell, PageHero } from "@/components/page-shell";
+import { usePage } from "@/lib/i18n";
 
 export const Route = createFileRoute("/education")({
   head: () => ({
     meta: [
       { title: "Trading Academy — Courses, videos and webinars | HK Global" },
-      { name: "description", content: "Learn to trade like a pro. Courses, video library, live webinars, e-books and pro calculators — free for HK clients." },
+      { name: "description", content: "Learn to trade like a pro." },
       { property: "og:title", content: "HK Trading Academy" },
       { property: "og:description", content: "Free trading education — courses, webinars, calculators." },
     ],
@@ -15,19 +16,21 @@ export const Route = createFileRoute("/education")({
 });
 
 function Education() {
+  const p = usePage().education;
+  const t = p.tracks;
   const tracks = [
-    { icon: GraduationCap, title: "Trading Courses", body: "12 full curriculums across beginner, intermediate and pro levels.", stat: "220+ lessons" },
-    { icon: Video, title: "Video Library", body: "On-demand videos across strategy, psychology and technicals.", stat: "480 videos" },
-    { icon: PlayCircle, title: "Live Webinars", body: "Weekly sessions with prop-desk traders and quant researchers.", stat: "3× per week" },
-    { icon: BookOpen, title: "E-books & Guides", body: "Deep-dive PDFs on market structure, risk and edge design.", stat: "40+ e-books" },
-    { icon: Calculator, title: "Trading Calculators", body: "Position sizing, margin, pip value, swap and profit calculators.", stat: "12 tools" },
+    { icon: GraduationCap, title: t.coursesT, body: t.coursesB, stat: t.coursesS },
+    { icon: Video, title: t.videosT, body: t.videosB, stat: t.videosS },
+    { icon: PlayCircle, title: t.webinarsT, body: t.webinarsB, stat: t.webinarsS },
+    { icon: BookOpen, title: t.ebooksT, body: t.ebooksB, stat: t.ebooksS },
+    { icon: Calculator, title: t.calcT, body: t.calcB, stat: t.calcS },
   ];
   return (
     <PageShell>
       <PageHero
-        eyebrow="Education"
-        title={<>The <span className="text-gradient">HK Academy</span></>}
-        subtitle="Everything you need to sharpen your edge — free for HK clients."
+        eyebrow={p.hero.eyebrow}
+        title={<>{p.hero.titleA} <span className="text-gradient">{p.hero.titleB}</span></>}
+        subtitle={p.hero.subtitle}
       />
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
