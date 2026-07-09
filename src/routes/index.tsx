@@ -14,6 +14,10 @@ import {
   TrendingUp,
   Users,
   Wallet,
+  Award,
+  Quote,
+  Star,
+  ScrollText,
 } from "lucide-react";
 import { PageShell } from "@/components/page-shell";
 import { MarketTicker } from "@/components/market-ticker";
@@ -60,6 +64,8 @@ function Home() {
       <PerformanceBand c={c} />
       <RiskFramework c={c} />
       <SecurityBlock c={c} />
+      <Testimonials />
+      <Credentials />
       <PortalPreview c={c} />
       <FinalCTA c={c} />
     </PageShell>
@@ -368,6 +374,264 @@ function FinalCTA({ c }: { c: LandingContent }) {
           <Link to="/contact">{c.hero.ctaAdvisor}</Link>
         </Button>
       </div>
+    </section>
+  );
+}
+
+type TL = {
+  eyebrow: string;
+  title: string;
+  subtitle: string;
+  items: { name: string; role: string; quote: string; rating: number }[];
+};
+
+const TESTIMONIALS: Record<string, TL> = {
+  ar: {
+    eyebrow: "آراء العملاء",
+    title: "تجارب حقيقية من عملائنا",
+    subtitle: "شهادات من مستثمرين وثقوا بإدارتنا لمحافظهم.",
+    items: [
+      { name: "خالد المنصوري", role: "رجل أعمال — دبي", rating: 5, quote: "إدارة احترافية وشفافية كاملة في التقارير الشهرية. عوائد مستقرة ومخاطر مدروسة." },
+      { name: "سارة العتيبي", role: "طبيبة استشارية — الرياض", rating: 5, quote: "بوابة العميل ممتازة وفريق الدعم سريع الاستجابة. أنصح بها لكل من يبحث عن استثمار طويل الأجل." },
+      { name: "أحمد الفهد", role: "مستثمر خاص — الكويت", rating: 5, quote: "التزام صارم بإدارة المخاطر، وأداء يفوق التوقعات على مدى سنتين متتاليتين." },
+    ],
+  },
+  en: {
+    eyebrow: "Client Voices",
+    title: "Real experiences from real investors",
+    subtitle: "Verified reviews from clients who trusted us with their portfolios.",
+    items: [
+      { name: "James Whitfield", role: "Business Owner — London", rating: 5, quote: "Professional management with full transparency in monthly reporting. Steady returns and disciplined risk." },
+      { name: "Sofia Lindqvist", role: "Private Investor — Stockholm", rating: 5, quote: "Excellent client portal and a responsive advisory team. Highly recommended for long-term investors." },
+      { name: "Michael Chen", role: "Executive — Singapore", rating: 5, quote: "Strict risk framework and consistent performance across two consecutive years." },
+    ],
+  },
+  fr: {
+    eyebrow: "Avis clients",
+    title: "Des expériences réelles d'investisseurs",
+    subtitle: "Témoignages de clients qui nous ont confié leurs portefeuilles.",
+    items: [
+      { name: "Julien Moreau", role: "Chef d'entreprise — Paris", rating: 5, quote: "Gestion professionnelle et transparence totale des rapports mensuels." },
+      { name: "Camille Roux", role: "Investisseuse privée — Lyon", rating: 5, quote: "Portail client excellent et équipe très réactive." },
+      { name: "Antoine Girard", role: "Cadre dirigeant — Genève", rating: 5, quote: "Cadre de risque rigoureux et performance constante." },
+    ],
+  },
+  es: {
+    eyebrow: "Opiniones de clientes",
+    title: "Experiencias reales de inversores",
+    subtitle: "Testimonios de clientes que confiaron en nosotros.",
+    items: [
+      { name: "Carlos Herrera", role: "Empresario — Madrid", rating: 5, quote: "Gestión profesional y total transparencia en los informes mensuales." },
+      { name: "Lucía Fernández", role: "Inversora privada — Barcelona", rating: 5, quote: "Portal excelente y equipo muy atento." },
+      { name: "Diego Ramírez", role: "Directivo — Ciudad de México", rating: 5, quote: "Marco de riesgo estricto y rendimiento consistente." },
+    ],
+  },
+  tr: {
+    eyebrow: "Müşteri Görüşleri",
+    title: "Yatırımcılardan gerçek deneyimler",
+    subtitle: "Portföylerini bize emanet eden müşterilerimizin görüşleri.",
+    items: [
+      { name: "Emre Yılmaz", role: "İş İnsanı — İstanbul", rating: 5, quote: "Profesyonel yönetim ve tam şeffaf raporlama." },
+      { name: "Aylin Demir", role: "Özel Yatırımcı — Ankara", rating: 5, quote: "Mükemmel müşteri portalı ve hızlı destek ekibi." },
+      { name: "Kaan Aksoy", role: "Yönetici — İzmir", rating: 5, quote: "Sıkı risk yönetimi ve istikrarlı performans." },
+    ],
+  },
+};
+
+type CL = {
+  eyebrow: string;
+  title: string;
+  subtitle: string;
+  certs: { name: string; body: string }[];
+  awards: { name: string; body: string }[];
+  awardsTitle: string;
+  certsTitle: string;
+  disclaimer: string;
+};
+
+const CREDENTIALS: Record<string, CL> = {
+  ar: {
+    eyebrow: "اعتمادات وجوائز",
+    title: "شركة معتمدة دولياً وحاصلة على جوائز عالمية",
+    subtitle: "نلتزم بأعلى المعايير التنظيمية والمهنية، ونفتخر بتقدير المؤسسات الدولية لجودة خدماتنا.",
+    certsTitle: "الاعتمادات والشهادات القانونية",
+    awardsTitle: "الجوائز والتقديرات العالمية",
+    certs: [
+      { name: "ISO/IEC 27001", body: "شهادة معتمدة في أمن المعلومات لحماية بيانات العملاء." },
+      { name: "SOC 2 Type II", body: "تقرير مستقل يوثّق ضوابط الأمان والخصوصية والتوافر." },
+      { name: "GDPR Compliance", body: "التزام كامل بلائحة حماية البيانات الأوروبية." },
+      { name: "AML / KYC", body: "سياسات صارمة لمكافحة غسل الأموال ومعرفة العميل." },
+    ],
+    awards: [
+      { name: "Best Wealth Manager 2025", body: "جائزة أفضل شركة إدارة ثروات — Global Finance Awards." },
+      { name: "Top Performance Award", body: "التميّز في الأداء الاستثماري — International Investor Magazine." },
+      { name: "Excellence in Risk Management", body: "التميّز في إدارة المخاطر — MENA Investment Summit." },
+    ],
+    disclaimer: "الاعتمادات والجوائز عرض تمثيلي لأغراض التصميم؛ يتم تحديثها فور استلام الشهادات الرسمية الموثّقة.",
+  },
+  en: {
+    eyebrow: "Certifications & Awards",
+    title: "Internationally accredited and globally recognized",
+    subtitle: "We adhere to the highest regulatory and professional standards, recognized by leading international institutions.",
+    certsTitle: "Legal Certifications",
+    awardsTitle: "Global Awards & Recognition",
+    certs: [
+      { name: "ISO/IEC 27001", body: "Certified information-security management for client data protection." },
+      { name: "SOC 2 Type II", body: "Independent report on security, privacy and availability controls." },
+      { name: "GDPR Compliance", body: "Full alignment with the EU General Data Protection Regulation." },
+      { name: "AML / KYC", body: "Rigorous anti–money laundering and know-your-customer policies." },
+    ],
+    awards: [
+      { name: "Best Wealth Manager 2025", body: "Global Finance Awards — top wealth-management firm." },
+      { name: "Top Performance Award", body: "International Investor Magazine — investment performance." },
+      { name: "Excellence in Risk Management", body: "MENA Investment Summit — risk discipline." },
+    ],
+    disclaimer: "Certifications and awards shown are illustrative and will be updated with verified documentation.",
+  },
+  fr: {
+    eyebrow: "Certifications & Prix",
+    title: "Une société accréditée et primée à l'international",
+    subtitle: "Nous respectons les normes réglementaires et professionnelles les plus élevées.",
+    certsTitle: "Certifications légales",
+    awardsTitle: "Récompenses mondiales",
+    certs: [
+      { name: "ISO/IEC 27001", body: "Gestion certifiée de la sécurité de l'information." },
+      { name: "SOC 2 Type II", body: "Contrôles indépendants de sécurité et de confidentialité." },
+      { name: "GDPR", body: "Conformité totale au règlement européen." },
+      { name: "AML / KYC", body: "Politiques strictes de lutte contre le blanchiment." },
+    ],
+    awards: [
+      { name: "Best Wealth Manager 2025", body: "Global Finance Awards." },
+      { name: "Top Performance Award", body: "International Investor Magazine." },
+      { name: "Excellence in Risk Management", body: "MENA Investment Summit." },
+    ],
+    disclaimer: "Certifications et prix présentés à titre indicatif.",
+  },
+  es: {
+    eyebrow: "Certificaciones y Premios",
+    title: "Empresa acreditada internacionalmente y galardonada",
+    subtitle: "Cumplimos con los estándares regulatorios y profesionales más exigentes.",
+    certsTitle: "Certificaciones legales",
+    awardsTitle: "Premios internacionales",
+    certs: [
+      { name: "ISO/IEC 27001", body: "Gestión certificada de seguridad de la información." },
+      { name: "SOC 2 Type II", body: "Controles independientes de seguridad y privacidad." },
+      { name: "GDPR", body: "Cumplimiento pleno del reglamento europeo." },
+      { name: "AML / KYC", body: "Políticas estrictas contra el blanqueo de capitales." },
+    ],
+    awards: [
+      { name: "Best Wealth Manager 2025", body: "Global Finance Awards." },
+      { name: "Top Performance Award", body: "International Investor Magazine." },
+      { name: "Excellence in Risk Management", body: "MENA Investment Summit." },
+    ],
+    disclaimer: "Certificaciones y premios mostrados con fines ilustrativos.",
+  },
+  tr: {
+    eyebrow: "Sertifikalar ve Ödüller",
+    title: "Uluslararası akredite ve ödüllü şirket",
+    subtitle: "En yüksek düzenleyici ve mesleki standartlara bağlıyız.",
+    certsTitle: "Yasal Sertifikalar",
+    awardsTitle: "Uluslararası Ödüller",
+    certs: [
+      { name: "ISO/IEC 27001", body: "Sertifikalı bilgi güvenliği yönetimi." },
+      { name: "SOC 2 Type II", body: "Bağımsız güvenlik ve gizlilik kontrolleri." },
+      { name: "GDPR", body: "AB veri koruma yönetmeliğine tam uyum." },
+      { name: "AML / KYC", body: "Sıkı kara para aklamayı önleme politikaları." },
+    ],
+    awards: [
+      { name: "Best Wealth Manager 2025", body: "Global Finance Awards." },
+      { name: "Top Performance Award", body: "International Investor Magazine." },
+      { name: "Excellence in Risk Management", body: "MENA Investment Summit." },
+    ],
+    disclaimer: "Sertifika ve ödüller örnek amaçlıdır.",
+  },
+};
+
+function Testimonials() {
+  const { lang } = useI18n();
+  const t = TESTIMONIALS[lang] ?? TESTIMONIALS.en;
+  return (
+    <section className="border-y border-white/5 bg-white/[0.02] py-24">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="max-w-2xl">
+          <span className="text-xs uppercase tracking-[0.22em] text-gold">{t.eyebrow}</span>
+          <h2 className="mt-3 font-display text-4xl font-semibold md:text-5xl">{t.title}</h2>
+          <p className="mt-4 text-muted-foreground">{t.subtitle}</p>
+        </div>
+        <div className="mt-12 grid gap-5 md:grid-cols-3">
+          {t.items.map((it) => (
+            <figure key={it.name} className="glass-strong flex h-full flex-col rounded-2xl p-6">
+              <Quote className="h-6 w-6 text-gold" />
+              <div className="mt-3 flex gap-1">
+                {Array.from({ length: it.rating }).map((_, i) => (
+                  <Star key={i} className="h-4 w-4 fill-gold text-gold" />
+                ))}
+              </div>
+              <blockquote className="mt-4 flex-1 text-sm leading-relaxed text-muted-foreground">
+                "{it.quote}"
+              </blockquote>
+              <figcaption className="mt-6 border-t border-white/5 pt-4">
+                <p className="font-display text-base font-semibold text-foreground">{it.name}</p>
+                <p className="text-xs text-muted-foreground">{it.role}</p>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Credentials() {
+  const { lang } = useI18n();
+  const c = CREDENTIALS[lang] ?? CREDENTIALS.en;
+  return (
+    <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
+      <div className="max-w-2xl">
+        <span className="text-xs uppercase tracking-[0.22em] text-gold">{c.eyebrow}</span>
+        <h2 className="mt-3 font-display text-4xl font-semibold md:text-5xl">{c.title}</h2>
+        <p className="mt-4 text-muted-foreground">{c.subtitle}</p>
+      </div>
+
+      <div className="mt-12 grid gap-10 lg:grid-cols-2">
+        <div>
+          <div className="flex items-center gap-2">
+            <ScrollText className="h-5 w-5 text-gold" />
+            <h3 className="font-display text-xl font-semibold">{c.certsTitle}</h3>
+          </div>
+          <div className="mt-5 grid gap-4 sm:grid-cols-2">
+            {c.certs.map((it) => (
+              <div key={it.name} className="glass rounded-2xl p-5">
+                <BadgeCheck className="h-5 w-5 text-gold" />
+                <h4 className="mt-3 font-display text-base font-semibold">{it.name}</h4>
+                <p className="mt-1 text-sm text-muted-foreground">{it.body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <div className="flex items-center gap-2">
+            <Award className="h-5 w-5 text-gold" />
+            <h3 className="font-display text-xl font-semibold">{c.awardsTitle}</h3>
+          </div>
+          <div className="mt-5 space-y-4">
+            {c.awards.map((it) => (
+              <div key={it.name} className="glass-strong flex items-start gap-4 rounded-2xl p-5">
+                <div className="rounded-full border border-gold/30 bg-gold/10 p-2">
+                  <Award className="h-5 w-5 text-gold" />
+                </div>
+                <div>
+                  <h4 className="font-display text-base font-semibold">{it.name}</h4>
+                  <p className="mt-1 text-sm text-muted-foreground">{it.body}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <p className="mt-10 max-w-3xl text-xs text-muted-foreground">{c.disclaimer}</p>
     </section>
   );
 }
