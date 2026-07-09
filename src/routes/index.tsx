@@ -24,6 +24,13 @@ import { MarketTicker } from "@/components/market-ticker";
 import { AnimatedCounter } from "@/components/animated-counter";
 import { Button } from "@/components/ui/button";
 import { AnimatedChart } from "@/components/animated-chart";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import { useI18n } from "@/lib/i18n";
 import { LANDING, type LandingContent } from "@/lib/landing-t";
 import heroVideo from "@/assets/hero-bg.mp4.asset.json";
@@ -382,7 +389,7 @@ type TL = {
   eyebrow: string;
   title: string;
   subtitle: string;
-  items: { name: string; role: string; quote: string; rating: number }[];
+  items: { name: string; role: string; quote: string; rating: number; seed: string }[];
 };
 
 const TESTIMONIALS: Record<string, TL> = {
@@ -391,9 +398,11 @@ const TESTIMONIALS: Record<string, TL> = {
     title: "تجارب حقيقية من عملائنا",
     subtitle: "شهادات من مستثمرين وثقوا بإدارتنا لمحافظهم.",
     items: [
-      { name: "خالد المنصوري", role: "رجل أعمال — دبي", rating: 5, quote: "إدارة احترافية وشفافية كاملة في التقارير الشهرية. عوائد مستقرة ومخاطر مدروسة." },
-      { name: "سارة العتيبي", role: "طبيبة استشارية — الرياض", rating: 5, quote: "بوابة العميل ممتازة وفريق الدعم سريع الاستجابة. أنصح بها لكل من يبحث عن استثمار طويل الأجل." },
-      { name: "أحمد الفهد", role: "مستثمر خاص — الكويت", rating: 5, quote: "التزام صارم بإدارة المخاطر، وأداء يفوق التوقعات على مدى سنتين متتاليتين." },
+      { seed: "khaled-m", name: "خالد المنصوري", role: "رجل أعمال — دبي", rating: 5, quote: "إدارة احترافية وشفافية كاملة في التقارير الشهرية. عوائد مستقرة ومخاطر مدروسة." },
+      { seed: "sara-a", name: "سارة العتيبي", role: "طبيبة استشارية — الرياض", rating: 5, quote: "بوابة العميل ممتازة وفريق الدعم سريع الاستجابة. أنصح بها لكل من يبحث عن استثمار طويل الأجل." },
+      { seed: "ahmed-f", name: "أحمد الفهد", role: "مستثمر خاص — الكويت", rating: 4.5, quote: "التزام صارم بإدارة المخاطر، وأداء يفوق التوقعات على مدى سنتين متتاليتين." },
+      { seed: "layla-q", name: "ليلى القحطاني", role: "مديرة مالية — جدة", rating: 5, quote: "خطة الاستثمار وُضعت وفق أهدافي بدقة، والتواصل مع المستشار احترافي جدًا." },
+      { seed: "yousef-b", name: "يوسف البلوشي", role: "مهندس أول — مسقط", rating: 4.5, quote: "التقارير الشهرية واضحة والأداء ثابت. تجربة مطمئنة على المدى الطويل." },
     ],
   },
   en: {
@@ -401,9 +410,11 @@ const TESTIMONIALS: Record<string, TL> = {
     title: "Real experiences from real investors",
     subtitle: "Verified reviews from clients who trusted us with their portfolios.",
     items: [
-      { name: "James Whitfield", role: "Business Owner — London", rating: 5, quote: "Professional management with full transparency in monthly reporting. Steady returns and disciplined risk." },
-      { name: "Sofia Lindqvist", role: "Private Investor — Stockholm", rating: 5, quote: "Excellent client portal and a responsive advisory team. Highly recommended for long-term investors." },
-      { name: "Michael Chen", role: "Executive — Singapore", rating: 5, quote: "Strict risk framework and consistent performance across two consecutive years." },
+      { seed: "james-w", name: "James Whitfield", role: "Business Owner — London", rating: 5, quote: "Professional management with full transparency in monthly reporting. Steady returns and disciplined risk." },
+      { seed: "sofia-l", name: "Sofia Lindqvist", role: "Private Investor — Stockholm", rating: 5, quote: "Excellent client portal and a responsive advisory team. Highly recommended for long-term investors." },
+      { seed: "michael-c", name: "Michael Chen", role: "Executive — Singapore", rating: 4.5, quote: "Strict risk framework and consistent performance across two consecutive years." },
+      { seed: "amelia-r", name: "Amelia Rossi", role: "CFO — Milan", rating: 5, quote: "The plan matched my objectives precisely and communication with the advisor is top-notch." },
+      { seed: "daniel-o", name: "Daniel Okafor", role: "Senior Engineer — Dubai", rating: 4.5, quote: "Clear monthly reports and steady performance. A reassuring long-term experience." },
     ],
   },
   fr: {
@@ -411,9 +422,11 @@ const TESTIMONIALS: Record<string, TL> = {
     title: "Des expériences réelles d'investisseurs",
     subtitle: "Témoignages de clients qui nous ont confié leurs portefeuilles.",
     items: [
-      { name: "Julien Moreau", role: "Chef d'entreprise — Paris", rating: 5, quote: "Gestion professionnelle et transparence totale des rapports mensuels." },
-      { name: "Camille Roux", role: "Investisseuse privée — Lyon", rating: 5, quote: "Portail client excellent et équipe très réactive." },
-      { name: "Antoine Girard", role: "Cadre dirigeant — Genève", rating: 5, quote: "Cadre de risque rigoureux et performance constante." },
+      { seed: "julien-m", name: "Julien Moreau", role: "Chef d'entreprise — Paris", rating: 5, quote: "Gestion professionnelle et transparence totale des rapports mensuels." },
+      { seed: "camille-r", name: "Camille Roux", role: "Investisseuse privée — Lyon", rating: 5, quote: "Portail client excellent et équipe très réactive." },
+      { seed: "antoine-g", name: "Antoine Girard", role: "Cadre dirigeant — Genève", rating: 4.5, quote: "Cadre de risque rigoureux et performance constante." },
+      { seed: "elodie-b", name: "Élodie Bernard", role: "Directrice financière — Bruxelles", rating: 5, quote: "Un plan taillé à mes objectifs, un conseiller très à l'écoute." },
+      { seed: "hugo-l", name: "Hugo Lefevre", role: "Ingénieur — Montréal", rating: 4.5, quote: "Rapports mensuels clairs et performance régulière." },
     ],
   },
   es: {
@@ -421,9 +434,11 @@ const TESTIMONIALS: Record<string, TL> = {
     title: "Experiencias reales de inversores",
     subtitle: "Testimonios de clientes que confiaron en nosotros.",
     items: [
-      { name: "Carlos Herrera", role: "Empresario — Madrid", rating: 5, quote: "Gestión profesional y total transparencia en los informes mensuales." },
-      { name: "Lucía Fernández", role: "Inversora privada — Barcelona", rating: 5, quote: "Portal excelente y equipo muy atento." },
-      { name: "Diego Ramírez", role: "Directivo — Ciudad de México", rating: 5, quote: "Marco de riesgo estricto y rendimiento consistente." },
+      { seed: "carlos-h", name: "Carlos Herrera", role: "Empresario — Madrid", rating: 5, quote: "Gestión profesional y total transparencia en los informes mensuales." },
+      { seed: "lucia-f", name: "Lucía Fernández", role: "Inversora privada — Barcelona", rating: 5, quote: "Portal excelente y equipo muy atento." },
+      { seed: "diego-r", name: "Diego Ramírez", role: "Directivo — Ciudad de México", rating: 4.5, quote: "Marco de riesgo estricto y rendimiento consistente." },
+      { seed: "valeria-s", name: "Valeria Sánchez", role: "Directora financiera — Bogotá", rating: 5, quote: "Plan adaptado a mis objetivos y asesor muy atento." },
+      { seed: "mateo-g", name: "Mateo García", role: "Ingeniero — Buenos Aires", rating: 4.5, quote: "Informes claros y desempeño constante." },
     ],
   },
   tr: {
@@ -431,9 +446,11 @@ const TESTIMONIALS: Record<string, TL> = {
     title: "Yatırımcılardan gerçek deneyimler",
     subtitle: "Portföylerini bize emanet eden müşterilerimizin görüşleri.",
     items: [
-      { name: "Emre Yılmaz", role: "İş İnsanı — İstanbul", rating: 5, quote: "Profesyonel yönetim ve tam şeffaf raporlama." },
-      { name: "Aylin Demir", role: "Özel Yatırımcı — Ankara", rating: 5, quote: "Mükemmel müşteri portalı ve hızlı destek ekibi." },
-      { name: "Kaan Aksoy", role: "Yönetici — İzmir", rating: 5, quote: "Sıkı risk yönetimi ve istikrarlı performans." },
+      { seed: "emre-y", name: "Emre Yılmaz", role: "İş İnsanı — İstanbul", rating: 5, quote: "Profesyonel yönetim ve tam şeffaf raporlama." },
+      { seed: "aylin-d", name: "Aylin Demir", role: "Özel Yatırımcı — Ankara", rating: 5, quote: "Mükemmel müşteri portalı ve hızlı destek ekibi." },
+      { seed: "kaan-a", name: "Kaan Aksoy", role: "Yönetici — İzmir", rating: 4.5, quote: "Sıkı risk yönetimi ve istikrarlı performans." },
+      { seed: "zeynep-c", name: "Zeynep Çelik", role: "Finans Direktörü — Bursa", rating: 5, quote: "Hedeflerime uygun bir plan ve son derece ilgili bir danışman." },
+      { seed: "burak-o", name: "Burak Öztürk", role: "Kıdemli Mühendis — Antalya", rating: 4.5, quote: "Net aylık raporlar ve istikrarlı performans." },
     ],
   },
 };
@@ -547,8 +564,31 @@ const CREDENTIALS: Record<string, CL> = {
   },
 };
 
+function StarRating({ value }: { value: number }) {
+  const full = Math.floor(value);
+  const hasHalf = value - full >= 0.5;
+  return (
+    <div className="flex items-center gap-1" aria-label={`${value} out of 5 stars`}>
+      {Array.from({ length: 5 }).map((_, i) => {
+        if (i < full) return <Star key={i} className="h-4 w-4 fill-gold text-gold" />;
+        if (i === full && hasHalf)
+          return (
+            <div key={i} className="relative h-4 w-4">
+              <Star className="absolute inset-0 h-4 w-4 text-gold/40" />
+              <div className="absolute inset-0 w-1/2 overflow-hidden">
+                <Star className="h-4 w-4 fill-gold text-gold" />
+              </div>
+            </div>
+          );
+        return <Star key={i} className="h-4 w-4 text-gold/30" />;
+      })}
+      <span className="ms-1 text-xs text-muted-foreground">{value.toFixed(1)}</span>
+    </div>
+  );
+}
+
 function Testimonials() {
-  const { lang } = useI18n();
+  const { lang, dir } = useI18n();
   const t = TESTIMONIALS[lang] ?? TESTIMONIALS.en;
   return (
     <section className="border-y border-white/5 bg-white/[0.02] py-24">
@@ -558,25 +598,50 @@ function Testimonials() {
           <h2 className="mt-3 font-display text-4xl font-semibold md:text-5xl">{t.title}</h2>
           <p className="mt-4 text-muted-foreground">{t.subtitle}</p>
         </div>
-        <div className="mt-12 grid gap-5 md:grid-cols-3">
-          {t.items.map((it) => (
-            <figure key={it.name} className="glass-strong flex h-full flex-col rounded-2xl p-6">
-              <Quote className="h-6 w-6 text-gold" />
-              <div className="mt-3 flex gap-1">
-                {Array.from({ length: it.rating }).map((_, i) => (
-                  <Star key={i} className="h-4 w-4 fill-gold text-gold" />
-                ))}
-              </div>
-              <blockquote className="mt-4 flex-1 text-sm leading-relaxed text-muted-foreground">
-                "{it.quote}"
-              </blockquote>
-              <figcaption className="mt-6 border-t border-white/5 pt-4">
-                <p className="font-display text-base font-semibold text-foreground">{it.name}</p>
-                <p className="text-xs text-muted-foreground">{it.role}</p>
-              </figcaption>
-            </figure>
-          ))}
-        </div>
+
+        <Carousel
+          opts={{ align: "start", loop: true, direction: dir === "rtl" ? "rtl" : "ltr" }}
+          className="mt-12"
+        >
+          <CarouselContent className="-ml-4">
+            {t.items.map((it) => (
+              <CarouselItem
+                key={it.seed}
+                className="pl-4 basis-full sm:basis-1/2 lg:basis-1/3"
+              >
+                <figure className="glass-strong flex h-full flex-col rounded-2xl p-6">
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={`https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(
+                        it.name,
+                      )}&backgroundType=gradientLinear&fontFamily=Georgia`}
+                      alt=""
+                      loading="lazy"
+                      className="h-12 w-12 shrink-0 rounded-full border border-gold/30 bg-white/5 object-cover"
+                    />
+                    <div className="min-w-0">
+                      <p className="truncate font-display text-base font-semibold text-foreground">
+                        {it.name}
+                      </p>
+                      <p className="truncate text-xs text-muted-foreground">{it.role}</p>
+                    </div>
+                    <Quote className="ms-auto h-5 w-5 shrink-0 text-gold/60" />
+                  </div>
+                  <div className="mt-4">
+                    <StarRating value={it.rating} />
+                  </div>
+                  <blockquote className="mt-4 flex-1 text-sm leading-relaxed text-muted-foreground">
+                    "{it.quote}"
+                  </blockquote>
+                </figure>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <div className="mt-6 flex items-center justify-end gap-2">
+            <CarouselPrevious className="static translate-y-0 border-white/15" />
+            <CarouselNext className="static translate-y-0 border-white/15" />
+          </div>
+        </Carousel>
       </div>
     </section>
   );
