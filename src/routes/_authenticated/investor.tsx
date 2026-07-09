@@ -138,7 +138,7 @@ function InvestorPortal() {
   }
 
   return (
-    <PageShell>
+    <PageShell bare>
       <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div>
           <p className="text-xs uppercase tracking-widest text-gold">Investor Portal</p>

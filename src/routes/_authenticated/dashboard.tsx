@@ -127,7 +127,7 @@ function DashboardPage() {
   const name = profile?.display_name ?? profile?.email?.split("@")[0] ?? "مستثمر";
 
   return (
-    <PageShell>
+    <PageShell bare>
       <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
