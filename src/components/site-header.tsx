@@ -13,6 +13,7 @@ import { LayoutDashboard } from "lucide-react";
 const NAV = [
   { key: "nav.platform", to: "/platform" },
   { key: "nav.markets", to: "/markets" },
+  { key: "nav.investment", to: "/investment" },
   { key: "nav.competitions", to: "/competitions" },
   { key: "nav.education", to: "/education" },
   { key: "nav.partners", to: "/partners" },

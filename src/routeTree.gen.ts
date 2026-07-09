@@ -15,6 +15,7 @@ import { Route as PlatformRouteImport } from './routes/platform'
 import { Route as PartnersRouteImport } from './routes/partners'
 import { Route as NewsRouteImport } from './routes/news'
 import { Route as MarketsRouteImport } from './routes/markets'
+import { Route as InvestmentRouteImport } from './routes/investment'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as EducationRouteImport } from './routes/education'
 import { Route as EconomicCalendarRouteImport } from './routes/economic-calendar'
@@ -56,6 +57,11 @@ const NewsRoute = NewsRouteImport.update({
 const MarketsRoute = MarketsRouteImport.update({
   id: '/markets',
   path: '/markets',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InvestmentRoute = InvestmentRouteImport.update({
+  id: '/investment',
+  path: '/investment',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FaqRoute = FaqRouteImport.update({
@@ -129,6 +135,7 @@ export interface FileRoutesByFullPath {
   '/economic-calendar': typeof EconomicCalendarRoute
   '/education': typeof EducationRoute
   '/faq': typeof FaqRoute
+  '/investment': typeof InvestmentRoute
   '/markets': typeof MarketsRoute
   '/news': typeof NewsRoute
   '/partners': typeof PartnersRoute
@@ -148,6 +155,7 @@ export interface FileRoutesByTo {
   '/economic-calendar': typeof EconomicCalendarRoute
   '/education': typeof EducationRoute
   '/faq': typeof FaqRoute
+  '/investment': typeof InvestmentRoute
   '/markets': typeof MarketsRoute
   '/news': typeof NewsRoute
   '/partners': typeof PartnersRoute
@@ -169,6 +177,7 @@ export interface FileRoutesById {
   '/economic-calendar': typeof EconomicCalendarRoute
   '/education': typeof EducationRoute
   '/faq': typeof FaqRoute
+  '/investment': typeof InvestmentRoute
   '/markets': typeof MarketsRoute
   '/news': typeof NewsRoute
   '/partners': typeof PartnersRoute
@@ -190,6 +199,7 @@ export interface FileRouteTypes {
     | '/economic-calendar'
     | '/education'
     | '/faq'
+    | '/investment'
     | '/markets'
     | '/news'
     | '/partners'
@@ -209,6 +219,7 @@ export interface FileRouteTypes {
     | '/economic-calendar'
     | '/education'
     | '/faq'
+    | '/investment'
     | '/markets'
     | '/news'
     | '/partners'
@@ -229,6 +240,7 @@ export interface FileRouteTypes {
     | '/economic-calendar'
     | '/education'
     | '/faq'
+    | '/investment'
     | '/markets'
     | '/news'
     | '/partners'
@@ -250,6 +262,7 @@ export interface RootRouteChildren {
   EconomicCalendarRoute: typeof EconomicCalendarRoute
   EducationRoute: typeof EducationRoute
   FaqRoute: typeof FaqRoute
+  InvestmentRoute: typeof InvestmentRoute
   MarketsRoute: typeof MarketsRoute
   NewsRoute: typeof NewsRoute
   PartnersRoute: typeof PartnersRoute
@@ -300,6 +313,13 @@ declare module '@tanstack/react-router' {
       path: '/markets'
       fullPath: '/markets'
       preLoaderRoute: typeof MarketsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/investment': {
+      id: '/investment'
+      path: '/investment'
+      fullPath: '/investment'
+      preLoaderRoute: typeof InvestmentRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/faq': {
@@ -412,6 +432,7 @@ const rootRouteChildren: RootRouteChildren = {
   EconomicCalendarRoute: EconomicCalendarRoute,
   EducationRoute: EducationRoute,
   FaqRoute: FaqRoute,
+  InvestmentRoute: InvestmentRoute,
   MarketsRoute: MarketsRoute,
   NewsRoute: NewsRoute,
   PartnersRoute: PartnersRoute,
