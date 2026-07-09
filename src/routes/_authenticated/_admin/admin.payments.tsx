@@ -1,0 +1,145 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { useQuery } from "@tanstack/react-query";
+import {
+  AdminShell,
+  AdminCard,
+  AdminKpi,
+  StatusPill,
+  fmtInt,
+  fmtMoney,
+} from "@/components/admin-shell";
+import { listPaymentsAdmin } from "@/lib/admin.functions";
+import { ArrowUpRight, ArrowDownRight, Wallet, AlertCircle } from "lucide-react";
+
+export const Route = createFileRoute("/_authenticated/_admin/admin/payments")({
+  head: () => ({
+    meta: [
+      { title: "Admin — Payments" },
+      { name: "description", content: "Payment log across all methods with manual review queue." },
+    ],
+  }),
+  component: AdminPayments,
+});
+
+function AdminPayments() {
+  const fetchList = useServerFn(listPaymentsAdmin);
+  const [status, setStatus] = useState<"all" | "pending" | "approved" | "rejected">("all");
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["admin", "payments", status],
+    queryFn: () => fetchList({ data: { status } }),
+    staleTime: 30_000,
+  });
+
+  const t = data?.totals;
+  return (
+    <AdminShell
+      eyebrow="Payments"
+      title="سجل المدفوعات"
+      subtitle="تدفقات الأموال (إيداعات وسحوبات) عبر جميع الوسائل — قابل للفلترة والمراجعة."
+    >
+      {error ? (
+        <div className="mb-6 rounded-xl border border-red-400/20 bg-red-400/[0.06] p-4 text-sm text-red-200">
+          {(error as Error).message}
+        </div>
+      ) : null}
+
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <AdminKpi icon={ArrowUpRight} label="التدفق الداخل" value={fmtMoney(t?.inflow)} tone="positive" />
+        <AdminKpi icon={ArrowDownRight} label="التدفق الخارج" value={fmtMoney(t?.outflow)} />
+        <AdminKpi icon={AlertCircle} label="قيد المراجعة" value={fmtInt(t?.pending)} tone="warning" />
+        <AdminKpi icon={Wallet} label="مرفوضة" value={fmtInt(t?.failed)} tone="critical" />
+      </div>
+
+      <AdminCard title="جميع المدفوعات" icon={Wallet} className="mt-6">
+        <div className="mb-4 flex flex-wrap items-center gap-2">
+          {(["all", "pending", "approved", "rejected"] as const).map((s) => (
+            <button
+              key={s}
+              onClick={() => setStatus(s)}
+              className={`rounded-md border px-3 py-1.5 font-mono text-[10px] uppercase tracking-wider transition ${
+                status === s
+                  ? "border-gold/50 bg-gold/[0.08] text-foreground"
+                  : "border-white/10 text-muted-foreground hover:border-gold/30"
+              }`}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="border-b border-white/10 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+              <tr>
+                <th className="px-2 py-2 text-start">التاريخ</th>
+                <th className="px-2 py-2 text-start">النوع</th>
+                <th className="px-2 py-2 text-start">المستثمر</th>
+                <th className="px-2 py-2 text-start">المبلغ</th>
+                <th className="px-2 py-2 text-start">الطريقة/الوجهة</th>
+                <th className="px-2 py-2 text-start">المرجع</th>
+                <th className="px-2 py-2 text-end">الحالة</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-white/[0.06]">
+              {isLoading ? (
+                Array.from({ length: 6 }).map((_, i) => (
+                  <tr key={i}>
+                    <td colSpan={7} className="px-2 py-3">
+                      <div className="h-6 animate-pulse rounded bg-white/[0.03]" />
+                    </td>
+                  </tr>
+                ))
+              ) : (data?.rows ?? []).length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="px-2 py-8 text-center text-muted-foreground">
+                    لا توجد مدفوعات.
+                  </td>
+                </tr>
+              ) : (
+                (data!.rows as any[]).map((r) => (
+                  <tr key={`${r.kind}-${r.id}`}>
+                    <td className="px-2 py-2.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                      {new Date(r.created_at).toLocaleString()}
+                    </td>
+                    <td className="px-2 py-2.5">
+                      <StatusPill tone={r.kind === "deposit" ? "positive" : "info"}>{r.kind}</StatusPill>
+                    </td>
+                    <td className="px-2 py-2.5">
+                      <div className="font-medium">{r.profile?.display_name ?? "—"}</div>
+                      <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                        {r.profile?.email ?? r.user_id.slice(0, 8)}
+                      </div>
+                    </td>
+                    <td className={`px-2 py-2.5 font-semibold ${r.kind === "deposit" ? "text-emerald-300" : "text-amber-300"}`}>
+                      {r.kind === "deposit" ? "+" : "−"}
+                      {fmtMoney(r.amount, r.currency)}
+                    </td>
+                    <td className="px-2 py-2.5 text-muted-foreground">{r.method}</td>
+                    <td className="px-2 py-2.5 font-mono text-xs text-muted-foreground">{r.reference ?? "—"}</td>
+                    <td className="px-2 py-2.5 text-end">
+                      <StatusPill
+                        tone={
+                          r.status === "approved"
+                            ? "positive"
+                            : r.status === "pending"
+                              ? "warning"
+                              : r.status === "rejected"
+                                ? "critical"
+                                : "neutral"
+                        }
+                      >
+                        {r.status}
+                      </StatusPill>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </AdminCard>
+    </AdminShell>
+  );
+}
