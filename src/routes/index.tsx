@@ -268,10 +268,14 @@ function Features({ c }: { c: LandingContent }) {
         {c.features.items.map((f, i) => {
           const Icon = icons[i] ?? Briefcase;
           return (
-            <div key={f.t} className="glass group rounded-2xl p-6 transition hover:-translate-y-0.5 hover:border-gold/30">
-              <Icon className="h-6 w-6 text-gold" />
-              <h3 className="mt-4 font-display text-lg font-semibold">{f.t}</h3>
+            <div key={f.t} className="group relative overflow-hidden rounded-xl border border-white/10 bg-card/50 p-6 backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-gold/40">
+              <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-md border border-gold/20 bg-gold/[0.06]">
+                <Icon className="h-5 w-5 text-gold" />
+              </div>
+              <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">{String(i + 1).padStart(2, "0")}</p>
+              <h3 className="mt-1 font-display text-lg font-semibold">{f.t}</h3>
               <p className="mt-2 text-sm text-muted-foreground">{f.b}</p>
+              <div className="pointer-events-none absolute inset-x-6 bottom-0 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent opacity-0 transition group-hover:opacity-100" aria-hidden />
             </div>
           );
         })}
