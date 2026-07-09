@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { HKLogo } from "./hk-logo";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,6 @@ import { LanguageSwitcher } from "./language-switcher";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { LayoutDashboard, ShieldCheck } from "lucide-react";
-import { useEffect, useState as useReactState } from "react";
 
 const NAV = [
   { key: "nav.about", to: "/about" },
@@ -27,7 +26,7 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const t = useT();
   const { user } = useAuth();
-  const [isAdmin, setIsAdmin] = useReactState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   useEffect(() => {
     if (!user) return setIsAdmin(false);
     supabase.rpc("has_role", { _user_id: user.id, _role: "admin" }).then(({ data }) => setIsAdmin(Boolean(data)));
