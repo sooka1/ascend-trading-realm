@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { toast } from "sonner";
 import { z } from "zod";
+import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -25,6 +26,7 @@ export const Route = createFileRoute("/auth")({
 });
 
 function Auth() {
+  const { t } = useI18n();
   const [mode, setMode] = useState<"login" | "register">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -107,7 +109,7 @@ function Auth() {
     const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
       if (session && (event === "SIGNED_IN" || event === "USER_UPDATED" || event === "TOKEN_REFRESHED")) {
         clearCooldown();
-        toast.success("Email confirmed");
+        toast.success(t("auth.toast.email_confirmed"));
         navigate({ to: "/dashboard", replace: true });
       }
     });
@@ -117,7 +119,7 @@ function Auth() {
       if (data.session) {
         clearInterval(interval);
         clearCooldown();
-        toast.success("Email confirmed");
+        toast.success(t("auth.toast.email_confirmed"));
         navigate({ to: "/dashboard", replace: true });
       }
     }, 5000);
@@ -125,20 +127,20 @@ function Auth() {
       sub.subscription.unsubscribe();
       clearInterval(interval);
     };
-  }, [pendingEmail, navigate]);
+  }, [pendingEmail, navigate, t]);
 
   const loginSchema = z.object({
-    email: z.string().trim().min(1, "Email is required").email("Enter a valid email").max(255),
-    password: z.string().min(6, "Password must be at least 6 characters").max(72, "Password is too long"),
+    email: z.string().trim().min(1, t("auth.err.email.required")).email(t("auth.err.email.invalid")).max(255),
+    password: z.string().min(6, t("auth.err.password.min")).max(72, t("auth.err.password.long")),
   });
   const registerSchema = loginSchema.extend({
-    fullName: z.string().trim().min(2, "Please enter your full name").max(100, "Name is too long"),
+    fullName: z.string().trim().min(2, t("auth.err.fullname.min")).max(100, t("auth.err.fullname.long")),
     password: z
       .string()
-      .min(8, "Use at least 8 characters")
-      .max(72, "Password is too long")
-      .regex(/[A-Za-z]/, "Include at least one letter")
-      .regex(/[0-9]/, "Include at least one number"),
+      .min(8, t("auth.err.password.min8"))
+      .max(72, t("auth.err.password.long"))
+      .regex(/[A-Za-z]/, t("auth.err.password.letter"))
+      .regex(/[0-9]/, t("auth.err.password.number")),
   });
 
   async function handleSubmit(e: React.FormEvent) {
@@ -162,7 +164,7 @@ function Auth() {
       if (mode === "login") {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        toast.success("Signed in");
+        toast.success(t("auth.toast.signed_in"));
         navigate({ to: "/dashboard", replace: true });
       } else {
         const { data, error } = await supabase.auth.signUp({
@@ -177,7 +179,7 @@ function Auth() {
         // When email confirmation is enabled, no session is returned.
         if (data.session) {
           clearCooldown();
-          toast.success("Account created");
+          toast.success(t("auth.toast.created"));
           navigate({ to: "/dashboard", replace: true });
         } else {
           setPendingEmail(email);
@@ -186,7 +188,7 @@ function Auth() {
         }
       }
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Something went wrong";
+      const message = err instanceof Error ? err.message : t("auth.err.generic");
       setErrors({ form: message });
       toast.error(message);
     } finally {
@@ -206,9 +208,9 @@ function Auth() {
       if (error) throw error;
       setResendState({ loading: false, cooldown: 30, sent: true });
       saveCooldown(pendingEmail, 30);
-      toast.success("Confirmation email sent");
+      toast.success(t("auth.toast.resent"));
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Couldn't resend the email";
+      const message = err instanceof Error ? err.message : t("auth.confirm.resend_error");
       setResendState({ loading: false, cooldown: 0, error: message });
     }
   }
@@ -238,7 +240,7 @@ function Auth() {
         redirect_uri: window.location.origin,
       });
       if (result.error) {
-        toast.error(result.error.message ?? "Google sign-in failed");
+        toast.error(result.error.message ?? t("auth.toast.google_fail"));
         return;
       }
       if (result.redirected) return; // browser navigates away
@@ -256,16 +258,16 @@ function Auth() {
           <Link to="/"><HKLogo size="lg" /></Link>
           <div>
             <h1 className="font-display text-4xl font-bold leading-tight md:text-5xl">
-              Welcome to the <span className="text-gradient">global trading floor.</span>
+              {t("auth.welcome.title")} <span className="text-gradient">{t("auth.welcome.brand")}</span>
             </h1>
             <p className="mt-4 max-w-md text-muted-foreground">
-              One account. Every market. Real prize pools. Join more than 2 million traders competing on HK.
+              {t("auth.welcome.sub")}
             </p>
             <div className="mt-8 grid gap-3">
               {[
-                { icon: Zap, label: "Sub-20ms execution across 10,000+ instruments" },
-                { icon: Trophy, label: "Enter live competitions from your dashboard" },
-                { icon: ShieldCheck, label: "Segregated funds, multi-jurisdiction regulation" },
+                { icon: Zap, label: t("auth.feat.execution") },
+                { icon: Trophy, label: t("auth.feat.competitions") },
+                { icon: ShieldCheck, label: t("auth.feat.regulation") },
               ].map((f) => (
                 <div key={f.label} className="glass flex items-center gap-3 rounded-xl p-3 text-sm">
                   <f.icon className="h-4 w-4 text-gold" />
@@ -280,7 +282,7 @@ function Auth() {
         <div className="mx-auto flex w-full max-w-md items-center">
           <div className="w-full rounded-none border-0 bg-transparent p-0 sm:glass-strong sm:rounded-3xl sm:border sm:p-8">
             <div className="mb-4 flex items-center justify-between lg:hidden">
-              <Link to="/" aria-label="Back to home" className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5">
+              <Link to="/" aria-label={t("auth.back_home")} className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5">
                 <ArrowLeft className="h-4 w-4" />
               </Link>
               <Link to="/"><HKLogo /></Link>
@@ -298,12 +300,10 @@ function Auth() {
             <>
             <div className="mb-4 lg:hidden">
               <h1 className="font-display text-2xl font-bold leading-tight">
-                {mode === "login" ? "Welcome back" : "Open your account"}
+                {mode === "login" ? t("auth.mobile.welcome") : t("auth.mobile.open")}
               </h1>
               <p className="mt-1 text-sm text-muted-foreground">
-                {mode === "login"
-                  ? "Sign in to access your trading terminal."
-                  : "Join in under 5 minutes. No commitment."}
+                {mode === "login" ? t("auth.mobile.welcome.sub") : t("auth.mobile.open.sub")}
               </p>
             </div>
             <div className="grid grid-cols-2 gap-1 rounded-lg bg-white/[0.03] p-1">
@@ -317,7 +317,7 @@ function Auth() {
                     mode === m ? "bg-[var(--gradient-brand)] text-white" : "text-muted-foreground hover:text-foreground",
                   )}
                 >
-                  {m === "login" ? "Log in" : "Open account"}
+                  {m === "login" ? t("auth.tab.login") : t("auth.tab.register")}
                 </button>
               ))}
             </div>
@@ -338,10 +338,10 @@ function Auth() {
               )}
               {mode === "register" && (
                 <div>
-                  <Label htmlFor="fullname">Full name</Label>
+                  <Label htmlFor="fullname">{t("auth.field.fullname")}</Label>
                   <Input
                     id="fullname"
-                    placeholder="Alex Rivera"
+                    placeholder={t("auth.field.fullname.ph")}
                     className={cn("mt-1.5 h-12 bg-white/5 text-base sm:h-10 sm:text-sm", errors.fullName && "border-destructive focus-visible:ring-destructive")}
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
@@ -355,12 +355,12 @@ function Auth() {
                 </div>
               )}
               <div>
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">{t("auth.field.email")}</Label>
                 <Input
                   id="email"
                   type="email"
                   inputMode="email"
-                  placeholder="you@example.com"
+                  placeholder={t("auth.field.email.ph")}
                   className={cn("mt-1.5 h-12 bg-white/5 text-base sm:h-10 sm:text-sm", errors.email && "border-destructive focus-visible:ring-destructive")}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -373,7 +373,7 @@ function Auth() {
                 )}
               </div>
               <div>
-                <Label htmlFor="pw">Password</Label>
+                <Label htmlFor="pw">{t("auth.field.password")}</Label>
                 <div className="relative mt-1.5">
                   <Input
                     id="pw"
@@ -389,7 +389,7 @@ function Auth() {
                   <button
                     type="button"
                     onClick={() => setShowPw((v) => !v)}
-                    aria-label={showPw ? "Hide password" : "Show password"}
+                    aria-label={showPw ? t("auth.field.password.hide") : t("auth.field.password.show")}
                     className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-muted-foreground hover:text-foreground"
                   >
                     {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -399,7 +399,7 @@ function Auth() {
                   <p id="pw-error" className="mt-1.5 text-xs text-destructive">{errors.password}</p>
                 ) : mode === "register" ? (
                   <p id="pw-hint" className="mt-1.5 text-xs text-muted-foreground">
-                    Use 8+ characters with a mix of letters and numbers.
+                    {t("auth.hint.password")}
                   </p>
                 ) : null}
               </div>
@@ -409,7 +409,7 @@ function Auth() {
                 className="h-12 w-full bg-[var(--gradient-brand)] text-base text-white shadow-[var(--shadow-glow)] sm:h-10 sm:text-sm"
               >
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {mode === "login" ? "Log in" : "Create account"}
+                {mode === "login" ? t("auth.btn.login") : t("auth.btn.register")}
               </Button>
 
               {mode === "login" && (
@@ -418,13 +418,13 @@ function Auth() {
                     to="/forgot-password"
                     className="text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
                   >
-                    Forgot your password?
+                    {t("auth.forgot")}
                   </Link>
                 </div>
               )}
 
               <div className="relative py-2 text-center text-xs text-muted-foreground">
-                <span className="relative z-10 bg-transparent px-2">or continue with</span>
+                <span className="relative z-10 bg-transparent px-2">{t("auth.or")}</span>
                 <div className="absolute inset-x-0 top-1/2 h-px bg-white/10" aria-hidden />
               </div>
 
@@ -438,11 +438,11 @@ function Auth() {
                 <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24" aria-hidden>
                   <path fill="#EA4335" d="M12 10.2v3.9h5.4c-.24 1.4-1.66 4.1-5.4 4.1-3.25 0-5.9-2.7-5.9-6s2.65-6 5.9-6c1.85 0 3.09.79 3.8 1.47l2.6-2.5C16.83 3.7 14.7 2.7 12 2.7 6.9 2.7 2.8 6.8 2.8 12s4.1 9.3 9.2 9.3c5.31 0 8.83-3.73 8.83-8.99 0-.6-.07-1.06-.15-1.51H12z"/>
                 </svg>
-                Continue with Google
+                {t("auth.google")}
               </Button>
 
               <p className="pt-2 text-center text-xs text-muted-foreground">
-                By continuing you agree to our Terms and Privacy Policy.
+                {t("auth.terms")}
               </p>
             </form>
             </>
@@ -467,6 +467,7 @@ function ConfirmEmailPanel({
   onChangeEmail: () => void;
   state: { loading: boolean; cooldown: number; error?: string; sent?: boolean };
 }) {
+  const { t } = useI18n();
   return (
     <div className="space-y-6">
       <div className="flex flex-col items-center text-center">
@@ -474,15 +475,15 @@ function ConfirmEmailPanel({
           <MailCheck className="h-8 w-8 text-white" />
         </div>
         <h1 className="mt-5 font-display text-2xl font-bold leading-tight sm:text-3xl">
-          Confirm your email
+          {t("auth.confirm.title")}
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          We sent a confirmation link to
+          {t("auth.confirm.sent")}
           <br />
           <span className="font-medium text-foreground">{email}</span>
         </p>
         <p className="mt-3 text-xs text-muted-foreground">
-          Click the link in that email to activate your account. It expires in 24 hours.
+          {t("auth.confirm.expires")}
         </p>
       </div>
 
@@ -491,7 +492,7 @@ function ConfirmEmailPanel({
           role="status"
           className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-3 text-center text-xs text-emerald-200"
         >
-          A new confirmation email is on the way.
+          {t("auth.confirm.resent")}
         </div>
       )}
       {state.error && (
@@ -512,7 +513,9 @@ function ConfirmEmailPanel({
           className="h-12 w-full bg-[var(--gradient-brand)] text-base text-white shadow-[var(--shadow-glow)] sm:h-10 sm:text-sm"
         >
           {state.loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {state.cooldown > 0 ? `Resend in ${state.cooldown}s` : "Resend confirmation email"}
+          {state.cooldown > 0
+            ? t("auth.confirm.resend_in").replace("{n}", String(state.cooldown))
+            : t("auth.confirm.resend")}
         </Button>
         {state.cooldown > 0 && (
           <p
@@ -520,8 +523,8 @@ function ConfirmEmailPanel({
             aria-live="polite"
             className="text-center text-xs text-muted-foreground"
           >
-            You can request another email in{" "}
-            <span className="font-medium text-foreground tabular-nums">{state.cooldown}s</span>.
+            {t("auth.confirm.timer_a")}{" "}
+            <span className="font-medium text-foreground tabular-nums">{state.cooldown}{t("auth.confirm.timer_b")}</span>
           </p>
         )}
         <Button
@@ -530,7 +533,7 @@ function ConfirmEmailPanel({
           onClick={onChangeEmail}
           className="h-12 w-full border-white/15 bg-white/5 text-base sm:h-10 sm:text-sm"
         >
-          Change email address
+          {t("auth.confirm.change_email")}
         </Button>
         <Button
           type="button"
@@ -538,14 +541,14 @@ function ConfirmEmailPanel({
           onClick={onBack}
           className="h-12 w-full border-white/15 bg-white/5 text-base sm:h-10 sm:text-sm"
         >
-          Back to sign in
+          {t("auth.confirm.back")}
         </Button>
       </div>
 
       <p className="text-center text-xs text-muted-foreground">
-        Wrong email?{" "}
+        {t("auth.confirm.wrong_email")}{" "}
         <button type="button" onClick={onChangeEmail} className="text-foreground underline-offset-4 hover:underline">
-          Use a different address
+          {t("auth.confirm.use_diff")}
         </button>
       </p>
     </div>
