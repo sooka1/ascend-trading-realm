@@ -67,8 +67,13 @@ export function AnimatedChart() {
 function generateSeries(n: number, start: number) {
   const out: number[] = [];
   let v = start;
+  // Deterministic pseudo-random so SSR and client render identical paths.
+  const rand = (i: number) => {
+    const x = Math.sin(i * 12.9898 + 78.233) * 43758.5453;
+    return x - Math.floor(x);
+  };
   for (let i = 0; i < n; i++) {
-    v += (Math.sin(i / 5) + Math.cos(i / 3)) * 0.6 + (i / n) * 0.6 + (Math.random() - 0.5) * 0.4;
+    v += (Math.sin(i / 5) + Math.cos(i / 3)) * 0.6 + (i / n) * 0.6 + (rand(i) - 0.5) * 0.4;
     out.push(v);
   }
   return out;
