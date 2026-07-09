@@ -12,6 +12,8 @@ import {
   Info,
   Filter,
   Clock,
+  History,
+  User as UserIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SECURITY_SNAPSHOT, type SecurityFinding, type Severity, type FindingStatus } from "@/lib/security-snapshot";
@@ -164,6 +166,9 @@ function SecurityPanel() {
           )}
         </div>
 
+        {/* Global audit log */}
+        <AuditLog findings={findings} />
+
         {/* Scanner strip */}
         <div className="mt-10">
           <h2 className="mb-3 text-sm font-semibold text-muted-foreground">أدوات الفحص المشغّلة</h2>
@@ -178,6 +183,50 @@ function SecurityPanel() {
         </div>
       </section>
     </PageShell>
+  );
+}
+
+function AuditLog({ findings }: { findings: SecurityFinding[] }) {
+  const entries = useMemo(() => {
+    const rows = findings.flatMap((f) =>
+      (f.audit ?? []).map((a) => ({ ...a, findingId: f.id, findingTitle: f.title, severity: f.severity })),
+    );
+    return rows.sort((a, b) => (a.at < b.at ? 1 : -1));
+  }, [findings]);
+
+  if (entries.length === 0) return null;
+
+  return (
+    <div className="mt-10">
+      <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-muted-foreground">
+        <History className="h-4 w-4" /> سجل التدقيق — تطبيق الإصلاحات
+      </h2>
+      <ol className="glass space-y-3 rounded-2xl border border-white/10 p-4">
+        {entries.map((e, i) => (
+          <li key={`${e.findingId}-${i}`} className="border-b border-white/5 pb-3 last:border-0 last:pb-0">
+            <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+              <Clock className="h-3.5 w-3.5" />
+              <span className="tabular-nums text-foreground/90">
+                {new Date(e.at).toLocaleString("ar-EG")}
+              </span>
+              <span>·</span>
+              <UserIcon className="h-3.5 w-3.5" />
+              <span className="font-mono text-foreground/90">{e.by}</span>
+              <span>·</span>
+              <span className={cn("rounded-full border px-2 py-0.5 text-[10px]", SEV_META[e.severity].badge)}>
+                {SEV_META[e.severity].label}
+              </span>
+            </div>
+            <p className="mt-1 text-sm font-medium">{e.action} — <span className="text-muted-foreground">{e.findingTitle}</span></p>
+            <ul className="mt-1.5 list-disc space-y-0.5 ps-5 text-xs text-muted-foreground">
+              {e.changes.map((c, j) => (
+                <li key={j}>{c}</li>
+              ))}
+            </ul>
+          </li>
+        ))}
+      </ol>
+    </div>
   );
 }
 
@@ -211,6 +260,32 @@ function FindingCard({ f }: { f: SecurityFinding }) {
                 <CheckCircle2 className="h-3.5 w-3.5" /> الإصلاح المقترح
               </p>
               <p className="text-foreground/90">{f.remediation}</p>
+              {f.audit && f.audit.length > 0 && (
+                <div className="mt-3 border-t border-emerald-500/15 pt-3">
+                  <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-emerald-300">
+                    <History className="h-3.5 w-3.5" /> سجل التدقيق لهذا الإصلاح
+                  </p>
+                  <ol className="space-y-2">
+                    {f.audit.map((a, i) => (
+                      <li key={i} className="rounded-md border border-white/10 bg-white/[0.02] p-2">
+                        <div className="flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground">
+                          <Clock className="h-3 w-3" />
+                          <span className="tabular-nums">{new Date(a.at).toLocaleString("ar-EG")}</span>
+                          <span>·</span>
+                          <UserIcon className="h-3 w-3" />
+                          <span className="font-mono">{a.by}</span>
+                        </div>
+                        <p className="mt-1 text-xs font-medium text-foreground/90">{a.action}</p>
+                        <ul className="mt-1 list-disc space-y-0.5 ps-4 text-[11px] text-muted-foreground">
+                          {a.changes.map((c, j) => (
+                            <li key={j}>{c}</li>
+                          ))}
+                        </ul>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              )}
             </div>
           )}
         </div>
