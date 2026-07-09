@@ -2,6 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageShell, PageHero } from "@/components/page-shell";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2 } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
+import { PORTFOLIOS } from "@/lib/portfolios-t";
 
 export const Route = createFileRoute("/portfolios")({
   head: () => ({
@@ -15,76 +17,42 @@ export const Route = createFileRoute("/portfolios")({
   component: PortfoliosPage,
 });
 
-const tiers = [
-  {
-    name: "Conservative",
-    target: "6 – 10%",
-    min: "$25,000",
-    risk: "Low",
-    features: [
-      "Capital preservation focus",
-      "Fixed-income & income overlays",
-      "Low correlation to equity markets",
-      "Monthly performance reporting",
-    ],
-  },
-  {
-    name: "Balanced",
-    target: "10 – 16%",
-    min: "$100,000",
-    risk: "Moderate",
-    highlight: true,
-    features: [
-      "Multi-asset diversification",
-      "Active currency & gold overlay",
-      "Volatility-adjusted position sizing",
-      "Bi-weekly performance updates",
-    ],
-  },
-  {
-    name: "Growth",
-    target: "16 – 24%",
-    min: "$250,000",
-    risk: "Higher",
-    features: [
-      "Higher exposure to growth assets",
-      "Tactical single-name equities",
-      "Optional digital-asset overlay",
-      "Weekly performance updates",
-    ],
-  },
-];
+const TARGETS = ["6 – 10%", "10 – 16%", "16 – 24%"];
+const MINS = ["$25,000", "$100,000", "$250,000"];
+const HIGHLIGHT = [false, true, false];
 
 function PortfoliosPage() {
+  const { lang } = useI18n();
+  const c = PORTFOLIOS[lang];
   return (
     <PageShell>
       <PageHero
-        eyebrow="Managed Portfolios"
-        title={<>Three strategies. One standard of care.</>}
-        subtitle="Every portfolio is managed with the same discipline — you choose the risk profile that fits your objectives."
+        eyebrow={c.eyebrow}
+        title={<>{c.title}</>}
+        subtitle={c.subtitle}
       />
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="grid gap-5 lg:grid-cols-3">
-          {tiers.map((p) => (
+          {c.tiers.map((p, i) => (
             <div
               key={p.name}
-              className={`glass-strong rounded-3xl p-8 ${p.highlight ? "ring-1 ring-gold/40" : ""}`}
+              className={`glass-strong rounded-3xl p-8 ${HIGHLIGHT[i] ? "ring-1 ring-gold/40" : ""}`}
             >
-              {p.highlight && (
+              {HIGHLIGHT[i] && (
                 <span className="mb-3 inline-block rounded-full bg-gold/15 px-3 py-1 text-xs text-gold">
-                  Most popular
+                  {c.popular}
                 </span>
               )}
               <h3 className="font-display text-2xl font-semibold">{p.name}</h3>
-              <p className="mt-2 text-sm text-muted-foreground">Target annual return</p>
-              <p className="font-display text-5xl font-semibold text-gradient">{p.target}</p>
+              <p className="mt-2 text-sm text-muted-foreground">{c.target}</p>
+              <p className="font-display text-5xl font-semibold text-gradient">{TARGETS[i]}</p>
               <dl className="mt-6 grid grid-cols-2 gap-3 text-sm">
                 <div>
-                  <dt className="text-muted-foreground">Minimum</dt>
-                  <dd className="font-medium">{p.min}</dd>
+                  <dt className="text-muted-foreground">{c.minimum}</dt>
+                  <dd className="font-medium">{MINS[i]}</dd>
                 </div>
                 <div>
-                  <dt className="text-muted-foreground">Risk profile</dt>
+                  <dt className="text-muted-foreground">{c.risk}</dt>
                   <dd className="font-medium">{p.risk}</dd>
                 </div>
               </dl>
@@ -97,15 +65,12 @@ function PortfoliosPage() {
                 ))}
               </ul>
               <Button asChild className="mt-8 w-full bg-[var(--gradient-gold)] font-semibold text-background">
-                <Link to="/auth">Open this portfolio</Link>
+                <Link to="/auth">{c.cta}</Link>
               </Button>
             </div>
           ))}
         </div>
-        <p className="mt-10 max-w-3xl text-xs text-muted-foreground">
-          Target returns are illustrative and not guaranteed. Investing involves risk, including possible loss of
-          principal. Past performance is not indicative of future results.
-        </p>
+        <p className="mt-10 max-w-3xl text-xs text-muted-foreground">{c.disclaimer}</p>
       </section>
     </PageShell>
   );
