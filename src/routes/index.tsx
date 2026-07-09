@@ -268,10 +268,14 @@ function Features({ c }: { c: LandingContent }) {
         {c.features.items.map((f, i) => {
           const Icon = icons[i] ?? Briefcase;
           return (
-            <div key={f.t} className="glass group rounded-2xl p-6 transition hover:-translate-y-0.5 hover:border-gold/30">
-              <Icon className="h-6 w-6 text-gold" />
-              <h3 className="mt-4 font-display text-lg font-semibold">{f.t}</h3>
+            <div key={f.t} className="group relative overflow-hidden rounded-xl border border-white/10 bg-card/50 p-6 backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-gold/40">
+              <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-md border border-gold/20 bg-gold/[0.06]">
+                <Icon className="h-5 w-5 text-gold" />
+              </div>
+              <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">{String(i + 1).padStart(2, "0")}</p>
+              <h3 className="mt-1 font-display text-lg font-semibold">{f.t}</h3>
               <p className="mt-2 text-sm text-muted-foreground">{f.b}</p>
+              <div className="pointer-events-none absolute inset-x-6 bottom-0 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent opacity-0 transition group-hover:opacity-100" aria-hidden />
             </div>
           );
         })}
@@ -297,19 +301,30 @@ function SolutionsPreview({ c }: { c: LandingContent }) {
         </div>
         <div className="mt-10 grid gap-5 lg:grid-cols-3">
           {c.solutions.tiers.map((p, i) => (
-            <div key={p.name} className={`glass-strong rounded-3xl p-8 ${i === 1 ? "ring-1 ring-gold/40" : ""}`}>
-              {i === 1 && <span className="mb-3 inline-block rounded-full bg-gold/15 px-3 py-1 text-xs text-gold">{c.solutions.popular}</span>}
+            <div
+              key={p.name}
+              className={`group relative overflow-hidden rounded-2xl border bg-card/60 p-8 backdrop-blur-xl transition hover:-translate-y-0.5 ${
+                i === 1 ? "border-gold/40 shadow-[0_0_40px_-12px_rgba(201,168,76,0.35)]" : "border-white/10"
+              }`}
+            >
+              {i === 1 && (
+                <span className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-gold/30 bg-gold/10 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-gold">
+                  <span className="h-1.5 w-1.5 rounded-full bg-gold" />
+                  {c.solutions.popular}
+                </span>
+              )}
               <h3 className="font-display text-2xl font-semibold">{p.name}</h3>
-              <p className="mt-2 text-sm text-muted-foreground">{c.solutions.target}</p>
-              <p className="font-display text-4xl font-semibold text-gradient">{targets[i]}</p>
+              <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.18em] text-gold/80">{c.solutions.target}</p>
+              <p className="mt-1 font-mono text-4xl font-medium tracking-tight text-foreground tabular-nums">{targets[i]}</p>
               <dl className="mt-6 space-y-3 text-sm">
                 <Row k={c.solutions.risk} v={p.risk} />
                 <Row k={c.solutions.min} v={mins[i]} />
                 <Row k={c.solutions.allocation} v={p.allocation} />
               </dl>
-              <Button asChild className="mt-6 w-full bg-[var(--gradient-gold)] font-semibold text-background hover:opacity-95">
+              <Button asChild className="mt-6 w-full rounded-sm bg-gold font-semibold text-background transition hover:bg-[oklch(0.88_0.11_90)]">
                 <Link to="/auth">{c.solutions.open}</Link>
               </Button>
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent" aria-hidden />
             </div>
           ))}
         </div>
@@ -338,9 +353,9 @@ function PerformanceBand({ c }: { c: LandingContent }) {
     <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
       <div className="grid gap-6 rounded-3xl border border-white/5 bg-gradient-to-br from-white/[0.03] to-transparent p-10 md:grid-cols-4">
         {stats.map((s) => (
-          <div key={s.k}>
-            <p className="text-xs uppercase tracking-widest text-muted-foreground">{s.k}</p>
-            <p className="mt-2 font-display text-4xl font-semibold text-foreground">
+          <div key={s.k} className="border-l border-white/5 pl-6 first:border-l-0 first:pl-0">
+            <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-gold/80">{s.k}</p>
+            <p className="mt-2 font-mono text-4xl font-medium tracking-tight text-foreground tabular-nums">
               <AnimatedCounter value={s.n} prefix={s.prefix ?? ""} suffix={s.suffix} decimals={s.decimals} />
             </p>
           </div>
