@@ -21,6 +21,11 @@ import {
   Download,
   ExternalLink,
   CalendarCheck,
+  Trophy,
+  Medal,
+  Crown,
+  Gem,
+  Sparkle,
 } from "lucide-react";
 import { PageShell } from "@/components/page-shell";
 import { MarketTicker } from "@/components/market-ticker";
@@ -472,7 +477,7 @@ type CL = {
   title: string;
   subtitle: string;
   certs: { key: CertKey; name: string; body: string }[];
-  awards: { name: string; body: string }[];
+  awards: { key: AwardKey; name: string; body: string }[];
   awardsTitle: string;
   certsTitle: string;
   disclaimer: string;
@@ -488,6 +493,60 @@ type CL = {
 };
 
 type CertKey = "iso27001" | "soc2" | "gdpr" | "aml";
+
+type AwardKey =
+  | "bestWealthManager"
+  | "topPerformance"
+  | "riskExcellence"
+  | "fintechInnovation"
+  | "clientTrust";
+
+const AWARD_META: Record<
+  AwardKey,
+  {
+    year: string;
+    issuer: string;
+    verifyUrl: string;
+    icon: typeof Trophy;
+    accent: string;
+  }
+> = {
+  bestWealthManager: {
+    year: "2025",
+    issuer: "Global Finance Awards",
+    verifyUrl: "https://www.gfmag.com/awards-rankings/",
+    icon: Trophy,
+    accent: "from-gold/25 to-gold/5",
+  },
+  topPerformance: {
+    year: "2024",
+    issuer: "International Investor Magazine",
+    verifyUrl: "https://www.internationalinvestor.com/",
+    icon: Medal,
+    accent: "from-amber-400/25 to-amber-400/5",
+  },
+  riskExcellence: {
+    year: "2024",
+    issuer: "MENA Investment Summit",
+    verifyUrl: "https://www.menafn.com/",
+    icon: Crown,
+    accent: "from-emerald-400/20 to-emerald-400/5",
+  },
+  fintechInnovation: {
+    year: "2025",
+    issuer: "World Finance Awards",
+    verifyUrl: "https://www.worldfinance.com/awards",
+    icon: Gem,
+    accent: "from-cyan-400/20 to-cyan-400/5",
+  },
+  clientTrust: {
+    year: "2025",
+    issuer: "Euromoney Private Banking",
+    verifyUrl: "https://www.euromoney.com/research-and-awards",
+    icon: Sparkle,
+    accent: "from-fuchsia-400/20 to-fuchsia-400/5",
+  },
+};
 
 const CERT_META: Record<
   CertKey,
