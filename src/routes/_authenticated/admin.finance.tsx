@@ -102,6 +102,15 @@ function AdminFinance() {
       metadata: { amount: row.amount, currency: row.currency },
     });
     if (aErr) toast.error("تعذّر تسجيل التدقيق: " + aErr.message);
+    const actionLabel = status === "approved" ? "اعتماد" : "رفض";
+    const kindLabel = kind === "deposits" ? "الإيداع" : "السحب";
+    const amountStr = `${Number(row.amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${row.currency}`;
+    const { error: nErr } = await supabase.from("notifications").insert({
+      user_id: row.user_id,
+      title: `${status === "approved" ? "تم اعتماد" : "تم رفض"} طلب ${kindLabel}`,
+      body: `${actionLabel} طلب ${kindLabel} بمبلغ ${amountStr}.${reason?.trim() ? ` السبب: ${reason.trim()}` : ""}`,
+    });
+    if (nErr) toast.error("تعذّر إرسال الإشعار: " + nErr.message);
     toast.success(status === "approved" ? "تم اعتماد الطلب" : "تم رفض الطلب");
     await load();
   }
