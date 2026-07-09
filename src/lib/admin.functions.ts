@@ -585,6 +585,84 @@ export const listInvoicesAdmin = createServerFn({ method: "GET" })
     return { rows, totals };
   });
 
+// ---------------------------------------------------------------------------
+// User lifecycle management — invite, suspend, activate, reset password.
+// ---------------------------------------------------------------------------
+
+export const inviteUser = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(
+    (data: { email: string; displayName?: string; role?: AppRole }) => data,
+  )
+  .handler(async ({ data, context }) => {
+    const auth = await assertAdmin(context);
+    if (!auth.ok) throw new Error("Forbidden");
+    const email = data.email.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error("Invalid email");
+    const role = data.role ?? "user";
+    const elevated: AppRole[] = ["super_admin", "admin"];
+    if (elevated.includes(role) && !auth.isSuper) {
+      throw new Error("Only super_admin can invite admin roles");
+    }
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: invited, error } = await supabaseAdmin.auth.admin.inviteUserByEmail(email, {
+      data: data.displayName ? { display_name: data.displayName } : undefined,
+    });
+    if (error) throw new Error(error.message);
+    const uid = invited?.user?.id;
+    if (uid && role !== "user") {
+      await supabaseAdmin
+        .from("user_roles")
+        .upsert({ user_id: uid, role }, { onConflict: "user_id,role" });
+    }
+    return { ok: true, userId: uid ?? null };
+  });
+
+export const setUserBanned = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { userId: string; banned: boolean }) => data)
+  .handler(async ({ data, context }) => {
+    const auth = await assertAdmin(context);
+    if (!auth.ok) throw new Error("Forbidden");
+    if (data.userId === context.userId) throw new Error("Cannot suspend your own account");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.auth.admin.updateUserById(data.userId, {
+      ban_duration: data.banned ? "876000h" : "none",
+    } as any);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const sendPasswordReset = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { email: string }) => data)
+  .handler(async ({ data, context }) => {
+    const auth = await assertAdmin(context);
+    if (!auth.ok) throw new Error("Forbidden");
+    const email = data.email.trim().toLowerCase();
+    if (!email) throw new Error("Email required");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.auth.admin.generateLink({
+      type: "recovery",
+      email,
+    });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const deleteUserAccount = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { userId: string }) => data)
+  .handler(async ({ data, context }) => {
+    const auth = await assertAdmin(context);
+    if (!auth.ok || !auth.isSuper) throw new Error("Only super_admin can delete users");
+    if (data.userId === context.userId) throw new Error("Cannot delete your own account");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.auth.admin.deleteUser(data.userId);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
 export const listPaymentsAdmin = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: { status?: string } | undefined) => data ?? {})
