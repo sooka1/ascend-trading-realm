@@ -503,7 +503,8 @@ function AffiliateBanner() {
 
 /* ---------------- MOBILE APPS ---------------- */
 function MobileApps() {
-  const h = useHome().mobile;
+  const home = useHome();
+  const h = home.mobile;
   return (
     <Section
       eyebrow={h.eyebrow}
@@ -527,8 +528,8 @@ function MobileApps() {
               <div className="text-xs text-bull">+$1,214 {h.today}</div>
               <MiniChart />
               <div className="mt-auto grid grid-cols-2 gap-2">
-                <div className="rounded-lg bg-bull/15 py-2 text-center text-xs font-medium text-bull">{useHome().common.buy}</div>
-                <div className="rounded-lg bg-bear/15 py-2 text-center text-xs font-medium text-bear">{useHome().common.sell}</div>
+                <div className="rounded-lg bg-bull/15 py-2 text-center text-xs font-medium text-bull">{home.common.buy}</div>
+                <div className="rounded-lg bg-bear/15 py-2 text-center text-xs font-medium text-bear">{home.common.sell}</div>
               </div>
             </div>
           </div>
