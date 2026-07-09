@@ -146,6 +146,15 @@ function Auth() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setErrors({});
+    // Client-side rate limit: 5 attempts per minute per email.
+    const key = `auth:${mode}:${email.toLowerCase().trim()}`;
+    const { rateLimit } = await import("@/lib/rate-limit");
+    const limiter = rateLimit(key, { max: 5, windowMs: 60_000 });
+    if (!limiter.tryConsume()) {
+      const secs = Math.ceil(limiter.resetIn() / 1000);
+      toast.error(`محاولات كثيرة. حاول بعد ${secs} ثانية.`);
+      return;
+    }
     const parsed =
       mode === "login"
         ? loginSchema.safeParse({ email, password })
