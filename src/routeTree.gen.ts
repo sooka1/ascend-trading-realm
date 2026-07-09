@@ -9,7 +9,14 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TermsRouteImport } from './routes/terms'
+import { Route as SolutionsRouteImport } from './routes/solutions'
+import { Route as RiskRouteImport } from './routes/risk'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as PortfoliosRouteImport } from './routes/portfolios'
+import { Route as PerformanceRouteImport } from './routes/performance'
 import { Route as MarketsRouteImport } from './routes/markets'
+import { Route as LegalRouteImport } from './routes/legal'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as EducationRouteImport } from './routes/education'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -19,9 +26,44 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SolutionsRoute = SolutionsRouteImport.update({
+  id: '/solutions',
+  path: '/solutions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RiskRoute = RiskRouteImport.update({
+  id: '/risk',
+  path: '/risk',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortfoliosRoute = PortfoliosRouteImport.update({
+  id: '/portfolios',
+  path: '/portfolios',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PerformanceRoute = PerformanceRouteImport.update({
+  id: '/performance',
+  path: '/performance',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MarketsRoute = MarketsRouteImport.update({
   id: '/markets',
   path: '/markets',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LegalRoute = LegalRouteImport.update({
+  id: '/legal',
+  path: '/legal',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FaqRoute = FaqRouteImport.update({
@@ -71,7 +113,14 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/education': typeof EducationRoute
   '/faq': typeof FaqRoute
+  '/legal': typeof LegalRoute
   '/markets': typeof MarketsRoute
+  '/performance': typeof PerformanceRoute
+  '/portfolios': typeof PortfoliosRoute
+  '/privacy': typeof PrivacyRoute
+  '/risk': typeof RiskRoute
+  '/solutions': typeof SolutionsRoute
+  '/terms': typeof TermsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
 }
 export interface FileRoutesByTo {
@@ -81,7 +130,14 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/education': typeof EducationRoute
   '/faq': typeof FaqRoute
+  '/legal': typeof LegalRoute
   '/markets': typeof MarketsRoute
+  '/performance': typeof PerformanceRoute
+  '/portfolios': typeof PortfoliosRoute
+  '/privacy': typeof PrivacyRoute
+  '/risk': typeof RiskRoute
+  '/solutions': typeof SolutionsRoute
+  '/terms': typeof TermsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
 }
 export interface FileRoutesById {
@@ -93,7 +149,14 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/education': typeof EducationRoute
   '/faq': typeof FaqRoute
+  '/legal': typeof LegalRoute
   '/markets': typeof MarketsRoute
+  '/performance': typeof PerformanceRoute
+  '/portfolios': typeof PortfoliosRoute
+  '/privacy': typeof PrivacyRoute
+  '/risk': typeof RiskRoute
+  '/solutions': typeof SolutionsRoute
+  '/terms': typeof TermsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
 }
 export interface FileRouteTypes {
@@ -105,7 +168,14 @@ export interface FileRouteTypes {
     | '/contact'
     | '/education'
     | '/faq'
+    | '/legal'
     | '/markets'
+    | '/performance'
+    | '/portfolios'
+    | '/privacy'
+    | '/risk'
+    | '/solutions'
+    | '/terms'
     | '/dashboard'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -115,7 +185,14 @@ export interface FileRouteTypes {
     | '/contact'
     | '/education'
     | '/faq'
+    | '/legal'
     | '/markets'
+    | '/performance'
+    | '/portfolios'
+    | '/privacy'
+    | '/risk'
+    | '/solutions'
+    | '/terms'
     | '/dashboard'
   id:
     | '__root__'
@@ -126,7 +203,14 @@ export interface FileRouteTypes {
     | '/contact'
     | '/education'
     | '/faq'
+    | '/legal'
     | '/markets'
+    | '/performance'
+    | '/portfolios'
+    | '/privacy'
+    | '/risk'
+    | '/solutions'
+    | '/terms'
     | '/_authenticated/dashboard'
   fileRoutesById: FileRoutesById
 }
@@ -138,16 +222,72 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   EducationRoute: typeof EducationRoute
   FaqRoute: typeof FaqRoute
+  LegalRoute: typeof LegalRoute
   MarketsRoute: typeof MarketsRoute
+  PerformanceRoute: typeof PerformanceRoute
+  PortfoliosRoute: typeof PortfoliosRoute
+  PrivacyRoute: typeof PrivacyRoute
+  RiskRoute: typeof RiskRoute
+  SolutionsRoute: typeof SolutionsRoute
+  TermsRoute: typeof TermsRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/solutions': {
+      id: '/solutions'
+      path: '/solutions'
+      fullPath: '/solutions'
+      preLoaderRoute: typeof SolutionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/risk': {
+      id: '/risk'
+      path: '/risk'
+      fullPath: '/risk'
+      preLoaderRoute: typeof RiskRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/portfolios': {
+      id: '/portfolios'
+      path: '/portfolios'
+      fullPath: '/portfolios'
+      preLoaderRoute: typeof PortfoliosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/performance': {
+      id: '/performance'
+      path: '/performance'
+      fullPath: '/performance'
+      preLoaderRoute: typeof PerformanceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/markets': {
       id: '/markets'
       path: '/markets'
       fullPath: '/markets'
       preLoaderRoute: typeof MarketsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/legal': {
+      id: '/legal'
+      path: '/legal'
+      fullPath: '/legal'
+      preLoaderRoute: typeof LegalRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/faq': {
@@ -228,7 +368,14 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   EducationRoute: EducationRoute,
   FaqRoute: FaqRoute,
+  LegalRoute: LegalRoute,
   MarketsRoute: MarketsRoute,
+  PerformanceRoute: PerformanceRoute,
+  PortfoliosRoute: PortfoliosRoute,
+  PrivacyRoute: PrivacyRoute,
+  RiskRoute: RiskRoute,
+  SolutionsRoute: SolutionsRoute,
+  TermsRoute: TermsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
