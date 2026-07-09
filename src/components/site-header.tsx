@@ -8,7 +8,8 @@ import { useT } from "@/lib/i18n";
 import { LanguageSwitcher } from "./language-switcher";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
-import { LayoutDashboard } from "lucide-react";
+import { LayoutDashboard, ShieldCheck } from "lucide-react";
+import { useEffect, useState as useReactState } from "react";
 
 const NAV = [
   { key: "nav.about", to: "/about" },
@@ -26,6 +27,11 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const t = useT();
   const { user } = useAuth();
+  const [isAdmin, setIsAdmin] = useReactState(false);
+  useEffect(() => {
+    if (!user) return setIsAdmin(false);
+    supabase.rpc("has_role", { _user_id: user.id, _role: "admin" }).then(({ data }) => setIsAdmin(Boolean(data)));
+  }, [user]);
 
   async function handleSignOut() {
     await supabase.auth.signOut();
@@ -63,6 +69,11 @@ export function SiteHeader() {
               <Button variant="ghost" asChild>
                 <Link to="/investor">Investor</Link>
               </Button>
+              {isAdmin && (
+                <Button variant="ghost" asChild>
+                  <Link to="/admin/finance"><ShieldCheck className="mr-2 h-4 w-4" /> Admin</Link>
+                </Button>
+              )}
               <Button variant="outline" className="border-white/15" onClick={handleSignOut}>
                 Sign out
               </Button>
