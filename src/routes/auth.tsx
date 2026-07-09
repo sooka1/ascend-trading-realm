@@ -106,6 +106,7 @@ function Auth() {
     if (!pendingEmail) return;
     const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
       if (session && (event === "SIGNED_IN" || event === "USER_UPDATED" || event === "TOKEN_REFRESHED")) {
+        clearCooldown();
         toast.success("Email confirmed");
         navigate({ to: "/dashboard", replace: true });
       }
@@ -115,6 +116,7 @@ function Auth() {
       const { data } = await supabase.auth.getSession();
       if (data.session) {
         clearInterval(interval);
+        clearCooldown();
         toast.success("Email confirmed");
         navigate({ to: "/dashboard", replace: true });
       }
