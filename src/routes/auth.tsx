@@ -141,6 +141,15 @@ function Auth() {
     setErrors({});
   }
 
+  function changeEmail() {
+    setPendingEmail(null);
+    setEmail("");
+    setPassword("");
+    setMode("register");
+    setErrors({});
+    setResendState({ loading: false, cooldown: 0 });
+  }
+
   async function handleGoogle() {
     setLoading(true);
     try {
@@ -201,6 +210,7 @@ function Auth() {
                 email={pendingEmail}
                 onResend={handleResend}
                 onBack={resetToLogin}
+                onChangeEmail={changeEmail}
                 state={resendState}
               />
             ) : (
@@ -367,11 +377,13 @@ function ConfirmEmailPanel({
   email,
   onResend,
   onBack,
+  onChangeEmail,
   state,
 }: {
   email: string;
   onResend: () => void;
   onBack: () => void;
+  onChangeEmail: () => void;
   state: { loading: boolean; cooldown: number; error?: string; sent?: boolean };
 }) {
   return (
@@ -424,6 +436,14 @@ function ConfirmEmailPanel({
         <Button
           type="button"
           variant="outline"
+          onClick={onChangeEmail}
+          className="h-12 w-full border-white/15 bg-white/5 text-base sm:h-10 sm:text-sm"
+        >
+          Change email address
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
           onClick={onBack}
           className="h-12 w-full border-white/15 bg-white/5 text-base sm:h-10 sm:text-sm"
         >
@@ -433,7 +453,7 @@ function ConfirmEmailPanel({
 
       <p className="text-center text-xs text-muted-foreground">
         Wrong email?{" "}
-        <button type="button" onClick={onBack} className="text-foreground underline-offset-4 hover:underline">
+        <button type="button" onClick={onChangeEmail} className="text-foreground underline-offset-4 hover:underline">
           Use a different address
         </button>
       </p>
