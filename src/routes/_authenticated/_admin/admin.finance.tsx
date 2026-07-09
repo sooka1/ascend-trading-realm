@@ -3,7 +3,7 @@ import { Fragment, useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { canViewSecurityAudit } from "@/lib/security-audit.functions";
-import { PageShell } from "@/components/page-shell";
+import { AdminShell, AdminCard } from "@/components/admin-shell";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { CheckCircle2, XCircle, Clock, ShieldAlert, History } from "lucide-react";
@@ -117,25 +117,20 @@ function AdminFinance() {
 
   if (authorized === null || loading) {
     return (
-      <PageShell bare>
-        <section className="mx-auto max-w-7xl px-4 py-16 text-sm text-muted-foreground">جارٍ التحميل…</section>
-      </PageShell>
+      <AdminShell eyebrow="Financial Operations" title="طلبات مالية">
+        <div className="text-sm text-muted-foreground">جارٍ التحميل…</div>
+      </AdminShell>
     );
   }
 
   if (!authorized) {
     return (
-      <PageShell bare>
-        <section className="mx-auto max-w-3xl px-4 py-16">
-          <div className="glass flex items-start gap-3 rounded-3xl p-6">
-            <ShieldAlert className="mt-1 h-5 w-5 text-amber-400" />
-            <div>
-              <h1 className="font-display text-2xl font-semibold">غير مصرّح</h1>
-              <p className="mt-2 text-sm text-muted-foreground">هذه الصفحة متاحة فقط للمستخدمين ذوي دور admin.</p>
-            </div>
-          </div>
-        </section>
-      </PageShell>
+      <AdminShell eyebrow="Financial Operations" title="غير مصرّح">
+        <div className="flex items-start gap-3 rounded-xl border border-amber-400/30 bg-amber-400/[0.06] p-6">
+          <ShieldAlert className="mt-1 h-5 w-5 text-amber-400" />
+          <p className="text-sm text-muted-foreground">هذه الصفحة متاحة فقط للمستخدمين ذوي دور admin.</p>
+        </div>
+      </AdminShell>
     );
   }
 
@@ -148,13 +143,13 @@ function AdminFinance() {
   };
 
   return (
-    <PageShell bare>
-      <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-        <p className="text-xs uppercase tracking-widest text-gold">Admin</p>
-        <h1 className="mt-1 font-display text-3xl font-semibold md:text-4xl">إدارة طلبات الإيداع والسحب</h1>
-        <p className="mt-2 text-sm text-muted-foreground">اعتمد أو ارفض الطلبات — سجل كامل بجميع الحالات.</p>
-
-        <div className="mt-6 flex flex-wrap items-center gap-2">
+    <AdminShell
+      eyebrow="Financial Operations"
+      title="طلبات الإيداع والسحب"
+      subtitle="اعتمد أو ارفض الطلبات — سجل كامل بجميع الحالات."
+    >
+      <AdminCard title="الطلبات" icon={History}>
+        <div className="mb-4 flex flex-wrap items-center gap-2">
           <TabBtn active={tab === "deposits"} onClick={() => setTab("deposits")}>
             الإيداعات {counts.pendingDep > 0 && <span className="ml-1 rounded-full bg-amber-500/20 px-1.5 text-[10px] text-amber-300">{counts.pendingDep}</span>}
           </TabBtn>
@@ -169,8 +164,7 @@ function AdminFinance() {
           ))}
         </div>
 
-        <div className="glass mt-6 overflow-hidden rounded-3xl">
-          <div className="overflow-x-auto">
+        <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="bg-white/[0.03] text-xs uppercase tracking-widest text-muted-foreground">
                 <tr>
@@ -265,10 +259,9 @@ function AdminFinance() {
                 )}
               </tbody>
             </table>
-          </div>
         </div>
-      </section>
-    </PageShell>
+      </AdminCard>
+    </AdminShell>
   );
 }
 
