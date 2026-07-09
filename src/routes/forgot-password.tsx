@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { ArrowLeft, Loader2, AlertCircle, CheckCircle2, Mail } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { z } from "zod";
+import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/forgot-password")({
   head: () => ({
@@ -21,11 +22,11 @@ export const Route = createFileRoute("/forgot-password")({
   component: ForgotPassword,
 });
 
-const schema = z.object({
-  email: z.string().trim().min(1, "Email is required").email("Enter a valid email").max(255),
-});
-
 function ForgotPassword() {
+  const { t } = useI18n();
+  const schema = z.object({
+    email: z.string().trim().min(1, t("auth.err.email.required")).email(t("auth.err.email.invalid")).max(255),
+  });
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
@@ -38,7 +39,7 @@ function ForgotPassword() {
     setFieldError(null);
     const parsed = schema.safeParse({ email });
     if (!parsed.success) {
-      setFieldError(parsed.error.issues[0]?.message ?? "Invalid email");
+      setFieldError(parsed.error.issues[0]?.message ?? t("auth.forgot.err.invalid"));
       return;
     }
     setLoading(true);
@@ -49,7 +50,7 @@ function ForgotPassword() {
       if (error) throw error;
       setSent(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+      setError(err instanceof Error ? err.message : t("auth.forgot.err.generic"));
     } finally {
       setLoading(false);
     }
@@ -61,7 +62,7 @@ function ForgotPassword() {
         <div className="mb-4 flex items-center justify-between lg:hidden">
           <Link
             to="/auth"
-            aria-label="Back to sign in"
+            aria-label={t("auth.forgot.back_aria")}
             className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5"
           >
             <ArrowLeft className="h-4 w-4" />
@@ -73,10 +74,10 @@ function ForgotPassword() {
         <div className="w-full rounded-none border-0 bg-transparent p-0 sm:glass-strong sm:rounded-3xl sm:border sm:p-8">
           <div className="mb-6">
             <h1 className="font-display text-2xl font-bold leading-tight sm:text-3xl">
-              Reset your password
+              {t("auth.forgot.title")}
             </h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              Enter the email linked to your account and we&apos;ll send you a secure reset link.
+              {t("auth.forgot.sub")}
             </p>
           </div>
 
@@ -88,15 +89,14 @@ function ForgotPassword() {
               >
                 <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0" />
                 <div>
-                  <p className="font-medium text-emerald-100">Check your inbox</p>
+                  <p className="font-medium text-emerald-100">{t("auth.forgot.sent.title")}</p>
                   <p className="mt-1 text-emerald-200/90">
-                    If an account exists for <span className="font-medium">{email}</span>, a reset link is on its way.
-                    The link expires in 60 minutes.
+                    {t("auth.forgot.sent.body_a")} <span className="font-medium">{email}</span>, {t("auth.forgot.sent.body_b")}
                   </p>
                 </div>
               </div>
               <div className="space-y-3 text-sm text-muted-foreground">
-                <p>Didn&apos;t get the email? Check your spam folder, then try again.</p>
+                <p>{t("auth.forgot.spam")}</p>
                 <div className="flex flex-col gap-2 sm:flex-row">
                   <Button
                     type="button"
@@ -104,10 +104,10 @@ function ForgotPassword() {
                     onClick={() => setSent(false)}
                     className="h-12 w-full border-white/15 bg-white/5 text-base sm:h-10 sm:text-sm"
                   >
-                    Send again
+                    {t("auth.forgot.again")}
                   </Button>
                   <Button asChild className="h-12 w-full bg-[var(--gradient-brand)] text-base text-white sm:h-10 sm:text-sm">
-                    <Link to="/auth">Back to sign in</Link>
+                    <Link to="/auth">{t("auth.forgot.back_signin")}</Link>
                   </Button>
                 </div>
               </div>
@@ -124,7 +124,7 @@ function ForgotPassword() {
                 </div>
               )}
               <div>
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">{t("auth.field.email")}</Label>
                 <div className="relative mt-1.5">
                   <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
@@ -132,7 +132,7 @@ function ForgotPassword() {
                     type="email"
                     inputMode="email"
                     autoComplete="email"
-                    placeholder="you@example.com"
+                    placeholder={t("auth.field.email.ph")}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className={cn(
@@ -153,12 +153,12 @@ function ForgotPassword() {
                 className="h-12 w-full bg-[var(--gradient-brand)] text-base text-white shadow-[var(--shadow-glow)] sm:h-10 sm:text-sm"
               >
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Send reset link
+                {t("auth.forgot.send")}
               </Button>
               <p className="pt-2 text-center text-sm text-muted-foreground">
-                Remembered it?{" "}
+                {t("auth.forgot.back_login")}{" "}
                 <Link to="/auth" className="text-foreground underline-offset-4 hover:underline">
-                  Sign in
+                  {t("auth.forgot.signin")}
                 </Link>
               </p>
             </form>
