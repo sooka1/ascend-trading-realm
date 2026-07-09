@@ -10,6 +10,7 @@ import { ArrowLeft, Loader2, AlertCircle, CheckCircle2, Eye, EyeOff } from "luci
 import { supabase } from "@/integrations/supabase/client";
 import { z } from "zod";
 import { toast } from "sonner";
+import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/reset-password")({
   head: () => ({
@@ -22,22 +23,22 @@ export const Route = createFileRoute("/reset-password")({
   component: ResetPassword,
 });
 
-const schema = z
-  .object({
-    password: z
-      .string()
-      .min(8, "Use at least 8 characters")
-      .max(72, "Password is too long")
-      .regex(/[A-Za-z]/, "Include at least one letter")
-      .regex(/[0-9]/, "Include at least one number"),
-    confirm: z.string(),
-  })
-  .refine((d) => d.password === d.confirm, {
-    path: ["confirm"],
-    message: "Passwords don't match",
-  });
-
 function ResetPassword() {
+  const { t } = useI18n();
+  const schema = z
+    .object({
+      password: z
+        .string()
+        .min(8, t("auth.err.password.min8"))
+        .max(72, t("auth.err.password.long"))
+        .regex(/[A-Za-z]/, t("auth.err.password.letter"))
+        .regex(/[0-9]/, t("auth.err.password.number")),
+      confirm: z.string(),
+    })
+    .refine((d) => d.password === d.confirm, {
+      path: ["confirm"],
+      message: t("auth.err.password.mismatch"),
+    });
   const navigate = useNavigate();
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -86,11 +87,11 @@ function ResetPassword() {
       const { error } = await supabase.auth.updateUser({ password });
       if (error) throw error;
       setDone(true);
-      toast.success("Password updated");
+      toast.success(t("auth.reset.toast"));
       await supabase.auth.signOut();
       setTimeout(() => navigate({ to: "/auth", replace: true }), 1600);
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Couldn't update password";
+      const message = err instanceof Error ? err.message : t("auth.reset.err.generic");
       setErrors({ form: message });
     } finally {
       setLoading(false);
@@ -103,7 +104,7 @@ function ResetPassword() {
         <div className="mb-4 flex items-center justify-between lg:hidden">
           <Link
             to="/auth"
-            aria-label="Back to sign in"
+            aria-label={t("auth.forgot.back_aria")}
             className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5"
           >
             <ArrowLeft className="h-4 w-4" />
@@ -115,16 +116,16 @@ function ResetPassword() {
         <div className="w-full rounded-none border-0 bg-transparent p-0 sm:glass-strong sm:rounded-3xl sm:border sm:p-8">
           <div className="mb-6">
             <h1 className="font-display text-2xl font-bold leading-tight sm:text-3xl">
-              Set a new password
+              {t("auth.reset.title")}
             </h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              Choose a strong password you haven&apos;t used before.
+              {t("auth.reset.sub")}
             </p>
           </div>
 
           {ready === "pending" && (
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Loader2 className="h-4 w-4 animate-spin" /> Verifying your reset link…
+              <Loader2 className="h-4 w-4 animate-spin" /> {t("auth.reset.verifying")}
             </div>
           )}
 
@@ -135,10 +136,10 @@ function ResetPassword() {
                 className="flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive"
               >
                 <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
-                <span>This reset link is invalid or has expired. Request a new one to continue.</span>
+                <span>{t("auth.reset.invalid")}</span>
               </div>
               <Button asChild className="h-12 w-full bg-[var(--gradient-brand)] text-base text-white sm:h-10 sm:text-sm">
-                <Link to="/forgot-password">Request a new link</Link>
+                <Link to="/forgot-password">{t("auth.reset.request_new")}</Link>
               </Button>
             </div>
           )}
@@ -155,7 +156,7 @@ function ResetPassword() {
                 </div>
               )}
               <div>
-                <Label htmlFor="pw">New password</Label>
+                <Label htmlFor="pw">{t("auth.field.password.new")}</Label>
                 <div className="relative mt-1.5">
                   <Input
                     id="pw"
@@ -174,7 +175,7 @@ function ResetPassword() {
                   <button
                     type="button"
                     onClick={() => setShowPw((v) => !v)}
-                    aria-label={showPw ? "Hide password" : "Show password"}
+                    aria-label={showPw ? t("auth.field.password.hide") : t("auth.field.password.show")}
                     className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-muted-foreground hover:text-foreground"
                   >
                     {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -184,12 +185,12 @@ function ResetPassword() {
                   <p id="pw-error" className="mt-1.5 text-xs text-destructive">{errors.password}</p>
                 ) : (
                   <p id="pw-hint" className="mt-1.5 text-xs text-muted-foreground">
-                    Use 8+ characters with a mix of letters and numbers.
+                    {t("auth.hint.password")}
                   </p>
                 )}
               </div>
               <div>
-                <Label htmlFor="pw2">Confirm new password</Label>
+                <Label htmlFor="pw2">{t("auth.field.password.confirm")}</Label>
                 <Input
                   id="pw2"
                   type={showPw ? "text" : "password"}
@@ -214,7 +215,7 @@ function ResetPassword() {
                 className="h-12 w-full bg-[var(--gradient-brand)] text-base text-white shadow-[var(--shadow-glow)] sm:h-10 sm:text-sm"
               >
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Update password
+                {t("auth.reset.update")}
               </Button>
             </form>
           )}
@@ -226,8 +227,8 @@ function ResetPassword() {
             >
               <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0" />
               <div>
-                <p className="font-medium text-emerald-100">Password updated</p>
-                <p className="mt-1 text-emerald-200/90">Redirecting you to sign in…</p>
+                <p className="font-medium text-emerald-100">{t("auth.reset.updated.title")}</p>
+                <p className="mt-1 text-emerald-200/90">{t("auth.reset.updated.body")}</p>
               </div>
             </div>
           )}
