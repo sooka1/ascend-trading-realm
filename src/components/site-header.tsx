@@ -60,6 +60,9 @@ export function SiteHeader() {
                   <LayoutDashboard className="mr-2 h-4 w-4" /> Dashboard
                 </Link>
               </Button>
+              <Button variant="ghost" asChild>
+                <Link to="/investor">Investor</Link>
+              </Button>
               <Button variant="outline" className="border-white/15" onClick={handleSignOut}>
                 Sign out
               </Button>

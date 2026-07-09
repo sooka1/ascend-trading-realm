@@ -29,6 +29,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedSecurityRouteImport } from './routes/_authenticated/security'
 import { Route as AuthenticatedPortalRouteImport } from './routes/_authenticated/portal'
+import { Route as AuthenticatedInvestorRouteImport } from './routes/_authenticated/investor'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
 import { Route as AuthenticatedAppProfileRouteImport } from './routes/_authenticated/app.profile'
@@ -134,6 +135,11 @@ const AuthenticatedPortalRoute = AuthenticatedPortalRouteImport.update({
   path: '/portal',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedInvestorRoute = AuthenticatedInvestorRouteImport.update({
+  id: '/investor',
+  path: '/investor',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -182,6 +188,7 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/app': typeof AuthenticatedAppRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/investor': typeof AuthenticatedInvestorRoute
   '/portal': typeof AuthenticatedPortalRoute
   '/security': typeof AuthenticatedSecurityRoute
   '/app/activity': typeof AuthenticatedAppActivityRoute
@@ -208,6 +215,7 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/app': typeof AuthenticatedAppRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/investor': typeof AuthenticatedInvestorRoute
   '/portal': typeof AuthenticatedPortalRoute
   '/security': typeof AuthenticatedSecurityRoute
   '/app/activity': typeof AuthenticatedAppActivityRoute
@@ -236,6 +244,7 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/investor': typeof AuthenticatedInvestorRoute
   '/_authenticated/portal': typeof AuthenticatedPortalRoute
   '/_authenticated/security': typeof AuthenticatedSecurityRoute
   '/_authenticated/app/activity': typeof AuthenticatedAppActivityRoute
@@ -264,6 +273,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/app'
     | '/dashboard'
+    | '/investor'
     | '/portal'
     | '/security'
     | '/app/activity'
@@ -290,6 +300,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/app'
     | '/dashboard'
+    | '/investor'
     | '/portal'
     | '/security'
     | '/app/activity'
@@ -317,6 +328,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/_authenticated/app'
     | '/_authenticated/dashboard'
+    | '/_authenticated/investor'
     | '/_authenticated/portal'
     | '/_authenticated/security'
     | '/_authenticated/app/activity'
@@ -487,6 +499,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPortalRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/investor': {
+      id: '/_authenticated/investor'
+      path: '/investor'
+      fullPath: '/investor'
+      preLoaderRoute: typeof AuthenticatedInvestorRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -543,6 +562,7 @@ const AuthenticatedAppRouteWithChildren =
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAppRoute: typeof AuthenticatedAppRouteWithChildren
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedInvestorRoute: typeof AuthenticatedInvestorRoute
   AuthenticatedPortalRoute: typeof AuthenticatedPortalRoute
   AuthenticatedSecurityRoute: typeof AuthenticatedSecurityRoute
 }
@@ -550,6 +570,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAppRoute: AuthenticatedAppRouteWithChildren,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedInvestorRoute: AuthenticatedInvestorRoute,
   AuthenticatedPortalRoute: AuthenticatedPortalRoute,
   AuthenticatedSecurityRoute: AuthenticatedSecurityRoute,
 }
