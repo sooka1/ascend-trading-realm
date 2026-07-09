@@ -33,6 +33,7 @@ import { Route as AuthenticatedInvestorRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/_admin/route'
+import { Route as AuthenticatedPortalTransactionsRouteImport } from './routes/_authenticated/portal.transactions'
 import { Route as AuthenticatedPortalSupportRouteImport } from './routes/_authenticated/portal.support'
 import { Route as AuthenticatedPortalProfileRouteImport } from './routes/_authenticated/portal.profile'
 import { Route as AuthenticatedPortalNotificationsRouteImport } from './routes/_authenticated/portal.notifications'
@@ -164,6 +165,12 @@ const AuthenticatedAdminRouteRoute = AuthenticatedAdminRouteRouteImport.update({
   id: '/_admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPortalTransactionsRoute =
+  AuthenticatedPortalTransactionsRouteImport.update({
+    id: '/transactions',
+    path: '/transactions',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
 const AuthenticatedPortalSupportRoute =
   AuthenticatedPortalSupportRouteImport.update({
     id: '/support',
@@ -266,6 +273,7 @@ export interface FileRoutesByFullPath {
   '/portal/notifications': typeof AuthenticatedPortalNotificationsRoute
   '/portal/profile': typeof AuthenticatedPortalProfileRoute
   '/portal/support': typeof AuthenticatedPortalSupportRoute
+  '/portal/transactions': typeof AuthenticatedPortalTransactionsRoute
   '/admin/audit': typeof AuthenticatedAdminAdminAuditRoute
   '/admin/finance': typeof AuthenticatedAdminAdminFinanceRoute
   '/admin/users': typeof AuthenticatedAdminAdminUsersRoute
@@ -302,6 +310,7 @@ export interface FileRoutesByTo {
   '/portal/notifications': typeof AuthenticatedPortalNotificationsRoute
   '/portal/profile': typeof AuthenticatedPortalProfileRoute
   '/portal/support': typeof AuthenticatedPortalSupportRoute
+  '/portal/transactions': typeof AuthenticatedPortalTransactionsRoute
   '/admin/audit': typeof AuthenticatedAdminAdminAuditRoute
   '/admin/finance': typeof AuthenticatedAdminAdminFinanceRoute
   '/admin/users': typeof AuthenticatedAdminAdminUsersRoute
@@ -341,6 +350,7 @@ export interface FileRoutesById {
   '/_authenticated/portal/notifications': typeof AuthenticatedPortalNotificationsRoute
   '/_authenticated/portal/profile': typeof AuthenticatedPortalProfileRoute
   '/_authenticated/portal/support': typeof AuthenticatedPortalSupportRoute
+  '/_authenticated/portal/transactions': typeof AuthenticatedPortalTransactionsRoute
   '/_authenticated/_admin/admin/audit': typeof AuthenticatedAdminAdminAuditRoute
   '/_authenticated/_admin/admin/finance': typeof AuthenticatedAdminAdminFinanceRoute
   '/_authenticated/_admin/admin/users': typeof AuthenticatedAdminAdminUsersRoute
@@ -379,6 +389,7 @@ export interface FileRouteTypes {
     | '/portal/notifications'
     | '/portal/profile'
     | '/portal/support'
+    | '/portal/transactions'
     | '/admin/audit'
     | '/admin/finance'
     | '/admin/users'
@@ -415,6 +426,7 @@ export interface FileRouteTypes {
     | '/portal/notifications'
     | '/portal/profile'
     | '/portal/support'
+    | '/portal/transactions'
     | '/admin/audit'
     | '/admin/finance'
     | '/admin/users'
@@ -453,6 +465,7 @@ export interface FileRouteTypes {
     | '/_authenticated/portal/notifications'
     | '/_authenticated/portal/profile'
     | '/_authenticated/portal/support'
+    | '/_authenticated/portal/transactions'
     | '/_authenticated/_admin/admin/audit'
     | '/_authenticated/_admin/admin/finance'
     | '/_authenticated/_admin/admin/users'
@@ -650,6 +663,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/portal/transactions': {
+      id: '/_authenticated/portal/transactions'
+      path: '/transactions'
+      fullPath: '/portal/transactions'
+      preLoaderRoute: typeof AuthenticatedPortalTransactionsRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
     '/_authenticated/portal/support': {
       id: '/_authenticated/portal/support'
       path: '/support'
@@ -778,6 +798,7 @@ interface AuthenticatedPortalRouteChildren {
   AuthenticatedPortalNotificationsRoute: typeof AuthenticatedPortalNotificationsRoute
   AuthenticatedPortalProfileRoute: typeof AuthenticatedPortalProfileRoute
   AuthenticatedPortalSupportRoute: typeof AuthenticatedPortalSupportRoute
+  AuthenticatedPortalTransactionsRoute: typeof AuthenticatedPortalTransactionsRoute
 }
 
 const AuthenticatedPortalRouteChildren: AuthenticatedPortalRouteChildren = {
@@ -786,6 +807,7 @@ const AuthenticatedPortalRouteChildren: AuthenticatedPortalRouteChildren = {
   AuthenticatedPortalNotificationsRoute: AuthenticatedPortalNotificationsRoute,
   AuthenticatedPortalProfileRoute: AuthenticatedPortalProfileRoute,
   AuthenticatedPortalSupportRoute: AuthenticatedPortalSupportRoute,
+  AuthenticatedPortalTransactionsRoute: AuthenticatedPortalTransactionsRoute,
 }
 
 const AuthenticatedPortalRouteWithChildren =
