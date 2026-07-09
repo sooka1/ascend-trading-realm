@@ -250,7 +250,7 @@ function AdminFinance() {
                           </td>
                         </tr>
                       )}
-                      </>
+                      </React.Fragment>
                     );
                   })
                 )}
