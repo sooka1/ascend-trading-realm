@@ -585,6 +585,104 @@ export const listInvoicesAdmin = createServerFn({ method: "GET" })
     return { rows, totals };
   });
 
+// ============================================================
+// Role Permissions Matrix
+// ============================================================
+
+export const PERMISSION_CATALOG: Array<{
+  key: string;
+  group: string;
+  label: string;
+}> = [
+  { key: "users.view", group: "المستخدمون", label: "عرض المستخدمين" },
+  { key: "users.manage", group: "المستخدمون", label: "إدارة المستخدمين والأدوار" },
+  { key: "finance.view", group: "المالية", label: "عرض العمليات المالية" },
+  { key: "finance.approve", group: "المالية", label: "اعتماد الإيداع/السحب" },
+  { key: "subscriptions.view", group: "الاشتراكات", label: "عرض الاشتراكات" },
+  { key: "subscriptions.manage", group: "الاشتراكات", label: "إدارة الاشتراكات" },
+  { key: "invoices.view", group: "المالية", label: "عرض الفواتير" },
+  { key: "payments.view", group: "المالية", label: "عرض المدفوعات" },
+  { key: "accounting.view", group: "المالية", label: "التقارير المحاسبية" },
+  { key: "portfolios.view", group: "المحافظ", label: "عرض المحافظ" },
+  { key: "portfolios.manage", group: "المحافظ", label: "إدارة المحافظ" },
+  { key: "documents.view", group: "الوثائق", label: "عرض الوثائق" },
+  { key: "support.view", group: "الدعم", label: "عرض تذاكر الدعم" },
+  { key: "support.reply", group: "الدعم", label: "الرد على تذاكر الدعم" },
+  { key: "audit.view", group: "الحوكمة", label: "سجل التدقيق" },
+  { key: "analytics.view", group: "التحليلات", label: "لوحات التحليلات" },
+  { key: "monitoring.view", group: "النظام", label: "مراقبة النظام" },
+];
+
+export const ROLES_FOR_MATRIX: AppRole[] = [
+  "super_admin",
+  "admin",
+  "portfolio_manager",
+  "compliance_officer",
+  "finance",
+  "support",
+  "moderator",
+  "investor",
+  "user",
+];
+
+export const getRolePermissions = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const auth = await assertAdmin(context);
+    if (!auth.ok) throw new Error("Forbidden");
+    const { data, error } = await context.supabase
+      .from("role_permissions")
+      .select("role,permission");
+    if (error) throw new Error(error.message);
+    const matrix: Record<string, string[]> = {};
+    for (const r of ROLES_FOR_MATRIX) matrix[r] = [];
+    for (const row of data ?? []) {
+      if (!matrix[row.role]) matrix[row.role] = [];
+      matrix[row.role].push(row.permission);
+    }
+    // super_admin implicitly has every permission
+    matrix["super_admin"] = PERMISSION_CATALOG.map((p) => p.key);
+    return {
+      matrix,
+      isSuper: auth.isSuper,
+      catalog: PERMISSION_CATALOG,
+      roles: ROLES_FOR_MATRIX,
+    };
+  });
+
+export const setRolePermission = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(
+    (data: { role: AppRole; permission: string; grant: boolean }) => data,
+  )
+  .handler(async ({ data, context }) => {
+    const auth = await assertAdmin(context);
+    if (!auth.ok || !auth.isSuper)
+      throw new Error("يتطلب صلاحية super_admin");
+    if (data.role === "super_admin")
+      throw new Error("super_admin يمتلك كل الصلاحيات ضمنيًا");
+    if (!PERMISSION_CATALOG.some((p) => p.key === data.permission))
+      throw new Error("صلاحية غير معروفة");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    if (data.grant) {
+      const { error } = await supabaseAdmin
+        .from("role_permissions")
+        .upsert(
+          { role: data.role, permission: data.permission },
+          { onConflict: "role,permission" },
+        );
+      if (error) throw new Error(error.message);
+    } else {
+      const { error } = await supabaseAdmin
+        .from("role_permissions")
+        .delete()
+        .eq("role", data.role)
+        .eq("permission", data.permission);
+      if (error) throw new Error(error.message);
+    }
+    return { ok: true };
+  });
+
 // ---------------------------------------------------------------------------
 // User lifecycle management — invite, suspend, activate, reset password.
 // ---------------------------------------------------------------------------
