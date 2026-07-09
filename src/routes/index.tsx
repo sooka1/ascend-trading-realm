@@ -389,7 +389,7 @@ type TL = {
   eyebrow: string;
   title: string;
   subtitle: string;
-  items: { name: string; role: string; quote: string; rating: number }[];
+  items: { name: string; role: string; quote: string; rating: number; seed: string }[];
 };
 
 const TESTIMONIALS: Record<string, TL> = {
