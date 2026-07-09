@@ -57,7 +57,7 @@ function DashboardPage() {
       supabase.from("portfolios").select("*").eq("user_id", uid).order("created_at").limit(1).maybeSingle(),
     ]);
     setProfile(prof);
-    setPortfolio(pf);
+    setPortfolio((pf as Portfolio | null) ?? null);
     if (pf) {
       const [{ data: sn }, { data: tx }] = await Promise.all([
         supabase.from("portfolio_snapshots").select("*").eq("portfolio_id", pf.id).order("as_of_date"),
