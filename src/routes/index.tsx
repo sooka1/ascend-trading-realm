@@ -398,9 +398,11 @@ const TESTIMONIALS: Record<string, TL> = {
     title: "تجارب حقيقية من عملائنا",
     subtitle: "شهادات من مستثمرين وثقوا بإدارتنا لمحافظهم.",
     items: [
-      { name: "خالد المنصوري", role: "رجل أعمال — دبي", rating: 5, quote: "إدارة احترافية وشفافية كاملة في التقارير الشهرية. عوائد مستقرة ومخاطر مدروسة." },
-      { name: "سارة العتيبي", role: "طبيبة استشارية — الرياض", rating: 5, quote: "بوابة العميل ممتازة وفريق الدعم سريع الاستجابة. أنصح بها لكل من يبحث عن استثمار طويل الأجل." },
-      { name: "أحمد الفهد", role: "مستثمر خاص — الكويت", rating: 5, quote: "التزام صارم بإدارة المخاطر، وأداء يفوق التوقعات على مدى سنتين متتاليتين." },
+      { seed: "khaled-m", name: "خالد المنصوري", role: "رجل أعمال — دبي", rating: 5, quote: "إدارة احترافية وشفافية كاملة في التقارير الشهرية. عوائد مستقرة ومخاطر مدروسة." },
+      { seed: "sara-a", name: "سارة العتيبي", role: "طبيبة استشارية — الرياض", rating: 5, quote: "بوابة العميل ممتازة وفريق الدعم سريع الاستجابة. أنصح بها لكل من يبحث عن استثمار طويل الأجل." },
+      { seed: "ahmed-f", name: "أحمد الفهد", role: "مستثمر خاص — الكويت", rating: 4.5, quote: "التزام صارم بإدارة المخاطر، وأداء يفوق التوقعات على مدى سنتين متتاليتين." },
+      { seed: "layla-q", name: "ليلى القحطاني", role: "مديرة مالية — جدة", rating: 5, quote: "خطة الاستثمار وُضعت وفق أهدافي بدقة، والتواصل مع المستشار احترافي جدًا." },
+      { seed: "yousef-b", name: "يوسف البلوشي", role: "مهندس أول — مسقط", rating: 4.5, quote: "التقارير الشهرية واضحة والأداء ثابت. تجربة مطمئنة على المدى الطويل." },
     ],
   },
   en: {
@@ -408,9 +410,11 @@ const TESTIMONIALS: Record<string, TL> = {
     title: "Real experiences from real investors",
     subtitle: "Verified reviews from clients who trusted us with their portfolios.",
     items: [
-      { name: "James Whitfield", role: "Business Owner — London", rating: 5, quote: "Professional management with full transparency in monthly reporting. Steady returns and disciplined risk." },
-      { name: "Sofia Lindqvist", role: "Private Investor — Stockholm", rating: 5, quote: "Excellent client portal and a responsive advisory team. Highly recommended for long-term investors." },
-      { name: "Michael Chen", role: "Executive — Singapore", rating: 5, quote: "Strict risk framework and consistent performance across two consecutive years." },
+      { seed: "james-w", name: "James Whitfield", role: "Business Owner — London", rating: 5, quote: "Professional management with full transparency in monthly reporting. Steady returns and disciplined risk." },
+      { seed: "sofia-l", name: "Sofia Lindqvist", role: "Private Investor — Stockholm", rating: 5, quote: "Excellent client portal and a responsive advisory team. Highly recommended for long-term investors." },
+      { seed: "michael-c", name: "Michael Chen", role: "Executive — Singapore", rating: 4.5, quote: "Strict risk framework and consistent performance across two consecutive years." },
+      { seed: "amelia-r", name: "Amelia Rossi", role: "CFO — Milan", rating: 5, quote: "The plan matched my objectives precisely and communication with the advisor is top-notch." },
+      { seed: "daniel-o", name: "Daniel Okafor", role: "Senior Engineer — Dubai", rating: 4.5, quote: "Clear monthly reports and steady performance. A reassuring long-term experience." },
     ],
   },
   fr: {
@@ -418,9 +422,11 @@ const TESTIMONIALS: Record<string, TL> = {
     title: "Des expériences réelles d'investisseurs",
     subtitle: "Témoignages de clients qui nous ont confié leurs portefeuilles.",
     items: [
-      { name: "Julien Moreau", role: "Chef d'entreprise — Paris", rating: 5, quote: "Gestion professionnelle et transparence totale des rapports mensuels." },
-      { name: "Camille Roux", role: "Investisseuse privée — Lyon", rating: 5, quote: "Portail client excellent et équipe très réactive." },
-      { name: "Antoine Girard", role: "Cadre dirigeant — Genève", rating: 5, quote: "Cadre de risque rigoureux et performance constante." },
+      { seed: "julien-m", name: "Julien Moreau", role: "Chef d'entreprise — Paris", rating: 5, quote: "Gestion professionnelle et transparence totale des rapports mensuels." },
+      { seed: "camille-r", name: "Camille Roux", role: "Investisseuse privée — Lyon", rating: 5, quote: "Portail client excellent et équipe très réactive." },
+      { seed: "antoine-g", name: "Antoine Girard", role: "Cadre dirigeant — Genève", rating: 4.5, quote: "Cadre de risque rigoureux et performance constante." },
+      { seed: "elodie-b", name: "Élodie Bernard", role: "Directrice financière — Bruxelles", rating: 5, quote: "Un plan taillé à mes objectifs, un conseiller très à l'écoute." },
+      { seed: "hugo-l", name: "Hugo Lefevre", role: "Ingénieur — Montréal", rating: 4.5, quote: "Rapports mensuels clairs et performance régulière." },
     ],
   },
   es: {
@@ -428,9 +434,11 @@ const TESTIMONIALS: Record<string, TL> = {
     title: "Experiencias reales de inversores",
     subtitle: "Testimonios de clientes que confiaron en nosotros.",
     items: [
-      { name: "Carlos Herrera", role: "Empresario — Madrid", rating: 5, quote: "Gestión profesional y total transparencia en los informes mensuales." },
-      { name: "Lucía Fernández", role: "Inversora privada — Barcelona", rating: 5, quote: "Portal excelente y equipo muy atento." },
-      { name: "Diego Ramírez", role: "Directivo — Ciudad de México", rating: 5, quote: "Marco de riesgo estricto y rendimiento consistente." },
+      { seed: "carlos-h", name: "Carlos Herrera", role: "Empresario — Madrid", rating: 5, quote: "Gestión profesional y total transparencia en los informes mensuales." },
+      { seed: "lucia-f", name: "Lucía Fernández", role: "Inversora privada — Barcelona", rating: 5, quote: "Portal excelente y equipo muy atento." },
+      { seed: "diego-r", name: "Diego Ramírez", role: "Directivo — Ciudad de México", rating: 4.5, quote: "Marco de riesgo estricto y rendimiento consistente." },
+      { seed: "valeria-s", name: "Valeria Sánchez", role: "Directora financiera — Bogotá", rating: 5, quote: "Plan adaptado a mis objetivos y asesor muy atento." },
+      { seed: "mateo-g", name: "Mateo García", role: "Ingeniero — Buenos Aires", rating: 4.5, quote: "Informes claros y desempeño constante." },
     ],
   },
   tr: {
@@ -438,9 +446,11 @@ const TESTIMONIALS: Record<string, TL> = {
     title: "Yatırımcılardan gerçek deneyimler",
     subtitle: "Portföylerini bize emanet eden müşterilerimizin görüşleri.",
     items: [
-      { name: "Emre Yılmaz", role: "İş İnsanı — İstanbul", rating: 5, quote: "Profesyonel yönetim ve tam şeffaf raporlama." },
-      { name: "Aylin Demir", role: "Özel Yatırımcı — Ankara", rating: 5, quote: "Mükemmel müşteri portalı ve hızlı destek ekibi." },
-      { name: "Kaan Aksoy", role: "Yönetici — İzmir", rating: 5, quote: "Sıkı risk yönetimi ve istikrarlı performans." },
+      { seed: "emre-y", name: "Emre Yılmaz", role: "İş İnsanı — İstanbul", rating: 5, quote: "Profesyonel yönetim ve tam şeffaf raporlama." },
+      { seed: "aylin-d", name: "Aylin Demir", role: "Özel Yatırımcı — Ankara", rating: 5, quote: "Mükemmel müşteri portalı ve hızlı destek ekibi." },
+      { seed: "kaan-a", name: "Kaan Aksoy", role: "Yönetici — İzmir", rating: 4.5, quote: "Sıkı risk yönetimi ve istikrarlı performans." },
+      { seed: "zeynep-c", name: "Zeynep Çelik", role: "Finans Direktörü — Bursa", rating: 5, quote: "Hedeflerime uygun bir plan ve son derece ilgili bir danışman." },
+      { seed: "burak-o", name: "Burak Öztürk", role: "Kıdemli Mühendis — Antalya", rating: 4.5, quote: "Net aylık raporlar ve istikrarlı performans." },
     ],
   },
 };
