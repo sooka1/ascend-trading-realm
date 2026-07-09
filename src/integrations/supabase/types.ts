@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      investment_requests: {
+        Row: {
+          capital_range: Database["public"]["Enums"]["capital_range"]
+          country: string
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          notes: string | null
+          risk_preference: Database["public"]["Enums"]["risk_preference"]
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          capital_range: Database["public"]["Enums"]["capital_range"]
+          country: string
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          notes?: string | null
+          risk_preference: Database["public"]["Enums"]["risk_preference"]
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          capital_range?: Database["public"]["Enums"]["capital_range"]
+          country?: string
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          notes?: string | null
+          risk_preference?: Database["public"]["Enums"]["risk_preference"]
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -80,6 +122,8 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
+      capital_range: "1k_10k" | "10k_50k" | "50k_250k" | "250k_1m" | "1m_plus"
+      risk_preference: "conservative" | "balanced" | "aggressive"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -208,6 +252,8 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
+      capital_range: ["1k_10k", "10k_50k", "50k_250k", "250k_1m", "1m_plus"],
+      risk_preference: ["conservative", "balanced", "aggressive"],
     },
   },
 } as const
