@@ -17,6 +17,7 @@ import { Route as PortfoliosRouteImport } from './routes/portfolios'
 import { Route as PerformanceRouteImport } from './routes/performance'
 import { Route as MarketsRouteImport } from './routes/markets'
 import { Route as LegalRouteImport } from './routes/legal'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as EducationRouteImport } from './routes/education'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -70,6 +71,11 @@ const MarketsRoute = MarketsRouteImport.update({
 const LegalRoute = LegalRouteImport.update({
   id: '/legal',
   path: '/legal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FaqRoute = FaqRouteImport.update({
@@ -152,6 +158,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/education': typeof EducationRoute
   '/faq': typeof FaqRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/legal': typeof LegalRoute
   '/markets': typeof MarketsRoute
   '/performance': typeof PerformanceRoute
@@ -175,6 +182,7 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/education': typeof EducationRoute
   '/faq': typeof FaqRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/legal': typeof LegalRoute
   '/markets': typeof MarketsRoute
   '/performance': typeof PerformanceRoute
@@ -200,6 +208,7 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/education': typeof EducationRoute
   '/faq': typeof FaqRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/legal': typeof LegalRoute
   '/markets': typeof MarketsRoute
   '/performance': typeof PerformanceRoute
@@ -225,6 +234,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/education'
     | '/faq'
+    | '/forgot-password'
     | '/legal'
     | '/markets'
     | '/performance'
@@ -248,6 +258,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/education'
     | '/faq'
+    | '/forgot-password'
     | '/legal'
     | '/markets'
     | '/performance'
@@ -272,6 +283,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/education'
     | '/faq'
+    | '/forgot-password'
     | '/legal'
     | '/markets'
     | '/performance'
@@ -297,6 +309,7 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   EducationRoute: typeof EducationRoute
   FaqRoute: typeof FaqRoute
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
   LegalRoute: typeof LegalRoute
   MarketsRoute: typeof MarketsRoute
   PerformanceRoute: typeof PerformanceRoute
@@ -363,6 +376,13 @@ declare module '@tanstack/react-router' {
       path: '/legal'
       fullPath: '/legal'
       preLoaderRoute: typeof LegalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/faq': {
@@ -505,6 +525,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   EducationRoute: EducationRoute,
   FaqRoute: FaqRoute,
+  ForgotPasswordRoute: ForgotPasswordRoute,
   LegalRoute: LegalRoute,
   MarketsRoute: MarketsRoute,
   PerformanceRoute: PerformanceRoute,
