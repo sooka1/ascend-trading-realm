@@ -38,6 +38,7 @@ import { Route as AuthenticatedPortalDocumentsRouteImport } from './routes/_auth
 import { Route as AuthenticatedAppProfileRouteImport } from './routes/_authenticated/app.profile'
 import { Route as AuthenticatedAppPortfolioRouteImport } from './routes/_authenticated/app.portfolio'
 import { Route as AuthenticatedAppActivityRouteImport } from './routes/_authenticated/app.activity'
+import { Route as AuthenticatedAdminAdminIndexRouteImport } from './routes/_authenticated/_admin/admin.index'
 import { Route as AuthenticatedAdminAdminFinanceRouteImport } from './routes/_authenticated/_admin/admin.finance'
 
 const TermsRoute = TermsRouteImport.update({
@@ -187,6 +188,12 @@ const AuthenticatedAppActivityRoute =
     path: '/activity',
     getParentRoute: () => AuthenticatedAppRoute,
   } as any)
+const AuthenticatedAdminAdminIndexRoute =
+  AuthenticatedAdminAdminIndexRouteImport.update({
+    id: '/admin/',
+    path: '/admin/',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 const AuthenticatedAdminAdminFinanceRoute =
   AuthenticatedAdminAdminFinanceRouteImport.update({
     id: '/admin/finance',
@@ -223,6 +230,7 @@ export interface FileRoutesByFullPath {
   '/portal/documents': typeof AuthenticatedPortalDocumentsRoute
   '/portal/support': typeof AuthenticatedPortalSupportRoute
   '/admin/finance': typeof AuthenticatedAdminAdminFinanceRoute
+  '/admin/': typeof AuthenticatedAdminAdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -253,6 +261,7 @@ export interface FileRoutesByTo {
   '/portal/documents': typeof AuthenticatedPortalDocumentsRoute
   '/portal/support': typeof AuthenticatedPortalSupportRoute
   '/admin/finance': typeof AuthenticatedAdminAdminFinanceRoute
+  '/admin': typeof AuthenticatedAdminAdminIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -286,6 +295,7 @@ export interface FileRoutesById {
   '/_authenticated/portal/documents': typeof AuthenticatedPortalDocumentsRoute
   '/_authenticated/portal/support': typeof AuthenticatedPortalSupportRoute
   '/_authenticated/_admin/admin/finance': typeof AuthenticatedAdminAdminFinanceRoute
+  '/_authenticated/_admin/admin/': typeof AuthenticatedAdminAdminIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -318,6 +328,7 @@ export interface FileRouteTypes {
     | '/portal/documents'
     | '/portal/support'
     | '/admin/finance'
+    | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -348,6 +359,7 @@ export interface FileRouteTypes {
     | '/portal/documents'
     | '/portal/support'
     | '/admin/finance'
+    | '/admin'
   id:
     | '__root__'
     | '/'
@@ -380,6 +392,7 @@ export interface FileRouteTypes {
     | '/_authenticated/portal/documents'
     | '/_authenticated/portal/support'
     | '/_authenticated/_admin/admin/finance'
+    | '/_authenticated/_admin/admin/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -608,6 +621,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppActivityRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/_admin/admin/': {
+      id: '/_authenticated/_admin/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/_admin/admin/finance': {
       id: '/_authenticated/_admin/admin/finance'
       path: '/admin/finance'
@@ -620,11 +640,13 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedAdminRouteRouteChildren {
   AuthenticatedAdminAdminFinanceRoute: typeof AuthenticatedAdminAdminFinanceRoute
+  AuthenticatedAdminAdminIndexRoute: typeof AuthenticatedAdminAdminIndexRoute
 }
 
 const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
   {
     AuthenticatedAdminAdminFinanceRoute: AuthenticatedAdminAdminFinanceRoute,
+    AuthenticatedAdminAdminIndexRoute: AuthenticatedAdminAdminIndexRoute,
   }
 
 const AuthenticatedAdminRouteRouteWithChildren =
