@@ -5,39 +5,39 @@ import { useT } from "@/lib/i18n";
 
 const COLS = [
   {
-    title: "footer.col.platform",
+    title: "footer.col.solutions",
     links: [
-      { label: "footer.link.platform", to: "/platform" },
-      { label: "footer.link.markets", to: "/markets" },
-      { label: "footer.link.pricing", to: "/pricing" },
-      { label: "footer.link.calendar", to: "/economic-calendar" },
+      { label: "nav.solutions", to: "/solutions" },
+      { label: "nav.portfolios", to: "/portfolios" },
+      { label: "nav.performance", to: "/performance" },
+      { label: "nav.risk", to: "/risk" },
     ],
   },
   {
-    title: "footer.col.compete",
+    title: "footer.col.resources",
     links: [
-      { label: "footer.link.competitions", to: "/competitions" },
+      { label: "footer.link.markets", to: "/markets" },
       { label: "footer.link.education", to: "/education" },
-      { label: "footer.link.news", to: "/news" },
-      { label: "footer.link.blog", to: "/blog" },
+      { label: "footer.link.faq", to: "/faq" },
+      { label: "footer.link.contact", to: "/contact" },
     ],
   },
   {
     title: "footer.col.company",
     links: [
       { label: "footer.link.about", to: "/about" },
-      { label: "footer.link.partners", to: "/partners" },
-      { label: "footer.link.affiliate", to: "/affiliate" },
-      { label: "footer.link.contact", to: "/contact" },
+      { label: "footer.link.legal", to: "/legal" },
+      { label: "footer.link.privacy", to: "/privacy" },
+      { label: "footer.link.terms", to: "/terms" },
     ],
   },
   {
-    title: "footer.col.support",
+    title: "footer.col.account",
     links: [
-      { label: "footer.link.support", to: "/support" },
-      { label: "footer.link.faq", to: "/faq" },
       { label: "cta.login", to: "/auth" },
       { label: "cta.open_account", to: "/auth" },
+      { label: "cta.dashboard", to: "/dashboard" },
+      { label: "cta.portal", to: "/portal" },
     ],
   },
 ] as const;

@@ -11,14 +11,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { LayoutDashboard } from "lucide-react";
 
 const NAV = [
-  { key: "nav.platform", to: "/platform" },
-  { key: "nav.markets", to: "/markets" },
-  { key: "nav.investment", to: "/investment" },
-  { key: "nav.competitions", to: "/competitions" },
-  { key: "nav.education", to: "/education" },
-  { key: "nav.partners", to: "/partners" },
-  { key: "nav.pricing", to: "/pricing" },
   { key: "nav.about", to: "/about" },
+  { key: "nav.solutions", to: "/solutions" },
+  { key: "nav.portfolios", to: "/portfolios" },
+  { key: "nav.performance", to: "/performance" },
+  { key: "nav.risk", to: "/risk" },
+  { key: "nav.markets", to: "/markets" },
+  { key: "nav.education", to: "/education" },
+  { key: "nav.faq", to: "/faq" },
+  { key: "nav.contact", to: "/contact" },
 ] as const;
 
 export function SiteHeader() {
