@@ -120,60 +120,111 @@ function Hero({ c }: { c: LandingContent }) {
 
       <div className="relative mx-auto grid max-w-7xl gap-10 px-4 pt-24 pb-16 sm:px-6 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:px-8 lg:pt-32 lg:pb-24">
         <div>
-          <span className="inline-flex items-center gap-2 rounded-full border border-gold/30 bg-gold/5 px-3 py-1 text-[11px] uppercase tracking-[0.22em] text-gold">
-            <Sparkles className="h-3 w-3" /> {c.hero.badge}
+          <span className="inline-flex items-center gap-2 rounded-full border border-gold/25 bg-gold/[0.06] px-3 py-1 text-[11px] uppercase tracking-[0.22em] text-gold backdrop-blur-md">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-gold opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-gold" />
+            </span>
+            {c.hero.badge}
           </span>
-          <h1 className="mt-6 font-display text-5xl font-semibold leading-[1.02] tracking-tight md:text-6xl lg:text-7xl">
-            {c.hero.titleA} <span className="text-gradient">{c.hero.titleB}</span> {c.hero.titleC}
+          <h1 className="mt-6 font-display text-5xl font-semibold leading-[1.05] tracking-tight md:text-6xl lg:text-7xl">
+            {c.hero.titleA} <span className="italic text-gold">{c.hero.titleB}</span> {c.hero.titleC}
           </h1>
           <p className="mt-6 max-w-xl text-lg text-muted-foreground">{c.hero.subtitle}</p>
           <div className="mt-8 flex flex-wrap items-center gap-3">
-            <Button asChild size="lg" className="bg-[var(--gradient-gold)] font-semibold text-background shadow-[var(--shadow-gold)] hover:opacity-95">
+            <Button asChild size="lg" className="rounded-sm bg-gold font-semibold text-background shadow-[0_0_28px_rgba(201,168,76,0.22)] transition hover:bg-[oklch(0.88_0.11_90)] active:scale-[0.98]">
               <Link to="/auth">{c.hero.ctaOpen} <ArrowRight className="ml-2 h-4 w-4" /></Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="border-white/15">
+            <Button asChild size="lg" variant="outline" className="rounded-sm border-white/10 transition hover:border-gold/60 hover:text-foreground">
               <Link to="/contact">{c.hero.ctaAdvisor}</Link>
             </Button>
             <Button asChild size="lg" variant="ghost">
               <Link to="/solutions">{c.hero.ctaLearn}</Link>
             </Button>
           </div>
-          <dl className="mt-10 grid max-w-lg grid-cols-3 gap-6 text-sm">
+          <dl className="mt-12 grid max-w-lg grid-cols-3 gap-6 border-t border-white/5 pt-8 text-sm">
             {[
-              { k: c.hero.statAum, v: "$1.2B+" },
-              { k: c.hero.statClients, v: "18,400+" },
-              { k: c.hero.statCountries, v: "62" },
+              { k: c.hero.statAum, v: "$1.2B+", d: "+12.4%", tone: "up" },
+              { k: c.hero.statClients, v: "18,400+", d: "OPTIMIZED", tone: "muted" },
+              { k: c.hero.statCountries, v: "62", d: "GLOBAL", tone: "muted" },
             ].map((s) => (
-              <div key={s.k}>
-                <dt className="text-xs uppercase tracking-widest text-muted-foreground">{s.k}</dt>
-                <dd className="mt-1 font-display text-2xl font-semibold text-foreground">{s.v}</dd>
+              <div key={s.k} className="space-y-1">
+                <dt className="text-[10px] font-medium uppercase tracking-[0.18em] text-gold/80">{s.k}</dt>
+                <dd className="font-mono text-2xl font-medium text-foreground tabular-nums">{s.v}</dd>
+                <p className={`font-mono text-[10px] tracking-wide ${s.tone === "up" ? "text-emerald-400" : "text-muted-foreground"}`}>
+                  {s.tone === "up" ? "↑ " : ""}{s.d}
+                </p>
               </div>
             ))}
           </dl>
         </div>
 
         <div className="relative">
-          <div className="glass-strong rounded-3xl p-6 shadow-[var(--shadow-glow)]">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs uppercase tracking-widest text-muted-foreground">{c.hero.cardTitle}</p>
-                <p className="mt-1 font-display text-2xl font-semibold">+18.4% <span className="text-sm font-normal text-muted-foreground">{c.hero.ytd}</span></p>
+          {/* Ambient gold glow behind card */}
+          <div className="pointer-events-none absolute -inset-1 -z-10 rounded-2xl bg-[radial-gradient(ellipse_at_top_left,rgba(201,168,76,0.22),transparent_60%)] blur-2xl" aria-hidden />
+
+          <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-card/60 shadow-elegant backdrop-blur-2xl">
+            {/* Frosted saturation layer */}
+            <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.035),transparent_40%)]" aria-hidden />
+
+            {/* Terminal header */}
+            <div className="relative flex items-center justify-between border-b border-white/[0.06] bg-white/[0.02] px-5 py-3 backdrop-blur-xl">
+              <div className="flex items-center gap-2.5">
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+                </span>
+                <span className="font-mono text-[11px] tracking-wider text-foreground/80">HK / MODEL PORTFOLIO</span>
               </div>
-              <span className="rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-xs text-gold">{c.hero.live}</span>
+              <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">Live Terminal Data</span>
             </div>
-            <AnimatedChart />
-            <div className="mt-4 grid grid-cols-3 gap-3 text-xs">
+
+            {/* Headline stat */}
+            <div className="relative px-6 pt-6">
+              <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-gold/80">{c.hero.cardTitle}</p>
+              <div className="mt-2 flex items-baseline gap-3">
+                <span className="font-mono text-4xl font-medium tracking-tight text-foreground tabular-nums">+18.4%</span>
+                <span className="font-mono text-sm text-emerald-400">+2.45%</span>
+                <span className="ml-auto font-mono text-[10px] uppercase tracking-widest text-muted-foreground">{c.hero.ytd}</span>
+              </div>
+            </div>
+
+            {/* Chart */}
+            <div className="relative px-4 pb-2 pt-2">
+              <AnimatedChart />
+            </div>
+
+            {/* Timeframe rail */}
+            <div className="relative grid grid-cols-3 border-t border-white/[0.06] bg-white/[0.015]">
               {[
                 { k: "1M", v: "+2.1%" },
                 { k: "6M", v: "+9.7%" },
                 { k: "1Y", v: "+22.3%" },
-              ].map((r) => (
-                <div key={r.k} className="rounded-lg border border-white/5 bg-white/[0.02] p-3">
-                  <p className="text-muted-foreground">{r.k}</p>
-                  <p className="mt-1 font-semibold text-foreground">{r.v}</p>
+              ].map((r, i) => (
+                <div
+                  key={r.k}
+                  className={`px-4 py-3 ${i > 0 ? "border-l border-white/[0.06]" : ""}`}
+                >
+                  <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">{r.k}</p>
+                  <p className="mt-1 font-mono text-sm text-foreground tabular-nums">{r.v}</p>
                 </div>
               ))}
             </div>
+
+            {/* Bid / Ask footer */}
+            <div className="relative grid grid-cols-2 border-t border-white/[0.06] bg-background/40 backdrop-blur-xl">
+              <div className="border-l border-white/[0.06] px-5 py-3">
+                <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Bid</p>
+                <p className="mt-0.5 font-mono text-sm text-foreground tabular-nums">1,284.10</p>
+              </div>
+              <div className="px-5 py-3">
+                <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Ask</p>
+                <p className="mt-0.5 font-mono text-sm text-foreground tabular-nums">1,284.50</p>
+              </div>
+            </div>
+
+            {/* Hairline gold accent */}
+            <div className="h-px w-full bg-gradient-to-l from-transparent via-gold/40 to-transparent" aria-hidden />
           </div>
           <p className="mt-3 text-xs text-muted-foreground">{c.hero.disclaimer}</p>
         </div>
