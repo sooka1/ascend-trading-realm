@@ -474,8 +474,8 @@ export const setSubscriptionStatus = createServerFn({ method: "POST" })
       .eq("id", data.id)
       .maybeSingle();
     if (!current) throw new Error("Subscription not found");
-    const patch: Record<string, unknown> = { status: data.status };
-    if (data.status === "active" && !("started_at" in current && (current as any).started_at)) {
+    const patch: { status: string; started_at?: string; ends_at?: string } = { status: data.status };
+    if (data.status === "active" && !(current as any).started_at) {
       patch.started_at = new Date().toISOString();
     }
     if (data.status === "closed" || data.status === "archived") {
