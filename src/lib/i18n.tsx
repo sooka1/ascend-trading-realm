@@ -469,3 +469,9 @@ export function usePage() {
   const { lang } = useI18n();
   return pageContent(lang);
 }
+
+import { homeContent } from "./home-content";
+export function useHome() {
+  const { lang } = useI18n();
+  return homeContent(lang);
+}
