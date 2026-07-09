@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { PageShell } from "@/components/page-shell";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowDownToLine, ArrowUpFromLine, Bell, Download, FileText, MessageSquare, Send } from "lucide-react";
+import { ArrowDownToLine, ArrowUpFromLine, Bell, Download, FileText, FolderOpen, LifeBuoy, MessageSquare, Send } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/portal")({
@@ -79,6 +79,18 @@ function PortalPage() {
             </Button>
           </div>
         </div>
+
+        <nav className="mt-6 flex flex-wrap gap-2">
+          <Button asChild variant="outline" className="border-white/15">
+            <Link to="/portal/documents"><FolderOpen className="ml-2 h-4 w-4" />المستندات</Link>
+          </Button>
+          <Button asChild variant="outline" className="border-white/15">
+            <Link to="/portal/support"><LifeBuoy className="ml-2 h-4 w-4" />الدعم</Link>
+          </Button>
+          <Button asChild variant="outline" className="border-white/15">
+            <Link to="/security">الأمان</Link>
+          </Button>
+        </nav>
 
         <div className="mt-8 grid gap-6 lg:grid-cols-3">
           <div className="glass rounded-3xl p-6 lg:col-span-2">

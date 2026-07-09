@@ -33,6 +33,7 @@ import { Route as AuthenticatedInvestorRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/_admin/route'
+import { Route as AuthenticatedPortalSupportRouteImport } from './routes/_authenticated/portal.support'
 import { Route as AuthenticatedPortalDocumentsRouteImport } from './routes/_authenticated/portal.documents'
 import { Route as AuthenticatedAppProfileRouteImport } from './routes/_authenticated/app.profile'
 import { Route as AuthenticatedAppPortfolioRouteImport } from './routes/_authenticated/app.portfolio'
@@ -157,6 +158,12 @@ const AuthenticatedAdminRouteRoute = AuthenticatedAdminRouteRouteImport.update({
   id: '/_admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPortalSupportRoute =
+  AuthenticatedPortalSupportRouteImport.update({
+    id: '/support',
+    path: '/support',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
 const AuthenticatedPortalDocumentsRoute =
   AuthenticatedPortalDocumentsRouteImport.update({
     id: '/documents',
@@ -214,6 +221,7 @@ export interface FileRoutesByFullPath {
   '/app/portfolio': typeof AuthenticatedAppPortfolioRoute
   '/app/profile': typeof AuthenticatedAppProfileRoute
   '/portal/documents': typeof AuthenticatedPortalDocumentsRoute
+  '/portal/support': typeof AuthenticatedPortalSupportRoute
   '/admin/finance': typeof AuthenticatedAdminAdminFinanceRoute
 }
 export interface FileRoutesByTo {
@@ -243,6 +251,7 @@ export interface FileRoutesByTo {
   '/app/portfolio': typeof AuthenticatedAppPortfolioRoute
   '/app/profile': typeof AuthenticatedAppProfileRoute
   '/portal/documents': typeof AuthenticatedPortalDocumentsRoute
+  '/portal/support': typeof AuthenticatedPortalSupportRoute
   '/admin/finance': typeof AuthenticatedAdminAdminFinanceRoute
 }
 export interface FileRoutesById {
@@ -275,6 +284,7 @@ export interface FileRoutesById {
   '/_authenticated/app/portfolio': typeof AuthenticatedAppPortfolioRoute
   '/_authenticated/app/profile': typeof AuthenticatedAppProfileRoute
   '/_authenticated/portal/documents': typeof AuthenticatedPortalDocumentsRoute
+  '/_authenticated/portal/support': typeof AuthenticatedPortalSupportRoute
   '/_authenticated/_admin/admin/finance': typeof AuthenticatedAdminAdminFinanceRoute
 }
 export interface FileRouteTypes {
@@ -306,6 +316,7 @@ export interface FileRouteTypes {
     | '/app/portfolio'
     | '/app/profile'
     | '/portal/documents'
+    | '/portal/support'
     | '/admin/finance'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -335,6 +346,7 @@ export interface FileRouteTypes {
     | '/app/portfolio'
     | '/app/profile'
     | '/portal/documents'
+    | '/portal/support'
     | '/admin/finance'
   id:
     | '__root__'
@@ -366,6 +378,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/portfolio'
     | '/_authenticated/app/profile'
     | '/_authenticated/portal/documents'
+    | '/_authenticated/portal/support'
     | '/_authenticated/_admin/admin/finance'
   fileRoutesById: FileRoutesById
 }
@@ -560,6 +573,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/portal/support': {
+      id: '/_authenticated/portal/support'
+      path: '/support'
+      fullPath: '/portal/support'
+      preLoaderRoute: typeof AuthenticatedPortalSupportRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
     '/_authenticated/portal/documents': {
       id: '/_authenticated/portal/documents'
       path: '/documents'
@@ -629,10 +649,12 @@ const AuthenticatedAppRouteWithChildren =
 
 interface AuthenticatedPortalRouteChildren {
   AuthenticatedPortalDocumentsRoute: typeof AuthenticatedPortalDocumentsRoute
+  AuthenticatedPortalSupportRoute: typeof AuthenticatedPortalSupportRoute
 }
 
 const AuthenticatedPortalRouteChildren: AuthenticatedPortalRouteChildren = {
   AuthenticatedPortalDocumentsRoute: AuthenticatedPortalDocumentsRoute,
+  AuthenticatedPortalSupportRoute: AuthenticatedPortalSupportRoute,
 }
 
 const AuthenticatedPortalRouteWithChildren =
