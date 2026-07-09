@@ -59,6 +59,48 @@ export type Database = {
         }
         Relationships: []
       }
+      finance_audit_log: {
+        Row: {
+          action: string
+          admin_id: string
+          created_at: string
+          from_status: string | null
+          id: string
+          metadata: Json | null
+          reason: string | null
+          request_id: string
+          request_kind: string
+          target_user_id: string
+          to_status: string | null
+        }
+        Insert: {
+          action: string
+          admin_id: string
+          created_at?: string
+          from_status?: string | null
+          id?: string
+          metadata?: Json | null
+          reason?: string | null
+          request_id: string
+          request_kind: string
+          target_user_id: string
+          to_status?: string | null
+        }
+        Update: {
+          action?: string
+          admin_id?: string
+          created_at?: string
+          from_status?: string | null
+          id?: string
+          metadata?: Json | null
+          reason?: string | null
+          request_id?: string
+          request_kind?: string
+          target_user_id?: string
+          to_status?: string | null
+        }
+        Relationships: []
+      }
       investment_requests: {
         Row: {
           capital_range: Database["public"]["Enums"]["capital_range"]

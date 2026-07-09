@@ -1,12 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { canViewSecurityAudit } from "@/lib/security-audit.functions";
 import { PageShell } from "@/components/page-shell";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { CheckCircle2, XCircle, Clock, ShieldAlert } from "lucide-react";
+import { CheckCircle2, XCircle, Clock, ShieldAlert, History } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin/finance")({
   head: () => ({
@@ -21,6 +21,7 @@ export const Route = createFileRoute("/_authenticated/admin/finance")({
 type Dep = { id: string; user_id: string; amount: number; currency: string; method: string; reference: string | null; notes: string | null; status: string; created_at: string; reviewed_at: string | null };
 type Wd = { id: string; user_id: string; amount: number; currency: string; destination: string; iban: string | null; swift: string | null; notes: string | null; status: string; created_at: string; reviewed_at: string | null };
 type Profile = { id: string; email: string | null; display_name: string | null };
+type AuditRow = { id: string; request_kind: string; request_id: string; target_user_id: string; admin_id: string; action: string; from_status: string | null; to_status: string | null; reason: string | null; created_at: string };
 
 function AdminFinance() {
   const check = useServerFn(canViewSecurityAudit);
@@ -31,6 +32,8 @@ function AdminFinance() {
   const [wds, setWds] = useState<Wd[]>([]);
   const [profiles, setProfiles] = useState<Record<string, Profile>>({});
   const [loading, setLoading] = useState(true);
+  const [audit, setAudit] = useState<AuditRow[]>([]);
+  const [openLog, setOpenLog] = useState<string | null>(null);
 
   async function load() {
     setLoading(true);
@@ -42,7 +45,14 @@ function AdminFinance() {
     const w = (wd ?? []) as Wd[];
     setDeps(d);
     setWds(w);
-    const ids = Array.from(new Set([...d.map((x) => x.user_id), ...w.map((x) => x.user_id)]));
+    const { data: au } = await supabase
+      .from("finance_audit_log")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(500);
+    setAudit((au ?? []) as AuditRow[]);
+    const adminIds = (au ?? []).map((x: any) => x.admin_id);
+    const ids = Array.from(new Set([...d.map((x) => x.user_id), ...w.map((x) => x.user_id), ...adminIds]));
     if (ids.length) {
       const { data: pr } = await supabase.from("profiles").select("id,email,display_name").in("id", ids);
       const map: Record<string, Profile> = {};
@@ -62,12 +72,36 @@ function AdminFinance() {
   }, []);
 
   async function review(kind: "deposits" | "withdrawals", id: string, status: "approved" | "rejected") {
+    const row = (kind === "deposits" ? deps : wds).find((r) => r.id === id);
+    if (!row) return;
+    const reason = window.prompt(
+      status === "approved" ? "سبب الاعتماد (اختياري):" : "سبب الرفض (مطلوب):",
+      ""
+    );
+    if (status === "rejected" && !reason?.trim()) {
+      toast.error("يجب إدخال سبب الرفض");
+      return;
+    }
     const { data: userRes } = await supabase.auth.getUser();
+    const adminId = userRes.user?.id;
+    if (!adminId) return toast.error("جلسة غير صالحة");
     const { error } = await supabase
       .from(kind)
-      .update({ status, reviewed_by: userRes.user?.id, reviewed_at: new Date().toISOString() })
+      .update({ status, reviewed_by: adminId, reviewed_at: new Date().toISOString() })
       .eq("id", id);
     if (error) return toast.error(error.message);
+    const { error: aErr } = await supabase.from("finance_audit_log").insert({
+      request_kind: kind,
+      request_id: id,
+      target_user_id: row.user_id,
+      admin_id: adminId,
+      action: status === "approved" ? "approve" : "reject",
+      from_status: row.status,
+      to_status: status,
+      reason: reason?.trim() || null,
+      metadata: { amount: row.amount, currency: row.currency },
+    });
+    if (aErr) toast.error("تعذّر تسجيل التدقيق: " + aErr.message);
     toast.success(status === "approved" ? "تم اعتماد الطلب" : "تم رفض الطلب");
     await load();
   }
@@ -98,6 +132,7 @@ function AdminFinance() {
 
   const rows = tab === "deposits" ? deps : wds;
   const filtered = filter === "all" ? rows : rows.filter((r) => r.status === filter);
+  const auditFor = (id: string) => audit.filter((a) => a.request_id === id);
   const counts = {
     pendingDep: deps.filter((d) => d.status === "pending").length,
     pendingWd: wds.filter((w) => w.status === "pending").length,
@@ -150,7 +185,8 @@ function AdminFinance() {
                       ? `${(r as Dep).method}${(r as Dep).reference ? ` · ${(r as Dep).reference}` : ""}`
                       : `${(r as Wd).destination}${(r as Wd).iban ? ` · ${(r as Wd).iban}` : ""}`;
                     return (
-                      <tr key={r.id} className="align-top">
+                      <Fragment key={r.id}>
+                      <tr className="align-top">
                         <td className="px-4 py-3 text-xs text-muted-foreground">{new Date(r.created_at).toLocaleString()}</td>
                         <td className="px-4 py-3">
                           <div className="font-medium">{p?.display_name ?? "—"}</div>
@@ -160,6 +196,7 @@ function AdminFinance() {
                         <td className="px-4 py-3 text-xs">{info}{r.notes ? <div className="mt-1 text-muted-foreground">“{r.notes}”</div> : null}</td>
                         <td className="px-4 py-3"><StatusPill status={r.status} /></td>
                         <td className="px-4 py-3">
+                          <div className="flex items-center justify-end gap-2">
                           {r.status === "pending" ? (
                             <div className="flex justify-end gap-2">
                               <Button size="sm" onClick={() => review(tab, r.id, "approved")} className="bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30">
@@ -174,8 +211,46 @@ function AdminFinance() {
                               {r.reviewed_at ? new Date(r.reviewed_at).toLocaleDateString() : "—"}
                             </div>
                           )}
+                          <Button size="sm" variant="ghost" onClick={() => setOpenLog(openLog === r.id ? null : r.id)} className="text-xs">
+                            <History className="mr-1 h-3.5 w-3.5" />
+                            سجل ({auditFor(r.id).length})
+                          </Button>
+                          </div>
                         </td>
                       </tr>
+                      {openLog === r.id && (
+                        <tr className="bg-white/[0.02]">
+                          <td colSpan={6} className="px-4 py-3">
+                            {auditFor(r.id).length === 0 ? (
+                              <div className="text-xs text-muted-foreground">لا توجد إجراءات مسجّلة بعد.</div>
+                            ) : (
+                              <ul className="space-y-2">
+                                {auditFor(r.id).map((a) => {
+                                  const adm = profiles[a.admin_id];
+                                  return (
+                                    <li key={a.id} className="rounded-xl bg-white/[0.03] p-3 text-xs">
+                                      <div className="flex flex-wrap items-center gap-2">
+                                        <span className="font-medium">{a.action === "approve" ? "اعتماد" : a.action === "reject" ? "رفض" : a.action}</span>
+                                        <span className="text-muted-foreground">•</span>
+                                        <span className="text-muted-foreground">من</span>
+                                        <StatusPill status={a.from_status ?? "—"} />
+                                        <span className="text-muted-foreground">إلى</span>
+                                        <StatusPill status={a.to_status ?? "—"} />
+                                        <span className="ms-auto text-muted-foreground">{new Date(a.created_at).toLocaleString()}</span>
+                                      </div>
+                                      <div className="mt-1 text-muted-foreground">
+                                        بواسطة: {adm?.display_name ?? adm?.email ?? a.admin_id.slice(0, 8)}
+                                      </div>
+                                      {a.reason && <div className="mt-1">السبب: “{a.reason}”</div>}
+                                    </li>
+                                  );
+                                })}
+                              </ul>
+                            )}
+                          </td>
+                        </tr>
+                      )}
+                      </Fragment>
                     );
                   })
                 )}
