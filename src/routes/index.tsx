@@ -14,6 +14,10 @@ import {
   TrendingUp,
   Users,
   Wallet,
+  Award,
+  Quote,
+  Star,
+  ScrollText,
 } from "lucide-react";
 import { PageShell } from "@/components/page-shell";
 import { MarketTicker } from "@/components/market-ticker";
@@ -60,6 +64,8 @@ function Home() {
       <PerformanceBand c={c} />
       <RiskFramework c={c} />
       <SecurityBlock c={c} />
+      <Testimonials />
+      <Credentials />
       <PortalPreview c={c} />
       <FinalCTA c={c} />
     </PageShell>
