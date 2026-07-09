@@ -12,11 +12,13 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SolutionsRouteImport } from './routes/solutions'
 import { Route as RiskRouteImport } from './routes/risk'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PortfoliosRouteImport } from './routes/portfolios'
 import { Route as PerformanceRouteImport } from './routes/performance'
 import { Route as MarketsRouteImport } from './routes/markets'
 import { Route as LegalRouteImport } from './routes/legal'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as EducationRouteImport } from './routes/education'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -47,6 +49,11 @@ const RiskRoute = RiskRouteImport.update({
   path: '/risk',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
@@ -70,6 +77,11 @@ const MarketsRoute = MarketsRouteImport.update({
 const LegalRoute = LegalRouteImport.update({
   id: '/legal',
   path: '/legal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FaqRoute = FaqRouteImport.update({
@@ -152,11 +164,13 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/education': typeof EducationRoute
   '/faq': typeof FaqRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/legal': typeof LegalRoute
   '/markets': typeof MarketsRoute
   '/performance': typeof PerformanceRoute
   '/portfolios': typeof PortfoliosRoute
   '/privacy': typeof PrivacyRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/risk': typeof RiskRoute
   '/solutions': typeof SolutionsRoute
   '/terms': typeof TermsRoute
@@ -175,11 +189,13 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/education': typeof EducationRoute
   '/faq': typeof FaqRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/legal': typeof LegalRoute
   '/markets': typeof MarketsRoute
   '/performance': typeof PerformanceRoute
   '/portfolios': typeof PortfoliosRoute
   '/privacy': typeof PrivacyRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/risk': typeof RiskRoute
   '/solutions': typeof SolutionsRoute
   '/terms': typeof TermsRoute
@@ -200,11 +216,13 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/education': typeof EducationRoute
   '/faq': typeof FaqRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/legal': typeof LegalRoute
   '/markets': typeof MarketsRoute
   '/performance': typeof PerformanceRoute
   '/portfolios': typeof PortfoliosRoute
   '/privacy': typeof PrivacyRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/risk': typeof RiskRoute
   '/solutions': typeof SolutionsRoute
   '/terms': typeof TermsRoute
@@ -225,11 +243,13 @@ export interface FileRouteTypes {
     | '/contact'
     | '/education'
     | '/faq'
+    | '/forgot-password'
     | '/legal'
     | '/markets'
     | '/performance'
     | '/portfolios'
     | '/privacy'
+    | '/reset-password'
     | '/risk'
     | '/solutions'
     | '/terms'
@@ -248,11 +268,13 @@ export interface FileRouteTypes {
     | '/contact'
     | '/education'
     | '/faq'
+    | '/forgot-password'
     | '/legal'
     | '/markets'
     | '/performance'
     | '/portfolios'
     | '/privacy'
+    | '/reset-password'
     | '/risk'
     | '/solutions'
     | '/terms'
@@ -272,11 +294,13 @@ export interface FileRouteTypes {
     | '/contact'
     | '/education'
     | '/faq'
+    | '/forgot-password'
     | '/legal'
     | '/markets'
     | '/performance'
     | '/portfolios'
     | '/privacy'
+    | '/reset-password'
     | '/risk'
     | '/solutions'
     | '/terms'
@@ -297,11 +321,13 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   EducationRoute: typeof EducationRoute
   FaqRoute: typeof FaqRoute
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
   LegalRoute: typeof LegalRoute
   MarketsRoute: typeof MarketsRoute
   PerformanceRoute: typeof PerformanceRoute
   PortfoliosRoute: typeof PortfoliosRoute
   PrivacyRoute: typeof PrivacyRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   RiskRoute: typeof RiskRoute
   SolutionsRoute: typeof SolutionsRoute
   TermsRoute: typeof TermsRoute
@@ -328,6 +354,13 @@ declare module '@tanstack/react-router' {
       path: '/risk'
       fullPath: '/risk'
       preLoaderRoute: typeof RiskRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacy': {
@@ -363,6 +396,13 @@ declare module '@tanstack/react-router' {
       path: '/legal'
       fullPath: '/legal'
       preLoaderRoute: typeof LegalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/faq': {
@@ -505,11 +545,13 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   EducationRoute: EducationRoute,
   FaqRoute: FaqRoute,
+  ForgotPasswordRoute: ForgotPasswordRoute,
   LegalRoute: LegalRoute,
   MarketsRoute: MarketsRoute,
   PerformanceRoute: PerformanceRoute,
   PortfoliosRoute: PortfoliosRoute,
   PrivacyRoute: PrivacyRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   RiskRoute: RiskRoute,
   SolutionsRoute: SolutionsRoute,
   TermsRoute: TermsRoute,

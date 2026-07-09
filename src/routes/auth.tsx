@@ -270,6 +270,17 @@ function Auth() {
                 {mode === "login" ? "Log in" : "Create account"}
               </Button>
 
+              {mode === "login" && (
+                <div className="text-center">
+                  <Link
+                    to="/forgot-password"
+                    className="text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+                  >
+                    Forgot your password?
+                  </Link>
+                </div>
+              )}
+
               <div className="relative py-2 text-center text-xs text-muted-foreground">
                 <span className="relative z-10 bg-transparent px-2">or continue with</span>
                 <div className="absolute inset-x-0 top-1/2 h-px bg-white/10" aria-hidden />
