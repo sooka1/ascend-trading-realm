@@ -26,6 +26,7 @@ import { PageShell } from "@/components/page-shell";
 import { MarketTicker } from "@/components/market-ticker";
 import { AnimatedCounter } from "@/components/animated-counter";
 import { Button } from "@/components/ui/button";
+import { useT } from "@/lib/i18n";
 import {
   Accordion,
   AccordionContent,
@@ -61,6 +62,7 @@ function Index() {
 
 /* ---------------- HERO ---------------- */
 function Hero() {
+  const t = useT();
   return (
     <section className="relative overflow-hidden">
       <img
@@ -81,19 +83,16 @@ function Hero() {
         <div>
           <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs uppercase tracking-[0.2em] text-muted-foreground">
             <Sparkles className="h-3.5 w-3.5 text-gold" />
-            World-class trading, real prizes
+            {t("hero.badge")}
           </span>
 
           <h1 className="mt-6 font-display text-4xl font-bold leading-[1.05] sm:text-6xl md:text-7xl">
-            Trade the world.
+            {t("hero.title.1")}
             <br />
-            <span className="text-gradient">Compete like a pro.</span>
+            <span className="text-gradient">{t("hero.title.2")}</span>
           </h1>
 
-          <p className="mt-6 max-w-xl text-lg text-muted-foreground">
-            Forex, crypto, gold, indices and stocks — executed at institutional speed on a platform built
-            for the world's most competitive traders. Join live tournaments and climb the global leaderboard.
-          </p>
+          <p className="mt-6 max-w-xl text-lg text-muted-foreground">{t("hero.subtitle")}</p>
 
           <div className="mt-8 flex flex-wrap gap-3">
             <Button
@@ -102,24 +101,24 @@ function Hero() {
               className="bg-[var(--gradient-brand)] text-white shadow-[var(--shadow-glow)] hover:opacity-95"
             >
               <Link to="/auth">
-                Start Trading <ChevronRight className="ml-1 h-4 w-4" />
+                {t("hero.cta.start")} <ChevronRight className="ml-1 h-4 w-4" />
               </Link>
             </Button>
             <Button size="lg" variant="outline" asChild className="border-white/15 bg-white/5 hover:bg-white/10">
               <Link to="/competitions">
-                <Trophy className="mr-2 h-4 w-4 text-gold" /> Join Competition
+                <Trophy className="mr-2 h-4 w-4 text-gold" /> {t("hero.cta.compete")}
               </Link>
             </Button>
             <Button size="lg" variant="ghost" asChild>
-              <Link to="/platform">Try Demo</Link>
+              <Link to="/platform">{t("hero.cta.demo")}</Link>
             </Button>
           </div>
 
           <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4 text-xs text-muted-foreground">
-            <TrustPill icon={ShieldCheck} label="Globally regulated" />
-            <TrustPill icon={Zap} label="18ms avg execution" />
-            <TrustPill icon={Lock} label="Segregated funds" />
-            <TrustPill icon={Users} label="2M+ traders" />
+            <TrustPill icon={ShieldCheck} label={t("hero.trust.regulated")} />
+            <TrustPill icon={Zap} label={t("hero.trust.execution")} />
+            <TrustPill icon={Lock} label={t("hero.trust.funds")} />
+            <TrustPill icon={Users} label={t("hero.trust.traders")} />
           </div>
         </div>
 
