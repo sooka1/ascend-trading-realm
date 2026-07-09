@@ -1,11 +1,11 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { PageShell } from "@/components/page-shell";
+import { PortalShell, PortalCard } from "@/components/portal-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, LifeBuoy, Plus, Send } from "lucide-react";
+import { LifeBuoy, Plus, Send } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -118,27 +118,20 @@ function SupportPage() {
   }
 
   return (
-    <PageShell bare>
-      <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <p className="text-xs uppercase tracking-widest text-gold">الدعم</p>
-            <h1 className="mt-1 font-display text-3xl font-semibold md:text-4xl">تذاكر الدعم</h1>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button onClick={() => setCreating((v) => !v)} className="bg-[var(--gradient-gold)] font-semibold text-background">
-              <Plus className="ml-2 h-4 w-4" /> تذكرة جديدة
-            </Button>
-            <Button asChild variant="ghost" className="text-muted-foreground">
-              <Link to="/portal"><ArrowLeft className="ml-2 h-4 w-4" />رجوع</Link>
-            </Button>
-          </div>
-        </div>
-
-        {creating && (
-          <div className="glass mt-6 rounded-3xl p-6">
-            <h2 className="font-display text-lg font-semibold">فتح تذكرة جديدة</h2>
-            <div className="mt-4 grid gap-3 md:grid-cols-2">
+    <PortalShell
+      eyebrow="الأنشطة والاتصال"
+      title="تذاكر الدعم"
+      subtitle="افتح تذكرة جديدة أو تابع محادثاتك السابقة مع فريق HK."
+      actions={
+        <Button size="sm" onClick={() => setCreating((v) => !v)}>
+          <Plus className="me-1.5 h-3.5 w-3.5" /> تذكرة جديدة
+        </Button>
+      }
+    >
+      {creating && (
+        <div className="mb-6">
+          <PortalCard title="فتح تذكرة جديدة" icon={LifeBuoy}>
+            <div className="grid gap-3 md:grid-cols-2">
               <Input
                 placeholder="الموضوع"
                 value={form.subject}
@@ -157,106 +150,105 @@ function SupportPage() {
               onChange={(e) => setForm((f) => ({ ...f, body: e.target.value }))}
             />
             <div className="mt-3 flex justify-end gap-2">
-              <Button variant="ghost" onClick={() => setCreating(false)}>إلغاء</Button>
-              <Button onClick={submitNew} className="bg-[var(--gradient-gold)] font-semibold text-background">
-                إرسال
-              </Button>
+              <Button variant="outline" size="sm" onClick={() => setCreating(false)}>إلغاء</Button>
+              <Button size="sm" onClick={submitNew}>إرسال</Button>
             </div>
-          </div>
-        )}
+          </PortalCard>
+        </div>
+      )}
 
-        <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,320px)_1fr]">
-          <div className="glass rounded-3xl p-4">
-            <h2 className="px-2 pb-3 text-sm font-medium text-muted-foreground">تذاكري</h2>
-            {tickets.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-white/10 p-6 text-center">
-                <LifeBuoy className="mx-auto h-8 w-8 text-muted-foreground" />
-                <p className="mt-3 text-sm text-muted-foreground">لا توجد تذاكر بعد.</p>
-              </div>
-            ) : (
-              <ul className="space-y-1">
-                {tickets.map((t) => (
-                  <li key={t.id}>
-                    <button
-                      onClick={() => openTicket(t)}
-                      className={`w-full rounded-xl px-3 py-3 text-start text-sm transition ${
-                        selected?.id === t.id ? "bg-white/10" : "hover:bg-white/5"
-                      }`}
-                    >
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="truncate font-medium">{t.subject}</span>
-                        <StatusPill status={t.status} />
-                      </div>
-                      <p className="mt-1 text-xs text-muted-foreground">
-                        {t.category ?? "عام"} · {new Date(t.last_message_at).toLocaleDateString()}
-                      </p>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,320px)_1fr]">
+        <PortalCard title={`تذاكري · ${tickets.length}`} icon={LifeBuoy}>
+          {tickets.length === 0 ? (
+            <p className="py-6 text-center text-sm text-muted-foreground">لا توجد تذاكر بعد.</p>
+          ) : (
+            <ul className="space-y-1">
+              {tickets.map((t) => (
+                <li key={t.id}>
+                  <button
+                    onClick={() => openTicket(t)}
+                    className={`w-full rounded-md border px-3 py-2.5 text-start text-sm transition ${
+                      selected?.id === t.id
+                        ? "border-gold/40 bg-gold/[0.08]"
+                        : "border-white/10 bg-white/[0.02] hover:border-gold/30"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="truncate font-medium">{t.subject}</span>
+                      <StatusPill status={t.status} />
+                    </div>
+                    <p className="mt-1 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                      {t.category ?? "عام"} · {new Date(t.last_message_at).toLocaleDateString()}
+                    </p>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </PortalCard>
 
-          <div className="glass rounded-3xl p-6">
-            {!selected ? (
-              <div className="grid h-full min-h-[300px] place-items-center text-center text-sm text-muted-foreground">
-                اختر تذكرة من القائمة أو افتح تذكرة جديدة.
+        <PortalCard title={selected ? selected.subject : "المحادثة"} icon={LifeBuoy}>
+          {!selected ? (
+            <div className="grid min-h-[280px] place-items-center text-center text-sm text-muted-foreground">
+              اختر تذكرة من القائمة أو افتح تذكرة جديدة.
+            </div>
+          ) : (
+            <div className="flex flex-col">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/5 pb-3">
+                <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                  {selected.category ?? "عام"} · فُتحت في {new Date(selected.created_at).toLocaleString()}
+                </p>
+                <StatusPill status={selected.status} />
               </div>
-            ) : (
-              <div className="flex h-full flex-col">
-                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/5 pb-3">
-                  <div>
-                    <h2 className="font-display text-lg font-semibold">{selected.subject}</h2>
-                    <p className="text-xs text-muted-foreground">
-                      {selected.category ?? "عام"} · فُتحت في {new Date(selected.created_at).toLocaleString()}
+              <div className="mt-4 flex-1 space-y-3 overflow-y-auto pe-1">
+                {messages.map((m) => (
+                  <div
+                    key={m.id}
+                    className={`max-w-[85%] rounded-md border px-3 py-2 text-sm ${
+                      m.is_staff
+                        ? "me-auto border-white/5 bg-white/[0.03]"
+                        : "ms-auto border-gold/20 bg-gold/[0.08]"
+                    }`}
+                  >
+                    <p className="whitespace-pre-wrap">{m.body}</p>
+                    <p className="mt-1 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                      {m.is_staff ? "فريق الدعم" : "أنت"} · {new Date(m.created_at).toLocaleString()}
                     </p>
                   </div>
-                  <StatusPill status={selected.status} />
-                </div>
-                <div className="mt-4 flex-1 space-y-3 overflow-y-auto pr-1">
-                  {messages.map((m) => (
-                    <div
-                      key={m.id}
-                      className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm ${
-                        m.is_staff ? "mr-auto bg-white/5" : "ml-auto bg-gold/15"
-                      }`}
-                    >
-                      <p className="whitespace-pre-wrap">{m.body}</p>
-                      <p className="mt-1 text-[10px] text-muted-foreground">
-                        {m.is_staff ? "فريق الدعم" : "أنت"} · {new Date(m.created_at).toLocaleString()}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-                {selected.status !== "closed" && (
-                  <div className="mt-4 flex items-end gap-2 border-t border-white/5 pt-4">
-                    <Textarea
-                      value={draft}
-                      onChange={(e) => setDraft(e.target.value)}
-                      placeholder="اكتب رداً…"
-                      className="min-h-[70px] bg-white/[0.03]"
-                    />
-                    <Button onClick={reply} className="bg-[var(--gradient-gold)] font-semibold text-background">
-                      <Send className="h-4 w-4" />
-                    </Button>
-                  </div>
-                )}
+                ))}
               </div>
-            )}
-          </div>
-        </div>
-      </section>
-    </PageShell>
+              {selected.status !== "closed" && (
+                <div className="mt-4 flex items-end gap-2 border-t border-white/5 pt-4">
+                  <Textarea
+                    value={draft}
+                    onChange={(e) => setDraft(e.target.value)}
+                    placeholder="اكتب رداً…"
+                    className="min-h-[70px] bg-white/[0.02]"
+                  />
+                  <Button size="sm" onClick={reply}>
+                    <Send className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
+        </PortalCard>
+      </div>
+    </PortalShell>
   );
 }
 
 function StatusPill({ status }: { status: Ticket["status"] }) {
   const map: Record<Ticket["status"], { label: string; className: string }> = {
-    open: { label: "مفتوحة", className: "bg-emerald-500/15 text-emerald-300" },
-    pending: { label: "معلّقة", className: "bg-amber-500/15 text-amber-300" },
-    resolved: { label: "محلولة", className: "bg-sky-500/15 text-sky-300" },
-    closed: { label: "مغلقة", className: "bg-white/10 text-muted-foreground" },
+    open: { label: "مفتوحة", className: "border-emerald-500/30 bg-emerald-500/10 text-emerald-300" },
+    pending: { label: "معلّقة", className: "border-amber-500/30 bg-amber-500/10 text-amber-300" },
+    resolved: { label: "محلولة", className: "border-sky-500/30 bg-sky-500/10 text-sky-300" },
+    closed: { label: "مغلقة", className: "border-white/10 bg-white/[0.03] text-muted-foreground" },
   };
   const s = map[status];
-  return <span className={`rounded-full px-2 py-0.5 text-[10px] ${s.className}`}>{s.label}</span>;
+  return (
+    <span className={`rounded-sm border px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider ${s.className}`}>
+      {s.label}
+    </span>
+  );
 }

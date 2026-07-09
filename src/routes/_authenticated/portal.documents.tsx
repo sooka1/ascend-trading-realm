@@ -1,9 +1,10 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { PageShell } from "@/components/page-shell";
+import { PortalShell, PortalCard } from "@/components/portal-shell";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Download, FileText, Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Download, FileText, FolderOpen, Search } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/portal/documents")({
@@ -31,6 +32,7 @@ function DocumentsPage() {
   const [docs, setDocs] = useState<Doc[]>([]);
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
+  const [category, setCategory] = useState<string>("all");
 
   useEffect(() => {
     void (async () => {
@@ -50,12 +52,19 @@ function DocumentsPage() {
     window.open(data.signedUrl, "_blank", "noopener");
   }
 
-  const filtered = docs.filter(
-    (d) =>
-      !q ||
-      d.file_name.toLowerCase().includes(q.toLowerCase()) ||
-      d.category.toLowerCase().includes(q.toLowerCase()),
-  );
+  const categories = useMemo(() => {
+    const set = new Set(docs.map((d) => d.category));
+    return ["all", ...Array.from(set)];
+  }, [docs]);
+
+  const filtered = useMemo(() => {
+    const needle = q.trim().toLowerCase();
+    return docs.filter((d) => {
+      if (category !== "all" && d.category !== category) return false;
+      if (needle && ![d.file_name, d.category, d.description ?? ""].some((v) => v.toLowerCase().includes(needle))) return false;
+      return true;
+    });
+  }, [docs, q, category]);
 
   const grouped = filtered.reduce<Record<string, Doc[]>>((acc, d) => {
     (acc[d.category] ??= []).push(d);
@@ -63,65 +72,69 @@ function DocumentsPage() {
   }, {});
 
   return (
-    <PageShell bare>
-      <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <p className="text-xs uppercase tracking-widest text-gold">مركز المستندات</p>
-            <h1 className="mt-1 font-display text-3xl font-semibold md:text-4xl">مستنداتي</h1>
-            <p className="mt-2 text-sm text-muted-foreground">
-              التقارير، العقود، إشعارات الاستحقاق، وشهادات KYC. الروابط موقّعة وتنتهي خلال 60 ثانية.
-            </p>
-          </div>
-          <Button asChild variant="ghost" className="text-muted-foreground">
-            <Link to="/portal"><ArrowLeft className="ml-2 h-4 w-4" />رجوع للبوابة</Link>
-          </Button>
+    <PortalShell
+      eyebrow="التقارير والمستندات"
+      title="مركز المستندات"
+      subtitle="التقارير، العقود، إشعارات الاستحقاق، وشهادات KYC — روابط التنزيل موقّعة وتنتهي خلال 60 ثانية."
+    >
+      <div className="mb-6 flex flex-wrap items-center gap-2">
+        <div className="relative min-w-[220px] flex-1">
+          <Search className="pointer-events-none absolute start-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+          <Input placeholder="ابحث بالاسم أو الفئة…" value={q} onChange={(e) => setQ(e.target.value)} className="ps-9" />
         </div>
+        <div className="flex flex-wrap gap-1.5">
+          {categories.map((c) => (
+            <button
+              key={c}
+              onClick={() => setCategory(c)}
+              className={`rounded-md border px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-wider transition ${
+                category === c
+                  ? "border-gold/50 bg-gold/[0.08] text-foreground"
+                  : "border-white/10 text-muted-foreground hover:border-gold/40 hover:text-foreground"
+              }`}
+            >
+              {c === "all" ? "الكل" : c}
+            </button>
+          ))}
+        </div>
+      </div>
 
-        <div className="mt-6 flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.03] px-3 py-2">
-          <Search className="h-4 w-4 text-muted-foreground" />
-          <input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="بحث بالاسم أو الفئة…"
-            className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
-          />
+      {loading ? (
+        <PortalCard title="جارٍ التحميل…" icon={FileText}>
+          <p className="py-8 text-center text-sm text-muted-foreground">جلب مستنداتك…</p>
+        </PortalCard>
+      ) : filtered.length === 0 ? (
+        <PortalCard title="لا توجد مستندات" icon={FileText}>
+          <p className="py-8 text-center text-sm text-muted-foreground">لا توجد مستندات مطابقة.</p>
+        </PortalCard>
+      ) : (
+        <div className="space-y-6">
+          {Object.entries(grouped).map(([cat, list]) => (
+            <PortalCard key={cat} title={`${cat} · ${list.length}`} icon={FolderOpen}>
+              <ul className="divide-y divide-white/5">
+                {list.map((d) => (
+                  <li key={d.id} className="flex flex-wrap items-center gap-3 py-3">
+                    <span className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-gold/20 bg-gold/[0.06]">
+                      <FileText className="h-4 w-4 text-gold" />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate font-medium">{d.file_name}</p>
+                      <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                        {new Date(d.created_at).toLocaleDateString()} · {formatSize(d.size_bytes)}
+                        {d.description ? ` · ${d.description}` : ""}
+                      </p>
+                    </div>
+                    <Button size="sm" onClick={() => download(d)}>
+                      <Download className="me-1.5 h-3.5 w-3.5" /> تنزيل
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            </PortalCard>
+          ))}
         </div>
-
-        <div className="mt-8 space-y-6">
-          {loading ? (
-            <div className="glass rounded-3xl p-8 text-center text-sm text-muted-foreground">جارٍ التحميل…</div>
-          ) : filtered.length === 0 ? (
-            <div className="glass rounded-3xl p-10 text-center">
-              <FileText className="mx-auto h-10 w-10 text-muted-foreground" />
-              <p className="mt-4 text-sm text-muted-foreground">لا توجد مستندات مطابقة.</p>
-            </div>
-          ) : (
-            Object.entries(grouped).map(([category, list]) => (
-              <div key={category} className="glass rounded-3xl p-6">
-                <h2 className="font-display text-lg font-semibold capitalize">{category}</h2>
-                <ul className="mt-4 divide-y divide-white/5">
-                  {list.map((d) => (
-                    <li key={d.id} className="flex items-center justify-between gap-3 py-3 text-sm">
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate font-medium">{d.file_name}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {new Date(d.created_at).toLocaleDateString()} · {formatSize(d.size_bytes)}
-                          {d.description ? ` · ${d.description}` : ""}
-                        </p>
-                      </div>
-                      <Button size="sm" variant="ghost" onClick={() => download(d)}>
-                        <Download className="mr-2 h-4 w-4" /> تنزيل
-                      </Button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))
-          )}
-        </div>
-      </section>
-    </PageShell>
+      )}
+    </PortalShell>
   );
 }
 
