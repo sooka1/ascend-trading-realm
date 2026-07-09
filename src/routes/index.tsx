@@ -534,6 +534,7 @@ const CREDENTIALS: Record<string, CL> = {
       { name: "Excellence in Risk Management", body: "التميّز في إدارة المخاطر — MENA Investment Summit." },
     ],
     disclaimer: "الاعتمادات والجوائز عرض تمثيلي لأغراض التصميم؛ يتم تحديثها فور استلام الشهادات الرسمية الموثّقة.",
+    labels: { updated: "آخر تحديث", view: "عرض الشهادة", download: "تحميل PDF", verify: "تحقق عبر الجهة المُصدِرة", verifyStatement: "يمكن التحقق من صحة هذه الوثيقة عبر معرّف الشهادة أدناه لدى الجهة المُصدِرة الرسمية.", close: "إغلاق", details: "عرض التفاصيل" },
   },
   en: {
     eyebrow: "Certifications & Awards",
@@ -553,6 +554,7 @@ const CREDENTIALS: Record<string, CL> = {
       { name: "Excellence in Risk Management", body: "MENA Investment Summit — risk discipline." },
     ],
     disclaimer: "Certifications and awards shown are illustrative and will be updated with verified documentation.",
+    labels: { updated: "Last updated", view: "View certificate", download: "Download PDF", verify: "Verify with issuing body", verifyStatement: "Authenticity can be verified via the certificate ID below with the official issuing authority.", close: "Close", details: "View details" },
   },
   fr: {
     eyebrow: "Certifications & Prix",
@@ -572,6 +574,7 @@ const CREDENTIALS: Record<string, CL> = {
       { name: "Excellence in Risk Management", body: "MENA Investment Summit." },
     ],
     disclaimer: "Certifications et prix présentés à titre indicatif.",
+    labels: { updated: "Dernière mise à jour", view: "Voir le certificat", download: "Télécharger le PDF", verify: "Vérifier auprès de l'organisme", verifyStatement: "L'authenticité peut être vérifiée via l'identifiant ci-dessous auprès de l'organisme émetteur.", close: "Fermer", details: "Voir les détails" },
   },
   es: {
     eyebrow: "Certificaciones y Premios",
@@ -591,6 +594,7 @@ const CREDENTIALS: Record<string, CL> = {
       { name: "Excellence in Risk Management", body: "MENA Investment Summit." },
     ],
     disclaimer: "Certificaciones y premios mostrados con fines ilustrativos.",
+    labels: { updated: "Última actualización", view: "Ver certificado", download: "Descargar PDF", verify: "Verificar con el emisor", verifyStatement: "La autenticidad puede verificarse mediante el identificador a continuación con la entidad emisora.", close: "Cerrar", details: "Ver detalles" },
   },
   tr: {
     eyebrow: "Sertifikalar ve Ödüller",
@@ -610,6 +614,7 @@ const CREDENTIALS: Record<string, CL> = {
       { name: "Excellence in Risk Management", body: "MENA Investment Summit." },
     ],
     disclaimer: "Sertifika ve ödüller örnek amaçlıdır.",
+    labels: { updated: "Son güncelleme", view: "Sertifikayı görüntüle", download: "PDF indir", verify: "Veren kurum ile doğrula", verifyStatement: "Belgenin gerçekliği aşağıdaki sertifika kimliği ile veren kuruluş üzerinden doğrulanabilir.", close: "Kapat", details: "Detayları gör" },
   },
 };
 
