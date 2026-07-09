@@ -10,8 +10,8 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/_authenticated/portal")({
   head: () => ({
     meta: [
-      { title: "Client Portal — HK Investment Management" },
-      { name: "description", content: "Statements, transaction history, secure messaging and notifications for HK Investment Management clients." },
+      { title: "بوابة العميل — HK Investment Management" },
+      { name: "description", content: "الكشوف، سجل العمليات، المراسلات الآمنة، والإشعارات لعملاء HK." },
     ],
   }),
   component: PortalPage,
@@ -64,11 +64,11 @@ function PortalPage() {
       <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <p className="text-xs uppercase tracking-widest text-gold">Client Portal</p>
-            <h1 className="mt-1 font-display text-3xl font-semibold md:text-4xl">Documents, activity & support</h1>
+            <p className="text-xs uppercase tracking-widest text-gold">بوابة العميل</p>
+            <h1 className="mt-1 font-display text-3xl font-semibold md:text-4xl">المستندات والنشاط والدعم</h1>
           </div>
           <Button asChild variant="outline" className="border-white/15">
-            <Link to="/dashboard">Back to dashboard</Link>
+            <Link to="/dashboard">العودة إلى لوحة التحكم</Link>
           </Button>
         </div>
 
@@ -76,10 +76,10 @@ function PortalPage() {
           <div className="glass rounded-3xl p-6 lg:col-span-2">
             <div className="flex items-center gap-2">
               <FileText className="h-5 w-5 text-gold" />
-              <h2 className="font-display text-lg font-semibold">Statements & reports</h2>
+              <h2 className="font-display text-lg font-semibold">الكشوف والتقارير</h2>
             </div>
             {statements.length === 0 ? (
-              <p className="mt-4 text-sm text-muted-foreground">No statements yet.</p>
+              <p className="mt-4 text-sm text-muted-foreground">لا توجد كشوف بعد.</p>
             ) : (
               <ul className="mt-4 divide-y divide-white/5">
                 {statements.map((s) => (
@@ -89,7 +89,7 @@ function PortalPage() {
                       <p className="text-xs text-muted-foreground">{cap(s.kind)} · {s.period}</p>
                     </div>
                     <Button size="sm" variant="ghost" disabled={!s.file_url}>
-                      <Download className="mr-2 h-4 w-4" /> {s.file_url ? "Download" : "Pending"}
+                      <Download className="mr-2 h-4 w-4" /> {s.file_url ? "تنزيل" : "قيد الإصدار"}
                     </Button>
                   </li>
                 ))}
@@ -100,10 +100,10 @@ function PortalPage() {
           <div className="glass rounded-3xl p-6">
             <div className="flex items-center gap-2">
               <Bell className="h-5 w-5 text-gold" />
-              <h2 className="font-display text-lg font-semibold">Notifications</h2>
+              <h2 className="font-display text-lg font-semibold">الإشعارات</h2>
             </div>
             {notifications.length === 0 ? (
-              <p className="mt-4 text-sm text-muted-foreground">No notifications.</p>
+              <p className="mt-4 text-sm text-muted-foreground">لا توجد إشعارات.</p>
             ) : (
               <ul className="mt-4 space-y-3">
                 {notifications.map((n) => (
@@ -118,23 +118,23 @@ function PortalPage() {
           </div>
 
           <div className="glass rounded-3xl p-6 lg:col-span-2">
-            <h2 className="font-display text-lg font-semibold">Transaction history</h2>
+            <h2 className="font-display text-lg font-semibold">سجل العمليات</h2>
             <div className="mt-4 overflow-x-auto">
               <table className="w-full min-w-[640px] text-sm">
                 <thead className="text-xs uppercase tracking-widest text-muted-foreground">
                   <tr>
-                    <th className="py-2 text-left">Date</th>
-                    <th className="py-2 text-left">Symbol</th>
-                    <th className="py-2 text-left">Side</th>
-                    <th className="py-2 text-right">Qty</th>
-                    <th className="py-2 text-right">Price</th>
-                    <th className="py-2 text-right">P&amp;L</th>
+                    <th className="py-2 text-start">التاريخ</th>
+                    <th className="py-2 text-start">الرمز</th>
+                    <th className="py-2 text-start">النوع</th>
+                    <th className="py-2 text-end">الكمية</th>
+                    <th className="py-2 text-end">السعر</th>
+                    <th className="py-2 text-end">الربح/الخسارة</th>
                   </tr>
                 </thead>
                 <tbody>
                   {txs.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="py-6 text-center text-muted-foreground">No transactions yet.</td>
+                      <td colSpan={6} className="py-6 text-center text-muted-foreground">لا توجد عمليات بعد.</td>
                     </tr>
                   ) : (
                     txs.map((t) => (
@@ -142,9 +142,9 @@ function PortalPage() {
                         <td className="py-3">{new Date(t.occurred_at).toLocaleDateString()}</td>
                         <td className="py-3 font-medium">{t.symbol}</td>
                         <td className="py-3 uppercase text-muted-foreground">{t.side}</td>
-                        <td className="py-3 text-right">{Number(t.quantity).toLocaleString()}</td>
-                        <td className="py-3 text-right">{Number(t.price).toFixed(2)}</td>
-                        <td className={`py-3 text-right ${Number(t.pnl) >= 0 ? "text-gold" : "text-red-400"}`}>
+                        <td className="py-3 text-end">{Number(t.quantity).toLocaleString()}</td>
+                        <td className="py-3 text-end">{Number(t.price).toFixed(2)}</td>
+                        <td className={`py-3 text-end ${Number(t.pnl) >= 0 ? "text-gold" : "text-red-400"}`}>
                           {Number(t.pnl) >= 0 ? "+" : ""}
                           {Number(t.pnl).toFixed(2)}
                         </td>
@@ -159,11 +159,11 @@ function PortalPage() {
           <div className="glass rounded-3xl p-6">
             <div className="flex items-center gap-2">
               <MessageSquare className="h-5 w-5 text-gold" />
-              <h2 className="font-display text-lg font-semibold">Secure messaging</h2>
+              <h2 className="font-display text-lg font-semibold">المراسلات الآمنة</h2>
             </div>
             <div className="mt-4 max-h-72 space-y-3 overflow-y-auto pr-2">
               {messages.length === 0 ? (
-                <p className="text-sm text-muted-foreground">No messages yet.</p>
+                <p className="text-sm text-muted-foreground">لا توجد رسائل بعد.</p>
               ) : (
                 messages.map((m) => (
                   <div
@@ -172,7 +172,7 @@ function PortalPage() {
                   >
                     <p>{m.body}</p>
                     <p className="mt-1 text-[10px] text-muted-foreground">
-                      {m.from_role === "client" ? "You" : "Account manager"} · {new Date(m.created_at).toLocaleString()}
+                      {m.from_role === "client" ? "أنت" : "مدير الحساب"} · {new Date(m.created_at).toLocaleString()}
                     </p>
                   </div>
                 ))
@@ -182,7 +182,7 @@ function PortalPage() {
               <Textarea
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
-                placeholder="Message your account manager…"
+                placeholder="اكتب رسالة لمدير حسابك…"
                 className="min-h-[70px] bg-white/[0.03]"
               />
               <Button onClick={sendMessage} className="bg-[var(--gradient-gold)] font-semibold text-background">
