@@ -249,7 +249,7 @@ function AdminUsers() {
                       u.banned_until && new Date(u.banned_until).getTime() > Date.now();
                     const isPending = !u.email_confirmed_at;
                     const statusTone: "positive" | "warning" | "critical" = isBanned
-                      ? "negative"
+                      ? "critical"
                       : isPending
                         ? "warning"
                         : "positive";
