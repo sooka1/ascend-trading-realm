@@ -18,6 +18,9 @@ import {
   Quote,
   Star,
   ScrollText,
+  Download,
+  ExternalLink,
+  CalendarCheck,
 } from "lucide-react";
 import { PageShell } from "@/components/page-shell";
 import { MarketTicker } from "@/components/market-ticker";
@@ -31,6 +34,15 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { useI18n } from "@/lib/i18n";
 import { LANDING, type LandingContent } from "@/lib/landing-t";
 import heroVideo from "@/assets/hero-bg.mp4.asset.json";
@@ -459,11 +471,48 @@ type CL = {
   eyebrow: string;
   title: string;
   subtitle: string;
-  certs: { name: string; body: string }[];
+  certs: { key: CertKey; name: string; body: string }[];
   awards: { name: string; body: string }[];
   awardsTitle: string;
   certsTitle: string;
   disclaimer: string;
+  labels: {
+    updated: string;
+    view: string;
+    download: string;
+    verify: string;
+    verifyStatement: string;
+    close: string;
+    details: string;
+  };
+};
+
+type CertKey = "iso27001" | "soc2" | "gdpr" | "aml";
+
+const CERT_META: Record<
+  CertKey,
+  { updated: string; verifyUrl: string; verifyId: string }
+> = {
+  iso27001: {
+    updated: "2025-08-14",
+    verifyUrl: "https://www.iso.org/standard/27001",
+    verifyId: "HK-ISO27001-2025-0814",
+  },
+  soc2: {
+    updated: "2025-06-30",
+    verifyUrl: "https://www.aicpa-cima.com/topic/audit-assurance/audit-and-assurance-greater-than-soc-2",
+    verifyId: "HK-SOC2-TYPEII-2025-Q2",
+  },
+  gdpr: {
+    updated: "2025-09-01",
+    verifyUrl: "https://gdpr.eu/",
+    verifyId: "HK-GDPR-DPA-2025-09",
+  },
+  aml: {
+    updated: "2025-10-05",
+    verifyUrl: "https://www.fatf-gafi.org/",
+    verifyId: "HK-AML-KYC-2025-10",
+  },
 };
 
 const CREDENTIALS: Record<string, CL> = {
@@ -474,10 +523,10 @@ const CREDENTIALS: Record<string, CL> = {
     certsTitle: "الاعتمادات والشهادات القانونية",
     awardsTitle: "الجوائز والتقديرات العالمية",
     certs: [
-      { name: "ISO/IEC 27001", body: "شهادة معتمدة في أمن المعلومات لحماية بيانات العملاء." },
-      { name: "SOC 2 Type II", body: "تقرير مستقل يوثّق ضوابط الأمان والخصوصية والتوافر." },
-      { name: "GDPR Compliance", body: "التزام كامل بلائحة حماية البيانات الأوروبية." },
-      { name: "AML / KYC", body: "سياسات صارمة لمكافحة غسل الأموال ومعرفة العميل." },
+      { key: "iso27001", name: "ISO/IEC 27001", body: "شهادة معتمدة في أمن المعلومات لحماية بيانات العملاء." },
+      { key: "soc2", name: "SOC 2 Type II", body: "تقرير مستقل يوثّق ضوابط الأمان والخصوصية والتوافر." },
+      { key: "gdpr", name: "GDPR Compliance", body: "التزام كامل بلائحة حماية البيانات الأوروبية." },
+      { key: "aml", name: "AML / KYC", body: "سياسات صارمة لمكافحة غسل الأموال ومعرفة العميل." },
     ],
     awards: [
       { name: "Best Wealth Manager 2025", body: "جائزة أفضل شركة إدارة ثروات — Global Finance Awards." },
@@ -485,6 +534,7 @@ const CREDENTIALS: Record<string, CL> = {
       { name: "Excellence in Risk Management", body: "التميّز في إدارة المخاطر — MENA Investment Summit." },
     ],
     disclaimer: "الاعتمادات والجوائز عرض تمثيلي لأغراض التصميم؛ يتم تحديثها فور استلام الشهادات الرسمية الموثّقة.",
+    labels: { updated: "آخر تحديث", view: "عرض الشهادة", download: "تحميل PDF", verify: "تحقق عبر الجهة المُصدِرة", verifyStatement: "يمكن التحقق من صحة هذه الوثيقة عبر معرّف الشهادة أدناه لدى الجهة المُصدِرة الرسمية.", close: "إغلاق", details: "عرض التفاصيل" },
   },
   en: {
     eyebrow: "Certifications & Awards",
@@ -493,10 +543,10 @@ const CREDENTIALS: Record<string, CL> = {
     certsTitle: "Legal Certifications",
     awardsTitle: "Global Awards & Recognition",
     certs: [
-      { name: "ISO/IEC 27001", body: "Certified information-security management for client data protection." },
-      { name: "SOC 2 Type II", body: "Independent report on security, privacy and availability controls." },
-      { name: "GDPR Compliance", body: "Full alignment with the EU General Data Protection Regulation." },
-      { name: "AML / KYC", body: "Rigorous anti–money laundering and know-your-customer policies." },
+      { key: "iso27001", name: "ISO/IEC 27001", body: "Certified information-security management for client data protection." },
+      { key: "soc2", name: "SOC 2 Type II", body: "Independent report on security, privacy and availability controls." },
+      { key: "gdpr", name: "GDPR Compliance", body: "Full alignment with the EU General Data Protection Regulation." },
+      { key: "aml", name: "AML / KYC", body: "Rigorous anti–money laundering and know-your-customer policies." },
     ],
     awards: [
       { name: "Best Wealth Manager 2025", body: "Global Finance Awards — top wealth-management firm." },
@@ -504,6 +554,7 @@ const CREDENTIALS: Record<string, CL> = {
       { name: "Excellence in Risk Management", body: "MENA Investment Summit — risk discipline." },
     ],
     disclaimer: "Certifications and awards shown are illustrative and will be updated with verified documentation.",
+    labels: { updated: "Last updated", view: "View certificate", download: "Download PDF", verify: "Verify with issuing body", verifyStatement: "Authenticity can be verified via the certificate ID below with the official issuing authority.", close: "Close", details: "View details" },
   },
   fr: {
     eyebrow: "Certifications & Prix",
@@ -512,10 +563,10 @@ const CREDENTIALS: Record<string, CL> = {
     certsTitle: "Certifications légales",
     awardsTitle: "Récompenses mondiales",
     certs: [
-      { name: "ISO/IEC 27001", body: "Gestion certifiée de la sécurité de l'information." },
-      { name: "SOC 2 Type II", body: "Contrôles indépendants de sécurité et de confidentialité." },
-      { name: "GDPR", body: "Conformité totale au règlement européen." },
-      { name: "AML / KYC", body: "Politiques strictes de lutte contre le blanchiment." },
+      { key: "iso27001", name: "ISO/IEC 27001", body: "Gestion certifiée de la sécurité de l'information." },
+      { key: "soc2", name: "SOC 2 Type II", body: "Contrôles indépendants de sécurité et de confidentialité." },
+      { key: "gdpr", name: "GDPR", body: "Conformité totale au règlement européen." },
+      { key: "aml", name: "AML / KYC", body: "Politiques strictes de lutte contre le blanchiment." },
     ],
     awards: [
       { name: "Best Wealth Manager 2025", body: "Global Finance Awards." },
@@ -523,6 +574,7 @@ const CREDENTIALS: Record<string, CL> = {
       { name: "Excellence in Risk Management", body: "MENA Investment Summit." },
     ],
     disclaimer: "Certifications et prix présentés à titre indicatif.",
+    labels: { updated: "Dernière mise à jour", view: "Voir le certificat", download: "Télécharger le PDF", verify: "Vérifier auprès de l'organisme", verifyStatement: "L'authenticité peut être vérifiée via l'identifiant ci-dessous auprès de l'organisme émetteur.", close: "Fermer", details: "Voir les détails" },
   },
   es: {
     eyebrow: "Certificaciones y Premios",
@@ -531,10 +583,10 @@ const CREDENTIALS: Record<string, CL> = {
     certsTitle: "Certificaciones legales",
     awardsTitle: "Premios internacionales",
     certs: [
-      { name: "ISO/IEC 27001", body: "Gestión certificada de seguridad de la información." },
-      { name: "SOC 2 Type II", body: "Controles independientes de seguridad y privacidad." },
-      { name: "GDPR", body: "Cumplimiento pleno del reglamento europeo." },
-      { name: "AML / KYC", body: "Políticas estrictas contra el blanqueo de capitales." },
+      { key: "iso27001", name: "ISO/IEC 27001", body: "Gestión certificada de seguridad de la información." },
+      { key: "soc2", name: "SOC 2 Type II", body: "Controles independientes de seguridad y privacidad." },
+      { key: "gdpr", name: "GDPR", body: "Cumplimiento pleno del reglamento europeo." },
+      { key: "aml", name: "AML / KYC", body: "Políticas estrictas contra el blanqueo de capitales." },
     ],
     awards: [
       { name: "Best Wealth Manager 2025", body: "Global Finance Awards." },
@@ -542,6 +594,7 @@ const CREDENTIALS: Record<string, CL> = {
       { name: "Excellence in Risk Management", body: "MENA Investment Summit." },
     ],
     disclaimer: "Certificaciones y premios mostrados con fines ilustrativos.",
+    labels: { updated: "Última actualización", view: "Ver certificado", download: "Descargar PDF", verify: "Verificar con el emisor", verifyStatement: "La autenticidad puede verificarse mediante el identificador a continuación con la entidad emisora.", close: "Cerrar", details: "Ver detalles" },
   },
   tr: {
     eyebrow: "Sertifikalar ve Ödüller",
@@ -550,10 +603,10 @@ const CREDENTIALS: Record<string, CL> = {
     certsTitle: "Yasal Sertifikalar",
     awardsTitle: "Uluslararası Ödüller",
     certs: [
-      { name: "ISO/IEC 27001", body: "Sertifikalı bilgi güvenliği yönetimi." },
-      { name: "SOC 2 Type II", body: "Bağımsız güvenlik ve gizlilik kontrolleri." },
-      { name: "GDPR", body: "AB veri koruma yönetmeliğine tam uyum." },
-      { name: "AML / KYC", body: "Sıkı kara para aklamayı önleme politikaları." },
+      { key: "iso27001", name: "ISO/IEC 27001", body: "Sertifikalı bilgi güvenliği yönetimi." },
+      { key: "soc2", name: "SOC 2 Type II", body: "Bağımsız güvenlik ve gizlilik kontrolleri." },
+      { key: "gdpr", name: "GDPR", body: "AB veri koruma yönetmeliğine tam uyum." },
+      { key: "aml", name: "AML / KYC", body: "Sıkı kara para aklamayı önleme politikaları." },
     ],
     awards: [
       { name: "Best Wealth Manager 2025", body: "Global Finance Awards." },
@@ -561,6 +614,7 @@ const CREDENTIALS: Record<string, CL> = {
       { name: "Excellence in Risk Management", body: "MENA Investment Summit." },
     ],
     disclaimer: "Sertifika ve ödüller örnek amaçlıdır.",
+    labels: { updated: "Son güncelleme", view: "Sertifikayı görüntüle", download: "PDF indir", verify: "Veren kurum ile doğrula", verifyStatement: "Belgenin gerçekliği aşağıdaki sertifika kimliği ile veren kuruluş üzerinden doğrulanabilir.", close: "Kapat", details: "Detayları gör" },
   },
 };
 
@@ -647,6 +701,100 @@ function Testimonials() {
   );
 }
 
+function downloadCertStub(cert: { name: string; body: string; id: string; updated: string }) {
+  const text = `HK Investment Management\n\nCertificate: ${cert.name}\nCertificate ID: ${cert.id}\nLast updated: ${cert.updated}\n\n${cert.body}\n\nThis document is a placeholder pending upload of the official signed certificate.\n`;
+  const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${cert.id}.txt`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function CertCard({
+  cert,
+  labels,
+}: {
+  cert: { key: CertKey; name: string; body: string };
+  labels: CL["labels"];
+}) {
+  const meta = CERT_META[cert.key];
+  return (
+    <Dialog>
+      <div className="glass flex h-full flex-col rounded-2xl p-5">
+        <BadgeCheck className="h-5 w-5 text-gold" />
+        <h4 className="mt-3 font-display text-base font-semibold">{cert.name}</h4>
+        <p className="mt-1 text-sm text-muted-foreground">{cert.body}</p>
+        <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
+          <CalendarCheck className="h-3.5 w-3.5 text-gold" />
+          <span>
+            {labels.updated}: {meta.updated}
+          </span>
+        </div>
+        <DialogTrigger asChild>
+          <button
+            type="button"
+            className="mt-4 inline-flex items-center gap-1 self-start text-xs font-semibold text-gold hover:underline"
+          >
+            {labels.details} <ExternalLink className="h-3 w-3" />
+          </button>
+        </DialogTrigger>
+      </div>
+
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2 font-display">
+            <BadgeCheck className="h-5 w-5 text-gold" /> {cert.name}
+          </DialogTitle>
+          <DialogDescription>{cert.body}</DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-3 text-sm">
+          <div className="flex items-center justify-between rounded-lg border border-white/10 bg-white/[0.02] px-3 py-2">
+            <span className="text-muted-foreground">{labels.updated}</span>
+            <span className="font-medium">{meta.updated}</span>
+          </div>
+          <div className="flex items-center justify-between rounded-lg border border-white/10 bg-white/[0.02] px-3 py-2">
+            <span className="text-muted-foreground">ID</span>
+            <span className="font-mono text-xs">{meta.verifyId}</span>
+          </div>
+          <p className="rounded-lg border border-gold/20 bg-gold/5 p-3 text-xs text-muted-foreground">
+            {labels.verifyStatement}
+          </p>
+        </div>
+
+        <DialogFooter className="flex-col gap-2 sm:flex-row sm:justify-end">
+          <Button
+            variant="outline"
+            className="border-white/15"
+            onClick={() =>
+              downloadCertStub({
+                name: cert.name,
+                body: cert.body,
+                id: meta.verifyId,
+                updated: meta.updated,
+              })
+            }
+          >
+            <Download className="me-2 h-4 w-4" /> {labels.download}
+          </Button>
+          <Button
+            asChild
+            className="bg-[var(--gradient-gold)] font-semibold text-background hover:opacity-95"
+          >
+            <a href={meta.verifyUrl} target="_blank" rel="noopener noreferrer">
+              <ExternalLink className="me-2 h-4 w-4" /> {labels.verify}
+            </a>
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 function Credentials() {
   const { lang } = useI18n();
   const c = CREDENTIALS[lang] ?? CREDENTIALS.en;
@@ -666,11 +814,7 @@ function Credentials() {
           </div>
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
             {c.certs.map((it) => (
-              <div key={it.name} className="glass rounded-2xl p-5">
-                <BadgeCheck className="h-5 w-5 text-gold" />
-                <h4 className="mt-3 font-display text-base font-semibold">{it.name}</h4>
-                <p className="mt-1 text-sm text-muted-foreground">{it.body}</p>
-              </div>
+              <CertCard key={it.key} cert={it} labels={c.labels} />
             ))}
           </div>
         </div>
