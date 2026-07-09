@@ -1,10 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { PageShell } from "@/components/page-shell";
+import { PortalShell, PortalCard, QuickAction } from "@/components/portal-shell";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowDownToLine, ArrowUpFromLine, Bell, Download, FileText, FolderOpen, LifeBuoy, MessageSquare, Send, ShieldCheck } from "lucide-react";
+import { ArrowDownToLine, ArrowUpFromLine, Bell, Download, FileText, LineChart, MessageSquare, Receipt, Send, Wallet } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/portal")({
@@ -60,164 +60,147 @@ function PortalPage() {
   }
 
   return (
-    <PageShell bare>
-      <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-gold/80">بوابة العميل</p>
-            <h1 className="mt-2 font-display text-3xl font-semibold md:text-4xl">المستندات والنشاط والدعم</h1>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <Button asChild className="rounded-sm bg-gold font-semibold text-background hover:bg-[oklch(0.88_0.11_90)]">
-              <Link to="/investor"><ArrowDownToLine className="ml-2 h-4 w-4" />إيداع</Link>
-            </Button>
-            <Button asChild variant="outline" className="rounded-sm border-white/10 hover:border-gold/60">
-              <Link to="/investor"><ArrowUpFromLine className="ml-2 h-4 w-4" />سحب</Link>
-            </Button>
-            <Button asChild variant="ghost" className="text-muted-foreground">
-              <Link to="/dashboard">لوحة التحكم</Link>
-            </Button>
-          </div>
-        </div>
-
-        <nav className="mt-6 flex flex-wrap gap-2 border-t border-white/5 pt-6">
-          {[
-            { to: "/portal/documents", icon: FolderOpen, label: "المستندات" },
-            { to: "/portal/support", icon: LifeBuoy, label: "الدعم" },
-            { to: "/portal/mfa", icon: ShieldCheck, label: "المصادقة الثنائية" },
-            { to: "/security", icon: ShieldCheck, label: "الأمان" },
-          ].map((n) => (
-            <Button key={n.to} asChild variant="outline" className="rounded-sm border-white/10 font-mono text-xs uppercase tracking-wider hover:border-gold/60">
-              <Link to={n.to}><n.icon className="ml-2 h-4 w-4" />{n.label}</Link>
-            </Button>
-          ))}
-        </nav>
-
-        <div className="mt-8 grid gap-6 lg:grid-cols-3">
-          <div className="relative overflow-hidden rounded-xl border border-white/10 bg-card/50 p-6 backdrop-blur-xl lg:col-span-2">
-            <div className="flex items-center gap-2">
-              <span className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-gold/20 bg-gold/[0.06]"><FileText className="h-4 w-4 text-gold" /></span>
-              <h2 className="font-display text-lg font-semibold">الكشوف والتقارير</h2>
-            </div>
-            {statements.length === 0 ? (
-              <p className="mt-4 text-sm text-muted-foreground">لا توجد كشوف بعد.</p>
-            ) : (
-              <ul className="mt-4 divide-y divide-white/5">
-                {statements.map((s) => (
-                  <li key={s.id} className="flex items-center justify-between py-3 text-sm">
-                    <div>
-                      <p className="font-medium">{s.title}</p>
-                      <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">{cap(s.kind)} · {s.period}</p>
-                    </div>
-                    <Button size="sm" variant="ghost" disabled={!s.file_url}>
-                      <Download className="mr-2 h-4 w-4" /> {s.file_url ? "تنزيل" : "قيد الإصدار"}
-                    </Button>
-                  </li>
-                ))}
-              </ul>
-            )}
+    <PortalShell
+      eyebrow="لوحة القيادة"
+      title="مرحبًا بك في بوابتك الاستثمارية"
+      subtitle="لمحة موحّدة عن محفظتك، آخر عملياتك، وإشعاراتك."
+      actions={
+        <>
+          <Button asChild className="rounded-sm bg-gold font-semibold text-background hover:bg-[oklch(0.88_0.11_90)]">
+            <Link to="/investor"><ArrowDownToLine className="ml-2 h-4 w-4" />إيداع</Link>
+          </Button>
+          <Button asChild variant="outline" className="rounded-sm border-white/10 hover:border-gold/60">
+            <Link to="/investor"><ArrowUpFromLine className="ml-2 h-4 w-4" />سحب</Link>
+          </Button>
+        </>
+      }
+    >
+      {/* KPI trio */}
+      <div className="grid gap-4 md:grid-cols-3">
+        {[
+          { k: "إجمالي المحفظة", v: "$128,420", d: "+8.4% YTD", tone: "up" as const },
+          { k: "الرصيد المتاح", v: "$12,540", d: "OPTIMIZED", tone: "muted" as const },
+          { k: "عوائد الشهر", v: "+$2,180", d: "+2.1%", tone: "up" as const },
+        ].map((s) => (
+          <div key={s.k} className="relative overflow-hidden rounded-xl border border-white/10 bg-card/50 p-5 backdrop-blur-xl">
+            <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-gold/80">{s.k}</p>
+            <p className="mt-2 font-mono text-3xl font-medium tracking-tight tabular-nums">{s.v}</p>
+            <p className={`mt-1 font-mono text-[10px] tracking-wide ${s.tone === "up" ? "text-emerald-400" : "text-muted-foreground"}`}>
+              {s.tone === "up" ? "↑ " : ""}{s.d}
+            </p>
             <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent" aria-hidden />
           </div>
+        ))}
+      </div>
 
-          <div className="relative overflow-hidden rounded-xl border border-white/10 bg-card/50 p-6 backdrop-blur-xl">
-            <div className="flex items-center gap-2">
-              <span className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-gold/20 bg-gold/[0.06]"><Bell className="h-4 w-4 text-gold" /></span>
-              <h2 className="font-display text-lg font-semibold">الإشعارات</h2>
-            </div>
-            {notifications.length === 0 ? (
-              <p className="mt-4 text-sm text-muted-foreground">لا توجد إشعارات.</p>
-            ) : (
-              <ul className="mt-4 space-y-3">
-                {notifications.map((n) => (
-                  <li key={n.id} className="rounded-md border border-white/5 bg-white/[0.02] p-3 text-sm">
-                    <p className="font-medium">{n.title}</p>
-                    {n.body && <p className="mt-1 text-muted-foreground">{n.body}</p>}
-                    <p className="mt-1 font-mono text-[10px] tracking-wide text-muted-foreground">{new Date(n.created_at).toLocaleString()}</p>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+      {/* Quick actions */}
+      <div className="mt-6 grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+        <QuickAction to="/portal/portfolio" icon={Wallet} label="عرض المحفظة" hint="Allocation" />
+        <QuickAction to="/portal/transactions" icon={Receipt} label="سجل العمليات" hint="Ledger" />
+        <QuickAction to="/portal/performance" icon={LineChart} label="تقارير الأداء" hint="Reports" />
+        <QuickAction to="/portal/documents" icon={FileText} label="المستندات" hint="Archive" />
+      </div>
 
-          <div className="relative overflow-hidden rounded-xl border border-white/10 bg-card/50 p-6 backdrop-blur-xl lg:col-span-2">
-            <div className="flex items-center justify-between">
-              <h2 className="font-display text-lg font-semibold">سجل العمليات</h2>
-              <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">Live Ledger</span>
-            </div>
-            <div className="mt-4 overflow-x-auto">
-              <table className="w-full min-w-[640px] text-sm">
-                <thead className="font-mono text-[10px] uppercase tracking-[0.16em] text-gold/80">
-                  <tr>
-                    <th className="py-2 text-start">التاريخ</th>
-                    <th className="py-2 text-start">الرمز</th>
-                    <th className="py-2 text-start">النوع</th>
-                    <th className="py-2 text-end">الكمية</th>
-                    <th className="py-2 text-end">السعر</th>
-                    <th className="py-2 text-end">الربح/الخسارة</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {txs.length === 0 ? (
-                    <tr>
-                      <td colSpan={6} className="py-6 text-center text-muted-foreground">لا توجد عمليات بعد.</td>
-                    </tr>
-                  ) : (
-                    txs.map((t) => (
-                      <tr key={t.id} className="border-t border-white/5 transition hover:bg-white/[0.015]">
-                        <td className="py-3 font-mono text-xs text-muted-foreground">{new Date(t.occurred_at).toLocaleDateString()}</td>
-                        <td className="py-3 font-mono font-medium">{t.symbol}</td>
-                        <td className="py-3 font-mono text-xs uppercase text-muted-foreground">{t.side}</td>
-                        <td className="py-3 text-end font-mono tabular-nums">{Number(t.quantity).toLocaleString()}</td>
-                        <td className="py-3 text-end font-mono tabular-nums">{Number(t.price).toFixed(2)}</td>
-                        <td className={`py-3 text-end font-mono tabular-nums ${Number(t.pnl) >= 0 ? "text-emerald-400" : "text-red-400"}`}>
-                          {Number(t.pnl) >= 0 ? "+" : ""}
-                          {Number(t.pnl).toFixed(2)}
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div className="relative overflow-hidden rounded-xl border border-white/10 bg-card/50 p-6 backdrop-blur-xl">
-            <div className="flex items-center gap-2">
-              <span className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-gold/20 bg-gold/[0.06]"><MessageSquare className="h-4 w-4 text-gold" /></span>
-              <h2 className="font-display text-lg font-semibold">المراسلات الآمنة</h2>
-            </div>
-            <div className="mt-4 max-h-72 space-y-3 overflow-y-auto pr-2">
-              {messages.length === 0 ? (
-                <p className="text-sm text-muted-foreground">لا توجد رسائل بعد.</p>
-              ) : (
-                messages.map((m) => (
-                  <div
-                    key={m.id}
-                    className={`rounded-md px-3 py-2 text-sm ${m.from_role === "client" ? "ml-auto max-w-[85%] border border-gold/20 bg-gold/[0.08]" : "mr-auto max-w-[85%] border border-white/5 bg-white/[0.03]"}`}
-                  >
-                    <p>{m.body}</p>
-                    <p className="mt-1 font-mono text-[10px] tracking-wide text-muted-foreground">
-                      {m.from_role === "client" ? "أنت" : "مدير الحساب"} · {new Date(m.created_at).toLocaleString()}
-                    </p>
+      <div className="mt-6 grid gap-6 lg:grid-cols-3">
+        <PortalCard title="الكشوف والتقارير" icon={FileText} className="lg:col-span-2"
+          action={<Link to="/portal/statements" className="font-mono text-[10px] uppercase tracking-widest text-gold hover:text-[oklch(0.88_0.11_90)]">عرض الكل →</Link>}
+        >
+          {statements.length === 0 ? (
+            <p className="text-sm text-muted-foreground">لا توجد كشوف بعد.</p>
+          ) : (
+            <ul className="divide-y divide-white/5">
+              {statements.slice(0, 5).map((s) => (
+                <li key={s.id} className="flex items-center justify-between py-3 text-sm">
+                  <div>
+                    <p className="font-medium">{s.title}</p>
+                    <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">{cap(s.kind)} · {s.period}</p>
                   </div>
-                ))
-              )}
-            </div>
-            <div className="mt-4 flex items-end gap-2">
-              <Textarea
-                value={draft}
-                onChange={(e) => setDraft(e.target.value)}
-                placeholder="اكتب رسالة لمدير حسابك…"
-                className="min-h-[70px] bg-white/[0.03]"
-              />
-              <Button onClick={sendMessage} className="rounded-sm bg-gold font-semibold text-background hover:bg-[oklch(0.88_0.11_90)]">
-                <Send className="h-4 w-4" />
-              </Button>
-            </div>
+                  <Button size="sm" variant="ghost" disabled={!s.file_url}>
+                    <Download className="mr-2 h-4 w-4" /> {s.file_url ? "تنزيل" : "قيد الإصدار"}
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </PortalCard>
+
+        <PortalCard title="الإشعارات" icon={Bell}
+          action={<Link to="/portal/notifications" className="font-mono text-[10px] uppercase tracking-widest text-gold hover:text-[oklch(0.88_0.11_90)]">الكل →</Link>}
+        >
+          {notifications.length === 0 ? (
+            <p className="text-sm text-muted-foreground">لا توجد إشعارات.</p>
+          ) : (
+            <ul className="space-y-3">
+              {notifications.slice(0, 4).map((n) => (
+                <li key={n.id} className="rounded-md border border-white/5 bg-white/[0.02] p-3 text-sm">
+                  <p className="font-medium">{n.title}</p>
+                  {n.body && <p className="mt-1 text-muted-foreground">{n.body}</p>}
+                  <p className="mt-1 font-mono text-[10px] tracking-wide text-muted-foreground">{new Date(n.created_at).toLocaleString()}</p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </PortalCard>
+
+        <PortalCard title="آخر العمليات" className="lg:col-span-2"
+          action={<Link to="/portal/transactions" className="font-mono text-[10px] uppercase tracking-widest text-gold hover:text-[oklch(0.88_0.11_90)]">الكل →</Link>}
+        >
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[640px] text-sm">
+              <thead className="font-mono text-[10px] uppercase tracking-[0.16em] text-gold/80">
+                <tr>
+                  <th className="py-2 text-start">التاريخ</th>
+                  <th className="py-2 text-start">الرمز</th>
+                  <th className="py-2 text-start">النوع</th>
+                  <th className="py-2 text-end">الكمية</th>
+                  <th className="py-2 text-end">السعر</th>
+                  <th className="py-2 text-end">P/L</th>
+                </tr>
+              </thead>
+              <tbody>
+                {txs.length === 0 ? (
+                  <tr><td colSpan={6} className="py-6 text-center text-muted-foreground">لا توجد عمليات بعد.</td></tr>
+                ) : txs.slice(0, 6).map((t) => (
+                  <tr key={t.id} className="border-t border-white/5 transition hover:bg-white/[0.015]">
+                    <td className="py-3 font-mono text-xs text-muted-foreground">{new Date(t.occurred_at).toLocaleDateString()}</td>
+                    <td className="py-3 font-mono font-medium">{t.symbol}</td>
+                    <td className="py-3 font-mono text-xs uppercase text-muted-foreground">{t.side}</td>
+                    <td className="py-3 text-end font-mono tabular-nums">{Number(t.quantity).toLocaleString()}</td>
+                    <td className="py-3 text-end font-mono tabular-nums">{Number(t.price).toFixed(2)}</td>
+                    <td className={`py-3 text-end font-mono tabular-nums ${Number(t.pnl) >= 0 ? "text-emerald-400" : "text-red-400"}`}>
+                      {Number(t.pnl) >= 0 ? "+" : ""}{Number(t.pnl).toFixed(2)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-        </div>
-      </section>
-    </PageShell>
+        </PortalCard>
+
+        <PortalCard title="المراسلات الآمنة" icon={MessageSquare}
+          action={<Link to="/portal/support" className="font-mono text-[10px] uppercase tracking-widest text-gold hover:text-[oklch(0.88_0.11_90)]">الدعم →</Link>}
+        >
+          <div className="max-h-64 space-y-3 overflow-y-auto pr-2">
+            {messages.length === 0 ? (
+              <p className="text-sm text-muted-foreground">لا توجد رسائل بعد.</p>
+            ) : messages.map((m) => (
+              <div key={m.id} className={`rounded-md px-3 py-2 text-sm ${m.from_role === "client" ? "ml-auto max-w-[85%] border border-gold/20 bg-gold/[0.08]" : "mr-auto max-w-[85%] border border-white/5 bg-white/[0.03]"}`}>
+                <p>{m.body}</p>
+                <p className="mt-1 font-mono text-[10px] tracking-wide text-muted-foreground">
+                  {m.from_role === "client" ? "أنت" : "مدير الحساب"} · {new Date(m.created_at).toLocaleString()}
+                </p>
+              </div>
+            ))}
+          </div>
+          <div className="mt-4 flex items-end gap-2">
+            <Textarea value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="اكتب رسالة…" className="min-h-[64px] bg-white/[0.03]" />
+            <Button onClick={sendMessage} className="rounded-sm bg-gold font-semibold text-background hover:bg-[oklch(0.88_0.11_90)]">
+              <Send className="h-4 w-4" />
+            </Button>
+          </div>
+        </PortalCard>
+      </div>
+    </PortalShell>
   );
 }
 
