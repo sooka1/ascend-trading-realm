@@ -232,6 +232,8 @@ function AuditLogGate({ findings }: { findings: SecurityFinding[] }) {
 }
 
 function AuditLog({ findings }: { findings: SecurityFinding[] }) {
+  const escapeHtml = (s: string) =>
+    s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   const entries = useMemo(() => {
     const rows = findings.flatMap((f) =>
       (f.audit ?? []).map((a) => ({ ...a, findingId: f.id, findingTitle: f.title, severity: f.severity })),
