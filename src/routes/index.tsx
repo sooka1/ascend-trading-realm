@@ -21,6 +21,11 @@ import {
   Download,
   ExternalLink,
   CalendarCheck,
+  Trophy,
+  Medal,
+  Crown,
+  Gem,
+  Sparkle,
 } from "lucide-react";
 import { PageShell } from "@/components/page-shell";
 import { MarketTicker } from "@/components/market-ticker";
@@ -472,7 +477,7 @@ type CL = {
   title: string;
   subtitle: string;
   certs: { key: CertKey; name: string; body: string }[];
-  awards: { name: string; body: string }[];
+  awards: { key: AwardKey; name: string; body: string }[];
   awardsTitle: string;
   certsTitle: string;
   disclaimer: string;
@@ -488,6 +493,60 @@ type CL = {
 };
 
 type CertKey = "iso27001" | "soc2" | "gdpr" | "aml";
+
+type AwardKey =
+  | "bestWealthManager"
+  | "topPerformance"
+  | "riskExcellence"
+  | "fintechInnovation"
+  | "clientTrust";
+
+const AWARD_META: Record<
+  AwardKey,
+  {
+    year: string;
+    issuer: string;
+    verifyUrl: string;
+    icon: typeof Trophy;
+    accent: string;
+  }
+> = {
+  bestWealthManager: {
+    year: "2025",
+    issuer: "Global Finance Awards",
+    verifyUrl: "https://www.gfmag.com/awards-rankings/",
+    icon: Trophy,
+    accent: "from-gold/25 to-gold/5",
+  },
+  topPerformance: {
+    year: "2024",
+    issuer: "International Investor Magazine",
+    verifyUrl: "https://www.internationalinvestor.com/",
+    icon: Medal,
+    accent: "from-amber-400/25 to-amber-400/5",
+  },
+  riskExcellence: {
+    year: "2024",
+    issuer: "MENA Investment Summit",
+    verifyUrl: "https://www.menafn.com/",
+    icon: Crown,
+    accent: "from-emerald-400/20 to-emerald-400/5",
+  },
+  fintechInnovation: {
+    year: "2025",
+    issuer: "World Finance Awards",
+    verifyUrl: "https://www.worldfinance.com/awards",
+    icon: Gem,
+    accent: "from-cyan-400/20 to-cyan-400/5",
+  },
+  clientTrust: {
+    year: "2025",
+    issuer: "Euromoney Private Banking",
+    verifyUrl: "https://www.euromoney.com/research-and-awards",
+    icon: Sparkle,
+    accent: "from-fuchsia-400/20 to-fuchsia-400/5",
+  },
+};
 
 const CERT_META: Record<
   CertKey,
@@ -529,9 +588,11 @@ const CREDENTIALS: Record<string, CL> = {
       { key: "aml", name: "AML / KYC", body: "سياسات صارمة لمكافحة غسل الأموال ومعرفة العميل." },
     ],
     awards: [
-      { name: "Best Wealth Manager 2025", body: "جائزة أفضل شركة إدارة ثروات — Global Finance Awards." },
-      { name: "Top Performance Award", body: "التميّز في الأداء الاستثماري — International Investor Magazine." },
-      { name: "Excellence in Risk Management", body: "التميّز في إدارة المخاطر — MENA Investment Summit." },
+      { key: "bestWealthManager", name: "Best Wealth Manager 2025", body: "جائزة أفضل شركة إدارة ثروات — Global Finance Awards." },
+      { key: "topPerformance", name: "Top Performance Award", body: "التميّز في الأداء الاستثماري — International Investor Magazine." },
+      { key: "riskExcellence", name: "Excellence in Risk Management", body: "التميّز في إدارة المخاطر — MENA Investment Summit." },
+      { key: "fintechInnovation", name: "FinTech Innovation Award", body: "الابتكار في التكنولوجيا المالية — World Finance Awards." },
+      { key: "clientTrust", name: "Client Trust Award", body: "ثقة العملاء في الخدمات المصرفية الخاصة — Euromoney." },
     ],
     disclaimer: "الاعتمادات والجوائز عرض تمثيلي لأغراض التصميم؛ يتم تحديثها فور استلام الشهادات الرسمية الموثّقة.",
     labels: { updated: "آخر تحديث", view: "عرض الشهادة", download: "تحميل PDF", verify: "تحقق عبر الجهة المُصدِرة", verifyStatement: "يمكن التحقق من صحة هذه الوثيقة عبر معرّف الشهادة أدناه لدى الجهة المُصدِرة الرسمية.", close: "إغلاق", details: "عرض التفاصيل" },
@@ -549,9 +610,11 @@ const CREDENTIALS: Record<string, CL> = {
       { key: "aml", name: "AML / KYC", body: "Rigorous anti–money laundering and know-your-customer policies." },
     ],
     awards: [
-      { name: "Best Wealth Manager 2025", body: "Global Finance Awards — top wealth-management firm." },
-      { name: "Top Performance Award", body: "International Investor Magazine — investment performance." },
-      { name: "Excellence in Risk Management", body: "MENA Investment Summit — risk discipline." },
+      { key: "bestWealthManager", name: "Best Wealth Manager 2025", body: "Global Finance Awards — top wealth-management firm." },
+      { key: "topPerformance", name: "Top Performance Award", body: "International Investor Magazine — investment performance." },
+      { key: "riskExcellence", name: "Excellence in Risk Management", body: "MENA Investment Summit — risk discipline." },
+      { key: "fintechInnovation", name: "FinTech Innovation Award", body: "World Finance Awards — financial-technology innovation." },
+      { key: "clientTrust", name: "Client Trust Award", body: "Euromoney — private-banking client trust." },
     ],
     disclaimer: "Certifications and awards shown are illustrative and will be updated with verified documentation.",
     labels: { updated: "Last updated", view: "View certificate", download: "Download PDF", verify: "Verify with issuing body", verifyStatement: "Authenticity can be verified via the certificate ID below with the official issuing authority.", close: "Close", details: "View details" },
@@ -569,9 +632,11 @@ const CREDENTIALS: Record<string, CL> = {
       { key: "aml", name: "AML / KYC", body: "Politiques strictes de lutte contre le blanchiment." },
     ],
     awards: [
-      { name: "Best Wealth Manager 2025", body: "Global Finance Awards." },
-      { name: "Top Performance Award", body: "International Investor Magazine." },
-      { name: "Excellence in Risk Management", body: "MENA Investment Summit." },
+      { key: "bestWealthManager", name: "Best Wealth Manager 2025", body: "Global Finance Awards." },
+      { key: "topPerformance", name: "Top Performance Award", body: "International Investor Magazine." },
+      { key: "riskExcellence", name: "Excellence in Risk Management", body: "MENA Investment Summit." },
+      { key: "fintechInnovation", name: "FinTech Innovation Award", body: "World Finance Awards — innovation fintech." },
+      { key: "clientTrust", name: "Client Trust Award", body: "Euromoney — confiance client." },
     ],
     disclaimer: "Certifications et prix présentés à titre indicatif.",
     labels: { updated: "Dernière mise à jour", view: "Voir le certificat", download: "Télécharger le PDF", verify: "Vérifier auprès de l'organisme", verifyStatement: "L'authenticité peut être vérifiée via l'identifiant ci-dessous auprès de l'organisme émetteur.", close: "Fermer", details: "Voir les détails" },
@@ -589,9 +654,11 @@ const CREDENTIALS: Record<string, CL> = {
       { key: "aml", name: "AML / KYC", body: "Políticas estrictas contra el blanqueo de capitales." },
     ],
     awards: [
-      { name: "Best Wealth Manager 2025", body: "Global Finance Awards." },
-      { name: "Top Performance Award", body: "International Investor Magazine." },
-      { name: "Excellence in Risk Management", body: "MENA Investment Summit." },
+      { key: "bestWealthManager", name: "Best Wealth Manager 2025", body: "Global Finance Awards." },
+      { key: "topPerformance", name: "Top Performance Award", body: "International Investor Magazine." },
+      { key: "riskExcellence", name: "Excellence in Risk Management", body: "MENA Investment Summit." },
+      { key: "fintechInnovation", name: "FinTech Innovation Award", body: "World Finance Awards — innovación fintech." },
+      { key: "clientTrust", name: "Client Trust Award", body: "Euromoney — confianza del cliente." },
     ],
     disclaimer: "Certificaciones y premios mostrados con fines ilustrativos.",
     labels: { updated: "Última actualización", view: "Ver certificado", download: "Descargar PDF", verify: "Verificar con el emisor", verifyStatement: "La autenticidad puede verificarse mediante el identificador a continuación con la entidad emisora.", close: "Cerrar", details: "Ver detalles" },
@@ -609,9 +676,11 @@ const CREDENTIALS: Record<string, CL> = {
       { key: "aml", name: "AML / KYC", body: "Sıkı kara para aklamayı önleme politikaları." },
     ],
     awards: [
-      { name: "Best Wealth Manager 2025", body: "Global Finance Awards." },
-      { name: "Top Performance Award", body: "International Investor Magazine." },
-      { name: "Excellence in Risk Management", body: "MENA Investment Summit." },
+      { key: "bestWealthManager", name: "Best Wealth Manager 2025", body: "Global Finance Awards." },
+      { key: "topPerformance", name: "Top Performance Award", body: "International Investor Magazine." },
+      { key: "riskExcellence", name: "Excellence in Risk Management", body: "MENA Investment Summit." },
+      { key: "fintechInnovation", name: "FinTech Innovation Award", body: "World Finance Awards — fintech inovasyonu." },
+      { key: "clientTrust", name: "Client Trust Award", body: "Euromoney — müşteri güveni." },
     ],
     disclaimer: "Sertifika ve ödüller örnek amaçlıdır.",
     labels: { updated: "Son güncelleme", view: "Sertifikayı görüntüle", download: "PDF indir", verify: "Veren kurum ile doğrula", verifyStatement: "Belgenin gerçekliği aşağıdaki sertifika kimliği ile veren kuruluş üzerinden doğrulanabilir.", close: "Kapat", details: "Detayları gör" },
@@ -806,41 +875,73 @@ function Credentials() {
         <p className="mt-4 text-muted-foreground">{c.subtitle}</p>
       </div>
 
-      <div className="mt-12 grid gap-10 lg:grid-cols-2">
-        <div>
-          <div className="flex items-center gap-2">
-            <ScrollText className="h-5 w-5 text-gold" />
-            <h3 className="font-display text-xl font-semibold">{c.certsTitle}</h3>
-          </div>
-          <div className="mt-5 grid gap-4 sm:grid-cols-2">
-            {c.certs.map((it) => (
-              <CertCard key={it.key} cert={it} labels={c.labels} />
-            ))}
-          </div>
+      <div className="mt-12">
+        <div className="flex items-center gap-2">
+          <ScrollText className="h-5 w-5 text-gold" />
+          <h3 className="font-display text-xl font-semibold">{c.certsTitle}</h3>
         </div>
+        <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {c.certs.map((it) => (
+            <CertCard key={it.key} cert={it} labels={c.labels} />
+          ))}
+        </div>
+      </div>
 
-        <div>
-          <div className="flex items-center gap-2">
-            <Award className="h-5 w-5 text-gold" />
-            <h3 className="font-display text-xl font-semibold">{c.awardsTitle}</h3>
-          </div>
-          <div className="mt-5 space-y-4">
-            {c.awards.map((it) => (
-              <div key={it.name} className="glass-strong flex items-start gap-4 rounded-2xl p-5">
-                <div className="rounded-full border border-gold/30 bg-gold/10 p-2">
-                  <Award className="h-5 w-5 text-gold" />
-                </div>
-                <div>
-                  <h4 className="font-display text-base font-semibold">{it.name}</h4>
-                  <p className="mt-1 text-sm text-muted-foreground">{it.body}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+      <div className="mt-16">
+        <div className="flex items-center gap-2">
+          <Award className="h-5 w-5 text-gold" />
+          <h3 className="font-display text-xl font-semibold">{c.awardsTitle}</h3>
+        </div>
+        <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+          {c.awards.map((it) => (
+            <AwardCard key={it.key} award={it} labels={c.labels} />
+          ))}
         </div>
       </div>
 
       <p className="mt-10 max-w-3xl text-xs text-muted-foreground">{c.disclaimer}</p>
     </section>
+  );
+}
+
+function AwardCard({
+  award,
+  labels,
+}: {
+  award: { key: AwardKey; name: string; body: string };
+  labels: CL["labels"];
+}) {
+  const meta = AWARD_META[award.key];
+  const Icon = meta.icon;
+  return (
+    <a
+      href={meta.verifyUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02] p-5 transition hover:-translate-y-0.5 hover:border-gold/40 hover:shadow-[var(--shadow-glow)]"
+    >
+      <div
+        className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${meta.accent} opacity-60`}
+        aria-hidden
+      />
+      <div className="relative flex items-center justify-between">
+        <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl border border-gold/30 bg-background/60 shadow-[var(--shadow-gold)]">
+          <Icon className="h-7 w-7 text-gold" />
+        </div>
+        <span className="rounded-full border border-gold/30 bg-gold/10 px-2.5 py-0.5 font-mono text-[11px] text-gold">
+          {meta.year}
+        </span>
+      </div>
+      <h4 className="relative mt-4 font-display text-base font-semibold leading-tight">
+        {award.name}
+      </h4>
+      <p className="relative mt-1 text-xs uppercase tracking-[0.18em] text-gold/80">
+        {meta.issuer}
+      </p>
+      <p className="relative mt-3 flex-1 text-sm text-muted-foreground">{award.body}</p>
+      <span className="relative mt-4 inline-flex items-center gap-1 text-xs font-semibold text-gold opacity-80 transition group-hover:opacity-100">
+        {labels.verify} <ExternalLink className="h-3 w-3" />
+      </span>
+    </a>
   );
 }
