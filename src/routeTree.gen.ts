@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SolutionsRouteImport } from './routes/solutions'
 import { Route as RiskRouteImport } from './routes/risk'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PortfoliosRouteImport } from './routes/portfolios'
 import { Route as PerformanceRouteImport } from './routes/performance'
@@ -46,6 +47,11 @@ const SolutionsRoute = SolutionsRouteImport.update({
 const RiskRoute = RiskRouteImport.update({
   id: '/risk',
   path: '/risk',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacyRoute = PrivacyRouteImport.update({
@@ -164,6 +170,7 @@ export interface FileRoutesByFullPath {
   '/performance': typeof PerformanceRoute
   '/portfolios': typeof PortfoliosRoute
   '/privacy': typeof PrivacyRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/risk': typeof RiskRoute
   '/solutions': typeof SolutionsRoute
   '/terms': typeof TermsRoute
@@ -188,6 +195,7 @@ export interface FileRoutesByTo {
   '/performance': typeof PerformanceRoute
   '/portfolios': typeof PortfoliosRoute
   '/privacy': typeof PrivacyRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/risk': typeof RiskRoute
   '/solutions': typeof SolutionsRoute
   '/terms': typeof TermsRoute
@@ -214,6 +222,7 @@ export interface FileRoutesById {
   '/performance': typeof PerformanceRoute
   '/portfolios': typeof PortfoliosRoute
   '/privacy': typeof PrivacyRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/risk': typeof RiskRoute
   '/solutions': typeof SolutionsRoute
   '/terms': typeof TermsRoute
@@ -240,6 +249,7 @@ export interface FileRouteTypes {
     | '/performance'
     | '/portfolios'
     | '/privacy'
+    | '/reset-password'
     | '/risk'
     | '/solutions'
     | '/terms'
@@ -264,6 +274,7 @@ export interface FileRouteTypes {
     | '/performance'
     | '/portfolios'
     | '/privacy'
+    | '/reset-password'
     | '/risk'
     | '/solutions'
     | '/terms'
@@ -289,6 +300,7 @@ export interface FileRouteTypes {
     | '/performance'
     | '/portfolios'
     | '/privacy'
+    | '/reset-password'
     | '/risk'
     | '/solutions'
     | '/terms'
@@ -315,6 +327,7 @@ export interface RootRouteChildren {
   PerformanceRoute: typeof PerformanceRoute
   PortfoliosRoute: typeof PortfoliosRoute
   PrivacyRoute: typeof PrivacyRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   RiskRoute: typeof RiskRoute
   SolutionsRoute: typeof SolutionsRoute
   TermsRoute: typeof TermsRoute
@@ -341,6 +354,13 @@ declare module '@tanstack/react-router' {
       path: '/risk'
       fullPath: '/risk'
       preLoaderRoute: typeof RiskRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacy': {
@@ -531,6 +551,7 @@ const rootRouteChildren: RootRouteChildren = {
   PerformanceRoute: PerformanceRoute,
   PortfoliosRoute: PortfoliosRoute,
   PrivacyRoute: PrivacyRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   RiskRoute: RiskRoute,
   SolutionsRoute: SolutionsRoute,
   TermsRoute: TermsRoute,
