@@ -1,5 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { canViewSecurityAudit } from "@/lib/security-audit.functions";
 import { PageShell } from "@/components/page-shell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -14,6 +17,7 @@ import {
   Clock,
   History,
   User as UserIcon,
+  Lock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SECURITY_SNAPSHOT, type SecurityFinding, type Severity, type FindingStatus } from "@/lib/security-snapshot";
@@ -51,6 +55,14 @@ function SecurityPanel() {
   const [filter, setFilter] = useState<FilterKey>("all");
 
   const findings = SECURITY_SNAPSHOT.findings;
+
+  const check = useServerFn(canViewSecurityAudit);
+  const { data: authz } = useQuery({
+    queryKey: ["security-audit-authz"],
+    queryFn: () => check(),
+    staleTime: 60_000,
+  });
+  const canViewAudit = Boolean(authz?.authorized);
 
   const stats = useMemo(() => {
     const s = { total: findings.length, open: 0, fixed: 0, critical: 0, high: 0, medium: 0, low: 0, info: 0 } as Record<string, number>;
@@ -162,12 +174,12 @@ function SecurityPanel() {
               <p className="mt-3 font-medium">لا نتائج ضمن هذه التصفية.</p>
             </div>
           ) : (
-            visible.map((f) => <FindingCard key={f.id} f={f} />)
+            visible.map((f) => <FindingCard key={f.id} f={f} canViewAudit={canViewAudit} />)
           )}
         </div>
 
         {/* Global audit log */}
-        <AuditLog findings={findings} />
+        <AuditLogGate findings={findings} />
 
         {/* Scanner strip */}
         <div className="mt-10">
@@ -184,6 +196,37 @@ function SecurityPanel() {
       </section>
     </PageShell>
   );
+}
+
+function AuditLogGate({ findings }: { findings: SecurityFinding[] }) {
+  const check = useServerFn(canViewSecurityAudit);
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["security-audit-authz"],
+    queryFn: () => check(),
+    staleTime: 60_000,
+  });
+
+  if (isLoading) {
+    return (
+      <div className="mt-10 glass rounded-2xl border border-white/10 p-6 text-center text-sm text-muted-foreground">
+        جارٍ التحقق من الصلاحيات…
+      </div>
+    );
+  }
+  if (isError || !data?.authorized) {
+    return (
+      <div className="mt-10 glass flex items-center gap-3 rounded-2xl border border-white/10 p-6">
+        <Lock className="h-5 w-5 text-muted-foreground" />
+        <div>
+          <p className="text-sm font-medium">سجل التدقيق مقيَّد</p>
+          <p className="text-xs text-muted-foreground">
+            عرض سجل تطبيق الإصلاحات متاح فقط للمستخدمين المصرّح لهم (دور admin).
+          </p>
+        </div>
+      </div>
+    );
+  }
+  return <AuditLog findings={findings} />;
 }
 
 function AuditLog({ findings }: { findings: SecurityFinding[] }) {
@@ -230,7 +273,7 @@ function AuditLog({ findings }: { findings: SecurityFinding[] }) {
   );
 }
 
-function FindingCard({ f }: { f: SecurityFinding }) {
+function FindingCard({ f, canViewAudit }: { f: SecurityFinding; canViewAudit: boolean }) {
   const sev = SEV_META[f.severity];
   const Icon = sev.icon;
   const [open, setOpen] = useState(false);
@@ -260,7 +303,7 @@ function FindingCard({ f }: { f: SecurityFinding }) {
                 <CheckCircle2 className="h-3.5 w-3.5" /> الإصلاح المقترح
               </p>
               <p className="text-foreground/90">{f.remediation}</p>
-              {f.audit && f.audit.length > 0 && (
+              {canViewAudit && f.audit && f.audit.length > 0 && (
                 <div className="mt-3 border-t border-emerald-500/15 pt-3">
                   <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-emerald-300">
                     <History className="h-3.5 w-3.5" /> سجل التدقيق لهذا الإصلاح
