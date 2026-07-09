@@ -39,6 +39,55 @@ function Auth() {
   });
   const navigate = useNavigate();
 
+  // Persist confirm-email state across refreshes / tab reconnects.
+  const STORAGE_KEY = "hk.auth.pendingConfirm";
+
+  function saveCooldown(emailAddr: string, seconds: number) {
+    try {
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({ email: emailAddr, until: Date.now() + seconds * 1000 }),
+      );
+    } catch {}
+  }
+
+  function clearCooldown() {
+    try { localStorage.removeItem(STORAGE_KEY); } catch {}
+  }
+
+  // Hydrate pending email + remaining cooldown on mount.
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      const { email: savedEmail, until } = JSON.parse(raw) as { email?: string; until?: number };
+      if (!savedEmail || typeof until !== "number") return;
+      setPendingEmail(savedEmail);
+      const remaining = Math.max(0, Math.ceil((until - Date.now()) / 1000));
+      setResendState({ loading: false, cooldown: remaining });
+    } catch {}
+  }, []);
+
+  // Re-sync remaining cooldown when the tab regains focus or visibility.
+  useEffect(() => {
+    function resync() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        const { until } = JSON.parse(raw) as { until?: number };
+        if (typeof until !== "number") return;
+        const remaining = Math.max(0, Math.ceil((until - Date.now()) / 1000));
+        setResendState((s) => ({ ...s, cooldown: remaining }));
+      } catch {}
+    }
+    window.addEventListener("focus", resync);
+    document.addEventListener("visibilitychange", resync);
+    return () => {
+      window.removeEventListener("focus", resync);
+      document.removeEventListener("visibilitychange", resync);
+    };
+  }, []);
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       if (data.session) navigate({ to: "/dashboard", replace: true });
@@ -125,11 +174,13 @@ function Auth() {
         if (error) throw error;
         // When email confirmation is enabled, no session is returned.
         if (data.session) {
+          clearCooldown();
           toast.success("Account created");
           navigate({ to: "/dashboard", replace: true });
         } else {
           setPendingEmail(email);
           setResendState({ loading: false, cooldown: 30 });
+          saveCooldown(email, 30);
         }
       }
     } catch (err) {
@@ -152,6 +203,7 @@ function Auth() {
       });
       if (error) throw error;
       setResendState({ loading: false, cooldown: 30, sent: true });
+      saveCooldown(pendingEmail, 30);
       toast.success("Confirmation email sent");
     } catch (err) {
       const message = err instanceof Error ? err.message : "Couldn't resend the email";
@@ -164,6 +216,7 @@ function Auth() {
     setPassword("");
     setMode("login");
     setErrors({});
+    clearCooldown();
   }
 
   function changeEmail() {
@@ -173,6 +226,7 @@ function Auth() {
     setMode("register");
     setErrors({});
     setResendState({ loading: false, cooldown: 0 });
+    clearCooldown();
   }
 
   async function handleGoogle() {
