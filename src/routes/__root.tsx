@@ -93,6 +93,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content: "Professional Investment Management — experienced portfolio management with disciplined risk controls and transparent reporting.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:site_name", content: "HK Investment Management" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
@@ -107,6 +108,24 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap",
+      },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FinancialService",
+          name: "HK Investment Management",
+          description:
+            "Professionally managed multi-asset portfolios across Forex, Gold, Commodities, Indices and Stocks with disciplined risk controls and transparent reporting.",
+          areaServed: "Global",
+          serviceType: [
+            "Portfolio Management",
+            "Investment Management",
+            "Wealth Management",
+          ],
+        }),
       },
     ],
   }),
