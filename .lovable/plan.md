@@ -1,57 +1,89 @@
+# HK Investment Management — Rebrand & Expansion Plan
 
-# HK Global Trading — Phased Build Plan
+The existing project is **HK Global Trading** (retail trading + competitions). The requested product is **HK Investment Management** — a managed-portfolio firm that trades on behalf of clients. Different positioning, different pages, different tone. This is a substantial rebuild, so I want to align on scope before writing code.
 
-A platform this large can't ship in one turn at quality. I'll deliver it in 5 phases and pause for your approval between each. This plan locks Phase 1 in detail and outlines Phases 2–5 so you know what's coming.
+## What changes vs. what stays
 
-## Brand foundation (used across all phases)
+Keep and reuse:
+- TanStack Start routing, i18n system (AR/EN/FR/ES/TR), auth (email/password + Google), Lovable Cloud backend, existing `investment_requests` table + form, translation coverage checker.
+- Tailwind v4 design tokens, shadcn components.
 
-- **Name**: HK Global Trading
-- **Logo**: Interlocked H+K monogram with an integrated upward candlestick tick inside the negative space of the K — geometric, minimal, fintech. Gold `#F59E0B` + Blue `#2563EB` gradient on dark. Generated as premium-quality PNG (transparent), plus a monochrome variant and a square app-icon/favicon variant.
-- **Palette**: bg `#0F172A` / surface `#111827`, primary blue `#2563EB`, gold accent `#F59E0B`, foreground white. Semantic tokens defined in `src/styles.css` (oklch) — no hardcoded colors in components.
-- **Typography**: Space Grotesk (display) + Inter (body), via `@fontsource`.
-- **Design language**: glassmorphism cards (blurred surfaces over gradient bg), soft gold/blue gradients, subtle grid backgrounds, animated candlestick hero, framer-motion micro-interactions, animated counters, skeleton loaders.
+Replace:
+- Brand identity: name → *HK Investment Management*, tagline → *Professional Investment Management*, palette → **dark base + gold + blue**, luxury corporate tone.
+- Navigation: drop *Competitions / Leaderboard / Affiliate* framing; adopt investor-first IA.
+- Home page: rewrite hero, features, and sections around managed portfolios (not competitions).
 
-## Phase 1 — Identity + Marketing Site (this build)
+## Design direction
 
-**Scope**: Logo, design system, and all public pages with polished UI. Mock data for market widgets. No auth yet, no backend yet.
+- Dark premium interface (near-black base, subtle blue depth).
+- Accent palette: deep navy `#0B1220`, royal blue `#1E3A8A`, luxury gold `#D4AF37` / `#F5D06A`.
+- Glassmorphism cards, gold hairlines, animated chart hero (SVG line + area, Framer-Motion-style CSS animations).
+- Serif display for headings (e.g. *Fraunces* or *Playfair Display*) + geometric sans body (e.g. *Inter*).
+- Micro-interactions: hover-lift, subtle gold glow, animated counters, ticker strip.
 
-Pages:
-- `/` Home — parallax hero (animated candlesticks + floating asset chips), Why Choose Us, Live Market Ticker (mock), Trading Instruments grid, Competitions preview, Leaderboard preview, Animated stats counters, Reviews, Academy teaser, News teaser, Affiliate teaser, Mobile Apps, Security & Regulation, FAQ accordion, Footer
-- `/about`, `/platform`, `/competitions`, `/markets`, `/education`, `/partners`, `/pricing`, `/affiliate`, `/news`, `/blog`, `/economic-calendar`, `/faq`, `/support`, `/contact`
-- `/auth` — login/register UI (visual only in Phase 1, wired in Phase 2)
+Fonts loaded via `<link>` in `__root.tsx` (Tailwind v4 rule).
 
-Each route gets its own `head()` with unique title/description/OG tags. Home gets a generated OG hero image.
+## Site map (routes)
 
-**Deliverables**:
-- HK logo (main, monochrome, favicon) generated + wired into nav, footer, favicon
-- `src/styles.css` design tokens + fonts
-- Shared `SiteHeader` (with HK logo + nav + auth CTAs) and `SiteFooter`
-- ~16 route files with real content, no placeholder boilerplate
-- Framer-motion animations, glass cards, animated counters, mock live-price ticker
+Public:
+- `/` Home
+- `/about` About HK
+- `/solutions` Investment Solutions
+- `/portfolios` Managed Portfolios
+- `/performance` Performance Reports
+- `/risk` Risk Management
+- `/markets` Markets (reuse existing)
+- `/education` Education (reuse existing)
+- `/faq` FAQ (reuse existing)
+- `/contact` Contact (reuse existing)
+- `/auth` Login / Register (reuse)
+- `/legal` Legal & Compliance
+- `/privacy` Privacy Policy
+- `/terms` Terms of Service
 
-## Phase 2 — Auth + Client Dashboard shell
+Authenticated (under `_authenticated/`):
+- `/dashboard` Investor Dashboard (overview, balance, performance chart, allocation donut, recent activity)
+- `/portal` Client Portal (statements, annual reports, transaction history, P&L, documents, secure messages, notifications, profile)
 
-Enable Lovable Cloud. Email/password + Google sign-in. `profiles` + `user_roles` tables with RLS. Managed `_authenticated` layout. Dashboard shell: portfolio, wallet, competitions (mine), achievements/badges, transactions, deposit/withdraw UI (mock), KYC upload flow, notifications, profile/settings, dark mode toggle. Password reset page.
+Drop from nav: `/competitions`, `/investment` (folded into `/solutions` + `/portfolios`), `/partners`, `/affiliate`, `/economic-calendar`, `/blog`, `/news`, `/pricing`, `/support`, `/platform` — files can remain but be delisted, or I can delete them. **Decision needed** (see below).
 
-## Phase 3 — Competitions engine + Real market data
+## Data model additions
 
-Cloud tables: `competitions`, `competition_entries`, `leaderboard_snapshots`, `trades` (simulated). Registration flow, live ranking, winner badges, certificates, history. Connect a market data provider (I'll recommend **Finnhub** — generous free tier covering forex, crypto, stocks; you'll add the API key via `add_secret`). Live prices, economic calendar, news via server functions.
+New tables (all with RLS + GRANTs + `updated_at` triggers):
+- `portfolios` — id, user_id, name, strategy, base_currency, inception_date.
+- `portfolio_snapshots` — portfolio_id, as_of_date, equity, pnl, allocation JSONB.
+- `transactions` — portfolio_id, ts, symbol, side, qty, price, pnl.
+- `statements` — user_id, period, kind (monthly/annual), file_url.
+- `notifications` — user_id, title, body, read_at.
+- `messages` — user_id, from_role, body, created_at.
 
-## Phase 4 — Admin dashboard + Affiliate + Gamification
+Reuse existing `profiles`, `user_roles`, `investment_requests`.
 
-Admin (role-gated via `has_role('admin')`): users, competitions, deposits/withdrawals, trading accounts, affiliate management, rewards, leaderboards, revenue analytics with charts. Affiliate system: referral links, commission tiers, payouts. Gamification: XP, achievements, daily missions, referral rewards.
+## Content & i18n
 
-## Phase 5 — Education Center + Polish
+- All new copy added to `page-content.ts` / `home-content.ts` / `DICTS` in 5 languages, verified by the existing coverage checker.
+- Legal pages: template copy with clear risk disclaimers ("investing involves risk", "past performance does not guarantee future results"), marked as *sample — review with counsel before publishing*.
 
-Courses, video library, articles, webinars, e-books, glossary, trading calculators. 2FA, session management, login history. PWA manifest, performance pass (lazy loading, image optimization, Lighthouse tuning), accessibility AA pass, SEO polish.
+## Logo & favicon
 
-## Technical notes
+- Generate a premium HK monogram (gold on dark navy, geometric, serif-inspired) via `imagegen` (premium tier for legibility), export as SVG-styled PNG, upload via `lovable-assets`, wire into header + `public/favicon.png` and delete default favicon.
 
-- Stack is TanStack Start (not Next.js — the spec asked for Next 15, but this template is TanStack Start v1 / React 19 / Vite 7, which delivers equivalent SSR/SEO/performance).
-- All colors go through semantic tokens in `src/styles.css`.
-- Server logic uses `createServerFn`; webhooks use `/api/public/*`.
-- Real market data requires you to obtain a Finnhub API key in Phase 3 (free at finnhub.io).
+## Execution order
 
-## What ships when you approve
+1. Palette + typography tokens in `src/styles.css`; header/footer rebrand.
+2. Logo + favicon.
+3. Home page rewrite with animated chart hero and feature grid.
+4. New public routes (about, solutions, portfolios, performance, risk, legal, privacy, terms).
+5. Migration for new tables + seed demo data for logged-in demo user.
+6. Investor Dashboard + Client Portal under `_authenticated/`.
+7. i18n coverage pass; run `bun run check:i18n`.
+8. Head metadata per route.
 
-Phase 1 only. I'll message you when it's ready to review, then start Phase 2 on your go.
+## Decisions I need from you
+
+1. **Legacy pages** — competitions, leaderboard, affiliate, partners, pricing, economic calendar, blog, news, support, platform: delete them, or keep them accessible but remove from nav?
+2. **Language scope** — keep all 5 languages (AR/EN/FR/ES/TR), or narrow to a subset for the rebrand and translate the rest later?
+3. **Dashboard data** — seed realistic demo data (fake portfolio + snapshots + transactions) so the dashboard looks alive for any signed-in user, or wire the UI to empty state until real data is loaded per user?
+4. **Legal copy** — do you want me to draft template Privacy / Terms / Legal & Compliance content (clearly labeled as sample), or leave those pages as scaffolds with placeholders for your counsel to fill in?
+
+Answer any subset — I'll assume sensible defaults for the rest (delete legacy pages, keep all 5 languages, seed demo data, draft sample legal copy clearly labeled).
