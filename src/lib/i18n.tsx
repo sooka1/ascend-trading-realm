@@ -308,3 +308,9 @@ export function useI18n() {
 export function useT() {
   return useI18n().t;
 }
+
+import { pageContent } from "./page-content";
+export function usePage() {
+  const { lang } = useI18n();
+  return pageContent(lang);
+}
