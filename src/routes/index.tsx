@@ -875,41 +875,73 @@ function Credentials() {
         <p className="mt-4 text-muted-foreground">{c.subtitle}</p>
       </div>
 
-      <div className="mt-12 grid gap-10 lg:grid-cols-2">
-        <div>
-          <div className="flex items-center gap-2">
-            <ScrollText className="h-5 w-5 text-gold" />
-            <h3 className="font-display text-xl font-semibold">{c.certsTitle}</h3>
-          </div>
-          <div className="mt-5 grid gap-4 sm:grid-cols-2">
-            {c.certs.map((it) => (
-              <CertCard key={it.key} cert={it} labels={c.labels} />
-            ))}
-          </div>
+      <div className="mt-12">
+        <div className="flex items-center gap-2">
+          <ScrollText className="h-5 w-5 text-gold" />
+          <h3 className="font-display text-xl font-semibold">{c.certsTitle}</h3>
         </div>
+        <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {c.certs.map((it) => (
+            <CertCard key={it.key} cert={it} labels={c.labels} />
+          ))}
+        </div>
+      </div>
 
-        <div>
-          <div className="flex items-center gap-2">
-            <Award className="h-5 w-5 text-gold" />
-            <h3 className="font-display text-xl font-semibold">{c.awardsTitle}</h3>
-          </div>
-          <div className="mt-5 space-y-4">
-            {c.awards.map((it) => (
-              <div key={it.name} className="glass-strong flex items-start gap-4 rounded-2xl p-5">
-                <div className="rounded-full border border-gold/30 bg-gold/10 p-2">
-                  <Award className="h-5 w-5 text-gold" />
-                </div>
-                <div>
-                  <h4 className="font-display text-base font-semibold">{it.name}</h4>
-                  <p className="mt-1 text-sm text-muted-foreground">{it.body}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+      <div className="mt-16">
+        <div className="flex items-center gap-2">
+          <Award className="h-5 w-5 text-gold" />
+          <h3 className="font-display text-xl font-semibold">{c.awardsTitle}</h3>
+        </div>
+        <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+          {c.awards.map((it) => (
+            <AwardCard key={it.key} award={it} labels={c.labels} />
+          ))}
         </div>
       </div>
 
       <p className="mt-10 max-w-3xl text-xs text-muted-foreground">{c.disclaimer}</p>
     </section>
+  );
+}
+
+function AwardCard({
+  award,
+  labels,
+}: {
+  award: { key: AwardKey; name: string; body: string };
+  labels: CL["labels"];
+}) {
+  const meta = AWARD_META[award.key];
+  const Icon = meta.icon;
+  return (
+    <a
+      href={meta.verifyUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02] p-5 transition hover:-translate-y-0.5 hover:border-gold/40 hover:shadow-[var(--shadow-glow)]"
+    >
+      <div
+        className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${meta.accent} opacity-60`}
+        aria-hidden
+      />
+      <div className="relative flex items-center justify-between">
+        <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl border border-gold/30 bg-background/60 shadow-[var(--shadow-gold)]">
+          <Icon className="h-7 w-7 text-gold" />
+        </div>
+        <span className="rounded-full border border-gold/30 bg-gold/10 px-2.5 py-0.5 font-mono text-[11px] text-gold">
+          {meta.year}
+        </span>
+      </div>
+      <h4 className="relative mt-4 font-display text-base font-semibold leading-tight">
+        {award.name}
+      </h4>
+      <p className="relative mt-1 text-xs uppercase tracking-[0.18em] text-gold/80">
+        {meta.issuer}
+      </p>
+      <p className="relative mt-3 flex-1 text-sm text-muted-foreground">{award.body}</p>
+      <span className="relative mt-4 inline-flex items-center gap-1 text-xs font-semibold text-gold opacity-80 transition group-hover:opacity-100">
+        {labels.verify} <ExternalLink className="h-3 w-3" />
+      </span>
+    </a>
   );
 }
