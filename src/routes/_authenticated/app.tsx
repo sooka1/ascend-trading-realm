@@ -195,8 +195,8 @@ function BalanceCard({
 
 function QuickActions() {
   const actions = [
-    { icon: Plus, label: "إيداع", onClick: () => toast("للإيداع — تواصل مع المستشار") },
-    { icon: ArrowUpRight, label: "سحب", onClick: () => toast("للسحب — قدّم الطلب عبر البوابة") },
+    { icon: Plus, label: "إيداع", to: "/investor" as const },
+    { icon: ArrowUpRight, label: "سحب", to: "/investor" as const },
     { icon: Repeat, label: "تحويل", onClick: () => toast("التحويل — قريبًا") },
     { icon: FileText, label: "التقارير", to: "/portal" as const },
   ];
