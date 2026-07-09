@@ -701,6 +701,100 @@ function Testimonials() {
   );
 }
 
+function downloadCertStub(cert: { name: string; body: string; id: string; updated: string }) {
+  const text = `HK Investment Management\n\nCertificate: ${cert.name}\nCertificate ID: ${cert.id}\nLast updated: ${cert.updated}\n\n${cert.body}\n\nThis document is a placeholder pending upload of the official signed certificate.\n`;
+  const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${cert.id}.txt`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function CertCard({
+  cert,
+  labels,
+}: {
+  cert: { key: CertKey; name: string; body: string };
+  labels: CL["labels"];
+}) {
+  const meta = CERT_META[cert.key];
+  return (
+    <Dialog>
+      <div className="glass flex h-full flex-col rounded-2xl p-5">
+        <BadgeCheck className="h-5 w-5 text-gold" />
+        <h4 className="mt-3 font-display text-base font-semibold">{cert.name}</h4>
+        <p className="mt-1 text-sm text-muted-foreground">{cert.body}</p>
+        <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
+          <CalendarCheck className="h-3.5 w-3.5 text-gold" />
+          <span>
+            {labels.updated}: {meta.updated}
+          </span>
+        </div>
+        <DialogTrigger asChild>
+          <button
+            type="button"
+            className="mt-4 inline-flex items-center gap-1 self-start text-xs font-semibold text-gold hover:underline"
+          >
+            {labels.details} <ExternalLink className="h-3 w-3" />
+          </button>
+        </DialogTrigger>
+      </div>
+
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2 font-display">
+            <BadgeCheck className="h-5 w-5 text-gold" /> {cert.name}
+          </DialogTitle>
+          <DialogDescription>{cert.body}</DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-3 text-sm">
+          <div className="flex items-center justify-between rounded-lg border border-white/10 bg-white/[0.02] px-3 py-2">
+            <span className="text-muted-foreground">{labels.updated}</span>
+            <span className="font-medium">{meta.updated}</span>
+          </div>
+          <div className="flex items-center justify-between rounded-lg border border-white/10 bg-white/[0.02] px-3 py-2">
+            <span className="text-muted-foreground">ID</span>
+            <span className="font-mono text-xs">{meta.verifyId}</span>
+          </div>
+          <p className="rounded-lg border border-gold/20 bg-gold/5 p-3 text-xs text-muted-foreground">
+            {labels.verifyStatement}
+          </p>
+        </div>
+
+        <DialogFooter className="flex-col gap-2 sm:flex-row sm:justify-end">
+          <Button
+            variant="outline"
+            className="border-white/15"
+            onClick={() =>
+              downloadCertStub({
+                name: cert.name,
+                body: cert.body,
+                id: meta.verifyId,
+                updated: meta.updated,
+              })
+            }
+          >
+            <Download className="me-2 h-4 w-4" /> {labels.download}
+          </Button>
+          <Button
+            asChild
+            className="bg-[var(--gradient-gold)] font-semibold text-background hover:opacity-95"
+          >
+            <a href={meta.verifyUrl} target="_blank" rel="noopener noreferrer">
+              <ExternalLink className="me-2 h-4 w-4" /> {labels.verify}
+            </a>
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 function Credentials() {
   const { lang } = useI18n();
   const c = CREDENTIALS[lang] ?? CREDENTIALS.en;
@@ -720,11 +814,7 @@ function Credentials() {
           </div>
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
             {c.certs.map((it) => (
-              <div key={it.name} className="glass rounded-2xl p-5">
-                <BadgeCheck className="h-5 w-5 text-gold" />
-                <h4 className="mt-3 font-display text-base font-semibold">{it.name}</h4>
-                <p className="mt-1 text-sm text-muted-foreground">{it.body}</p>
-              </div>
+              <CertCard key={it.key} cert={it} labels={c.labels} />
             ))}
           </div>
         </div>
