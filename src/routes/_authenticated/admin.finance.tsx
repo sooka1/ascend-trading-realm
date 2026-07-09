@@ -117,7 +117,7 @@ function AdminFinance() {
 
   if (authorized === null || loading) {
     return (
-      <PageShell>
+      <PageShell bare>
         <section className="mx-auto max-w-7xl px-4 py-16 text-sm text-muted-foreground">جارٍ التحميل…</section>
       </PageShell>
     );
@@ -125,7 +125,7 @@ function AdminFinance() {
 
   if (!authorized) {
     return (
-      <PageShell>
+      <PageShell bare>
         <section className="mx-auto max-w-3xl px-4 py-16">
           <div className="glass flex items-start gap-3 rounded-3xl p-6">
             <ShieldAlert className="mt-1 h-5 w-5 text-amber-400" />
@@ -148,7 +148,7 @@ function AdminFinance() {
   };
 
   return (
-    <PageShell>
+    <PageShell bare>
       <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <p className="text-xs uppercase tracking-widest text-gold">Admin</p>
         <h1 className="mt-1 font-display text-3xl font-semibold md:text-4xl">إدارة طلبات الإيداع والسحب</h1>

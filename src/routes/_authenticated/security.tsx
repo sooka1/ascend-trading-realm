@@ -92,7 +92,7 @@ function SecurityPanel() {
   const allClear = stats.open === 0;
 
   return (
-    <PageShell>
+    <PageShell bare>
       <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12" dir={dir}>
         <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>

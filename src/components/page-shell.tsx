@@ -2,12 +2,12 @@ import type { ReactNode } from "react";
 import { SiteHeader } from "./site-header";
 import { SiteFooter } from "./site-footer";
 
-export function PageShell({ children }: { children: ReactNode }) {
+export function PageShell({ children, bare = false }: { children: ReactNode; bare?: boolean }) {
   return (
     <div className="flex min-h-screen flex-col">
-      <SiteHeader />
+      {!bare && <SiteHeader />}
       <main className="flex-1">{children}</main>
-      <SiteFooter />
+      {!bare && <SiteFooter />}
     </div>
   );
 }
