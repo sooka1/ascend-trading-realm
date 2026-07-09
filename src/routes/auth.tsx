@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { ShieldCheck, Trophy, Zap, Loader2, Eye, EyeOff, AlertCircle, ArrowLeft } from "lucide-react";
+import { ShieldCheck, Trophy, Zap, Loader2, Eye, EyeOff, AlertCircle, ArrowLeft, MailCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { toast } from "sonner";
@@ -32,6 +32,11 @@ function Auth() {
   const [loading, setLoading] = useState(false);
   const [showPw, setShowPw] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string; fullName?: string; form?: string }>({});
+  const [pendingEmail, setPendingEmail] = useState<string | null>(null);
+  const [resendState, setResendState] = useState<{ loading: boolean; cooldown: number; error?: string; sent?: boolean }>({
+    loading: false,
+    cooldown: 0,
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -39,6 +44,12 @@ function Auth() {
       if (data.session) navigate({ to: "/dashboard", replace: true });
     });
   }, [navigate]);
+
+  useEffect(() => {
+    if (resendState.cooldown <= 0) return;
+    const t = setTimeout(() => setResendState((s) => ({ ...s, cooldown: s.cooldown - 1 })), 1000);
+    return () => clearTimeout(t);
+  }, [resendState.cooldown]);
 
   const loginSchema = z.object({
     email: z.string().trim().min(1, "Email is required").email("Enter a valid email").max(255),
@@ -78,7 +89,7 @@ function Auth() {
         toast.success("Signed in");
         navigate({ to: "/dashboard", replace: true });
       } else {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -87,8 +98,14 @@ function Auth() {
           },
         });
         if (error) throw error;
-        toast.success("Account created — check your email to confirm, then sign in.");
-        setMode("login");
+        // When email confirmation is enabled, no session is returned.
+        if (data.session) {
+          toast.success("Account created");
+          navigate({ to: "/dashboard", replace: true });
+        } else {
+          setPendingEmail(email);
+          setResendState({ loading: false, cooldown: 30 });
+        }
       }
     } catch (err) {
       const message = err instanceof Error ? err.message : "Something went wrong";
@@ -97,6 +114,31 @@ function Auth() {
     } finally {
       setLoading(false);
     }
+  }
+
+  async function handleResend() {
+    if (!pendingEmail || resendState.loading || resendState.cooldown > 0) return;
+    setResendState((s) => ({ ...s, loading: true, error: undefined, sent: false }));
+    try {
+      const { error } = await supabase.auth.resend({
+        type: "signup",
+        email: pendingEmail,
+        options: { emailRedirectTo: `${window.location.origin}/dashboard` },
+      });
+      if (error) throw error;
+      setResendState({ loading: false, cooldown: 30, sent: true });
+      toast.success("Confirmation email sent");
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Couldn't resend the email";
+      setResendState({ loading: false, cooldown: 0, error: message });
+    }
+  }
+
+  function resetToLogin() {
+    setPendingEmail(null);
+    setPassword("");
+    setMode("login");
+    setErrors({});
   }
 
   async function handleGoogle() {
@@ -154,6 +196,15 @@ function Auth() {
               <Link to="/"><HKLogo /></Link>
               <span className="h-10 w-10" aria-hidden />
             </div>
+            {pendingEmail ? (
+              <ConfirmEmailPanel
+                email={pendingEmail}
+                onResend={handleResend}
+                onBack={resetToLogin}
+                state={resendState}
+              />
+            ) : (
+            <>
             <div className="mb-4 lg:hidden">
               <h1 className="font-display text-2xl font-bold leading-tight">
                 {mode === "login" ? "Welcome back" : "Open your account"}
@@ -303,9 +354,89 @@ function Auth() {
                 By continuing you agree to our Terms and Privacy Policy.
               </p>
             </form>
+            </>
+            )}
           </div>
         </div>
       </section>
     </PageShell>
+  );
+}
+
+function ConfirmEmailPanel({
+  email,
+  onResend,
+  onBack,
+  state,
+}: {
+  email: string;
+  onResend: () => void;
+  onBack: () => void;
+  state: { loading: boolean; cooldown: number; error?: string; sent?: boolean };
+}) {
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col items-center text-center">
+        <div className="grid h-16 w-16 place-items-center rounded-full bg-[var(--gradient-brand)] shadow-[var(--shadow-glow)]">
+          <MailCheck className="h-8 w-8 text-white" />
+        </div>
+        <h1 className="mt-5 font-display text-2xl font-bold leading-tight sm:text-3xl">
+          Confirm your email
+        </h1>
+        <p className="mt-2 text-sm text-muted-foreground">
+          We sent a confirmation link to
+          <br />
+          <span className="font-medium text-foreground">{email}</span>
+        </p>
+        <p className="mt-3 text-xs text-muted-foreground">
+          Click the link in that email to activate your account. It expires in 24 hours.
+        </p>
+      </div>
+
+      {state.sent && (
+        <div
+          role="status"
+          className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-3 text-center text-xs text-emerald-200"
+        >
+          A new confirmation email is on the way.
+        </div>
+      )}
+      {state.error && (
+        <div
+          role="alert"
+          className="flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive"
+        >
+          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+          <span>{state.error}</span>
+        </div>
+      )}
+
+      <div className="space-y-3">
+        <Button
+          type="button"
+          onClick={onResend}
+          disabled={state.loading || state.cooldown > 0}
+          className="h-12 w-full bg-[var(--gradient-brand)] text-base text-white shadow-[var(--shadow-glow)] sm:h-10 sm:text-sm"
+        >
+          {state.loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {state.cooldown > 0 ? `Resend in ${state.cooldown}s` : "Resend confirmation email"}
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onBack}
+          className="h-12 w-full border-white/15 bg-white/5 text-base sm:h-10 sm:text-sm"
+        >
+          Back to sign in
+        </Button>
+      </div>
+
+      <p className="text-center text-xs text-muted-foreground">
+        Wrong email?{" "}
+        <button type="button" onClick={onBack} className="text-foreground underline-offset-4 hover:underline">
+          Use a different address
+        </button>
+      </p>
+    </div>
   );
 }
