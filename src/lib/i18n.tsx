@@ -959,3 +959,9 @@ export function useHome() {
   const { lang } = useI18n();
   return homeContent(lang);
 }
+
+import { staticPages } from "./static-pages-content";
+export function useStatic() {
+  const { lang } = useI18n();
+  return staticPages(lang);
+}
