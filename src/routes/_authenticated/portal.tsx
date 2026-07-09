@@ -64,14 +64,14 @@ function PortalPage() {
       <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <p className="text-xs uppercase tracking-widest text-gold">بوابة العميل</p>
-            <h1 className="mt-1 font-display text-3xl font-semibold md:text-4xl">المستندات والنشاط والدعم</h1>
+            <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-gold/80">بوابة العميل</p>
+            <h1 className="mt-2 font-display text-3xl font-semibold md:text-4xl">المستندات والنشاط والدعم</h1>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <Button asChild className="bg-[var(--gradient-gold)] font-semibold text-background">
+            <Button asChild className="rounded-sm bg-gold font-semibold text-background hover:bg-[oklch(0.88_0.11_90)]">
               <Link to="/investor"><ArrowDownToLine className="ml-2 h-4 w-4" />إيداع</Link>
             </Button>
-            <Button asChild variant="outline" className="border-white/15">
+            <Button asChild variant="outline" className="rounded-sm border-white/10 hover:border-gold/60">
               <Link to="/investor"><ArrowUpFromLine className="ml-2 h-4 w-4" />سحب</Link>
             </Button>
             <Button asChild variant="ghost" className="text-muted-foreground">
@@ -80,25 +80,23 @@ function PortalPage() {
           </div>
         </div>
 
-        <nav className="mt-6 flex flex-wrap gap-2">
-          <Button asChild variant="outline" className="border-white/15">
-            <Link to="/portal/documents"><FolderOpen className="ml-2 h-4 w-4" />المستندات</Link>
-          </Button>
-          <Button asChild variant="outline" className="border-white/15">
-            <Link to="/portal/support"><LifeBuoy className="ml-2 h-4 w-4" />الدعم</Link>
-          </Button>
-          <Button asChild variant="outline" className="border-white/15">
-            <Link to="/portal/mfa"><ShieldCheck className="ml-2 h-4 w-4" />المصادقة الثنائية</Link>
-          </Button>
-          <Button asChild variant="outline" className="border-white/15">
-            <Link to="/security">الأمان</Link>
-          </Button>
+        <nav className="mt-6 flex flex-wrap gap-2 border-t border-white/5 pt-6">
+          {[
+            { to: "/portal/documents", icon: FolderOpen, label: "المستندات" },
+            { to: "/portal/support", icon: LifeBuoy, label: "الدعم" },
+            { to: "/portal/mfa", icon: ShieldCheck, label: "المصادقة الثنائية" },
+            { to: "/security", icon: ShieldCheck, label: "الأمان" },
+          ].map((n) => (
+            <Button key={n.to} asChild variant="outline" className="rounded-sm border-white/10 font-mono text-xs uppercase tracking-wider hover:border-gold/60">
+              <Link to={n.to}><n.icon className="ml-2 h-4 w-4" />{n.label}</Link>
+            </Button>
+          ))}
         </nav>
 
         <div className="mt-8 grid gap-6 lg:grid-cols-3">
-          <div className="glass rounded-3xl p-6 lg:col-span-2">
+          <div className="relative overflow-hidden rounded-xl border border-white/10 bg-card/50 p-6 backdrop-blur-xl lg:col-span-2">
             <div className="flex items-center gap-2">
-              <FileText className="h-5 w-5 text-gold" />
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-gold/20 bg-gold/[0.06]"><FileText className="h-4 w-4 text-gold" /></span>
               <h2 className="font-display text-lg font-semibold">الكشوف والتقارير</h2>
             </div>
             {statements.length === 0 ? (
@@ -109,7 +107,7 @@ function PortalPage() {
                   <li key={s.id} className="flex items-center justify-between py-3 text-sm">
                     <div>
                       <p className="font-medium">{s.title}</p>
-                      <p className="text-xs text-muted-foreground">{cap(s.kind)} · {s.period}</p>
+                      <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">{cap(s.kind)} · {s.period}</p>
                     </div>
                     <Button size="sm" variant="ghost" disabled={!s.file_url}>
                       <Download className="mr-2 h-4 w-4" /> {s.file_url ? "تنزيل" : "قيد الإصدار"}
@@ -118,11 +116,12 @@ function PortalPage() {
                 ))}
               </ul>
             )}
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent" aria-hidden />
           </div>
 
-          <div className="glass rounded-3xl p-6">
+          <div className="relative overflow-hidden rounded-xl border border-white/10 bg-card/50 p-6 backdrop-blur-xl">
             <div className="flex items-center gap-2">
-              <Bell className="h-5 w-5 text-gold" />
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-gold/20 bg-gold/[0.06]"><Bell className="h-4 w-4 text-gold" /></span>
               <h2 className="font-display text-lg font-semibold">الإشعارات</h2>
             </div>
             {notifications.length === 0 ? (
@@ -130,21 +129,24 @@ function PortalPage() {
             ) : (
               <ul className="mt-4 space-y-3">
                 {notifications.map((n) => (
-                  <li key={n.id} className="rounded-lg border border-white/5 bg-white/[0.03] p-3 text-sm">
+                  <li key={n.id} className="rounded-md border border-white/5 bg-white/[0.02] p-3 text-sm">
                     <p className="font-medium">{n.title}</p>
                     {n.body && <p className="mt-1 text-muted-foreground">{n.body}</p>}
-                    <p className="mt-1 text-xs text-muted-foreground">{new Date(n.created_at).toLocaleString()}</p>
+                    <p className="mt-1 font-mono text-[10px] tracking-wide text-muted-foreground">{new Date(n.created_at).toLocaleString()}</p>
                   </li>
                 ))}
               </ul>
             )}
           </div>
 
-          <div className="glass rounded-3xl p-6 lg:col-span-2">
-            <h2 className="font-display text-lg font-semibold">سجل العمليات</h2>
+          <div className="relative overflow-hidden rounded-xl border border-white/10 bg-card/50 p-6 backdrop-blur-xl lg:col-span-2">
+            <div className="flex items-center justify-between">
+              <h2 className="font-display text-lg font-semibold">سجل العمليات</h2>
+              <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">Live Ledger</span>
+            </div>
             <div className="mt-4 overflow-x-auto">
               <table className="w-full min-w-[640px] text-sm">
-                <thead className="text-xs uppercase tracking-widest text-muted-foreground">
+                <thead className="font-mono text-[10px] uppercase tracking-[0.16em] text-gold/80">
                   <tr>
                     <th className="py-2 text-start">التاريخ</th>
                     <th className="py-2 text-start">الرمز</th>
@@ -161,13 +163,13 @@ function PortalPage() {
                     </tr>
                   ) : (
                     txs.map((t) => (
-                      <tr key={t.id} className="border-t border-white/5">
-                        <td className="py-3">{new Date(t.occurred_at).toLocaleDateString()}</td>
-                        <td className="py-3 font-medium">{t.symbol}</td>
-                        <td className="py-3 uppercase text-muted-foreground">{t.side}</td>
-                        <td className="py-3 text-end">{Number(t.quantity).toLocaleString()}</td>
-                        <td className="py-3 text-end">{Number(t.price).toFixed(2)}</td>
-                        <td className={`py-3 text-end ${Number(t.pnl) >= 0 ? "text-gold" : "text-red-400"}`}>
+                      <tr key={t.id} className="border-t border-white/5 transition hover:bg-white/[0.015]">
+                        <td className="py-3 font-mono text-xs text-muted-foreground">{new Date(t.occurred_at).toLocaleDateString()}</td>
+                        <td className="py-3 font-mono font-medium">{t.symbol}</td>
+                        <td className="py-3 font-mono text-xs uppercase text-muted-foreground">{t.side}</td>
+                        <td className="py-3 text-end font-mono tabular-nums">{Number(t.quantity).toLocaleString()}</td>
+                        <td className="py-3 text-end font-mono tabular-nums">{Number(t.price).toFixed(2)}</td>
+                        <td className={`py-3 text-end font-mono tabular-nums ${Number(t.pnl) >= 0 ? "text-emerald-400" : "text-red-400"}`}>
                           {Number(t.pnl) >= 0 ? "+" : ""}
                           {Number(t.pnl).toFixed(2)}
                         </td>
@@ -179,9 +181,9 @@ function PortalPage() {
             </div>
           </div>
 
-          <div className="glass rounded-3xl p-6">
+          <div className="relative overflow-hidden rounded-xl border border-white/10 bg-card/50 p-6 backdrop-blur-xl">
             <div className="flex items-center gap-2">
-              <MessageSquare className="h-5 w-5 text-gold" />
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-gold/20 bg-gold/[0.06]"><MessageSquare className="h-4 w-4 text-gold" /></span>
               <h2 className="font-display text-lg font-semibold">المراسلات الآمنة</h2>
             </div>
             <div className="mt-4 max-h-72 space-y-3 overflow-y-auto pr-2">
@@ -191,10 +193,10 @@ function PortalPage() {
                 messages.map((m) => (
                   <div
                     key={m.id}
-                    className={`rounded-2xl px-3 py-2 text-sm ${m.from_role === "client" ? "ml-auto max-w-[85%] bg-gold/15 text-foreground" : "mr-auto max-w-[85%] bg-white/5 text-foreground"}`}
+                    className={`rounded-md px-3 py-2 text-sm ${m.from_role === "client" ? "ml-auto max-w-[85%] border border-gold/20 bg-gold/[0.08]" : "mr-auto max-w-[85%] border border-white/5 bg-white/[0.03]"}`}
                   >
                     <p>{m.body}</p>
-                    <p className="mt-1 text-[10px] text-muted-foreground">
+                    <p className="mt-1 font-mono text-[10px] tracking-wide text-muted-foreground">
                       {m.from_role === "client" ? "أنت" : "مدير الحساب"} · {new Date(m.created_at).toLocaleString()}
                     </p>
                   </div>
@@ -208,7 +210,7 @@ function PortalPage() {
                 placeholder="اكتب رسالة لمدير حسابك…"
                 className="min-h-[70px] bg-white/[0.03]"
               />
-              <Button onClick={sendMessage} className="bg-[var(--gradient-gold)] font-semibold text-background">
+              <Button onClick={sendMessage} className="rounded-sm bg-gold font-semibold text-background hover:bg-[oklch(0.88_0.11_90)]">
                 <Send className="h-4 w-4" />
               </Button>
             </div>
