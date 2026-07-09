@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Briefcase } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/app/portfolio")({
-  head: () => ({ meta: [{ title: "Portfolio — HK Invest" }] }),
+  head: () => ({ meta: [{ title: "المحفظة — HK Invest" }] }),
   component: PortfolioMobile,
 });
 
@@ -25,13 +25,13 @@ function PortfolioMobile() {
   }, []);
   return (
     <div className="px-4 pt-6">
-      <h1 className="font-display text-2xl font-semibold">My portfolios</h1>
-      <p className="mt-1 text-xs text-muted-foreground">All managed strategies under your name</p>
+      <h1 className="font-display text-2xl font-semibold">محافظي</h1>
+      <p className="mt-1 text-xs text-muted-foreground">جميع الاستراتيجيات المُدارة باسمك</p>
       <div className="mt-5 space-y-3">
         {loading ? (
-          <p className="text-sm text-muted-foreground">Loading…</p>
+          <p className="text-sm text-muted-foreground">جارٍ التحميل…</p>
         ) : items.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No portfolios yet.</p>
+          <p className="text-sm text-muted-foreground">لا توجد محافظ بعد.</p>
         ) : (
           items.map((p) => (
             <div key={p.id} className="flex items-center gap-3 rounded-2xl border border-white/10 bg-[color:var(--surface)] p-4">
