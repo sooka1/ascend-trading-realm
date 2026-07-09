@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button";
 import { AnimatedChart } from "@/components/animated-chart";
 import { useI18n } from "@/lib/i18n";
 import { LANDING, type LandingContent } from "@/lib/landing-t";
+import heroVideo from "@/assets/hero-bg.mp4.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -67,9 +68,26 @@ function Home() {
 
 function Hero({ c }: { c: LandingContent }) {
   return (
-    <section className="relative overflow-hidden border-b border-white/5">
-      <div className="pointer-events-none absolute inset-0 bg-grid opacity-30" aria-hidden />
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-[640px] bg-[var(--gradient-radial)]" aria-hidden />
+    <section className="relative isolate overflow-hidden border-b border-white/5">
+      {/* Cinematic brand video */}
+      <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden>
+        <video
+          className="h-full w-full object-cover"
+          src={heroVideo.url}
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+          poster=""
+        />
+        {/* Layered overlays: darken + brand tint + fade-to-page */}
+        <div className="absolute inset-0 bg-background/70" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(212,175,55,0.18),transparent_60%)]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/60 to-background" />
+        <div className="absolute inset-0 bg-grid opacity-20" />
+      </div>
+
       <div className="relative mx-auto grid max-w-7xl gap-10 px-4 pt-24 pb-16 sm:px-6 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:px-8 lg:pt-32 lg:pb-24">
         <div>
           <span className="inline-flex items-center gap-2 rounded-full border border-gold/30 bg-gold/5 px-3 py-1 text-[11px] uppercase tracking-[0.22em] text-gold">
