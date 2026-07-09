@@ -34,6 +34,7 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/_admin/route'
 import { Route as AuthenticatedPortalSupportRouteImport } from './routes/_authenticated/portal.support'
+import { Route as AuthenticatedPortalNotificationsRouteImport } from './routes/_authenticated/portal.notifications'
 import { Route as AuthenticatedPortalMfaRouteImport } from './routes/_authenticated/portal.mfa'
 import { Route as AuthenticatedPortalDocumentsRouteImport } from './routes/_authenticated/portal.documents'
 import { Route as AuthenticatedAppProfileRouteImport } from './routes/_authenticated/app.profile'
@@ -168,6 +169,12 @@ const AuthenticatedPortalSupportRoute =
     path: '/support',
     getParentRoute: () => AuthenticatedPortalRoute,
   } as any)
+const AuthenticatedPortalNotificationsRoute =
+  AuthenticatedPortalNotificationsRouteImport.update({
+    id: '/notifications',
+    path: '/notifications',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
 const AuthenticatedPortalMfaRoute = AuthenticatedPortalMfaRouteImport.update({
   id: '/mfa',
   path: '/mfa',
@@ -249,6 +256,7 @@ export interface FileRoutesByFullPath {
   '/app/profile': typeof AuthenticatedAppProfileRoute
   '/portal/documents': typeof AuthenticatedPortalDocumentsRoute
   '/portal/mfa': typeof AuthenticatedPortalMfaRoute
+  '/portal/notifications': typeof AuthenticatedPortalNotificationsRoute
   '/portal/support': typeof AuthenticatedPortalSupportRoute
   '/admin/audit': typeof AuthenticatedAdminAdminAuditRoute
   '/admin/finance': typeof AuthenticatedAdminAdminFinanceRoute
@@ -283,6 +291,7 @@ export interface FileRoutesByTo {
   '/app/profile': typeof AuthenticatedAppProfileRoute
   '/portal/documents': typeof AuthenticatedPortalDocumentsRoute
   '/portal/mfa': typeof AuthenticatedPortalMfaRoute
+  '/portal/notifications': typeof AuthenticatedPortalNotificationsRoute
   '/portal/support': typeof AuthenticatedPortalSupportRoute
   '/admin/audit': typeof AuthenticatedAdminAdminAuditRoute
   '/admin/finance': typeof AuthenticatedAdminAdminFinanceRoute
@@ -320,6 +329,7 @@ export interface FileRoutesById {
   '/_authenticated/app/profile': typeof AuthenticatedAppProfileRoute
   '/_authenticated/portal/documents': typeof AuthenticatedPortalDocumentsRoute
   '/_authenticated/portal/mfa': typeof AuthenticatedPortalMfaRoute
+  '/_authenticated/portal/notifications': typeof AuthenticatedPortalNotificationsRoute
   '/_authenticated/portal/support': typeof AuthenticatedPortalSupportRoute
   '/_authenticated/_admin/admin/audit': typeof AuthenticatedAdminAdminAuditRoute
   '/_authenticated/_admin/admin/finance': typeof AuthenticatedAdminAdminFinanceRoute
@@ -356,6 +366,7 @@ export interface FileRouteTypes {
     | '/app/profile'
     | '/portal/documents'
     | '/portal/mfa'
+    | '/portal/notifications'
     | '/portal/support'
     | '/admin/audit'
     | '/admin/finance'
@@ -390,6 +401,7 @@ export interface FileRouteTypes {
     | '/app/profile'
     | '/portal/documents'
     | '/portal/mfa'
+    | '/portal/notifications'
     | '/portal/support'
     | '/admin/audit'
     | '/admin/finance'
@@ -426,6 +438,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/profile'
     | '/_authenticated/portal/documents'
     | '/_authenticated/portal/mfa'
+    | '/_authenticated/portal/notifications'
     | '/_authenticated/portal/support'
     | '/_authenticated/_admin/admin/audit'
     | '/_authenticated/_admin/admin/finance'
@@ -631,6 +644,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPortalSupportRouteImport
       parentRoute: typeof AuthenticatedPortalRoute
     }
+    '/_authenticated/portal/notifications': {
+      id: '/_authenticated/portal/notifications'
+      path: '/notifications'
+      fullPath: '/portal/notifications'
+      preLoaderRoute: typeof AuthenticatedPortalNotificationsRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
     '/_authenticated/portal/mfa': {
       id: '/_authenticated/portal/mfa'
       path: '/mfa'
@@ -735,12 +755,14 @@ const AuthenticatedAppRouteWithChildren =
 interface AuthenticatedPortalRouteChildren {
   AuthenticatedPortalDocumentsRoute: typeof AuthenticatedPortalDocumentsRoute
   AuthenticatedPortalMfaRoute: typeof AuthenticatedPortalMfaRoute
+  AuthenticatedPortalNotificationsRoute: typeof AuthenticatedPortalNotificationsRoute
   AuthenticatedPortalSupportRoute: typeof AuthenticatedPortalSupportRoute
 }
 
 const AuthenticatedPortalRouteChildren: AuthenticatedPortalRouteChildren = {
   AuthenticatedPortalDocumentsRoute: AuthenticatedPortalDocumentsRoute,
   AuthenticatedPortalMfaRoute: AuthenticatedPortalMfaRoute,
+  AuthenticatedPortalNotificationsRoute: AuthenticatedPortalNotificationsRoute,
   AuthenticatedPortalSupportRoute: AuthenticatedPortalSupportRoute,
 }
 
