@@ -6,7 +6,9 @@ import { Button } from "@/components/ui/button";
 import { AnimatedChart } from "@/components/animated-chart";
 import {
   ArrowDownRight,
+  ArrowDownToLine,
   ArrowUpRight,
+  ArrowUpFromLine,
   Briefcase,
   FileText,
   LogOut,
@@ -136,7 +138,13 @@ function DashboardPage() {
               أهلًا، <span className="text-gradient">{name}</span>
             </h1>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <Button asChild className="bg-[var(--gradient-gold)] font-semibold text-background">
+              <Link to="/investor"><ArrowDownToLine className="ml-2 h-4 w-4" />إيداع</Link>
+            </Button>
+            <Button asChild variant="outline" className="border-white/15">
+              <Link to="/investor"><ArrowUpFromLine className="ml-2 h-4 w-4" />سحب</Link>
+            </Button>
             <Button asChild variant="outline" className="border-white/15">
               <Link to="/portal">بوابة العميل</Link>
             </Button>
