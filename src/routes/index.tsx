@@ -240,10 +240,10 @@ function Row({ k, v }: { k: string; v: string }) {
 
 function PerformanceBand() {
   const stats = [
-    { k: "Assets under management", n: 1.2, suffix: "B+", prefix: "$" },
-    { k: "Active client accounts", n: 18400, suffix: "+" },
-    { k: "Average tenure (yrs)", n: 4.7, suffix: "" },
-    { k: "Client satisfaction", n: 98, suffix: "%" },
+    { k: "Assets under management", n: 1.2, suffix: "B+", prefix: "$", decimals: 1 },
+    { k: "Active client accounts", n: 18400, suffix: "+", decimals: 0 },
+    { k: "Average tenure (yrs)", n: 4.7, suffix: "", decimals: 1 },
+    { k: "Client satisfaction", n: 98, suffix: "%", decimals: 0 },
   ];
   return (
     <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
@@ -252,9 +252,7 @@ function PerformanceBand() {
           <div key={s.k}>
             <p className="text-xs uppercase tracking-widest text-muted-foreground">{s.k}</p>
             <p className="mt-2 font-display text-4xl font-semibold text-foreground">
-              {s.prefix ?? ""}
-              <AnimatedCounter to={s.n} />
-              {s.suffix}
+              <AnimatedCounter value={s.n} prefix={s.prefix ?? ""} suffix={s.suffix} decimals={s.decimals} />
             </p>
           </div>
         ))}
