@@ -19,8 +19,8 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
     meta: [
-      { title: "Investor Dashboard — HK Investment Management" },
-      { name: "description", content: "Your investment portfolio, performance and account activity." },
+      { title: "لوحة المستثمر — HK Investment Management" },
+      { name: "description", content: "محفظتك الاستثمارية، الأداء، ونشاط الحساب." },
     ],
   }),
   component: DashboardPage,
@@ -84,7 +84,7 @@ function DashboardPage() {
       .select()
       .single();
     if (pErr || !pf) {
-      toast.error(pErr?.message ?? "Failed to create demo portfolio");
+      toast.error(pErr?.message ?? "تعذّر إنشاء المحفظة التجريبية");
       setSeeding(false);
       return;
     }
@@ -95,26 +95,26 @@ function DashboardPage() {
       supabase.from("portfolio_snapshots").insert(snaps),
       supabase.from("transactions").insert(txs),
       supabase.from("statements").insert([
-        { user_id: uid, kind: "monthly", period: "2026-06", title: "Monthly statement — June 2026" },
-        { user_id: uid, kind: "monthly", period: "2026-05", title: "Monthly statement — May 2026" },
-        { user_id: uid, kind: "annual", period: "2025", title: "Annual report — 2025" },
+        { user_id: uid, kind: "monthly", period: "2026-06", title: "كشف حساب شهري — يونيو 2026" },
+        { user_id: uid, kind: "monthly", period: "2026-05", title: "كشف حساب شهري — مايو 2026" },
+        { user_id: uid, kind: "annual", period: "2025", title: "التقرير السنوي — 2025" },
       ]),
       supabase.from("notifications").insert([
-        { user_id: uid, title: "Welcome to HK Investment Management", body: "Your investor dashboard is ready.", created_at: now },
-        { user_id: uid, title: "Portfolio funded", body: "Initial allocation completed — Balanced Growth strategy." },
+        { user_id: uid, title: "مرحبًا بك في HK Investment Management", body: "لوحة المستثمر جاهزة الآن.", created_at: now },
+        { user_id: uid, title: "تم تمويل المحفظة", body: "اكتمل التخصيص الأولي — استراتيجية النمو المتوازن." },
       ]),
       supabase.from("messages").insert([
-        { user_id: uid, from_role: "manager", body: "Hi — I'm your account manager. Reach out anytime through this channel." },
+        { user_id: uid, from_role: "manager", body: "مرحبًا — أنا مدير حسابك. تواصل معي في أي وقت عبر هذه القناة." },
       ]),
     ]);
-    toast.success("Demo portfolio created");
+    toast.success("تم إنشاء المحفظة التجريبية");
     await load();
     setSeeding(false);
   }
 
   async function signOut() {
     await supabase.auth.signOut();
-    toast.success("Signed out");
+    toast.success("تم تسجيل الخروج");
     navigate({ to: "/auth", replace: true });
   }
 
@@ -124,52 +124,52 @@ function DashboardPage() {
   const alloc = latest?.allocation ?? {};
   const allocEntries = Object.entries(alloc);
 
-  const name = profile?.display_name ?? profile?.email?.split("@")[0] ?? "Investor";
+  const name = profile?.display_name ?? profile?.email?.split("@")[0] ?? "مستثمر";
 
   return (
     <PageShell>
       <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <p className="text-xs uppercase tracking-widest text-gold">Investor Dashboard</p>
+            <p className="text-xs uppercase tracking-widest text-gold">لوحة المستثمر</p>
             <h1 className="mt-1 font-display text-3xl font-semibold md:text-4xl">
-              Welcome, <span className="text-gradient">{name}</span>
+              أهلًا، <span className="text-gradient">{name}</span>
             </h1>
           </div>
           <div className="flex items-center gap-2">
             <Button asChild variant="outline" className="border-white/15">
-              <Link to="/portal">Client Portal</Link>
+              <Link to="/portal">بوابة العميل</Link>
             </Button>
             <Button variant="outline" className="border-white/15" onClick={signOut}>
-              <LogOut className="mr-2 h-4 w-4" /> Sign out
+              <LogOut className="mr-2 h-4 w-4" /> تسجيل الخروج
             </Button>
           </div>
         </div>
 
         {loading ? (
-          <p className="mt-10 text-sm text-muted-foreground">Loading your portfolio…</p>
+          <p className="mt-10 text-sm text-muted-foreground">جارٍ تحميل محفظتك…</p>
         ) : !portfolio ? (
           <EmptyState onSeed={seedDemo} loading={seeding} />
         ) : (
           <>
             <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-              <Stat label="Portfolio value" icon={Wallet} value={fmt(latest?.equity ?? 0)} hint={portfolio.name} />
+              <Stat label="قيمة المحفظة" icon={Wallet} value={fmt(latest?.equity ?? 0)} hint={portfolio.name} />
               <Stat
-                label="Cumulative return"
+                label="العائد التراكمي"
                 icon={cumulative >= 0 ? ArrowUpRight : ArrowDownRight}
                 value={`${cumulative >= 0 ? "+" : ""}${cumulative.toFixed(2)}%`}
                 accent={cumulative >= 0 ? "gold" : "bear"}
-                hint="Since inception"
+                hint="منذ التأسيس"
               />
-              <Stat label="Strategy" icon={Briefcase} value={cap(portfolio.strategy)} hint={`Base: ${portfolio.base_currency}`} />
-              <Stat label="Snapshots" icon={FileText} value={String(snapshots.length)} hint="Daily equity records" />
+              <Stat label="الاستراتيجية" icon={Briefcase} value={cap(portfolio.strategy)} hint={`العملة: ${portfolio.base_currency}`} />
+              <Stat label="اللقطات" icon={FileText} value={String(snapshots.length)} hint="سجلات يومية للرصيد" />
             </div>
 
             <div className="mt-8 grid gap-6 lg:grid-cols-3">
               <div className="glass-strong rounded-3xl p-6 lg:col-span-2">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs uppercase tracking-widest text-muted-foreground">Equity curve</p>
+                    <p className="text-xs uppercase tracking-widest text-muted-foreground">منحنى الرصيد</p>
                     <p className="mt-1 font-display text-2xl font-semibold">{fmt(latest?.equity ?? 0)}</p>
                   </div>
                   <span className={`rounded-full border px-3 py-1 text-xs ${cumulative >= 0 ? "border-gold/30 bg-gold/10 text-gold" : "border-red-500/30 bg-red-500/10 text-red-400"}`}>
@@ -181,9 +181,9 @@ function DashboardPage() {
               </div>
 
               <div className="glass rounded-3xl p-6">
-                <p className="text-xs uppercase tracking-widest text-muted-foreground">Allocation</p>
+                <p className="text-xs uppercase tracking-widest text-muted-foreground">التوزيع</p>
                 {allocEntries.length === 0 ? (
-                  <p className="mt-4 text-sm text-muted-foreground">No allocation data yet.</p>
+                  <p className="mt-4 text-sm text-muted-foreground">لا توجد بيانات توزيع بعد.</p>
                 ) : (
                   <ul className="mt-4 space-y-3 text-sm">
                     {allocEntries.map(([k, v]) => (
@@ -205,19 +205,19 @@ function DashboardPage() {
             <div className="mt-8 grid gap-6 lg:grid-cols-3">
               <div className="glass rounded-3xl p-6 lg:col-span-2">
                 <div className="flex items-center justify-between">
-                  <h2 className="font-display text-lg font-semibold">Recent transactions</h2>
-                  <Link to="/portal" className="text-xs text-gold hover:underline">View all →</Link>
+                  <h2 className="font-display text-lg font-semibold">آخر العمليات</h2>
+                  <Link to="/portal" className="text-xs text-gold hover:underline">عرض الكل →</Link>
                 </div>
                 <div className="mt-4 overflow-x-auto">
                   <table className="w-full min-w-[560px] text-sm">
                     <thead className="text-xs uppercase tracking-widest text-muted-foreground">
                       <tr>
-                        <th className="py-2 text-left">Date</th>
-                        <th className="py-2 text-left">Symbol</th>
-                        <th className="py-2 text-left">Side</th>
-                        <th className="py-2 text-right">Qty</th>
-                        <th className="py-2 text-right">Price</th>
-                        <th className="py-2 text-right">P&amp;L</th>
+                        <th className="py-2 text-start">التاريخ</th>
+                        <th className="py-2 text-start">الرمز</th>
+                        <th className="py-2 text-start">النوع</th>
+                        <th className="py-2 text-end">الكمية</th>
+                        <th className="py-2 text-end">السعر</th>
+                        <th className="py-2 text-end">الربح/الخسارة</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -226,9 +226,9 @@ function DashboardPage() {
                           <td className="py-3">{new Date(t.occurred_at).toLocaleDateString()}</td>
                           <td className="py-3 font-medium">{t.symbol}</td>
                           <td className="py-3 uppercase text-muted-foreground">{t.side}</td>
-                          <td className="py-3 text-right">{Number(t.quantity).toLocaleString()}</td>
-                          <td className="py-3 text-right">{Number(t.price).toFixed(2)}</td>
-                          <td className={`py-3 text-right ${Number(t.pnl) >= 0 ? "text-gold" : "text-red-400"}`}>
+                          <td className="py-3 text-end">{Number(t.quantity).toLocaleString()}</td>
+                          <td className="py-3 text-end">{Number(t.price).toFixed(2)}</td>
+                          <td className={`py-3 text-end ${Number(t.pnl) >= 0 ? "text-gold" : "text-red-400"}`}>
                             {Number(t.pnl) >= 0 ? "+" : ""}
                             {Number(t.pnl).toFixed(2)}
                           </td>
@@ -239,11 +239,11 @@ function DashboardPage() {
                 </div>
               </div>
               <div className="glass rounded-3xl p-6">
-                <h2 className="font-display text-lg font-semibold">Quick links</h2>
+                <h2 className="font-display text-lg font-semibold">روابط سريعة</h2>
                 <ul className="mt-4 space-y-2 text-sm">
-                  <QuickLink to="/portal" icon={FileText} label="Statements & reports" />
-                  <QuickLink to="/portal" icon={MessageSquare} label="Secure messaging" />
-                  <QuickLink to="/portfolios" icon={Briefcase} label="Add another strategy" />
+                  <QuickLink to="/portal" icon={FileText} label="الكشوف والتقارير" />
+                  <QuickLink to="/portal" icon={MessageSquare} label="المراسلات الآمنة" />
+                  <QuickLink to="/portfolios" icon={Briefcase} label="أضف استراتيجية أخرى" />
                 </ul>
               </div>
             </div>
@@ -259,19 +259,18 @@ function EmptyState({ onSeed, loading }: { onSeed: () => void; loading: boolean 
     <div className="mt-10 grid gap-8 rounded-3xl border border-white/5 bg-white/[0.02] p-10 lg:grid-cols-[1.3fr_1fr] lg:items-center">
       <div>
         <span className="inline-flex items-center gap-2 rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-xs text-gold">
-          <Sparkles className="h-3 w-3" /> Get started
+          <Sparkles className="h-3 w-3" /> ابدأ الآن
         </span>
-        <h2 className="mt-4 font-display text-3xl font-semibold">No portfolio yet.</h2>
+        <h2 className="mt-4 font-display text-3xl font-semibold">لا توجد محفظة بعد.</h2>
         <p className="mt-3 max-w-md text-muted-foreground">
-          Create a demo Balanced Growth portfolio to explore the investor dashboard, or contact an advisor to open a real
-          managed account.
+          أنشئ محفظة تجريبية "النمو المتوازن" لاستكشاف لوحة المستثمر، أو تواصل مع مستشار لفتح حساب مُدار حقيقي.
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
           <Button onClick={onSeed} disabled={loading} className="bg-[var(--gradient-gold)] font-semibold text-background">
-            {loading ? "Creating…" : "Create demo portfolio"}
+            {loading ? "جارٍ الإنشاء…" : "إنشاء محفظة تجريبية"}
           </Button>
           <Button asChild variant="outline" className="border-white/15">
-            <Link to="/contact">Talk to an advisor</Link>
+            <Link to="/contact">تحدث مع مستشار</Link>
           </Button>
         </div>
       </div>
