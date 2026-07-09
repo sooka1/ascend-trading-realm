@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { PageShell } from "@/components/page-shell";
 import { Button } from "@/components/ui/button";
 import { AnimatedChart } from "@/components/animated-chart";
+import { useRoles } from "@/hooks/use-roles";
 import {
   ArrowDownRight,
   ArrowDownToLine,
@@ -13,6 +14,7 @@ import {
   FileText,
   LogOut,
   MessageSquare,
+  ShieldCheck,
   Sparkles,
   Wallet,
 } from "lucide-react";
@@ -41,6 +43,7 @@ type Transaction = { id: string; occurred_at: string; symbol: string; side: stri
 
 function DashboardPage() {
   const navigate = useNavigate();
+  const { isAdmin } = useRoles();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [portfolio, setPortfolio] = useState<Portfolio | null>(null);
   const [snapshots, setSnapshots] = useState<Snapshot[]>([]);
@@ -148,6 +151,11 @@ function DashboardPage() {
             <Button asChild variant="outline" className="border-white/15">
               <Link to="/portal">بوابة العميل</Link>
             </Button>
+            {isAdmin && (
+              <Button asChild variant="outline" className="border-gold/40 text-gold hover:bg-gold/10">
+                <Link to="/admin/finance"><ShieldCheck className="ml-2 h-4 w-4" />الإدارة</Link>
+              </Button>
+            )}
             <Button variant="outline" className="border-white/15" onClick={signOut}>
               <LogOut className="mr-2 h-4 w-4" /> تسجيل الخروج
             </Button>

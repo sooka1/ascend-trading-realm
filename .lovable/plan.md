@@ -1,30 +1,92 @@
-## المرحلة 2 — ترجمة الصفحات الثابتة
+# خطة التحويل إلى منصة استثمار على مستوى المؤسسات
 
-### النطاق
-ترجمة الصفحات الاثنتي عشرة التالية عبر `t()` من `src/lib/i18n.tsx` مع الحفاظ على البنية والتنسيق:
+طلبت "كل ما سبق" و"تنفيذ كامل". بصراحة تامة: ما طلبته يعادل **6-8 أسابيع** من العمل الهندسي لفريق كامل (RBAC كامل، CRM، CMS، نظام تذاكر، تقارير PDF/Excel، MFA، إشعارات SMS، تدقيق OWASP كامل، ...إلخ). لا يمكن تنفيذ كل ذلك في جلسة واحدة دون **كسر التطبيق العامل حالياً**.
 
-`about`, `contact`, `faq`, `legal`, `privacy`, `terms`, `risk`, `solutions`, `education`, `markets`, `performance`, `brand`
+سأنفذ العمل على **مراحل متتالية**، كل مرحلة قابلة للاختبار والاستخدام قبل الانتقال للتالية. تبدأ كل مرحلة بأمر منك: "ابدأ المرحلة N".
 
-### طريقة العمل
+## المرحلة 1 — الأساس الأمني و RBAC (هذه الجلسة)
 
-1. **إضافة مفاتيح الترجمة** في `src/lib/i18n.tsx` لكل صفحة تحت مساحة اسم خاصة بها:
-   - `about.*`, `contact.*`, `faq.*`, `legal.*`, `privacy.*`, `terms.*`, `risk.*`, `solutions.*`, `education.*`, `markets.*`, `performance.*`, `brand.*`
-   - المفاتيح تشمل: عنوان الصفحة (title/subtitle/eyebrow)، عناوين الأقسام، الفقرات، عناصر القوائم، تسميات الأزرار، وحقول الميتا (meta title/description/og).
-   - كل مفتاح يُترجم إلى اللغات الخمس: `ar`, `en`, `fr`, `es`, `tr`.
+الأهم والأخطر. بدونها كل ما يأتي بعدها هش.
 
-2. **تعديل كل ملف route** ليستخدم `useI18n()` واستدعاء `t("key")` بدل النصوص الثابتة، مع الاحتفاظ بأيقونات lucide والتخطيط كما هو.
+- تدقيق كل جداول Supabase الـ14: التأكد من `GRANT` صحيح، RLS مُفعّل، سياسات مُحكمة لكل جدول.
+- إضافة أدوار enum: `super_admin`, `admin`, `portfolio_manager`, `compliance_officer`, `finance`, `support`, `investor` إلى `app_role`.
+- تعديل `has_role` ودالة `handle_new_user` لدعم الأدوار الجديدة.
+- إنشاء layout محمي `_admin` يستخدم `has_role` للتحقق من صلاحية الوصول لصفحات الإدارة.
+- إصلاح أي سياسة RLS مكشوفة (تشغيل `supabase--linter`).
+- تفعيل حماية كلمات المرور المسربة (HIBP).
 
-3. **دعم RTL**: يعتمد على السلوك الحالي في `useI18n()` الذي يضبط `document.documentElement.dir="rtl"` تلقائيًا للعربية عبر الـProvider الجذري — لا حاجة لتعديل إضافي في الصفحات نفسها.
+## المرحلة 2 — بوابة المستثمر الكاملة
 
-4. **الميتاداتا (head)**: عناوين ووصف كل صفحة يبقيان ثابتين بالإنجليزية داخل `head()` لأن `createFileRoute.head()` يُنفَّذ خارج شجرة React ولا يملك وصولاً لـ `useI18n()`. (بديل مقبول لأن الميتا يقرأها الزواحف ومحركات البحث.)
+- صفحات: `/portal/overview`, `/portal/reports`, `/portal/transactions`, `/portal/documents`, `/portal/notifications`, `/portal/support`, `/portal/security`, `/portal/profile`.
+- نظام تذاكر دعم (جدول `support_tickets` + `ticket_messages`).
+- مركز مستندات (Supabase Storage bucket + سياسات).
+- تصدير PDF للتقارير (react-pdf).
 
-### التحقق
-- تشغيل `bunx tsgo --noEmit` للتأكد من عدم كسر الأنواع.
-- التصفح اليدوي: التبديل إلى العربية والتأكد من ظهور النصوص المترجمة وتفعيل RTL على كل الصفحات المستهدفة.
+## المرحلة 3 — لوحة الإدارة (Admin)
 
-### ملاحظات تقنية
-- سيُضاف ما يقارب 250–350 مفتاح ترجمة جديد × 5 لغات.
-- لن تُعدَّل الصفحات المصادَق عليها (`_authenticated/*`) في هذه المرحلة.
-- لن تُغيَّر منطق أو تخطيط الصفحات، فقط النصوص.
+- `/admin/users` (إدارة/تعطيل/تعديل أدوار).
+- `/admin/portfolios` (عرض/تعديل محافظ جميع العملاء).
+- `/admin/finance` (موجود — تحسين).
+- `/admin/audit` (سجل التدقيق الكامل).
+- `/admin/support` (لوحة معالجة التذاكر).
+- `/admin/analytics` (KPIs عامة).
 
-هل أتابع التنفيذ؟
+## المرحلة 4 — نظام التصميم والأداء
+
+- توحيد جميع الألوان في `src/styles.css` كـ tokens (لا `bg-[var(...)]` مباشر).
+- مكونات موحدة: `StatCard`, `DataTable`, `EmptyState`, `LoadingState`, `ErrorBoundary`.
+- Lazy loading للمسارات الثقيلة.
+- Image optimization, code splitting.
+- SEO لكل صفحة (schema.org, canonical, OG images).
+
+## المرحلة 5 — إضافات المؤسسة
+
+- MFA/2FA (TOTP).
+- سجل جلسات وأجهزة.
+- إشعارات: Email (موجود) + In-app (موجود). SMS عبر GatewayAPI (اختياري).
+- CMS بسيط (blog/news/announcements).
+- التقويم الاقتصادي وشريط الأسواق (يوجد ticker — نُحسّنه).
+- WCAG AA: aria-labels لكل الأيقونات، تباين، keyboard nav.
+
+## المرحلة 6 — الضبط النهائي
+
+- Playwright E2E للتدفقات الحرجة.
+- Rate limiting للنماذج العامة.
+- تقرير Lighthouse ومعالجة كل النقاط دون 95.
+- مراجعة نهائية OWASP Top 10.
+
+---
+
+## تفاصيل تقنية للمرحلة 1 (التي سأنفذها الآن عند الموافقة)
+
+**Migration واحدة تُضيف:**
+
+```sql
+-- توسيع app_role
+ALTER TYPE app_role ADD VALUE IF NOT EXISTS 'super_admin';
+ALTER TYPE app_role ADD VALUE IF NOT EXISTS 'portfolio_manager';
+ALTER TYPE app_role ADD VALUE IF NOT EXISTS 'compliance_officer';
+ALTER TYPE app_role ADD VALUE IF NOT EXISTS 'finance';
+ALTER TYPE app_role ADD VALUE IF NOT EXISTS 'support';
+ALTER TYPE app_role ADD VALUE IF NOT EXISTS 'investor';
+
+-- دالة تجميع للتحقق من عدة أدوار
+CREATE OR REPLACE FUNCTION public.has_any_role(_user_id uuid, _roles app_role[])
+RETURNS boolean LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public
+AS $$ SELECT EXISTS (SELECT 1 FROM public.user_roles WHERE user_id=_user_id AND role = ANY(_roles)) $$;
+```
+
+**ملفات جديدة/معدلة:**
+- `src/routes/_authenticated/_admin/route.tsx` — بوابة تحقق `has_any_role(['admin','super_admin'])`.
+- نقل `admin.finance.tsx` تحت `_admin/`.
+- `src/lib/rbac.functions.ts` — server fn لجلب أدوار المستخدم الحالي.
+- `src/hooks/use-roles.ts` — hook للاستخدام في المكونات.
+
+**مخرجات مؤكدة:**
+- تشغيل `supabase--linter` بعد التعديلات.
+- typecheck يمر.
+- لا كسر لأي مسار موجود.
+
+---
+
+**للبدء اكتب: "ابدأ المرحلة 1"** أو **"ابدأ المرحلة X"** لأي مرحلة أخرى تفضلها أولاً.
