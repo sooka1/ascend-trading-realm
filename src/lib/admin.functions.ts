@@ -402,3 +402,311 @@ export const getSystemMonitoring = createServerFn({ method: "GET" })
       generatedAt: new Date().toISOString(),
     };
   });
+
+// ---------------------------------------------------------------------------
+// Phase 2 — Financial Operations
+// ---------------------------------------------------------------------------
+
+export const listSubscriptionsAdmin = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(
+    (data: { status?: string; search?: string } | undefined) => data ?? {},
+  )
+  .handler(async ({ data, context }) => {
+    const auth = await assertAdmin(context);
+    if (!auth.ok) throw new Error("Forbidden");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    let q = supabaseAdmin
+      .from("subscriptions")
+      .select(
+        "id,user_id,amount,currency,status,started_at,ends_at,created_at,packages(name,risk_level,lockup_months)",
+      )
+      .order("created_at", { ascending: false })
+      .limit(500);
+    if (data.status && data.status !== "all") q = q.eq("status", data.status);
+    const { data: rows, error } = await q;
+    if (error) throw new Error(error.message);
+    const ids = Array.from(new Set((rows ?? []).map((r: any) => r.user_id)));
+    const profileMap: Record<string, { email: string | null; display_name: string | null }> = {};
+    if (ids.length) {
+      const { data: pr } = await supabaseAdmin
+        .from("profiles")
+        .select("id,email,display_name")
+        .in("id", ids);
+      (pr ?? []).forEach((p: any) => (profileMap[p.id] = p));
+    }
+    const term = (data.search ?? "").trim().toLowerCase();
+    const enriched = (rows ?? []).map((r: any) => ({
+      ...r,
+      profile: profileMap[r.user_id] ?? null,
+    }));
+    const filtered = term
+      ? enriched.filter((r) =>
+          [r.profile?.email, r.profile?.display_name, r.packages?.name]
+            .filter(Boolean)
+            .some((v: string) => v.toLowerCase().includes(term)),
+        )
+      : enriched;
+    const totals = {
+      active: enriched.filter((r) => r.status === "active").length,
+      pending: enriched.filter((r) => r.status === "pending").length,
+      paused: enriched.filter((r) => r.status === "paused").length,
+      closed: enriched.filter((r) => r.status === "closed").length,
+      aum: enriched
+        .filter((r) => r.status === "active")
+        .reduce((a, r) => a + Number(r.amount || 0), 0),
+    };
+    return { rows: filtered, totals };
+  });
+
+export const setSubscriptionStatus = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(
+    (data: { id: string; status: "active" | "pending" | "paused" | "closed" | "archived" }) => data,
+  )
+  .handler(async ({ data, context }) => {
+    const auth = await assertAdmin(context);
+    if (!auth.ok) throw new Error("Forbidden");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: current } = await supabaseAdmin
+      .from("subscriptions")
+      .select("id,user_id,status,amount,currency")
+      .eq("id", data.id)
+      .maybeSingle();
+    if (!current) throw new Error("Subscription not found");
+    const patch: Record<string, unknown> = { status: data.status };
+    if (data.status === "active" && !("started_at" in current && (current as any).started_at)) {
+      patch.started_at = new Date().toISOString();
+    }
+    if (data.status === "closed" || data.status === "archived") {
+      patch.ends_at = new Date().toISOString();
+    }
+    const { error } = await supabaseAdmin.from("subscriptions").update(patch).eq("id", data.id);
+    if (error) throw new Error(error.message);
+    await supabaseAdmin.from("finance_audit_log").insert({
+      request_kind: "subscription",
+      request_id: data.id,
+      target_user_id: (current as any).user_id,
+      admin_id: context.userId,
+      action: `set_${data.status}`,
+      from_status: (current as any).status,
+      to_status: data.status,
+      metadata: { amount: (current as any).amount, currency: (current as any).currency },
+    });
+    return { ok: true };
+  });
+
+export const listInvoicesAdmin = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const auth = await assertAdmin(context);
+    if (!auth.ok) throw new Error("Forbidden");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const [subs, deposits] = await Promise.all([
+      supabaseAdmin
+        .from("subscriptions")
+        .select("id,user_id,amount,currency,status,started_at,created_at,packages(name)")
+        .order("created_at", { ascending: false })
+        .limit(300),
+      supabaseAdmin
+        .from("deposits")
+        .select("id,user_id,amount,currency,status,method,reference,created_at")
+        .eq("status", "approved")
+        .order("created_at", { ascending: false })
+        .limit(300),
+    ]);
+    const ids = Array.from(
+      new Set([
+        ...(subs.data ?? []).map((r: any) => r.user_id),
+        ...(deposits.data ?? []).map((r: any) => r.user_id),
+      ]),
+    );
+    const profileMap: Record<string, { email: string | null; display_name: string | null }> = {};
+    if (ids.length) {
+      const { data: pr } = await supabaseAdmin
+        .from("profiles")
+        .select("id,email,display_name")
+        .in("id", ids);
+      (pr ?? []).forEach((p: any) => (profileMap[p.id] = p));
+    }
+    const num = (id: string) => `INV-${id.slice(0, 8).toUpperCase()}`;
+    const subInvoices = (subs.data ?? []).map((r: any) => ({
+      id: r.id,
+      number: num(r.id),
+      kind: "subscription" as const,
+      user_id: r.user_id,
+      profile: profileMap[r.user_id] ?? null,
+      description: r.packages?.name ?? "Investment package",
+      amount: Number(r.amount),
+      currency: r.currency,
+      status: r.status === "active" ? "paid" : r.status === "pending" ? "due" : r.status,
+      issued_at: r.started_at ?? r.created_at,
+    }));
+    const depInvoices = (deposits.data ?? []).map((r: any) => ({
+      id: r.id,
+      number: num(r.id),
+      kind: "deposit" as const,
+      user_id: r.user_id,
+      profile: profileMap[r.user_id] ?? null,
+      description: `Deposit · ${r.method}${r.reference ? " · " + r.reference : ""}`,
+      amount: Number(r.amount),
+      currency: r.currency,
+      status: "paid" as const,
+      issued_at: r.created_at,
+    }));
+    const rows = [...subInvoices, ...depInvoices].sort(
+      (a, b) => +new Date(b.issued_at) - +new Date(a.issued_at),
+    );
+    const totals = {
+      paid: rows.filter((r) => r.status === "paid").reduce((a, r) => a + r.amount, 0),
+      due: rows.filter((r) => r.status === "due").reduce((a, r) => a + r.amount, 0),
+      count: rows.length,
+    };
+    return { rows, totals };
+  });
+
+export const listPaymentsAdmin = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { status?: string } | undefined) => data ?? {})
+  .handler(async ({ data, context }) => {
+    const auth = await assertAdmin(context);
+    if (!auth.ok) throw new Error("Forbidden");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    let dq = supabaseAdmin
+      .from("deposits")
+      .select("id,user_id,amount,currency,method,reference,status,created_at,reviewed_at")
+      .order("created_at", { ascending: false })
+      .limit(300);
+    let wq = supabaseAdmin
+      .from("withdrawals")
+      .select("id,user_id,amount,currency,destination,iban,status,created_at,reviewed_at")
+      .order("created_at", { ascending: false })
+      .limit(300);
+    if (data.status && data.status !== "all") {
+      dq = dq.eq("status", data.status);
+      wq = wq.eq("status", data.status);
+    }
+    const [deps, wds] = await Promise.all([dq, wq]);
+    const ids = Array.from(
+      new Set([
+        ...(deps.data ?? []).map((r: any) => r.user_id),
+        ...(wds.data ?? []).map((r: any) => r.user_id),
+      ]),
+    );
+    const profileMap: Record<string, { email: string | null; display_name: string | null }> = {};
+    if (ids.length) {
+      const { data: pr } = await supabaseAdmin
+        .from("profiles")
+        .select("id,email,display_name")
+        .in("id", ids);
+      (pr ?? []).forEach((p: any) => (profileMap[p.id] = p));
+    }
+    const rows = [
+      ...(deps.data ?? []).map((r: any) => ({
+        id: r.id,
+        kind: "deposit" as const,
+        user_id: r.user_id,
+        profile: profileMap[r.user_id] ?? null,
+        amount: Number(r.amount),
+        currency: r.currency,
+        method: r.method,
+        reference: r.reference,
+        status: r.status,
+        created_at: r.created_at,
+        reviewed_at: r.reviewed_at,
+      })),
+      ...(wds.data ?? []).map((r: any) => ({
+        id: r.id,
+        kind: "withdrawal" as const,
+        user_id: r.user_id,
+        profile: profileMap[r.user_id] ?? null,
+        amount: Number(r.amount),
+        currency: r.currency,
+        method: r.destination,
+        reference: r.iban,
+        status: r.status,
+        created_at: r.created_at,
+        reviewed_at: r.reviewed_at,
+      })),
+    ].sort((a, b) => +new Date(b.created_at) - +new Date(a.created_at));
+    const totals = {
+      inflow: rows
+        .filter((r) => r.kind === "deposit" && r.status === "approved")
+        .reduce((a, r) => a + r.amount, 0),
+      outflow: rows
+        .filter((r) => r.kind === "withdrawal" && r.status === "approved")
+        .reduce((a, r) => a + r.amount, 0),
+      pending: rows.filter((r) => r.status === "pending").length,
+      failed: rows.filter((r) => r.status === "rejected").length,
+    };
+    return { rows, totals };
+  });
+
+export const getAccountingSummary = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const auth = await assertAdmin(context);
+    if (!auth.ok) throw new Error("Forbidden");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const since = daysAgoISO(365);
+    const [subs, deps, wds] = await Promise.all([
+      supabaseAdmin
+        .from("subscriptions")
+        .select("amount,currency,status,started_at,created_at")
+        .gte("created_at", since),
+      supabaseAdmin
+        .from("deposits")
+        .select("amount,currency,status,created_at")
+        .eq("status", "approved")
+        .gte("created_at", since),
+      supabaseAdmin
+        .from("withdrawals")
+        .select("amount,currency,status,created_at")
+        .eq("status", "approved")
+        .gte("created_at", since),
+    ]);
+    const monthKey = (iso: string) => iso.slice(0, 7);
+    const months = new Map<
+      string,
+      { month: string; revenue: number; expenses: number; net: number; subscriptions: number }
+    >();
+    const now = new Date();
+    for (let i = 11; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const k = d.toISOString().slice(0, 7);
+      months.set(k, { month: k, revenue: 0, expenses: 0, net: 0, subscriptions: 0 });
+    }
+    for (const r of subs.data ?? []) {
+      const k = monthKey((r as any).started_at ?? (r as any).created_at);
+      const bucket = months.get(k);
+      if (!bucket) continue;
+      bucket.revenue += Number((r as any).amount || 0);
+      bucket.subscriptions += 1;
+    }
+    for (const r of deps.data ?? []) {
+      const k = monthKey((r as any).created_at);
+      const bucket = months.get(k);
+      if (!bucket) continue;
+      bucket.revenue += Number((r as any).amount || 0);
+    }
+    for (const r of wds.data ?? []) {
+      const k = monthKey((r as any).created_at);
+      const bucket = months.get(k);
+      if (!bucket) continue;
+      bucket.expenses += Number((r as any).amount || 0);
+    }
+    const rows = Array.from(months.values()).map((m) => ({
+      ...m,
+      net: m.revenue - m.expenses,
+    }));
+    const totals = rows.reduce(
+      (acc, r) => ({
+        revenue: acc.revenue + r.revenue,
+        expenses: acc.expenses + r.expenses,
+        net: acc.net + r.net,
+        subscriptions: acc.subscriptions + r.subscriptions,
+      }),
+      { revenue: 0, expenses: 0, net: 0, subscriptions: 0 },
+    );
+    return { rows, totals };
+  });
