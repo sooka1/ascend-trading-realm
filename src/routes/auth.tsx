@@ -51,6 +51,31 @@ function Auth() {
     return () => clearTimeout(t);
   }, [resendState.cooldown]);
 
+  // While the confirm-email screen is showing, watch for the user completing
+  // confirmation in another tab and route them straight to the dashboard.
+  useEffect(() => {
+    if (!pendingEmail) return;
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session && (event === "SIGNED_IN" || event === "USER_UPDATED" || event === "TOKEN_REFRESHED")) {
+        toast.success("Email confirmed");
+        navigate({ to: "/dashboard", replace: true });
+      }
+    });
+    // Fallback poll in case storage events don't fire (e.g. different browser).
+    const interval = setInterval(async () => {
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
+        clearInterval(interval);
+        toast.success("Email confirmed");
+        navigate({ to: "/dashboard", replace: true });
+      }
+    }, 5000);
+    return () => {
+      sub.subscription.unsubscribe();
+      clearInterval(interval);
+    };
+  }, [pendingEmail, navigate]);
+
   const loginSchema = z.object({
     email: z.string().trim().min(1, "Email is required").email("Enter a valid email").max(255),
     password: z.string().min(6, "Password must be at least 6 characters").max(72, "Password is too long"),
