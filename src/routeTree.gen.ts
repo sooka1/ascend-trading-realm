@@ -35,6 +35,7 @@ import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/ap
 import { Route as AuthenticatedAppProfileRouteImport } from './routes/_authenticated/app.profile'
 import { Route as AuthenticatedAppPortfolioRouteImport } from './routes/_authenticated/app.portfolio'
 import { Route as AuthenticatedAppActivityRouteImport } from './routes/_authenticated/app.activity'
+import { Route as AuthenticatedAdminFinanceRouteImport } from './routes/_authenticated/admin.finance'
 
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
@@ -167,6 +168,12 @@ const AuthenticatedAppActivityRoute =
     path: '/activity',
     getParentRoute: () => AuthenticatedAppRoute,
   } as any)
+const AuthenticatedAdminFinanceRoute =
+  AuthenticatedAdminFinanceRouteImport.update({
+    id: '/admin/finance',
+    path: '/admin/finance',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -191,6 +198,7 @@ export interface FileRoutesByFullPath {
   '/investor': typeof AuthenticatedInvestorRoute
   '/portal': typeof AuthenticatedPortalRoute
   '/security': typeof AuthenticatedSecurityRoute
+  '/admin/finance': typeof AuthenticatedAdminFinanceRoute
   '/app/activity': typeof AuthenticatedAppActivityRoute
   '/app/portfolio': typeof AuthenticatedAppPortfolioRoute
   '/app/profile': typeof AuthenticatedAppProfileRoute
@@ -218,6 +226,7 @@ export interface FileRoutesByTo {
   '/investor': typeof AuthenticatedInvestorRoute
   '/portal': typeof AuthenticatedPortalRoute
   '/security': typeof AuthenticatedSecurityRoute
+  '/admin/finance': typeof AuthenticatedAdminFinanceRoute
   '/app/activity': typeof AuthenticatedAppActivityRoute
   '/app/portfolio': typeof AuthenticatedAppPortfolioRoute
   '/app/profile': typeof AuthenticatedAppProfileRoute
@@ -247,6 +256,7 @@ export interface FileRoutesById {
   '/_authenticated/investor': typeof AuthenticatedInvestorRoute
   '/_authenticated/portal': typeof AuthenticatedPortalRoute
   '/_authenticated/security': typeof AuthenticatedSecurityRoute
+  '/_authenticated/admin/finance': typeof AuthenticatedAdminFinanceRoute
   '/_authenticated/app/activity': typeof AuthenticatedAppActivityRoute
   '/_authenticated/app/portfolio': typeof AuthenticatedAppPortfolioRoute
   '/_authenticated/app/profile': typeof AuthenticatedAppProfileRoute
@@ -276,6 +286,7 @@ export interface FileRouteTypes {
     | '/investor'
     | '/portal'
     | '/security'
+    | '/admin/finance'
     | '/app/activity'
     | '/app/portfolio'
     | '/app/profile'
@@ -303,6 +314,7 @@ export interface FileRouteTypes {
     | '/investor'
     | '/portal'
     | '/security'
+    | '/admin/finance'
     | '/app/activity'
     | '/app/portfolio'
     | '/app/profile'
@@ -331,6 +343,7 @@ export interface FileRouteTypes {
     | '/_authenticated/investor'
     | '/_authenticated/portal'
     | '/_authenticated/security'
+    | '/_authenticated/admin/finance'
     | '/_authenticated/app/activity'
     | '/_authenticated/app/portfolio'
     | '/_authenticated/app/profile'
@@ -541,6 +554,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppActivityRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/admin/finance': {
+      id: '/_authenticated/admin/finance'
+      path: '/admin/finance'
+      fullPath: '/admin/finance'
+      preLoaderRoute: typeof AuthenticatedAdminFinanceRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -565,6 +585,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedInvestorRoute: typeof AuthenticatedInvestorRoute
   AuthenticatedPortalRoute: typeof AuthenticatedPortalRoute
   AuthenticatedSecurityRoute: typeof AuthenticatedSecurityRoute
+  AuthenticatedAdminFinanceRoute: typeof AuthenticatedAdminFinanceRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -573,6 +594,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedInvestorRoute: AuthenticatedInvestorRoute,
   AuthenticatedPortalRoute: AuthenticatedPortalRoute,
   AuthenticatedSecurityRoute: AuthenticatedSecurityRoute,
+  AuthenticatedAdminFinanceRoute: AuthenticatedAdminFinanceRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
