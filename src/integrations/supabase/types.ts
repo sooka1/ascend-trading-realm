@@ -56,6 +56,134 @@ export type Database = {
         }
         Relationships: []
       }
+      messages: {
+        Row: {
+          body: string
+          created_at: string
+          from_role: string
+          id: string
+          read_at: string | null
+          user_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          from_role: string
+          id?: string
+          read_at?: string | null
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          from_role?: string
+          id?: string
+          read_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          read_at: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      portfolio_snapshots: {
+        Row: {
+          allocation: Json
+          as_of_date: string
+          created_at: string
+          equity: number
+          id: string
+          pnl: number
+          portfolio_id: string
+          user_id: string
+        }
+        Insert: {
+          allocation?: Json
+          as_of_date: string
+          created_at?: string
+          equity: number
+          id?: string
+          pnl?: number
+          portfolio_id: string
+          user_id: string
+        }
+        Update: {
+          allocation?: Json
+          as_of_date?: string
+          created_at?: string
+          equity?: number
+          id?: string
+          pnl?: number
+          portfolio_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portfolio_snapshots_portfolio_id_fkey"
+            columns: ["portfolio_id"]
+            isOneToOne: false
+            referencedRelation: "portfolios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      portfolios: {
+        Row: {
+          base_currency: string
+          created_at: string
+          id: string
+          inception_date: string
+          name: string
+          strategy: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          base_currency?: string
+          created_at?: string
+          id?: string
+          inception_date?: string
+          name: string
+          strategy: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          base_currency?: string
+          created_at?: string
+          id?: string
+          inception_date?: string
+          name?: string
+          strategy?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -85,6 +213,86 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      statements: {
+        Row: {
+          created_at: string
+          file_url: string | null
+          id: string
+          kind: string
+          period: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          file_url?: string | null
+          id?: string
+          kind: string
+          period: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          file_url?: string | null
+          id?: string
+          kind?: string
+          period?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      transactions: {
+        Row: {
+          created_at: string
+          id: string
+          note: string | null
+          occurred_at: string
+          pnl: number
+          portfolio_id: string
+          price: number
+          quantity: number
+          side: string
+          symbol: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          note?: string | null
+          occurred_at?: string
+          pnl?: number
+          portfolio_id: string
+          price: number
+          quantity: number
+          side: string
+          symbol: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          note?: string | null
+          occurred_at?: string
+          pnl?: number
+          portfolio_id?: string
+          price?: number
+          quantity?: number
+          side?: string
+          symbol?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_portfolio_id_fkey"
+            columns: ["portfolio_id"]
+            isOneToOne: false
+            referencedRelation: "portfolios"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
