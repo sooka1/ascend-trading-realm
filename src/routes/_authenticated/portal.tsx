@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { PageShell } from "@/components/page-shell";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Bell, Download, FileText, MessageSquare, Send } from "lucide-react";
+import { ArrowDownToLine, ArrowUpFromLine, Bell, Download, FileText, MessageSquare, Send } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/portal")({
@@ -67,9 +67,17 @@ function PortalPage() {
             <p className="text-xs uppercase tracking-widest text-gold">بوابة العميل</p>
             <h1 className="mt-1 font-display text-3xl font-semibold md:text-4xl">المستندات والنشاط والدعم</h1>
           </div>
-          <Button asChild variant="outline" className="border-white/15">
-            <Link to="/dashboard">العودة إلى لوحة التحكم</Link>
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button asChild className="bg-[var(--gradient-gold)] font-semibold text-background">
+              <Link to="/investor"><ArrowDownToLine className="ml-2 h-4 w-4" />إيداع</Link>
+            </Button>
+            <Button asChild variant="outline" className="border-white/15">
+              <Link to="/investor"><ArrowUpFromLine className="ml-2 h-4 w-4" />سحب</Link>
+            </Button>
+            <Button asChild variant="ghost" className="text-muted-foreground">
+              <Link to="/dashboard">لوحة التحكم</Link>
+            </Button>
+          </div>
         </div>
 
         <div className="mt-8 grid gap-6 lg:grid-cols-3">
