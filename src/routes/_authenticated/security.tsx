@@ -190,6 +190,37 @@ function SecurityPanel() {
   );
 }
 
+function AuditLogGate({ findings }: { findings: SecurityFinding[] }) {
+  const check = useServerFn(canViewSecurityAudit);
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["security-audit-authz"],
+    queryFn: () => check(),
+    staleTime: 60_000,
+  });
+
+  if (isLoading) {
+    return (
+      <div className="mt-10 glass rounded-2xl border border-white/10 p-6 text-center text-sm text-muted-foreground">
+        جارٍ التحقق من الصلاحيات…
+      </div>
+    );
+  }
+  if (isError || !data?.authorized) {
+    return (
+      <div className="mt-10 glass flex items-center gap-3 rounded-2xl border border-white/10 p-6">
+        <Lock className="h-5 w-5 text-muted-foreground" />
+        <div>
+          <p className="text-sm font-medium">سجل التدقيق مقيَّد</p>
+          <p className="text-xs text-muted-foreground">
+            عرض سجل تطبيق الإصلاحات متاح فقط للمستخدمين المصرّح لهم (دور admin).
+          </p>
+        </div>
+      </div>
+    );
+  }
+  return <AuditLog findings={findings} />;
+}
+
 function AuditLog({ findings }: { findings: SecurityFinding[] }) {
   const entries = useMemo(() => {
     const rows = findings.flatMap((f) =>
