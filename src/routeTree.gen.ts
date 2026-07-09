@@ -33,12 +33,21 @@ import { Route as AuthenticatedInvestorRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/_admin/route'
+import { Route as AuthenticatedPortalUpdatesRouteImport } from './routes/_authenticated/portal.updates'
 import { Route as AuthenticatedPortalTransactionsRouteImport } from './routes/_authenticated/portal.transactions'
 import { Route as AuthenticatedPortalSupportRouteImport } from './routes/_authenticated/portal.support'
+import { Route as AuthenticatedPortalStatementsRouteImport } from './routes/_authenticated/portal.statements'
+import { Route as AuthenticatedPortalSettingsRouteImport } from './routes/_authenticated/portal.settings'
 import { Route as AuthenticatedPortalProfileRouteImport } from './routes/_authenticated/portal.profile'
+import { Route as AuthenticatedPortalPortfolioRouteImport } from './routes/_authenticated/portal.portfolio'
+import { Route as AuthenticatedPortalPerformanceRouteImport } from './routes/_authenticated/portal.performance'
 import { Route as AuthenticatedPortalNotificationsRouteImport } from './routes/_authenticated/portal.notifications'
 import { Route as AuthenticatedPortalMfaRouteImport } from './routes/_authenticated/portal.mfa'
+import { Route as AuthenticatedPortalFavoritesRouteImport } from './routes/_authenticated/portal.favorites'
+import { Route as AuthenticatedPortalDownloadsRouteImport } from './routes/_authenticated/portal.downloads'
 import { Route as AuthenticatedPortalDocumentsRouteImport } from './routes/_authenticated/portal.documents'
+import { Route as AuthenticatedPortalActivityRouteImport } from './routes/_authenticated/portal.activity'
+import { Route as AuthenticatedPortalAccountsRouteImport } from './routes/_authenticated/portal.accounts'
 import { Route as AuthenticatedAppProfileRouteImport } from './routes/_authenticated/app.profile'
 import { Route as AuthenticatedAppPortfolioRouteImport } from './routes/_authenticated/app.portfolio'
 import { Route as AuthenticatedAppActivityRouteImport } from './routes/_authenticated/app.activity'
@@ -165,6 +174,12 @@ const AuthenticatedAdminRouteRoute = AuthenticatedAdminRouteRouteImport.update({
   id: '/_admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPortalUpdatesRoute =
+  AuthenticatedPortalUpdatesRouteImport.update({
+    id: '/updates',
+    path: '/updates',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
 const AuthenticatedPortalTransactionsRoute =
   AuthenticatedPortalTransactionsRouteImport.update({
     id: '/transactions',
@@ -177,10 +192,34 @@ const AuthenticatedPortalSupportRoute =
     path: '/support',
     getParentRoute: () => AuthenticatedPortalRoute,
   } as any)
+const AuthenticatedPortalStatementsRoute =
+  AuthenticatedPortalStatementsRouteImport.update({
+    id: '/statements',
+    path: '/statements',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
+const AuthenticatedPortalSettingsRoute =
+  AuthenticatedPortalSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
 const AuthenticatedPortalProfileRoute =
   AuthenticatedPortalProfileRouteImport.update({
     id: '/profile',
     path: '/profile',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
+const AuthenticatedPortalPortfolioRoute =
+  AuthenticatedPortalPortfolioRouteImport.update({
+    id: '/portfolio',
+    path: '/portfolio',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
+const AuthenticatedPortalPerformanceRoute =
+  AuthenticatedPortalPerformanceRouteImport.update({
+    id: '/performance',
+    path: '/performance',
     getParentRoute: () => AuthenticatedPortalRoute,
   } as any)
 const AuthenticatedPortalNotificationsRoute =
@@ -194,10 +233,34 @@ const AuthenticatedPortalMfaRoute = AuthenticatedPortalMfaRouteImport.update({
   path: '/mfa',
   getParentRoute: () => AuthenticatedPortalRoute,
 } as any)
+const AuthenticatedPortalFavoritesRoute =
+  AuthenticatedPortalFavoritesRouteImport.update({
+    id: '/favorites',
+    path: '/favorites',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
+const AuthenticatedPortalDownloadsRoute =
+  AuthenticatedPortalDownloadsRouteImport.update({
+    id: '/downloads',
+    path: '/downloads',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
 const AuthenticatedPortalDocumentsRoute =
   AuthenticatedPortalDocumentsRouteImport.update({
     id: '/documents',
     path: '/documents',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
+const AuthenticatedPortalActivityRoute =
+  AuthenticatedPortalActivityRouteImport.update({
+    id: '/activity',
+    path: '/activity',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
+const AuthenticatedPortalAccountsRoute =
+  AuthenticatedPortalAccountsRouteImport.update({
+    id: '/accounts',
+    path: '/accounts',
     getParentRoute: () => AuthenticatedPortalRoute,
   } as any)
 const AuthenticatedAppProfileRoute = AuthenticatedAppProfileRouteImport.update({
@@ -268,12 +331,21 @@ export interface FileRoutesByFullPath {
   '/app/activity': typeof AuthenticatedAppActivityRoute
   '/app/portfolio': typeof AuthenticatedAppPortfolioRoute
   '/app/profile': typeof AuthenticatedAppProfileRoute
+  '/portal/accounts': typeof AuthenticatedPortalAccountsRoute
+  '/portal/activity': typeof AuthenticatedPortalActivityRoute
   '/portal/documents': typeof AuthenticatedPortalDocumentsRoute
+  '/portal/downloads': typeof AuthenticatedPortalDownloadsRoute
+  '/portal/favorites': typeof AuthenticatedPortalFavoritesRoute
   '/portal/mfa': typeof AuthenticatedPortalMfaRoute
   '/portal/notifications': typeof AuthenticatedPortalNotificationsRoute
+  '/portal/performance': typeof AuthenticatedPortalPerformanceRoute
+  '/portal/portfolio': typeof AuthenticatedPortalPortfolioRoute
   '/portal/profile': typeof AuthenticatedPortalProfileRoute
+  '/portal/settings': typeof AuthenticatedPortalSettingsRoute
+  '/portal/statements': typeof AuthenticatedPortalStatementsRoute
   '/portal/support': typeof AuthenticatedPortalSupportRoute
   '/portal/transactions': typeof AuthenticatedPortalTransactionsRoute
+  '/portal/updates': typeof AuthenticatedPortalUpdatesRoute
   '/admin/audit': typeof AuthenticatedAdminAdminAuditRoute
   '/admin/finance': typeof AuthenticatedAdminAdminFinanceRoute
   '/admin/users': typeof AuthenticatedAdminAdminUsersRoute
@@ -305,12 +377,21 @@ export interface FileRoutesByTo {
   '/app/activity': typeof AuthenticatedAppActivityRoute
   '/app/portfolio': typeof AuthenticatedAppPortfolioRoute
   '/app/profile': typeof AuthenticatedAppProfileRoute
+  '/portal/accounts': typeof AuthenticatedPortalAccountsRoute
+  '/portal/activity': typeof AuthenticatedPortalActivityRoute
   '/portal/documents': typeof AuthenticatedPortalDocumentsRoute
+  '/portal/downloads': typeof AuthenticatedPortalDownloadsRoute
+  '/portal/favorites': typeof AuthenticatedPortalFavoritesRoute
   '/portal/mfa': typeof AuthenticatedPortalMfaRoute
   '/portal/notifications': typeof AuthenticatedPortalNotificationsRoute
+  '/portal/performance': typeof AuthenticatedPortalPerformanceRoute
+  '/portal/portfolio': typeof AuthenticatedPortalPortfolioRoute
   '/portal/profile': typeof AuthenticatedPortalProfileRoute
+  '/portal/settings': typeof AuthenticatedPortalSettingsRoute
+  '/portal/statements': typeof AuthenticatedPortalStatementsRoute
   '/portal/support': typeof AuthenticatedPortalSupportRoute
   '/portal/transactions': typeof AuthenticatedPortalTransactionsRoute
+  '/portal/updates': typeof AuthenticatedPortalUpdatesRoute
   '/admin/audit': typeof AuthenticatedAdminAdminAuditRoute
   '/admin/finance': typeof AuthenticatedAdminAdminFinanceRoute
   '/admin/users': typeof AuthenticatedAdminAdminUsersRoute
@@ -345,12 +426,21 @@ export interface FileRoutesById {
   '/_authenticated/app/activity': typeof AuthenticatedAppActivityRoute
   '/_authenticated/app/portfolio': typeof AuthenticatedAppPortfolioRoute
   '/_authenticated/app/profile': typeof AuthenticatedAppProfileRoute
+  '/_authenticated/portal/accounts': typeof AuthenticatedPortalAccountsRoute
+  '/_authenticated/portal/activity': typeof AuthenticatedPortalActivityRoute
   '/_authenticated/portal/documents': typeof AuthenticatedPortalDocumentsRoute
+  '/_authenticated/portal/downloads': typeof AuthenticatedPortalDownloadsRoute
+  '/_authenticated/portal/favorites': typeof AuthenticatedPortalFavoritesRoute
   '/_authenticated/portal/mfa': typeof AuthenticatedPortalMfaRoute
   '/_authenticated/portal/notifications': typeof AuthenticatedPortalNotificationsRoute
+  '/_authenticated/portal/performance': typeof AuthenticatedPortalPerformanceRoute
+  '/_authenticated/portal/portfolio': typeof AuthenticatedPortalPortfolioRoute
   '/_authenticated/portal/profile': typeof AuthenticatedPortalProfileRoute
+  '/_authenticated/portal/settings': typeof AuthenticatedPortalSettingsRoute
+  '/_authenticated/portal/statements': typeof AuthenticatedPortalStatementsRoute
   '/_authenticated/portal/support': typeof AuthenticatedPortalSupportRoute
   '/_authenticated/portal/transactions': typeof AuthenticatedPortalTransactionsRoute
+  '/_authenticated/portal/updates': typeof AuthenticatedPortalUpdatesRoute
   '/_authenticated/_admin/admin/audit': typeof AuthenticatedAdminAdminAuditRoute
   '/_authenticated/_admin/admin/finance': typeof AuthenticatedAdminAdminFinanceRoute
   '/_authenticated/_admin/admin/users': typeof AuthenticatedAdminAdminUsersRoute
@@ -384,12 +474,21 @@ export interface FileRouteTypes {
     | '/app/activity'
     | '/app/portfolio'
     | '/app/profile'
+    | '/portal/accounts'
+    | '/portal/activity'
     | '/portal/documents'
+    | '/portal/downloads'
+    | '/portal/favorites'
     | '/portal/mfa'
     | '/portal/notifications'
+    | '/portal/performance'
+    | '/portal/portfolio'
     | '/portal/profile'
+    | '/portal/settings'
+    | '/portal/statements'
     | '/portal/support'
     | '/portal/transactions'
+    | '/portal/updates'
     | '/admin/audit'
     | '/admin/finance'
     | '/admin/users'
@@ -421,12 +520,21 @@ export interface FileRouteTypes {
     | '/app/activity'
     | '/app/portfolio'
     | '/app/profile'
+    | '/portal/accounts'
+    | '/portal/activity'
     | '/portal/documents'
+    | '/portal/downloads'
+    | '/portal/favorites'
     | '/portal/mfa'
     | '/portal/notifications'
+    | '/portal/performance'
+    | '/portal/portfolio'
     | '/portal/profile'
+    | '/portal/settings'
+    | '/portal/statements'
     | '/portal/support'
     | '/portal/transactions'
+    | '/portal/updates'
     | '/admin/audit'
     | '/admin/finance'
     | '/admin/users'
@@ -460,12 +568,21 @@ export interface FileRouteTypes {
     | '/_authenticated/app/activity'
     | '/_authenticated/app/portfolio'
     | '/_authenticated/app/profile'
+    | '/_authenticated/portal/accounts'
+    | '/_authenticated/portal/activity'
     | '/_authenticated/portal/documents'
+    | '/_authenticated/portal/downloads'
+    | '/_authenticated/portal/favorites'
     | '/_authenticated/portal/mfa'
     | '/_authenticated/portal/notifications'
+    | '/_authenticated/portal/performance'
+    | '/_authenticated/portal/portfolio'
     | '/_authenticated/portal/profile'
+    | '/_authenticated/portal/settings'
+    | '/_authenticated/portal/statements'
     | '/_authenticated/portal/support'
     | '/_authenticated/portal/transactions'
+    | '/_authenticated/portal/updates'
     | '/_authenticated/_admin/admin/audit'
     | '/_authenticated/_admin/admin/finance'
     | '/_authenticated/_admin/admin/users'
@@ -663,6 +780,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/portal/updates': {
+      id: '/_authenticated/portal/updates'
+      path: '/updates'
+      fullPath: '/portal/updates'
+      preLoaderRoute: typeof AuthenticatedPortalUpdatesRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
     '/_authenticated/portal/transactions': {
       id: '/_authenticated/portal/transactions'
       path: '/transactions'
@@ -677,11 +801,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPortalSupportRouteImport
       parentRoute: typeof AuthenticatedPortalRoute
     }
+    '/_authenticated/portal/statements': {
+      id: '/_authenticated/portal/statements'
+      path: '/statements'
+      fullPath: '/portal/statements'
+      preLoaderRoute: typeof AuthenticatedPortalStatementsRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
+    '/_authenticated/portal/settings': {
+      id: '/_authenticated/portal/settings'
+      path: '/settings'
+      fullPath: '/portal/settings'
+      preLoaderRoute: typeof AuthenticatedPortalSettingsRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
     '/_authenticated/portal/profile': {
       id: '/_authenticated/portal/profile'
       path: '/profile'
       fullPath: '/portal/profile'
       preLoaderRoute: typeof AuthenticatedPortalProfileRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
+    '/_authenticated/portal/portfolio': {
+      id: '/_authenticated/portal/portfolio'
+      path: '/portfolio'
+      fullPath: '/portal/portfolio'
+      preLoaderRoute: typeof AuthenticatedPortalPortfolioRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
+    '/_authenticated/portal/performance': {
+      id: '/_authenticated/portal/performance'
+      path: '/performance'
+      fullPath: '/portal/performance'
+      preLoaderRoute: typeof AuthenticatedPortalPerformanceRouteImport
       parentRoute: typeof AuthenticatedPortalRoute
     }
     '/_authenticated/portal/notifications': {
@@ -698,11 +850,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPortalMfaRouteImport
       parentRoute: typeof AuthenticatedPortalRoute
     }
+    '/_authenticated/portal/favorites': {
+      id: '/_authenticated/portal/favorites'
+      path: '/favorites'
+      fullPath: '/portal/favorites'
+      preLoaderRoute: typeof AuthenticatedPortalFavoritesRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
+    '/_authenticated/portal/downloads': {
+      id: '/_authenticated/portal/downloads'
+      path: '/downloads'
+      fullPath: '/portal/downloads'
+      preLoaderRoute: typeof AuthenticatedPortalDownloadsRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
     '/_authenticated/portal/documents': {
       id: '/_authenticated/portal/documents'
       path: '/documents'
       fullPath: '/portal/documents'
       preLoaderRoute: typeof AuthenticatedPortalDocumentsRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
+    '/_authenticated/portal/activity': {
+      id: '/_authenticated/portal/activity'
+      path: '/activity'
+      fullPath: '/portal/activity'
+      preLoaderRoute: typeof AuthenticatedPortalActivityRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
+    '/_authenticated/portal/accounts': {
+      id: '/_authenticated/portal/accounts'
+      path: '/accounts'
+      fullPath: '/portal/accounts'
+      preLoaderRoute: typeof AuthenticatedPortalAccountsRouteImport
       parentRoute: typeof AuthenticatedPortalRoute
     }
     '/_authenticated/app/profile': {
@@ -793,21 +973,39 @@ const AuthenticatedAppRouteWithChildren =
   AuthenticatedAppRoute._addFileChildren(AuthenticatedAppRouteChildren)
 
 interface AuthenticatedPortalRouteChildren {
+  AuthenticatedPortalAccountsRoute: typeof AuthenticatedPortalAccountsRoute
+  AuthenticatedPortalActivityRoute: typeof AuthenticatedPortalActivityRoute
   AuthenticatedPortalDocumentsRoute: typeof AuthenticatedPortalDocumentsRoute
+  AuthenticatedPortalDownloadsRoute: typeof AuthenticatedPortalDownloadsRoute
+  AuthenticatedPortalFavoritesRoute: typeof AuthenticatedPortalFavoritesRoute
   AuthenticatedPortalMfaRoute: typeof AuthenticatedPortalMfaRoute
   AuthenticatedPortalNotificationsRoute: typeof AuthenticatedPortalNotificationsRoute
+  AuthenticatedPortalPerformanceRoute: typeof AuthenticatedPortalPerformanceRoute
+  AuthenticatedPortalPortfolioRoute: typeof AuthenticatedPortalPortfolioRoute
   AuthenticatedPortalProfileRoute: typeof AuthenticatedPortalProfileRoute
+  AuthenticatedPortalSettingsRoute: typeof AuthenticatedPortalSettingsRoute
+  AuthenticatedPortalStatementsRoute: typeof AuthenticatedPortalStatementsRoute
   AuthenticatedPortalSupportRoute: typeof AuthenticatedPortalSupportRoute
   AuthenticatedPortalTransactionsRoute: typeof AuthenticatedPortalTransactionsRoute
+  AuthenticatedPortalUpdatesRoute: typeof AuthenticatedPortalUpdatesRoute
 }
 
 const AuthenticatedPortalRouteChildren: AuthenticatedPortalRouteChildren = {
+  AuthenticatedPortalAccountsRoute: AuthenticatedPortalAccountsRoute,
+  AuthenticatedPortalActivityRoute: AuthenticatedPortalActivityRoute,
   AuthenticatedPortalDocumentsRoute: AuthenticatedPortalDocumentsRoute,
+  AuthenticatedPortalDownloadsRoute: AuthenticatedPortalDownloadsRoute,
+  AuthenticatedPortalFavoritesRoute: AuthenticatedPortalFavoritesRoute,
   AuthenticatedPortalMfaRoute: AuthenticatedPortalMfaRoute,
   AuthenticatedPortalNotificationsRoute: AuthenticatedPortalNotificationsRoute,
+  AuthenticatedPortalPerformanceRoute: AuthenticatedPortalPerformanceRoute,
+  AuthenticatedPortalPortfolioRoute: AuthenticatedPortalPortfolioRoute,
   AuthenticatedPortalProfileRoute: AuthenticatedPortalProfileRoute,
+  AuthenticatedPortalSettingsRoute: AuthenticatedPortalSettingsRoute,
+  AuthenticatedPortalStatementsRoute: AuthenticatedPortalStatementsRoute,
   AuthenticatedPortalSupportRoute: AuthenticatedPortalSupportRoute,
   AuthenticatedPortalTransactionsRoute: AuthenticatedPortalTransactionsRoute,
+  AuthenticatedPortalUpdatesRoute: AuthenticatedPortalUpdatesRoute,
 }
 
 const AuthenticatedPortalRouteWithChildren =
