@@ -53,6 +53,7 @@ import { Route as AuthenticatedAppPortfolioRouteImport } from './routes/_authent
 import { Route as AuthenticatedAppActivityRouteImport } from './routes/_authenticated/app.activity'
 import { Route as AuthenticatedAdminAdminIndexRouteImport } from './routes/_authenticated/_admin/admin.index'
 import { Route as AuthenticatedAdminAdminUsersRouteImport } from './routes/_authenticated/_admin/admin.users'
+import { Route as AuthenticatedAdminAdminMonitoringRouteImport } from './routes/_authenticated/_admin/admin.monitoring'
 import { Route as AuthenticatedAdminAdminFinanceRouteImport } from './routes/_authenticated/_admin/admin.finance'
 import { Route as AuthenticatedAdminAdminAuditRouteImport } from './routes/_authenticated/_admin/admin.audit'
 
@@ -292,6 +293,12 @@ const AuthenticatedAdminAdminUsersRoute =
     path: '/admin/users',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
+const AuthenticatedAdminAdminMonitoringRoute =
+  AuthenticatedAdminAdminMonitoringRouteImport.update({
+    id: '/admin/monitoring',
+    path: '/admin/monitoring',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 const AuthenticatedAdminAdminFinanceRoute =
   AuthenticatedAdminAdminFinanceRouteImport.update({
     id: '/admin/finance',
@@ -348,6 +355,7 @@ export interface FileRoutesByFullPath {
   '/portal/updates': typeof AuthenticatedPortalUpdatesRoute
   '/admin/audit': typeof AuthenticatedAdminAdminAuditRoute
   '/admin/finance': typeof AuthenticatedAdminAdminFinanceRoute
+  '/admin/monitoring': typeof AuthenticatedAdminAdminMonitoringRoute
   '/admin/users': typeof AuthenticatedAdminAdminUsersRoute
   '/admin/': typeof AuthenticatedAdminAdminIndexRoute
 }
@@ -394,6 +402,7 @@ export interface FileRoutesByTo {
   '/portal/updates': typeof AuthenticatedPortalUpdatesRoute
   '/admin/audit': typeof AuthenticatedAdminAdminAuditRoute
   '/admin/finance': typeof AuthenticatedAdminAdminFinanceRoute
+  '/admin/monitoring': typeof AuthenticatedAdminAdminMonitoringRoute
   '/admin/users': typeof AuthenticatedAdminAdminUsersRoute
   '/admin': typeof AuthenticatedAdminAdminIndexRoute
 }
@@ -443,6 +452,7 @@ export interface FileRoutesById {
   '/_authenticated/portal/updates': typeof AuthenticatedPortalUpdatesRoute
   '/_authenticated/_admin/admin/audit': typeof AuthenticatedAdminAdminAuditRoute
   '/_authenticated/_admin/admin/finance': typeof AuthenticatedAdminAdminFinanceRoute
+  '/_authenticated/_admin/admin/monitoring': typeof AuthenticatedAdminAdminMonitoringRoute
   '/_authenticated/_admin/admin/users': typeof AuthenticatedAdminAdminUsersRoute
   '/_authenticated/_admin/admin/': typeof AuthenticatedAdminAdminIndexRoute
 }
@@ -491,6 +501,7 @@ export interface FileRouteTypes {
     | '/portal/updates'
     | '/admin/audit'
     | '/admin/finance'
+    | '/admin/monitoring'
     | '/admin/users'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
@@ -537,6 +548,7 @@ export interface FileRouteTypes {
     | '/portal/updates'
     | '/admin/audit'
     | '/admin/finance'
+    | '/admin/monitoring'
     | '/admin/users'
     | '/admin'
   id:
@@ -585,6 +597,7 @@ export interface FileRouteTypes {
     | '/_authenticated/portal/updates'
     | '/_authenticated/_admin/admin/audit'
     | '/_authenticated/_admin/admin/finance'
+    | '/_authenticated/_admin/admin/monitoring'
     | '/_authenticated/_admin/admin/users'
     | '/_authenticated/_admin/admin/'
   fileRoutesById: FileRoutesById
@@ -920,6 +933,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminAdminUsersRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/_admin/admin/monitoring': {
+      id: '/_authenticated/_admin/admin/monitoring'
+      path: '/admin/monitoring'
+      fullPath: '/admin/monitoring'
+      preLoaderRoute: typeof AuthenticatedAdminAdminMonitoringRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/_admin/admin/finance': {
       id: '/_authenticated/_admin/admin/finance'
       path: '/admin/finance'
@@ -940,6 +960,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedAdminRouteRouteChildren {
   AuthenticatedAdminAdminAuditRoute: typeof AuthenticatedAdminAdminAuditRoute
   AuthenticatedAdminAdminFinanceRoute: typeof AuthenticatedAdminAdminFinanceRoute
+  AuthenticatedAdminAdminMonitoringRoute: typeof AuthenticatedAdminAdminMonitoringRoute
   AuthenticatedAdminAdminUsersRoute: typeof AuthenticatedAdminAdminUsersRoute
   AuthenticatedAdminAdminIndexRoute: typeof AuthenticatedAdminAdminIndexRoute
 }
@@ -948,6 +969,8 @@ const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren
   {
     AuthenticatedAdminAdminAuditRoute: AuthenticatedAdminAdminAuditRoute,
     AuthenticatedAdminAdminFinanceRoute: AuthenticatedAdminAdminFinanceRoute,
+    AuthenticatedAdminAdminMonitoringRoute:
+      AuthenticatedAdminAdminMonitoringRoute,
     AuthenticatedAdminAdminUsersRoute: AuthenticatedAdminAdminUsersRoute,
     AuthenticatedAdminAdminIndexRoute: AuthenticatedAdminAdminIndexRoute,
   }
