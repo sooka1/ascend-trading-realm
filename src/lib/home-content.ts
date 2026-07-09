@@ -788,7 +788,8 @@ const tr: HomeContent = {
   common: { buy: "Al", sell: "Sat" },
 };
 
-const ALL: Record<Lang, HomeContent> = { en, ar, fr, es, tr };
+export const ALL_HOME: Record<Lang, HomeContent> = { en, ar, fr, es, tr };
+const ALL = ALL_HOME;
 
 export function homeContent(lang: Lang): HomeContent {
   return ALL[lang] ?? en;

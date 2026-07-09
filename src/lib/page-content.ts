@@ -609,7 +609,8 @@ const tr: PageContent = {
   },
 };
 
-const CONTENT: Record<Lang, PageContent> = { en, ar, fr, es, tr };
+export const ALL_PAGES: Record<Lang, PageContent> = { en, ar, fr, es, tr };
+const CONTENT = ALL_PAGES;
 
 export function pageContent(lang: Lang): PageContent {
   return CONTENT[lang] ?? CONTENT.en;
