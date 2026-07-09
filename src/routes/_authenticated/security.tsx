@@ -56,6 +56,14 @@ function SecurityPanel() {
 
   const findings = SECURITY_SNAPSHOT.findings;
 
+  const check = useServerFn(canViewSecurityAudit);
+  const { data: authz } = useQuery({
+    queryKey: ["security-audit-authz"],
+    queryFn: () => check(),
+    staleTime: 60_000,
+  });
+  const canViewAudit = Boolean(authz?.authorized);
+
   const stats = useMemo(() => {
     const s = { total: findings.length, open: 0, fixed: 0, critical: 0, high: 0, medium: 0, low: 0, info: 0 } as Record<string, number>;
     for (const f of findings) {
@@ -166,7 +174,7 @@ function SecurityPanel() {
               <p className="mt-3 font-medium">لا نتائج ضمن هذه التصفية.</p>
             </div>
           ) : (
-            visible.map((f) => <FindingCard key={f.id} f={f} />)
+            visible.map((f) => <FindingCard key={f.id} f={f} canViewAudit={canViewAudit} />)
           )}
         </div>
 
@@ -265,7 +273,7 @@ function AuditLog({ findings }: { findings: SecurityFinding[] }) {
   );
 }
 
-function FindingCard({ f }: { f: SecurityFinding }) {
+function FindingCard({ f, canViewAudit }: { f: SecurityFinding; canViewAudit: boolean }) {
   const sev = SEV_META[f.severity];
   const Icon = sev.icon;
   const [open, setOpen] = useState(false);
@@ -295,7 +303,7 @@ function FindingCard({ f }: { f: SecurityFinding }) {
                 <CheckCircle2 className="h-3.5 w-3.5" /> الإصلاح المقترح
               </p>
               <p className="text-foreground/90">{f.remediation}</p>
-              {f.audit && f.audit.length > 0 && (
+              {canViewAudit && f.audit && f.audit.length > 0 && (
                 <div className="mt-3 border-t border-emerald-500/15 pt-3">
                   <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-emerald-300">
                     <History className="h-3.5 w-3.5" /> سجل التدقيق لهذا الإصلاح
