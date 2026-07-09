@@ -16,15 +16,15 @@ export function HKLogo({ className, showWordmark = true, size = "md" }: HKLogoPr
         <span className="absolute inset-0 rounded-lg bg-[var(--gradient-brand-soft)] blur-md" aria-hidden />
         <img
           src={logoSrc}
-          alt="HK Global Trading"
-          className={cn("relative object-contain", dim)}
+          alt="HK Investment Management"
+          className={cn("relative rounded-md object-contain", dim)}
           width={64}
           height={64}
         />
       </span>
       {showWordmark && (
         <span className={cn("leading-none tracking-tight", text)}>
-          HK <span className="text-gradient">Global</span>
+          HK <span className="text-gradient">Investment</span>
         </span>
       )}
     </span>
