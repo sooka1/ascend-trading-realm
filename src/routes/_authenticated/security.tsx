@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { canViewSecurityAudit } from "@/lib/security-audit.functions";
@@ -240,6 +241,34 @@ function AuditLog({ findings }: { findings: SecurityFinding[] }) {
     );
     return rows.sort((a, b) => (a.at < b.at ? 1 : -1));
   }, [findings]);
+
+  // In-app notification for newly applied fixes since last visit.
+  useEffect(() => {
+    if (typeof window === "undefined" || entries.length === 0) return;
+    const KEY = "security:audit:seen";
+    let seen: string[] = [];
+    try {
+      seen = JSON.parse(localStorage.getItem(KEY) ?? "[]");
+    } catch {
+      seen = [];
+    }
+    const seenSet = new Set(seen);
+    const fresh = entries.filter((e) => !seenSet.has(`${e.findingId}@${e.at}`));
+    if (fresh.length > 0) {
+      const shown = fresh.slice(0, 3);
+      for (const e of shown) {
+        toast.success(`إصلاح أمني جديد: ${e.findingTitle}`, {
+          description: `${e.action} — بواسطة ${e.by} · ${new Date(e.at).toLocaleString("ar-EG")}`,
+          duration: 6000,
+        });
+      }
+      if (fresh.length > shown.length) {
+        toast(`+${fresh.length - shown.length} إصلاح إضافي مُسجَّل في سجل التدقيق`);
+      }
+    }
+    const allKeys = entries.map((e) => `${e.findingId}@${e.at}`);
+    localStorage.setItem(KEY, JSON.stringify(allKeys));
+  }, [entries]);
 
   if (entries.length === 0) return null;
 
