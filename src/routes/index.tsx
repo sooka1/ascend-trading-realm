@@ -26,7 +26,7 @@ import { PageShell } from "@/components/page-shell";
 import { MarketTicker } from "@/components/market-ticker";
 import { AnimatedCounter } from "@/components/animated-counter";
 import { Button } from "@/components/ui/button";
-import { useT } from "@/lib/i18n";
+import { useT, useHome } from "@/lib/i18n";
 import {
   Accordion,
   AccordionContent,
@@ -162,6 +162,7 @@ function FloatingAssets() {
 }
 
 function HeroCard() {
+  const h = useHome();
   return (
     <div className="relative">
       <div className="absolute -inset-6 rounded-3xl bg-[var(--gradient-brand-soft)] blur-2xl" aria-hidden />
@@ -190,8 +191,8 @@ function HeroCard() {
         </div>
 
         <div className="mt-4 grid grid-cols-2 gap-2">
-          <Button size="sm" className="bg-bull text-white hover:bg-bull/90">Buy</Button>
-          <Button size="sm" variant="outline" className="border-bear/40 text-bear hover:bg-bear/10">Sell</Button>
+          <Button size="sm" className="bg-bull text-white hover:bg-bull/90">{h.common.buy}</Button>
+          <Button size="sm" variant="outline" className="border-bear/40 text-bear hover:bg-bear/10">{h.common.sell}</Button>
         </div>
       </div>
     </div>
@@ -216,19 +217,14 @@ function MiniChart() {
 
 /* ---------------- WHY CHOOSE US ---------------- */
 function WhyChooseUs() {
-  const items = [
-    { icon: Zap, title: "Lightning execution", body: "Sub-20ms order routing across global liquidity venues." },
-    { icon: ShieldCheck, title: "Regulated & secure", body: "Segregated funds, multi-jurisdiction compliance, cold storage." },
-    { icon: BarChart3, title: "Pro-grade tools", body: "Advanced charting, algo orders, VPS, and depth-of-market." },
-    { icon: Trophy, title: "Real prize pools", body: "Weekly and monthly tournaments with 6-figure prize funds." },
-    { icon: Globe2, title: "Global markets", body: "10,000+ instruments across forex, crypto, stocks and indices." },
-    { icon: Users, title: "24/7 support", body: "Human, multilingual client care in under 60 seconds." },
-  ];
+  const h = useHome().why;
+  const icons = [Zap, ShieldCheck, BarChart3, Trophy, Globe2, Users];
+  const items = h.items.map((it, i) => ({ ...it, icon: icons[i] }));
   return (
     <Section
-      eyebrow="Why HK"
-      title={<>Built for traders who <span className="text-gradient">refuse to lose</span></>}
-      subtitle="Every layer of the HK stack — from routing to risk — is engineered for measurable edge."
+      eyebrow={h.eyebrow}
+      title={<>{h.titleA} <span className="text-gradient">{h.titleB}</span></>}
+      subtitle={h.subtitle}
     >
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {items.map((it) => (
@@ -253,21 +249,14 @@ function WhyChooseUs() {
 
 /* ---------------- INSTRUMENTS ---------------- */
 function Instruments() {
-  const cats = [
-    { icon: DollarSign, name: "Forex", count: "60+ pairs" },
-    { icon: Bitcoin, name: "Crypto", count: "120+ coins" },
-    { icon: Medal, name: "Gold & Silver", count: "Spot & Futures" },
-    { icon: LineChart, name: "Indices", count: "30+ global" },
-    { icon: Layers, name: "Stocks", count: "5,000+ tickers" },
-    { icon: Flame, name: "Energy", count: "Brent, WTI, NatGas" },
-    { icon: Activity, name: "Commodities", count: "Softs & Metals" },
-    { icon: Globe2, name: "ETFs & Futures", count: "Institutional access" },
-  ];
+  const h = useHome().instruments;
+  const icons = [DollarSign, Bitcoin, Medal, LineChart, Layers, Flame, Activity, Globe2];
+  const cats = h.items.map((it, i) => ({ ...it, icon: icons[i] }));
   return (
     <Section
-      eyebrow="Instruments"
-      title={<>All markets. <span className="text-gradient">One account.</span></>}
-      subtitle="Diversify across asset classes and time zones — from Tokyo open to Wall Street close."
+      eyebrow={h.eyebrow}
+      title={<>{h.titleA} <span className="text-gradient">{h.titleB}</span></>}
+      subtitle={h.subtitle}
     >
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {cats.map((c) => (
@@ -284,16 +273,15 @@ function Instruments() {
 
 /* ---------------- COMPETITIONS ---------------- */
 function CompetitionsSection() {
-  const comps = [
-    { title: "King of Wall Street", prize: "$100,000", type: "Monthly · Live", spots: "1,842 / 3,000", tag: "Featured", accent: "gold" },
-    { title: "Crypto Gladiator", prize: "$50,000", type: "Weekly · Live", spots: "612 / 1,500", tag: "Live now", accent: "blue" },
-    { title: "Forex Masters Cup", prize: "$25,000", type: "Bi-weekly", spots: "Opens Fri", tag: "Upcoming", accent: "gold" },
-  ];
+  const h = useHome().competitions;
+  const tags = [h.tagFeatured, h.tagLive, h.tagUpcoming];
+  const accents = ["gold", "blue", "gold"] as const;
+  const comps = h.items.map((c, i) => ({ ...c, tag: tags[i], accent: accents[i] }));
   return (
     <Section
-      eyebrow="Competitions"
-      title={<>Trade to <span className="text-gradient">win</span>.</>}
-      subtitle="Enter live tournaments with real prize pools. Climb the leaderboard, earn badges and unlock exclusive rewards."
+      eyebrow={h.eyebrow}
+      title={<>{h.titleA} <span className="text-gradient">{h.titleB}</span>.</>}
+      subtitle={h.subtitle}
     >
       <div className="grid gap-4 lg:grid-cols-3">
         {comps.map((c) => (
@@ -309,16 +297,16 @@ function CompetitionsSection() {
             <div className="mt-1 text-sm text-muted-foreground">{c.type}</div>
 
             <div className="mt-6 rounded-xl border border-white/10 bg-white/[0.02] p-4">
-              <div className="text-xs uppercase tracking-widest text-muted-foreground">Prize pool</div>
+              <div className="text-xs uppercase tracking-widest text-muted-foreground">{h.prizePool}</div>
               <div className="mt-1 font-display text-3xl font-bold text-gradient">{c.prize}</div>
-              <div className="mt-3 text-xs text-muted-foreground">Slots: {c.spots}</div>
+              <div className="mt-3 text-xs text-muted-foreground">{h.slots}: {c.spots}</div>
               <div className="mt-2 h-1.5 rounded-full bg-white/5">
                 <div className="h-full w-2/3 rounded-full bg-[var(--gradient-brand)]" />
               </div>
             </div>
 
             <Button asChild className="mt-6 w-full bg-[var(--gradient-brand)] text-white hover:opacity-95">
-              <Link to="/competitions">Register now</Link>
+              <Link to="/competitions">{h.register}</Link>
             </Button>
           </div>
         ))}
@@ -329,6 +317,7 @@ function CompetitionsSection() {
 
 /* ---------------- LEADERBOARD ---------------- */
 function Leaderboard() {
+  const h = useHome().leaderboard;
   const rows = [
     { rank: 1, name: "Alexei V.", country: "🇦🇪", pnl: "+184.2%", equity: "$284,150", badge: "gold" },
     { rank: 2, name: "Priya M.", country: "🇸🇬", pnl: "+152.7%", equity: "$212,880", badge: "silver" },
@@ -345,16 +334,16 @@ function Leaderboard() {
     "bg-white/5 text-muted-foreground border-white/10";
   return (
     <Section
-      eyebrow="Live Leaderboard"
-      title={<>The world's <span className="text-gradient">top traders</span></>}
-      subtitle="Real-time global rankings from this week's active competitions."
+      eyebrow={h.eyebrow}
+      title={<>{h.titleA} <span className="text-gradient">{h.titleB}</span></>}
+      subtitle={h.subtitle}
     >
       <div className="glass-strong overflow-hidden rounded-2xl">
         <div className="grid grid-cols-[64px_1fr_auto_auto] gap-4 border-b border-white/5 px-6 py-3 text-xs uppercase tracking-widest text-muted-foreground sm:grid-cols-[64px_1fr_140px_140px]">
-          <div>Rank</div>
-          <div>Trader</div>
-          <div className="text-right">P&amp;L</div>
-          <div className="hidden text-right sm:block">Equity</div>
+          <div>{h.rank}</div>
+          <div>{h.trader}</div>
+          <div className="text-right">{h.pnl}</div>
+          <div className="hidden text-right sm:block">{h.equity}</div>
         </div>
         {rows.map((r) => (
           <div
@@ -377,7 +366,7 @@ function Leaderboard() {
       </div>
       <div className="mt-6 flex justify-center">
         <Button variant="outline" asChild className="border-white/15 bg-white/5 hover:bg-white/10">
-          <Link to="/competitions">View full leaderboard <ChevronRight className="ml-1 h-4 w-4" /></Link>
+          <Link to="/competitions">{h.viewAll} <ChevronRight className="ml-1 h-4 w-4" /></Link>
         </Button>
       </div>
     </Section>
@@ -386,11 +375,12 @@ function Leaderboard() {
 
 /* ---------------- STATS ---------------- */
 function Stats() {
+  const h = useHome().stats;
   const stats = [
-    { value: 2_400_000, suffix: "+", label: "Active traders" },
-    { value: 184, suffix: "+", label: "Countries served" },
-    { value: 18, suffix: "ms", label: "Avg. execution" },
-    { value: 1.2, suffix: "B+", prefix: "$", decimals: 1, label: "Prize pools awarded" },
+    { value: 2_400_000, suffix: "+", label: h.activeTraders },
+    { value: 184, suffix: "+", label: h.countries },
+    { value: 18, suffix: "ms", label: h.execution },
+    { value: 1.2, suffix: "B+", prefix: "$", decimals: 1, label: h.prizes },
   ];
   return (
     <section className="relative overflow-hidden py-24">
@@ -418,15 +408,12 @@ function Stats() {
 
 /* ---------------- REVIEWS ---------------- */
 function Reviews() {
-  const reviews = [
-    { quote: "The competition system turned my hobby into a career. I've cleared six figures in prize money.", name: "Julian F.", role: "Pro trader · Zurich" },
-    { quote: "Execution is genuinely institutional. My scalp strategy finally works outside the lab.", name: "Amara O.", role: "Quant · Lagos" },
-    { quote: "The mobile app is stunning and the leaderboard is addictive — in the best way possible.", name: "Chen L.", role: "Retail trader · Taipei" },
-  ];
+  const h = useHome().reviews;
+  const reviews = h.items;
   return (
     <Section
-      eyebrow="Loved by traders"
-      title={<>Voices from the <span className="text-gradient">global floor</span></>}
+      eyebrow={h.eyebrow}
+      title={<>{h.titleA} <span className="text-gradient">{h.titleB}</span></>}
     >
       <div className="grid gap-4 md:grid-cols-3">
         {reviews.map((r) => (
@@ -446,28 +433,22 @@ function Reviews() {
 
 /* ---------------- ACADEMY + NEWS ---------------- */
 function AcademyNews() {
+  const h = useHome().academy;
   return (
     <Section
-      eyebrow="Academy & News"
-      title={<>Learn. Then <span className="text-gradient">crush it.</span></>}
+      eyebrow={h.eyebrow}
+      title={<>{h.titleA} <span className="text-gradient">{h.titleB}</span></>}
     >
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="glass-strong lg:row-span-2 lg:col-span-1 rounded-2xl p-8">
           <GraduationCap className="h-8 w-8 text-gold" />
-          <h3 className="mt-6 font-display text-2xl font-bold">HK Trading Academy</h3>
-          <p className="mt-3 text-sm text-muted-foreground">
-            200+ video lessons, live webinars, e-books and pro-grade calculators. Free for every funded client.
-          </p>
+          <h3 className="mt-6 font-display text-2xl font-bold">{h.cardTitle}</h3>
+          <p className="mt-3 text-sm text-muted-foreground">{h.cardBody}</p>
           <Button asChild variant="outline" className="mt-6 border-white/15 bg-white/5 hover:bg-white/10">
-            <Link to="/education">Explore Academy</Link>
+            <Link to="/education">{h.explore}</Link>
           </Button>
         </div>
-        {[
-          { tag: "Market brief", title: "Gold breaks $2,400 as central banks pivot", time: "2h ago" },
-          { tag: "Deep dive", title: "Bitcoin ETF flows point to fresh institutional wave", time: "6h ago" },
-          { tag: "Signal", title: "EUR/USD sets up textbook liquidity sweep", time: "1d ago" },
-          { tag: "Analysis", title: "Semiconductor rally: rotation or resumption?", time: "1d ago" },
-        ].map((n) => (
+        {h.news.map((n) => (
           <Link key={n.title} to="/news" className="glass group rounded-2xl p-6 transition hover:border-white/20">
             <div className="flex items-center justify-between text-xs uppercase tracking-widest text-muted-foreground">
               <span>{n.tag}</span>
@@ -483,6 +464,7 @@ function AcademyNews() {
 
 /* ---------------- AFFILIATE ---------------- */
 function AffiliateBanner() {
+  const h = useHome().affiliate;
   return (
     <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
       <div className="glass-strong relative overflow-hidden rounded-3xl p-8 md:p-12">
@@ -490,30 +472,23 @@ function AffiliateBanner() {
         <div className="relative grid gap-8 md:grid-cols-[1.4fr_1fr] md:items-center">
           <div>
             <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs uppercase tracking-[0.18em] text-muted-foreground">
-              Affiliate program
+              {h.tag}
             </span>
             <h3 className="mt-5 font-display text-3xl font-bold md:text-4xl">
-              Earn up to <span className="text-gradient">$1,200</span> per funded referral.
+              {h.titleA} <span className="text-gradient">{h.titleB}</span> {h.titleC}
             </h3>
-            <p className="mt-3 max-w-lg text-muted-foreground">
-              Multi-tier commissions, lifetime revenue share and a real-time affiliate dashboard.
-            </p>
+            <p className="mt-3 max-w-lg text-muted-foreground">{h.body}</p>
             <div className="mt-6 flex gap-3">
               <Button asChild className="bg-[var(--gradient-brand)] text-white">
-                <Link to="/affiliate">Become an affiliate</Link>
+                <Link to="/affiliate">{h.become}</Link>
               </Button>
               <Button asChild variant="outline" className="border-white/15 bg-white/5 hover:bg-white/10">
-                <Link to="/partners">Partner with us</Link>
+                <Link to="/partners">{h.partner}</Link>
               </Button>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
-            {[
-              { k: "Tier 1", v: "$600" },
-              { k: "Tier 2", v: "$900" },
-              { k: "Tier 3", v: "$1,200" },
-              { k: "Rev share", v: "20%" },
-            ].map((s) => (
+            {h.tiles.map((s) => (
               <div key={s.k} className="glass rounded-xl p-4 text-center">
                 <div className="text-xs text-muted-foreground">{s.k}</div>
                 <div className="mt-1 font-display text-2xl font-bold text-gradient">{s.v}</div>
@@ -528,19 +503,18 @@ function AffiliateBanner() {
 
 /* ---------------- MOBILE APPS ---------------- */
 function MobileApps() {
+  const home = useHome();
+  const h = home.mobile;
   return (
     <Section
-      eyebrow="On every device"
-      title={<>Your terminal, <span className="text-gradient">in your pocket</span></>}
+      eyebrow={h.eyebrow}
+      title={<>{h.titleA} <span className="text-gradient">{h.titleB}</span></>}
     >
       <div className="grid gap-6 lg:grid-cols-2 lg:items-center">
         <div className="glass-strong relative overflow-hidden rounded-2xl p-8">
           <Smartphone className="h-8 w-8 text-gold" />
-          <h3 className="mt-5 font-display text-2xl font-bold">Trade anywhere, anytime</h3>
-          <p className="mt-3 max-w-lg text-muted-foreground">
-            Full charting, competitions and one-tap orders on iOS and Android. Biometric login, push alerts,
-            and the same institutional infrastructure as desktop.
-          </p>
+          <h3 className="mt-5 font-display text-2xl font-bold">{h.cardTitle}</h3>
+          <p className="mt-3 max-w-lg text-muted-foreground">{h.cardBody}</p>
           <div className="mt-6 flex flex-wrap gap-3">
             <div className="glass rounded-xl px-4 py-3 text-sm">📱 App Store</div>
             <div className="glass rounded-xl px-4 py-3 text-sm">🤖 Google Play</div>
@@ -549,13 +523,13 @@ function MobileApps() {
         <div className="relative flex justify-center">
           <div className="glass-strong relative aspect-[9/16] w-56 overflow-hidden rounded-[2.5rem] border border-white/15 p-3 shadow-[var(--shadow-glow)]">
             <div className="flex h-full flex-col rounded-[2rem] bg-background/80 p-4">
-              <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Portfolio</div>
+              <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{h.portfolio}</div>
               <div className="mt-1 font-display text-2xl font-bold tabular-nums">$48,921.44</div>
-              <div className="text-xs text-bull">+$1,214 today</div>
+              <div className="text-xs text-bull">+$1,214 {h.today}</div>
               <MiniChart />
               <div className="mt-auto grid grid-cols-2 gap-2">
-                <div className="rounded-lg bg-bull/15 py-2 text-center text-xs font-medium text-bull">Buy</div>
-                <div className="rounded-lg bg-bear/15 py-2 text-center text-xs font-medium text-bear">Sell</div>
+                <div className="rounded-lg bg-bull/15 py-2 text-center text-xs font-medium text-bull">{home.common.buy}</div>
+                <div className="rounded-lg bg-bear/15 py-2 text-center text-xs font-medium text-bear">{home.common.sell}</div>
               </div>
             </div>
           </div>
@@ -567,17 +541,14 @@ function MobileApps() {
 
 /* ---------------- SECURITY ---------------- */
 function SecurityBlock() {
-  const items = [
-    { icon: ShieldCheck, title: "Multi-jurisdiction regulation" },
-    { icon: Lock, title: "Segregated client funds" },
-    { icon: Wallet, title: "95% assets in cold storage" },
-    { icon: Award, title: "SOC 2 Type II certified" },
-  ];
+  const h = useHome().security;
+  const icons = [ShieldCheck, Lock, Wallet, Award];
+  const items = h.items.map((title, i) => ({ title, icon: icons[i] }));
   return (
     <Section
-      eyebrow="Security & regulation"
-      title={<>Your capital, <span className="text-gradient">fortified</span></>}
-      subtitle="Bank-grade security and transparent regulation across every jurisdiction we operate in."
+      eyebrow={h.eyebrow}
+      title={<>{h.titleA} <span className="text-gradient">{h.titleB}</span></>}
+      subtitle={h.subtitle}
     >
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {items.map((it) => (
@@ -593,17 +564,12 @@ function SecurityBlock() {
 
 /* ---------------- FAQ ---------------- */
 function FaqSection() {
-  const faqs = [
-    { q: "How do I open a live trading account?", a: "Click 'Open account', complete verification in under 5 minutes, and fund via card, bank wire or crypto. You'll be live in the same session." },
-    { q: "What are competition prize pools?", a: "Weekly and monthly tournaments run with prize pools from $10,000 to $500,000+. Entry is free for eligible funded accounts and paid entries return >90% of fees to winners." },
-    { q: "Which markets can I trade?", a: "Forex, indices, commodities, energy, ETFs, futures, 5,000+ stocks and 120+ cryptocurrencies — all from a single account." },
-    { q: "How fast are withdrawals?", a: "Same-day for crypto, next-day for card, 1–2 business days for bank wire. We maintain a 99.4% approval rate on first submission." },
-    { q: "Is my money safe?", a: "Client funds are segregated in tier-1 banks, protected by multi-jurisdiction regulation and covered by our internal insurance program." },
-  ];
+  const h = useHome().faq;
+  const faqs = h.items;
   return (
     <Section
-      eyebrow="FAQ"
-      title={<>Straight <span className="text-gradient">answers</span></>}
+      eyebrow={h.eyebrow}
+      title={<>{h.titleA} <span className="text-gradient">{h.titleB}</span></>}
     >
       <div className="mx-auto max-w-3xl">
         <Accordion type="single" collapsible className="w-full">
@@ -621,6 +587,7 @@ function FaqSection() {
 
 /* ---------------- FINAL CTA ---------------- */
 function FinalCTA() {
+  const h = useHome().finalCta;
   return (
     <section className="mx-auto max-w-7xl px-4 pb-24 sm:px-6 lg:px-8">
       <div className="relative overflow-hidden rounded-3xl border border-white/10 p-10 text-center md:p-16">
@@ -628,17 +595,15 @@ function FinalCTA() {
         <div className="pointer-events-none absolute inset-0 bg-grid opacity-40" aria-hidden />
         <div className="relative">
           <h2 className="font-display text-4xl font-bold md:text-5xl">
-            Your seat at the <span className="text-gradient">global table</span> is open.
+            {h.titleA} <span className="text-gradient">{h.titleB}</span> {h.titleC}
           </h2>
-          <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
-            Open an account in minutes. Trade the world. Compete for real prizes.
-          </p>
+          <p className="mx-auto mt-4 max-w-xl text-muted-foreground">{h.body}</p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Button size="lg" asChild className="bg-[var(--gradient-brand)] text-white shadow-[var(--shadow-glow)]">
-              <Link to="/auth">Open Live Account</Link>
+              <Link to="/auth">{h.openLive}</Link>
             </Button>
             <Button size="lg" variant="outline" asChild className="border-white/15 bg-white/5 hover:bg-white/10">
-              <Link to="/platform">Try Demo</Link>
+              <Link to="/platform">{h.tryDemo}</Link>
             </Button>
           </div>
         </div>
