@@ -53,6 +53,7 @@ import { Route as AuthenticatedAppPortfolioRouteImport } from './routes/_authent
 import { Route as AuthenticatedAppActivityRouteImport } from './routes/_authenticated/app.activity'
 import { Route as AuthenticatedAdminAdminIndexRouteImport } from './routes/_authenticated/_admin/admin.index'
 import { Route as AuthenticatedAdminAdminUsersRouteImport } from './routes/_authenticated/_admin/admin.users'
+import { Route as AuthenticatedAdminAdminSubscriptionsRouteImport } from './routes/_authenticated/_admin/admin.subscriptions'
 import { Route as AuthenticatedAdminAdminMonitoringRouteImport } from './routes/_authenticated/_admin/admin.monitoring'
 import { Route as AuthenticatedAdminAdminFinanceRouteImport } from './routes/_authenticated/_admin/admin.finance'
 import { Route as AuthenticatedAdminAdminAuditRouteImport } from './routes/_authenticated/_admin/admin.audit'
@@ -294,6 +295,12 @@ const AuthenticatedAdminAdminUsersRoute =
     path: '/admin/users',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
+const AuthenticatedAdminAdminSubscriptionsRoute =
+  AuthenticatedAdminAdminSubscriptionsRouteImport.update({
+    id: '/admin/subscriptions',
+    path: '/admin/subscriptions',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 const AuthenticatedAdminAdminMonitoringRoute =
   AuthenticatedAdminAdminMonitoringRouteImport.update({
     id: '/admin/monitoring',
@@ -364,6 +371,7 @@ export interface FileRoutesByFullPath {
   '/admin/audit': typeof AuthenticatedAdminAdminAuditRoute
   '/admin/finance': typeof AuthenticatedAdminAdminFinanceRoute
   '/admin/monitoring': typeof AuthenticatedAdminAdminMonitoringRoute
+  '/admin/subscriptions': typeof AuthenticatedAdminAdminSubscriptionsRoute
   '/admin/users': typeof AuthenticatedAdminAdminUsersRoute
   '/admin/': typeof AuthenticatedAdminAdminIndexRoute
 }
@@ -412,6 +420,7 @@ export interface FileRoutesByTo {
   '/admin/audit': typeof AuthenticatedAdminAdminAuditRoute
   '/admin/finance': typeof AuthenticatedAdminAdminFinanceRoute
   '/admin/monitoring': typeof AuthenticatedAdminAdminMonitoringRoute
+  '/admin/subscriptions': typeof AuthenticatedAdminAdminSubscriptionsRoute
   '/admin/users': typeof AuthenticatedAdminAdminUsersRoute
   '/admin': typeof AuthenticatedAdminAdminIndexRoute
 }
@@ -463,6 +472,7 @@ export interface FileRoutesById {
   '/_authenticated/_admin/admin/audit': typeof AuthenticatedAdminAdminAuditRoute
   '/_authenticated/_admin/admin/finance': typeof AuthenticatedAdminAdminFinanceRoute
   '/_authenticated/_admin/admin/monitoring': typeof AuthenticatedAdminAdminMonitoringRoute
+  '/_authenticated/_admin/admin/subscriptions': typeof AuthenticatedAdminAdminSubscriptionsRoute
   '/_authenticated/_admin/admin/users': typeof AuthenticatedAdminAdminUsersRoute
   '/_authenticated/_admin/admin/': typeof AuthenticatedAdminAdminIndexRoute
 }
@@ -513,6 +523,7 @@ export interface FileRouteTypes {
     | '/admin/audit'
     | '/admin/finance'
     | '/admin/monitoring'
+    | '/admin/subscriptions'
     | '/admin/users'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
@@ -561,6 +572,7 @@ export interface FileRouteTypes {
     | '/admin/audit'
     | '/admin/finance'
     | '/admin/monitoring'
+    | '/admin/subscriptions'
     | '/admin/users'
     | '/admin'
   id:
@@ -611,6 +623,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_admin/admin/audit'
     | '/_authenticated/_admin/admin/finance'
     | '/_authenticated/_admin/admin/monitoring'
+    | '/_authenticated/_admin/admin/subscriptions'
     | '/_authenticated/_admin/admin/users'
     | '/_authenticated/_admin/admin/'
   fileRoutesById: FileRoutesById
@@ -946,6 +959,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminAdminUsersRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/_admin/admin/subscriptions': {
+      id: '/_authenticated/_admin/admin/subscriptions'
+      path: '/admin/subscriptions'
+      fullPath: '/admin/subscriptions'
+      preLoaderRoute: typeof AuthenticatedAdminAdminSubscriptionsRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/_admin/admin/monitoring': {
       id: '/_authenticated/_admin/admin/monitoring'
       path: '/admin/monitoring'
@@ -982,6 +1002,7 @@ interface AuthenticatedAdminRouteRouteChildren {
   AuthenticatedAdminAdminAuditRoute: typeof AuthenticatedAdminAdminAuditRoute
   AuthenticatedAdminAdminFinanceRoute: typeof AuthenticatedAdminAdminFinanceRoute
   AuthenticatedAdminAdminMonitoringRoute: typeof AuthenticatedAdminAdminMonitoringRoute
+  AuthenticatedAdminAdminSubscriptionsRoute: typeof AuthenticatedAdminAdminSubscriptionsRoute
   AuthenticatedAdminAdminUsersRoute: typeof AuthenticatedAdminAdminUsersRoute
   AuthenticatedAdminAdminIndexRoute: typeof AuthenticatedAdminAdminIndexRoute
 }
@@ -994,6 +1015,8 @@ const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren
     AuthenticatedAdminAdminFinanceRoute: AuthenticatedAdminAdminFinanceRoute,
     AuthenticatedAdminAdminMonitoringRoute:
       AuthenticatedAdminAdminMonitoringRoute,
+    AuthenticatedAdminAdminSubscriptionsRoute:
+      AuthenticatedAdminAdminSubscriptionsRoute,
     AuthenticatedAdminAdminUsersRoute: AuthenticatedAdminAdminUsersRoute,
     AuthenticatedAdminAdminIndexRoute: AuthenticatedAdminAdminIndexRoute,
   }
