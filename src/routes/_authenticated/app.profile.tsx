@@ -6,7 +6,7 @@ import { ChevronRight, FileText, LayoutDashboard, LogOut, Mail, MessageSquare, S
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/app/profile")({
-  head: () => ({ meta: [{ title: "Profile — HK Invest" }] }),
+  head: () => ({ meta: [{ title: "الملف الشخصي — HK Invest" }] }),
   component: ProfileMobile,
 });
 
@@ -25,16 +25,16 @@ function ProfileMobile() {
 
   async function signOut() {
     await supabase.auth.signOut();
-    toast.success("Signed out");
+    toast.success("تم تسجيل الخروج");
     navigate({ to: "/auth", replace: true });
   }
 
-  const name = profile?.display_name ?? profile?.email?.split("@")[0] ?? "Investor";
+  const name = profile?.display_name ?? profile?.email?.split("@")[0] ?? "مستثمر";
   const rows = [
-    { icon: LayoutDashboard, label: "Full desktop dashboard", to: "/dashboard" as const },
-    { icon: FileText, label: "Statements & reports", to: "/portal" as const },
-    { icon: MessageSquare, label: "Secure messages", to: "/portal" as const },
-    { icon: ShieldCheck, label: "Security & privacy", to: "/privacy" as const },
+    { icon: LayoutDashboard, label: "لوحة التحكم الكاملة", to: "/dashboard" as const },
+    { icon: FileText, label: "الكشوف والتقارير", to: "/portal" as const },
+    { icon: MessageSquare, label: "الرسائل الآمنة", to: "/portal" as const },
+    { icon: ShieldCheck, label: "الأمان والخصوصية", to: "/privacy" as const },
   ];
   return (
     <div className="px-4 pt-6">
@@ -65,7 +65,7 @@ function ProfileMobile() {
       </ul>
 
       <Button onClick={signOut} variant="outline" className="mt-5 w-full border-white/15">
-        <LogOut className="mr-2 h-4 w-4" /> Sign out
+        <LogOut className="mr-2 h-4 w-4" /> تسجيل الخروج
       </Button>
 
       <p className="mt-6 flex items-center justify-center gap-1 text-[10px] uppercase tracking-widest text-muted-foreground">
