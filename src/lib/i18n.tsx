@@ -193,6 +193,16 @@ export const DICTS: Record<Lang, Dict> = {
     "auth.reset.updated.body": "جارٍ توجيهك إلى تسجيل الدخول…",
     "auth.reset.err.generic": "تعذّر تحديث كلمة المرور",
     "auth.reset.toast": "تم تحديث كلمة المرور",
+    "about.val.clientT": "العميل أولًا",
+    "about.val.clientB": "أهدافك تُشكّل كل توزيع للأصول. نحن متوائمون مع نتائجك.",
+    "about.val.discT": "الانضباط",
+    "about.val.discB": "ضوابط مخاطر مبنية على قواعد تمنع العاطفة من تحريك المحفظة.",
+    "about.val.transT": "الشفافية",
+    "about.val.transB": "كل مركز وكل رسم يُفصح عنه — لا شيء مخفي.",
+    "about.val.excT": "التميّز",
+    "about.val.excB": "فريق قيادي بخبرة مؤسسية تمتد لعقود.",
+    "about.cta.portfolios": "استعرض المحافظ المُدارة",
+    "about.cta.advisor": "تحدّث مع مستشار",
     },
   en: {
     "nav.platform": "Platform",
@@ -368,6 +378,16 @@ export const DICTS: Record<Lang, Dict> = {
     "auth.reset.updated.body": "Redirecting you to sign in\u2026",
     "auth.reset.err.generic": "Couldn\u2019t update password",
     "auth.reset.toast": "Password updated",
+    "about.val.clientT": "Client-first",
+    "about.val.clientB": "Your objectives shape every allocation. We are aligned with your outcomes.",
+    "about.val.discT": "Discipline",
+    "about.val.discB": "Rules-based risk controls prevent emotion from moving the portfolio.",
+    "about.val.transT": "Transparency",
+    "about.val.transB": "Every position and every fee is reported — nothing hidden.",
+    "about.val.excT": "Excellence",
+    "about.val.excB": "A senior team with decades of institutional experience.",
+    "about.cta.portfolios": "Explore managed portfolios",
+    "about.cta.advisor": "Talk to an advisor",
     },
   fr: {
     "nav.platform": "Plateforme",
@@ -543,6 +563,16 @@ export const DICTS: Record<Lang, Dict> = {
     "auth.reset.updated.body": "Redirection vers la connexion\u2026",
     "auth.reset.err.generic": "Impossible de mettre à jour le mot de passe",
     "auth.reset.toast": "Mot de passe mis à jour",
+    "about.val.clientT": "Client d'abord",
+    "about.val.clientB": "Vos objectifs guident chaque allocation. Nous sommes alignés sur vos résultats.",
+    "about.val.discT": "Discipline",
+    "about.val.discB": "Des contrôles de risque basés sur des règles empêchent l'émotion de guider le portefeuille.",
+    "about.val.transT": "Transparence",
+    "about.val.transB": "Chaque position et chaque frais est déclaré — rien de caché.",
+    "about.val.excT": "Excellence",
+    "about.val.excB": "Une équipe senior avec des décennies d'expérience institutionnelle.",
+    "about.cta.portfolios": "Voir les portefeuilles gérés",
+    "about.cta.advisor": "Parler à un conseiller",
     },
   es: {
     "nav.platform": "Plataforma",
@@ -718,6 +748,16 @@ export const DICTS: Record<Lang, Dict> = {
     "auth.reset.updated.body": "Redirigiéndote al inicio de sesión\u2026",
     "auth.reset.err.generic": "No se pudo actualizar la contraseña",
     "auth.reset.toast": "Contraseña actualizada",
+    "about.val.clientT": "Cliente primero",
+    "about.val.clientB": "Tus objetivos definen cada asignación. Estamos alineados con tus resultados.",
+    "about.val.discT": "Disciplina",
+    "about.val.discB": "Controles de riesgo basados en reglas evitan que la emoción mueva la cartera.",
+    "about.val.transT": "Transparencia",
+    "about.val.transB": "Cada posición y cada comisión se reporta — nada oculto.",
+    "about.val.excT": "Excelencia",
+    "about.val.excB": "Un equipo sénior con décadas de experiencia institucional.",
+    "about.cta.portfolios": "Ver portafolios gestionados",
+    "about.cta.advisor": "Hablar con un asesor",
     },
   tr: {
     "nav.platform": "Platform",
@@ -893,6 +933,16 @@ export const DICTS: Record<Lang, Dict> = {
     "auth.reset.updated.body": "Giriş ekranına yönlendiriliyorsunuz\u2026",
     "auth.reset.err.generic": "Şifre güncellenemedi",
     "auth.reset.toast": "Şifre güncellendi",
+    "about.val.clientT": "Önce müşteri",
+    "about.val.clientB": "Hedefleriniz her tahsisi belirler. Sonuçlarınızla hizalıyız.",
+    "about.val.discT": "Disiplin",
+    "about.val.discB": "Kurallara dayalı risk kontrolleri duygunun portföyü yönlendirmesini engeller.",
+    "about.val.transT": "Şeffaflık",
+    "about.val.transB": "Her pozisyon ve her ücret raporlanır — hiçbir şey gizli değil.",
+    "about.val.excT": "Mükemmellik",
+    "about.val.excB": "Onlarca yıllık kurumsal deneyime sahip kıdemli bir ekip.",
+    "about.cta.portfolios": "Yönetilen portföyleri keşfedin",
+    "about.cta.advisor": "Danışmanla görüşün",
     },
 };
 
@@ -958,4 +1008,10 @@ import { homeContent } from "./home-content";
 export function useHome() {
   const { lang } = useI18n();
   return homeContent(lang);
+}
+
+import { staticPages } from "./static-pages-content";
+export function useStatic() {
+  const { lang } = useI18n();
+  return staticPages(lang);
 }

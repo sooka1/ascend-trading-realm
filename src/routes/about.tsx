@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageShell, PageHero } from "@/components/page-shell";
 import { Award, Compass, Handshake, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { usePage, useT } from "@/lib/i18n";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -16,31 +17,29 @@ export const Route = createFileRoute("/about")({
 });
 
 function AboutPage() {
+  const p = usePage().about;
+  const t = useT();
   const values = [
-    { icon: Target, t: "Client-first", b: "Your objectives shape every allocation. We are aligned with your outcomes." },
-    { icon: Compass, t: "Discipline", b: "Rules-based risk controls prevent emotion from moving the portfolio." },
-    { icon: Handshake, t: "Transparency", b: "Every position and every fee is reported — nothing hidden." },
-    { icon: Award, t: "Excellence", b: "A senior team with decades of institutional experience." },
+    { icon: Target, t: t("about.val.clientT"), b: t("about.val.clientB") },
+    { icon: Compass, t: t("about.val.discT"), b: t("about.val.discB") },
+    { icon: Handshake, t: t("about.val.transT"), b: t("about.val.transB") },
+    { icon: Award, t: t("about.val.excT"), b: t("about.val.excB") },
   ];
   return (
     <PageShell>
       <PageHero
-        eyebrow="About HK"
-        title={<>Professional investment management, built for the long term.</>}
-        subtitle="HK Investment Management helps investors access professionally managed investment strategies with transparency, disciplined risk management and long-term performance."
+        eyebrow={p.hero.eyebrow}
+        title={<>{p.hero.titleA} <span className="text-gradient">{p.hero.titleB}</span></>}
+        subtitle={p.hero.subtitle}
       />
       <section className="mx-auto max-w-5xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="glass-strong rounded-3xl p-10">
-          <h2 className="font-display text-3xl font-semibold">Our mission</h2>
-          <p className="mt-4 text-muted-foreground">
-            Help investors access professionally managed investment strategies with transparency, disciplined risk
-            management, and long-term performance. We believe great investment outcomes come from clarity of process,
-            respect for risk, and a genuine partnership with our clients.
-          </p>
+          <h2 className="font-display text-3xl font-semibold">{p.values.missionT}</h2>
+          <p className="mt-4 text-muted-foreground">{p.values.missionB}</p>
         </div>
       </section>
       <section className="mx-auto max-w-7xl px-4 pb-24 sm:px-6 lg:px-8">
-        <h2 className="font-display text-3xl font-semibold">Our values</h2>
+        <h2 className="font-display text-3xl font-semibold">{p.values.valuesT}</h2>
         <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
           {values.map((v) => (
             <div key={v.t} className="glass rounded-2xl p-6">
@@ -52,10 +51,10 @@ function AboutPage() {
         </div>
         <div className="mt-12 flex flex-wrap gap-3">
           <Button asChild className="bg-[var(--gradient-gold)] font-semibold text-background">
-            <Link to="/portfolios">Explore managed portfolios</Link>
+            <Link to="/portfolios">{t("about.cta.portfolios")}</Link>
           </Button>
           <Button asChild variant="outline" className="border-white/15">
-            <Link to="/contact">Talk to an advisor</Link>
+            <Link to="/contact">{t("about.cta.advisor")}</Link>
           </Button>
         </div>
       </section>

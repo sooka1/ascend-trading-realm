@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageShell, PageHero } from "@/components/page-shell";
 import { AnimatedChart } from "@/components/animated-chart";
+import { useStatic } from "@/lib/i18n";
 
 export const Route = createFileRoute("/performance")({
   head: () => ({
@@ -13,28 +14,30 @@ export const Route = createFileRoute("/performance")({
   component: PerformancePage,
 });
 
-const rows = [
-  { name: "Conservative", ytd: "+7.2%", y1: "+9.6%", y3: "+28.4%", vol: "4.8%", maxDd: "-3.1%" },
-  { name: "Balanced", ytd: "+12.4%", y1: "+15.2%", y3: "+52.8%", vol: "8.9%", maxDd: "-6.4%" },
-  { name: "Growth", ytd: "+18.4%", y1: "+22.3%", y3: "+81.6%", vol: "13.7%", maxDd: "-11.2%" },
+const rowStats = [
+  { ytd: "+7.2%", y1: "+9.6%", y3: "+28.4%", vol: "4.8%", maxDd: "-3.1%" },
+  { ytd: "+12.4%", y1: "+15.2%", y3: "+52.8%", vol: "8.9%", maxDd: "-6.4%" },
+  { ytd: "+18.4%", y1: "+22.3%", y3: "+81.6%", vol: "13.7%", maxDd: "-11.2%" },
 ];
 
 function PerformancePage() {
+  const p = useStatic().performance;
+  const rows = p.rows.map((r, i) => ({ name: r.name, ...rowStats[i] }));
   return (
     <PageShell>
       <PageHero
-        eyebrow="Performance"
-        title={<>Track record, reported with clarity.</>}
-        subtitle="Illustrative performance figures for our managed portfolio strategies. Detailed monthly and annual statements are available in the client portal."
+        eyebrow={p.eyebrow}
+        title={<>{p.title}</>}
+        subtitle={p.subtitle}
       />
       <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="glass-strong rounded-3xl p-6 md:p-8">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <p className="text-xs uppercase tracking-widest text-muted-foreground">Balanced Growth Portfolio — cumulative return</p>
-              <p className="mt-1 font-display text-3xl font-semibold">+52.8% <span className="text-sm text-muted-foreground">3Y</span></p>
+              <p className="text-xs uppercase tracking-widest text-muted-foreground">{p.chartLabel}</p>
+              <p className="mt-1 font-display text-3xl font-semibold">+52.8% <span className="text-sm text-muted-foreground">{p.yearsSuffix}</span></p>
             </div>
-            <span className="rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-xs text-gold">Illustrative</span>
+            <span className="rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-xs text-gold">{p.illustrative}</span>
           </div>
           <AnimatedChart />
         </div>
@@ -43,12 +46,12 @@ function PerformancePage() {
           <table className="w-full min-w-[720px] border-separate border-spacing-y-2 text-sm">
             <thead className="text-xs uppercase tracking-widest text-muted-foreground">
               <tr>
-                <th className="px-4 py-2 text-left">Portfolio</th>
-                <th className="px-4 py-2 text-right">YTD</th>
-                <th className="px-4 py-2 text-right">1Y</th>
-                <th className="px-4 py-2 text-right">3Y</th>
-                <th className="px-4 py-2 text-right">Volatility</th>
-                <th className="px-4 py-2 text-right">Max drawdown</th>
+                <th className="px-4 py-2 text-left">{p.cols.portfolio}</th>
+                <th className="px-4 py-2 text-right">{p.cols.ytd}</th>
+                <th className="px-4 py-2 text-right">{p.cols.y1}</th>
+                <th className="px-4 py-2 text-right">{p.cols.y3}</th>
+                <th className="px-4 py-2 text-right">{p.cols.vol}</th>
+                <th className="px-4 py-2 text-right">{p.cols.maxDd}</th>
               </tr>
             </thead>
             <tbody>
@@ -66,10 +69,7 @@ function PerformancePage() {
           </table>
         </div>
 
-        <p className="mt-8 text-xs text-muted-foreground">
-          Performance figures shown are illustrative and net of a hypothetical fee schedule. Past performance is not
-          indicative of, and does not guarantee, future results. Investing involves risk, including loss of principal.
-        </p>
+        <p className="mt-8 text-xs text-muted-foreground">{p.footnote}</p>
       </section>
     </PageShell>
   );

@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useStatic } from "@/lib/i18n";
 import goldSquare from "@/assets/social/hk-social-gold-square.png";
 import whiteSquare from "@/assets/social/hk-social-white-square.png";
 import blackSquare from "@/assets/social/hk-social-black-square.png";
@@ -16,23 +17,21 @@ export const Route = createFileRoute("/brand")({
   component: BrandPage,
 });
 
-const ASSETS = [
-  { label: "Gold · Square", src: goldSquare, file: "hk-social-gold-square.png", shape: "square" as const },
-  { label: "White · Square", src: whiteSquare, file: "hk-social-white-square.png", shape: "square" as const },
-  { label: "Black · Square", src: blackSquare, file: "hk-social-black-square.png", shape: "square" as const },
-  { label: "Gold · Circle", src: goldCircle, file: "hk-social-gold-circle.png", shape: "circle" as const },
-  { label: "White · Circle", src: whiteCircle, file: "hk-social-white-circle.png", shape: "circle" as const },
-  { label: "Black · Circle", src: blackCircle, file: "hk-social-black-circle.png", shape: "circle" as const },
-];
-
 function BrandPage() {
+  const p = useStatic().brand;
+  const ASSETS = [
+    { label: p.labels.goldSquare, src: goldSquare, file: "hk-social-gold-square.png", shape: "square" as const },
+    { label: p.labels.whiteSquare, src: whiteSquare, file: "hk-social-white-square.png", shape: "square" as const },
+    { label: p.labels.blackSquare, src: blackSquare, file: "hk-social-black-square.png", shape: "square" as const },
+    { label: p.labels.goldCircle, src: goldCircle, file: "hk-social-gold-circle.png", shape: "circle" as const },
+    { label: p.labels.whiteCircle, src: whiteCircle, file: "hk-social-white-circle.png", shape: "circle" as const },
+    { label: p.labels.blackCircle, src: blackCircle, file: "hk-social-black-circle.png", shape: "circle" as const },
+  ];
   return (
     <main className="container mx-auto px-6 py-24">
       <header className="mb-12 max-w-2xl">
-        <h1 className="font-display text-4xl md:text-5xl tracking-tight">Brand Assets</h1>
-        <p className="mt-4 text-muted-foreground">
-          Optimized 1024×1024 profile logos for social media. Right-click or use the download button to save.
-        </p>
+        <h1 className="font-display text-4xl md:text-5xl tracking-tight">{p.title}</h1>
+        <p className="mt-4 text-muted-foreground">{p.subtitle}</p>
       </header>
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {ASSETS.map((a) => (
@@ -54,7 +53,7 @@ function BrandPage() {
                 download={a.file}
                 className="text-sm text-primary underline underline-offset-4"
               >
-                Download
+                {p.download}
               </a>
             </figcaption>
           </figure>
