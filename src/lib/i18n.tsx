@@ -12,7 +12,7 @@ export const LANGUAGES: { code: Lang; label: string; native: string; dir: "rtl" 
 
 type Dict = Record<string, string>;
 
-const DICTS: Record<Lang, Dict> = {
+export const DICTS: Record<Lang, Dict> = {
   ar: {
     "nav.platform": "المنصة",
     "nav.markets": "الأسواق",
