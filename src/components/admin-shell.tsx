@@ -36,9 +36,11 @@ const NAV: NavItem[] = [
   { to: "/admin/analytics", icon: BarChart3, label: "التحليلات", group: "overview", enabled: true },
   { to: "/admin/monitoring", icon: Server, label: "مراقبة النظام", group: "overview", enabled: true },
 
-  { to: "/admin/finance", icon: Wallet, label: "العمليات المالية", group: "operations", enabled: true },
-  { to: "/admin/subscriptions", icon: CreditCard, label: "الاشتراكات", group: "operations", enabled: false },
-  { to: "/admin/invoices", icon: FileText, label: "الفواتير", group: "operations", enabled: false },
+  { to: "/admin/finance", icon: Wallet, label: "طلبات مالية", group: "operations", enabled: true },
+  { to: "/admin/subscriptions", icon: CreditCard, label: "الاشتراكات", group: "operations", enabled: true },
+  { to: "/admin/invoices", icon: FileText, label: "الفواتير", group: "operations", enabled: true },
+  { to: "/admin/payments", icon: Wallet, label: "المدفوعات", group: "operations", enabled: true },
+  { to: "/admin/accounting", icon: FileText, label: "التقارير المحاسبية", group: "operations", enabled: true },
 
   { to: "/admin/users", icon: Users, label: "المستخدمون", group: "identity", enabled: true },
   { to: "/admin/roles", icon: ShieldCheck, label: "الأدوار والصلاحيات", group: "identity", enabled: false },
