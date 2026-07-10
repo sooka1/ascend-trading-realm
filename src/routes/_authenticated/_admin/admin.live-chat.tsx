@@ -66,6 +66,11 @@ function AdminLiveChat() {
   const [unreadByTicket, setUnreadByTicket] = useState<Record<string, number>>({});
   const [clientReadAt, setClientReadAt] = useState<string | null>(null);
   const [clientTyping, setClientTyping] = useState(false);
+  const [typingDebug, setTypingDebug] = useState<{
+    at: number;
+    reason: string;
+    value: boolean;
+  } | null>(null);
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const channelRef = useRef<RealtimeChannel | null>(null);
@@ -207,10 +212,12 @@ function AdminLiveChat() {
         console.debug("[typing] admin received", { ticketId: selected?.id, from: p?.from, uid: p?.uid });
         if (p?.from !== "client") return;
         setClientTyping(true);
+        setTypingDebug({ at: Date.now(), reason: "broadcast من العميل", value: true });
         console.debug("[typing] admin updated → clientTyping=true", { ticketId: selected?.id });
         if (typingClearRef.current) clearTimeout(typingClearRef.current);
         typingClearRef.current = setTimeout(() => {
           setClientTyping(false);
+          setTypingDebug({ at: Date.now(), reason: "انتهاء المهلة (2.5s)", value: false });
           console.debug("[typing] admin updated → clientTyping=false (timeout)", { ticketId: selected?.id });
         }, 2500);
       })
@@ -478,6 +485,16 @@ function AdminLiveChat() {
                 <p className="mt-1 px-1 text-[10px] text-muted-foreground animate-pulse">
                   {nameFor(selected.user_id)} يكتب…
                 </p>
+              )}
+              {typingDebug && (
+                <div className="mt-1 rounded-md border border-white/10 bg-black/30 px-2 py-1 font-mono text-[10px] leading-relaxed text-muted-foreground">
+                  <span className="text-gold">[debug typing]</span>{" "}
+                  <span>{typingDebug.value ? "ON" : "OFF"}</span>
+                  {" · "}
+                  <span>{new Date(typingDebug.at).toLocaleTimeString()}</span>
+                  {" · "}
+                  <span>{typingDebug.reason}</span>
+                </div>
               )}
             </div>
           )}
