@@ -264,7 +264,7 @@ function Hero({ c }: { c: LandingContent }) {
 
           {/* Realistic iPhone mockup showing the same hero video */}
           <div
-            className="relative mx-auto aspect-[9/19.5] w-[130px] rounded-[2rem] border border-neutral-700 bg-gradient-to-b from-neutral-800 via-neutral-900 to-black p-[6px] shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7),0_0_0_1px_rgba(255,255,255,0.06)_inset] sm:w-[150px] lg:w-[160px]"
+            className="relative mx-auto aspect-[9/19.5] w-[180px] rounded-[2.25rem] border border-neutral-700 bg-gradient-to-b from-neutral-800 via-neutral-900 to-black p-[7px] shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7),0_0_0_1px_rgba(255,255,255,0.06)_inset] sm:w-[210px] lg:w-[230px]"
             style={{
               backgroundImage:
                 "linear-gradient(145deg,#3a3a3c 0%,#1c1c1e 40%,#0a0a0a 100%)",
