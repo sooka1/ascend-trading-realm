@@ -234,8 +234,6 @@
 @utility nav-item-active {
   position: relative;
   overflow: hidden;
-}
-@utility nav-item-active {
   &::after {
     content: "";
     position: absolute;
