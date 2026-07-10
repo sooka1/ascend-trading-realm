@@ -52,6 +52,11 @@ export function SupportFab() {
   const [unread, setUnread] = useState(0);
   const [adminReadAt, setAdminReadAt] = useState<string | null>(null);
   const [staffTyping, setStaffTyping] = useState(false);
+  const [typingDebug, setTypingDebug] = useState<{
+    at: number;
+    reason: string;
+    value: boolean;
+  } | null>(null);
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const channelRef = useRef<RealtimeChannel | null>(null);
@@ -192,10 +197,12 @@ export function SupportFab() {
         console.debug("[typing] client received", { ticketId, from: p?.from, uid: p?.uid });
         if (p?.from !== "staff") return;
         setStaffTyping(true);
+        setTypingDebug({ at: Date.now(), reason: "broadcast من الدعم", value: true });
         console.debug("[typing] client updated → staffTyping=true", { ticketId });
         if (typingClearRef.current) clearTimeout(typingClearRef.current);
         typingClearRef.current = setTimeout(() => {
           setStaffTyping(false);
+          setTypingDebug({ at: Date.now(), reason: "انتهاء المهلة (2.5s)", value: false });
           console.debug("[typing] client updated → staffTyping=false (timeout)", { ticketId });
         }, 2500);
       })
@@ -501,6 +508,16 @@ export function SupportFab() {
                 <p className="mt-1 px-1 text-[10px] text-muted-foreground animate-pulse">
                   دعم HK يكتب…
                 </p>
+              )}
+              {typingDebug && (
+                <div className="mt-1 rounded-md border border-white/10 bg-black/30 px-2 py-1 font-mono text-[9px] leading-relaxed text-muted-foreground">
+                  <span className="text-gold">[debug typing]</span>{" "}
+                  <span>{typingDebug.value ? "ON" : "OFF"}</span>
+                  {" · "}
+                  <span>{new Date(typingDebug.at).toLocaleTimeString()}</span>
+                  {" · "}
+                  <span>{typingDebug.reason}</span>
+                </div>
               )}
             </div>
           </div>
