@@ -63,8 +63,8 @@ export function SiteHeader() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 border-b border-white/10 bg-[#c0392b]/95 text-white backdrop-blur-xl",
-        "[&_a]:text-white [&_button]:text-white",
+        "sticky top-0 z-50 border-b border-black/10 bg-white/95 text-neutral-900 backdrop-blur-xl",
+        "[&_a]:text-neutral-900 [&_button]:text-neutral-900",
         "transition-transform duration-300 will-change-transform",
         hidden ? "-translate-y-full" : "translate-y-0",
       )}
