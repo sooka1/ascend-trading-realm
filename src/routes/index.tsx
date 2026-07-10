@@ -86,6 +86,7 @@ function Home() {
       <Hero c={c} />
       <MarketTicker />
       <TrustStrip c={c} />
+      <CustodyBanks />
       <Features c={c} />
       <SolutionsPreview c={c} />
       <PerformanceBand c={c} />
@@ -344,6 +345,42 @@ function TrustStrip({ c }: { c: LandingContent }) {
             <it.icon className="h-4 w-4 text-gold" /> {it.label}
           </div>
         ))}
+      </div>
+    </section>
+  );
+}
+
+function CustodyBanks() {
+  const { lang } = useI18n();
+  const heading =
+    lang === "ar"
+      ? "أموالك محفوظة لدى مؤسسات من الدرجة الأولى"
+      : "Your funds are held with tier-one institutions";
+  const banks = [
+    "J.P. Morgan",
+    "UBS",
+    "Citi",
+    "J. Safra Sarasin",
+    "Deutsche Bank",
+    "Coutts",
+    "Pictet",
+  ];
+  return (
+    <section className="border-b border-white/5 bg-white/[0.02]">
+      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <h2 className="text-center font-display text-2xl font-semibold md:text-3xl">
+          {heading}
+        </h2>
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-x-10 gap-y-6">
+          {banks.map((b) => (
+            <span
+              key={b}
+              className="font-display text-lg font-semibold tracking-tight text-muted-foreground/80 transition hover:text-foreground md:text-xl"
+            >
+              {b}
+            </span>
+          ))}
+        </div>
       </div>
     </section>
   );
