@@ -178,7 +178,6 @@ function RootComponent() {
         </a>
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
-        <GlobalBackButton />
         <Toaster theme="dark" position="top-right" richColors />
       </I18nProvider>
     </QueryClientProvider>
