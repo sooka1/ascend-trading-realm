@@ -223,6 +223,22 @@ function PortfolioPage() {
 
 const BAR_COLORS = ["#d4af37", "#8b6f2a", "#e8c866", "#5b4a1c", "#b8912e", "#f0d97a"];
 
+function StatusBadge({ status }: { status: string }) {
+  const map: Record<string, string> = {
+    pending: "border-amber-400/40 text-amber-300 bg-amber-400/10",
+    approved: "border-emerald-400/40 text-emerald-300 bg-emerald-400/10",
+    completed: "border-emerald-400/40 text-emerald-300 bg-emerald-400/10",
+    rejected: "border-red-400/40 text-red-300 bg-red-400/10",
+    canceled: "border-white/15 text-muted-foreground bg-white/[0.03]",
+  };
+  const cls = map[status] ?? "border-white/15 text-muted-foreground bg-white/[0.03]";
+  return (
+    <span className={`shrink-0 rounded-full border px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider ${cls}`}>
+      {status}
+    </span>
+  );
+}
+
 function Kpi({ label, value, unit, positive }: { label: string; value: string; unit?: string; positive?: boolean }) {
   const tone = positive === undefined ? "text-foreground" : positive ? "text-emerald-400" : "text-red-400";
   return (
