@@ -129,10 +129,10 @@ function MobileTopBar({ name }: { name: string }) {
   return (
     <header className="sticky top-0 z-30 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-white/5 bg-[color:var(--background)]/80 px-4 py-3 backdrop-blur-xl">
       <div className="flex min-w-0 items-center gap-3">
-        <HKLogo showWordmark={false} size="sm" />
+        <HKLogo variant="chip" showWordmark size="sm" />
         <div className="min-w-0">
           <p className="text-[10px] uppercase tracking-widest text-muted-foreground">أهلاً بعودتك</p>
-          <p className="truncate text-sm font-semibold">{name}</p>
+          <p className="truncate text-xs font-semibold">{name}</p>
         </div>
       </div>
       <button
