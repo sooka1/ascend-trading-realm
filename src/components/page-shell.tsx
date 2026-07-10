@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { SiteHeader } from "./site-header";
 import { SiteFooter } from "./site-footer";
+import { SupportFab } from "./support-fab";
 
 export function PageShell({ children, bare = false }: { children: ReactNode; bare?: boolean }) {
   return (
@@ -8,6 +9,7 @@ export function PageShell({ children, bare = false }: { children: ReactNode; bar
       {!bare && <SiteHeader />}
       <main className="flex-1">{children}</main>
       {!bare && <SiteFooter />}
+      {!bare && <SupportFab />}
     </div>
   );
 }
