@@ -57,7 +57,7 @@ const TXID_RULES = {
 // Platform deposit destinations — super admin can update these values in code.
 const PLATFORM_WALLETS = {
   binance_pay: "194857355",
-  usdt_trc20: "TXxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  usdt_trc20: "TD8fkqHy5cGQU3tFf7Qi7AeeqrAWi6e9Rm",
 } as const;
 
 // Guardrail: the platform's Binance Pay ID must match the same numeric format
