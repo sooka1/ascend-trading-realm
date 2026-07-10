@@ -66,6 +66,18 @@ const PLATFORM_WALLETS = {
   usdt_bep20: "0xHKxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 } as const;
 
+// Guardrail: the platform's Binance Pay ID must match the same numeric format
+// we enforce on user input. It is used ONLY as the deposit destination shown
+// to investors and referenced when creating a Binance Pay order — never as a
+// withdraw destination or a user-supplied value.
+const IS_BINANCE_PAY_ID_VALID = ADDRESS_RULES.binance_pay.regex.test(PLATFORM_WALLETS.binance_pay);
+function getPlatformBinancePayId(): string {
+  if (!IS_BINANCE_PAY_ID_VALID) {
+    throw new Error("Binance Pay ID الخاص بالمنصة غير صالح — يرجى مراجعة الإدارة");
+  }
+  return PLATFORM_WALLETS.binance_pay;
+}
+
 function InvestorPortal() {
   const router = useRouter();
   const [uid, setUid] = useState<string | null>(null);
@@ -226,6 +238,10 @@ function InvestorPortal() {
       const ref = parsed.data.reference ?? "";
       if (!ref) return toast.error("يرجى إدخال TxID / مرجع المعاملة");
       if (!rule.regex.test(ref)) return toast.error(rule.label);
+    }
+    // Guard: refuse to create a Binance Pay request when the platform ID is invalid
+    if (parsed.data.method === "binance_pay") {
+      try { getPlatformBinancePayId(); } catch (err) { return toast.error((err as Error).message); }
     }
     // Optional receipt image upload
     const receipt = (fd.get("receipt") as File | null) ?? null;
@@ -420,8 +436,16 @@ function InvestorPortal() {
                   <div className="mb-1 font-semibold text-amber-300">
                     {depositMethod === "binance_pay" ? "Binance Pay ID للمنصة" : depositMethod === "usdt_trc20" ? "عنوان USDT-TRC20" : "عنوان USDT-BEP20"}
                   </div>
-                  <div className="break-all font-mono text-[11px] text-foreground">{PLATFORM_WALLETS[depositMethod]}</div>
-                  <p className="mt-2 text-muted-foreground">أرسل المبلغ إلى العنوان أعلاه ثم ألصق hash المعاملة (TxID) في حقل المرجع. سيُضاف الرصيد بعد تأكيد الاستلام من الإدارة.</p>
+                  {depositMethod === "binance_pay" && !IS_BINANCE_PAY_ID_VALID ? (
+                    <div className="rounded-md border border-red-500/40 bg-red-500/10 p-2 text-[11px] text-red-200">
+                      Binance Pay ID الخاص بالمنصة غير صالح حاليًا — يرجى استخدام طريقة إيداع أخرى أو التواصل مع الإدارة.
+                    </div>
+                  ) : (
+                    <>
+                      <div className="break-all font-mono text-[11px] text-foreground">{PLATFORM_WALLETS[depositMethod]}</div>
+                      <p className="mt-2 text-muted-foreground">أرسل المبلغ إلى العنوان أعلاه ثم ألصق hash المعاملة (TxID) في حقل المرجع. سيُضاف الرصيد بعد تأكيد الاستلام من الإدارة.</p>
+                    </>
+                  )}
                 </div>
               )}
               <Field label="مرجع التحويل / TxID"><Input name="reference" maxLength={120} placeholder={depositMethod === "bank_transfer" || depositMethod === "card" ? "" : "TxID / Hash المعاملة"} /></Field>
