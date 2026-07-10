@@ -36,12 +36,12 @@ export function AnimatedChart() {
     <svg viewBox={`0 0 ${w} ${h}`} className="mt-4 h-40 w-full">
       <defs>
         <linearGradient id="hk-chart-fill" x1="0" x2="0" y1="0" y2="1">
-          <stop offset="0%" stopColor="oklch(0.82 0.14 82)" stopOpacity="0.35" />
-          <stop offset="100%" stopColor="oklch(0.82 0.14 82)" stopOpacity="0" />
+          <stop offset="0%" stopColor="oklch(0.68 0.14 200)" stopOpacity="0.35" />
+          <stop offset="100%" stopColor="oklch(0.68 0.14 200)" stopOpacity="0" />
         </linearGradient>
         <linearGradient id="hk-chart-stroke" x1="0" x2="1" y1="0" y2="0">
-          <stop offset="0%" stopColor="oklch(0.52 0.19 262)" />
-          <stop offset="100%" stopColor="oklch(0.82 0.14 82)" />
+          <stop offset="0%" stopColor="oklch(0.55 0.14 210)" />
+          <stop offset="100%" stopColor="oklch(0.85 0.12 190)" />
         </linearGradient>
       </defs>
       {/* grid */}

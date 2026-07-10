@@ -66,8 +66,8 @@
   --color-brand-blue: var(--brand-blue);
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
-  --color-bull: oklch(0.72 0.17 152);
-  --color-bear: oklch(0.65 0.22 27);
+  --color-bull: oklch(0.78 0.13 190);   /* aqua sea-green for gains */
+  --color-bear: oklch(0.62 0.14 25);    /* muted coral for losses */
 }
 
 :root {
