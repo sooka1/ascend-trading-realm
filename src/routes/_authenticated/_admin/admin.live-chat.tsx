@@ -156,13 +156,33 @@ function AdminLiveChat() {
         (payload) => {
           const m = payload.new as Msg;
           setMessages((prev) => (prev.some((x) => x.id === m.id) ? prev : [...prev, m]));
+          // Mark as read immediately while the admin has the ticket open.
+          if (!m.is_staff && m.sender_id !== uid) {
+            void supabase
+              .from("support_tickets")
+              .update({ admin_last_read_at: new Date().toISOString() })
+              .eq("id", selected.id);
+          }
+        },
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "support_tickets",
+          filter: `id=eq.${selected.id}`,
+        },
+        (payload) => {
+          const t = payload.new as { client_last_read_at: string | null };
+          setClientReadAt(t.client_last_read_at ?? null);
         },
       )
       .subscribe();
     return () => {
       supabase.removeChannel(ch);
     };
-  }, [selected?.id]);
+  }, [selected?.id, uid]);
 
   useEffect(() => {
     if (listRef.current) listRef.current.scrollTop = listRef.current.scrollHeight;
