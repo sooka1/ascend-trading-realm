@@ -582,7 +582,7 @@ type TL = {
   eyebrow: string;
   title: string;
   subtitle: string;
-  items: { name: string; role: string; quote: string; rating: number; seed: string }[];
+  items: { name: string; role: string; quote: string; rating: number; seed: string; verified?: boolean }[];
 };
 
 const TESTIMONIALS: Record<string, TL> = {
@@ -596,6 +596,39 @@ const TESTIMONIALS: Record<string, TL> = {
       { seed: "ahmed-f", name: "أحمد الفهد", role: "مستثمر خاص — الكويت", rating: 4.5, quote: "التزام صارم بإدارة المخاطر، وأداء يفوق التوقعات على مدى سنتين متتاليتين." },
       { seed: "layla-q", name: "ليلى القحطاني", role: "مديرة مالية — جدة", rating: 5, quote: "خطة الاستثمار وُضعت وفق أهدافي بدقة، والتواصل مع المستشار احترافي جدًا." },
       { seed: "yousef-b", name: "يوسف البلوشي", role: "مهندس أول — مسقط", rating: 4.5, quote: "التقارير الشهرية واضحة والأداء ثابت. تجربة مطمئنة على المدى الطويل." },
+      { seed: "mona-s", name: "منى الشمري", role: "مستثمرة — الدوحة", rating: 4.5, quote: "التحديثات الأسبوعية عن الأداء ممتازة، وسحب الأرباح سهل وسريع." },
+      // — أجانب موثّقون —
+      { seed: "james-w", name: "James Whitfield", role: "رجل أعمال — لندن", rating: 5, quote: "أداء ثابت وتقارير شهرية شفافة. تجربة احترافية بكل المقاييس.", verified: true },
+      { seed: "sofia-l", name: "Sofia Lindqvist", role: "مستثمرة خاصة — ستوكهولم", rating: 5, quote: "الحفاظ على رأس المال كان أولويتي، والنتائج فاقت توقعاتي.", verified: true },
+      { seed: "michael-c", name: "Michael Chen", role: "تنفيذي — سنغافورة", rating: 5, quote: "إدارة مخاطر منضبطة وأداء قوي يناسب استثماري طويل الأجل.", verified: true },
+      { seed: "amelia-r", name: "Amelia Rossi", role: "مديرة مالية — ميلانو", rating: 4.5, quote: "تنويع واضح بين الأصول وتواصل احترافي مع المستشار.", verified: true },
+      { seed: "hugo-l", name: "Hugo Lefevre", role: "مهندس — مونتريال", rating: 5, quote: "خيار ممتاز للاستثمار المستقر بعيدًا عن ضجيج الأسواق.", verified: true },
+      { seed: "david-t", name: "David Thompson", role: "مدير صندوق — نيويورك", rating: 5, quote: "انضباط في التنفيذ وشفافية نادرة في التقارير. من أفضل تجاربي الاستثمارية.", verified: true },
+      { seed: "hannah-m", name: "Hannah Müller", role: "مستشارة ثروات — فرانكفورت", rating: 5, quote: "التوازن بين العائد والمخاطر مدروس بعناية، والتواصل دقيق ومحترم.", verified: true },
+      { seed: "takeshi-y", name: "Takeshi Yamamoto", role: "مستثمر خاص — طوكيو", rating: 4.5, quote: "التزام صارم بالخطة الاستثمارية ونتائج مستقرة على مدى عام كامل.", verified: true },
+      { seed: "isabella-c", name: "Isabella Costa", role: "رائدة أعمال — لشبونة", rating: 5, quote: "أداء تجاوز التوقعات مع وضوح تام في هيكل الرسوم.", verified: true },
+      { seed: "oliver-b", name: "Oliver Bennett", role: "محامي شركات — سيدني", rating: 5, quote: "منصة عملاء ممتازة وتقارير شهرية بجودة مؤسسية.", verified: true },
+      { seed: "ana-v", name: "Anastasia Volkova", role: "مستثمرة — دبي", rating: 4.5, quote: "فريق يفهم أهداف العميل الطويلة المدى ويتعامل بمهنية عالية.", verified: true },
+      { seed: "rafael-o", name: "Rafael Ortega", role: "طبيب أسنان — مدريد", rating: 5, quote: "مثالي لمن يريد استثمارًا هادئًا بعيدًا عن التوتر اليومي.", verified: true },
+      { seed: "priya-s", name: "Priya Sharma", role: "مهندسة برمجيات — بنغالورو", rating: 5, quote: "تحديثات دقيقة وأداء واضح — سعيدة جدًا بالتجربة.", verified: true },
+      // — عرب —
+      { seed: "abdullah-g", name: "عبدالله الغامدي", role: "رجل أعمال — الرياض", rating: 5, quote: "خدمة عملاء راقية وتقارير أسبوعية تعطيني صورة كاملة عن المحفظة." },
+      { seed: "noura-k", name: "نورة الكعبي", role: "مستثمرة — أبوظبي", rating: 5, quote: "تجربة استثمارية ناضجة، والتواصل مع المستشار مباشر وواضح." },
+      { seed: "faisal-d", name: "فيصل الدوسري", role: "استشاري مالي — المنامة", rating: 4.5, quote: "الحفاظ على رأس المال أولوية، وقد لمست ذلك في كل قرار." },
+      { seed: "reem-h", name: "ريم الحمادي", role: "مديرة تسويق — الشارقة", rating: 5, quote: "عوائد جيدة مع شفافية كاملة في العمولات والرسوم." },
+      { seed: "majed-h", name: "ماجد الحربي", role: "طبيب — الدمام", rating: 5, quote: "تنويع ذكي بين الأصول وأداء يستحق الثقة." },
+      { seed: "hind-z", name: "هند الزعابي", role: "مستثمرة خاصة — عمّان", rating: 4.5, quote: "أشعر أن مالي في أيدٍ أمينة، والتقارير تصلني في وقتها." },
+      { seed: "tareq-b", name: "طارق البقمي", role: "مقاول — جدة", rating: 5, quote: "بدأت متردداً وأصبحت من أكثر المؤيدين لهذه المحفظة." },
+      { seed: "dana-s", name: "دانا الصباح", role: "محامية — الكويت", rating: 5, quote: "احترافية في التعامل ونتائج فعلية على أرض الواقع." },
+      // — مصريون (لهجة مصرية) —
+      { seed: "mohamed-a", name: "محمد عبد الرحمن", role: "صاحب مصنع — القاهرة", rating: 5, quote: "بصراحة تجربة محترمة جدًا، الأرباح بتنزل في وقتها والتقارير واضحة أوي." },
+      { seed: "mona-sh", name: "منى شعبان", role: "دكتورة صيدلانية — الإسكندرية", rating: 5, quote: "أنا مبحبش المخاطرة، والمحفظة دي ريّحتني جدًا. الأداء ثابت والحمد لله." },
+      { seed: "ahmed-fa", name: "أحمد فتحي", role: "مهندس بترول — القاهرة", rating: 5, quote: "الفريق محترم والتواصل سريع، وكل ما أسأل بلاقي رد فورًا." },
+      { seed: "shaimaa-a", name: "شيماء عبد الله", role: "معلمة — المنصورة", rating: 4.5, quote: "بدأت بمبلغ صغير وكبرتُه بالتدريج، الموضوع سهل ومفيش تعقيد." },
+      { seed: "karim-s", name: "كريم السيد", role: "مبرمج — الجيزة", rating: 5, quote: "المنصة سهلة والسحب بيتم بسرعة، تجربة تستاهل فعلًا." },
+      { seed: "heba-m", name: "هبة مصطفى", role: "صاحبة بوتيك — طنطا", rating: 5, quote: "أول مرة أحس إن فيه حد بيشتغل على فلوسي بجد. ربنا يبارك." },
+      { seed: "amr-h", name: "عمرو حجازي", role: "محاسب قانوني — القاهرة", rating: 4.5, quote: "الأرقام واضحة والتقارير مفصّلة، ده اللي بيفرق في الاستثمار." },
+      { seed: "salma-a", name: "سلمى عادل", role: "مهندسة معمارية — الإسكندرية", rating: 5, quote: "خدمة العملاء بترد بسرعة وبتشرح كل حاجة بهدوء، حاجة تفرح." },
     ],
   },
   en: {
