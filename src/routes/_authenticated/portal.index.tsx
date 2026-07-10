@@ -150,18 +150,6 @@ function PortalPage() {
                 <p className="mt-1 text-xs text-muted-foreground">Starter · Growth · Premier · Private</p>
               </div>
             </Link>
-            <Link
-              to="/investor"
-              className="group flex items-start gap-3 rounded-md border border-white/5 bg-white/[0.02] p-3 transition hover:border-gold/40"
-            >
-              <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-gold/20 bg-gold/[0.06]">
-                <Sparkles className="h-4 w-4 text-gold" />
-              </span>
-              <div className="min-w-0 text-sm">
-                <p className="font-medium">العروض الحالية</p>
-                <p className="mt-1 text-xs text-muted-foreground">تبديل الباقة أو ترقيتها في أي وقت وفق شروط الإيداع</p>
-              </div>
-            </Link>
           </div>
         </PortalCard>
 
