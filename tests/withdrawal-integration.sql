@@ -18,18 +18,18 @@ INSERT INTO public.packages (id, name, min_amount, target_return_pct, lockup_mon
 VALUES ('a0000000-0000-0000-0000-0000000000b0', 'wt-pkg', 500, 5, 0, 'moderate', 'USD', true, 999);
 
 INSERT INTO public.deposits (user_id, amount, currency, method, status)
-VALUES (:uid, 5000, 'USD', 'binance_pay', 'approved');
+VALUES ('cd8a337c-43c3-43e5-9845-45363086d9df', 5000, 'USD', 'binance_pay', 'approved');
 
 -- Two active subs: older (2000) and newer (1000)
 INSERT INTO public.subscriptions (id, user_id, package_id, amount, currency, status, started_at, created_at)
 VALUES
-  (:s_old, :uid, 'a0000000-0000-0000-0000-0000000000b0', 2000, 'USD', 'active', now() - interval '10 days', now() - interval '10 days'),
-  (:s_new, :uid, 'a0000000-0000-0000-0000-0000000000b0', 1000, 'USD', 'active', now() - interval '1 day',  now() - interval '1 day');
+  ('a0000000-0000-0000-0000-0000000000c1', 'cd8a337c-43c3-43e5-9845-45363086d9df', 'a0000000-0000-0000-0000-0000000000b0', 2000, 'USD', 'active', now() - interval '10 days', now() - interval '10 days'),
+  ('a0000000-0000-0000-0000-0000000000c2', 'cd8a337c-43c3-43e5-9845-45363086d9df', 'a0000000-0000-0000-0000-0000000000b0', 1000, 'USD', 'active', now() - interval '1 day',  now() - interval '1 day');
 
 -- ---------- T1: newest-first deduction ----------
 -- Withdraw 400 → should come entirely from NEWER sub (1000 → 600), older untouched.
 INSERT INTO public.withdrawals (user_id, amount, currency, destination, status)
-VALUES (:uid, 400, 'USD', 'Tabc', 'pending');
+VALUES ('cd8a337c-43c3-43e5-9845-45363086d9df', 400, 'USD', 'Tabc', 'pending');
 
 DO $$
 DECLARE new_amt numeric; old_amt numeric; new_status text; old_status text;
@@ -48,7 +48,7 @@ SELECT 'T1 PASS: newest-first deduction' AS result;
 -- ---------- T2: cancellation when remaining < min_amount ----------
 -- Newer sub currently 600. Withdraw 200 → 400 < min 500 → cancel newer sub.
 INSERT INTO public.withdrawals (user_id, amount, currency, destination, status)
-VALUES (:uid, 200, 'USD', 'Tabc', 'pending');
+VALUES ('cd8a337c-43c3-43e5-9845-45363086d9df', 200, 'USD', 'Tabc', 'pending');
 
 DO $$
 DECLARE new_status text; new_amt numeric; old_amt numeric; old_status text;
