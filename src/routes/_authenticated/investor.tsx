@@ -369,6 +369,8 @@ function StatusPill({ status }: { status: string }) {
     approved: { cls: "bg-emerald-500/10 text-emerald-400", icon: <CheckCircle2 className="h-3 w-3" />, label: "مقبول" },
     active: { cls: "bg-emerald-500/10 text-emerald-400", icon: <CheckCircle2 className="h-3 w-3" />, label: "نشط" },
     rejected: { cls: "bg-red-500/10 text-red-400", icon: <XCircle className="h-3 w-3" />, label: "مرفوض" },
+    cancelled: { cls: "bg-white/5 text-muted-foreground", icon: <XCircle className="h-3 w-3" />, label: "ملغى" },
+    expired: { cls: "bg-white/5 text-muted-foreground", icon: <Clock className="h-3 w-3" />, label: "منتهية" },
   };
   const m = map[status] ?? { cls: "bg-white/5 text-muted-foreground", icon: null, label: status };
   return (
