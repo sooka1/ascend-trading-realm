@@ -443,7 +443,7 @@ function InvestorPortal() {
                   )}
                 </div>
               )}
-              <Field label="مرجع التحويل / TxID"><Input name="reference" maxLength={120} placeholder="TxID / Hash المعاملة" /></Field>
+              <Field label="مرجع التحويل / TxID (اختياري)"><Input name="reference" maxLength={120} placeholder="TxID / Hash المعاملة" /></Field>
               <Field label="صورة إثبات التحويل (اختياري)">
                 <Input name="receipt" type="file" accept="image/png,image/jpeg,image/webp" className="file:mr-2 file:rounded file:border-0 file:bg-white/10 file:px-2 file:py-1 file:text-xs file:text-foreground" />
               </Field>
