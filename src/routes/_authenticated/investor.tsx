@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { ArrowDownToLine, ArrowUpFromLine, Bell, BellDot, CheckCircle2, Clock, Package as PackageIcon, ShieldCheck, Wallet, XCircle } from "lucide-react";
+import { ArrowDownToLine, ArrowUpFromLine, CheckCircle2, Clock, Package as PackageIcon, ShieldCheck, Wallet, XCircle } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/investor")({
@@ -24,8 +24,6 @@ type Pkg = { id: string; name: string; description: string | null; min_amount: n
 type Sub = { id: string; package_id: string; amount: number; currency: string; status: string; started_at: string | null; ends_at: string | null; created_at: string };
 type Dep = { id: string; amount: number; currency: string; method: string; reference: string | null; status: string; created_at: string };
 type Wd = { id: string; amount: number; currency: string; destination: string; iban: string | null; status: string; created_at: string };
-type Notif = { id: string; title: string; body: string | null; read_at: string | null; created_at: string };
-
 const depositSchema = z.object({
   amount: z.coerce.number().positive().max(10_000_000),
   method: z.enum(["bank_transfer", "card"]),
@@ -47,7 +45,6 @@ function InvestorPortal() {
   const [subs, setSubs] = useState<Sub[]>([]);
   const [deps, setDeps] = useState<Dep[]>([]);
   const [wds, setWds] = useState<Wd[]>([]);
-  const [notifs, setNotifs] = useState<Notif[]>([]);
   const [loading, setLoading] = useState(true);
 
   async function load() {
@@ -55,18 +52,16 @@ function InvestorPortal() {
     const id = userRes.user?.id ?? null;
     setUid(id);
     if (!id) return setLoading(false);
-    const [{ data: pk }, { data: sb }, { data: dp }, { data: wd }, { data: nt }] = await Promise.all([
+    const [{ data: pk }, { data: sb }, { data: dp }, { data: wd }] = await Promise.all([
       supabase.from("packages").select("*").eq("active", true).order("sort_order"),
       supabase.from("subscriptions").select("*").eq("user_id", id).order("created_at", { ascending: false }),
       supabase.from("deposits").select("*").eq("user_id", id).order("created_at", { ascending: false }),
       supabase.from("withdrawals").select("*").eq("user_id", id).order("created_at", { ascending: false }),
-      supabase.from("notifications").select("*").eq("user_id", id).order("created_at", { ascending: false }).limit(50),
     ]);
     setPackages((pk ?? []) as Pkg[]);
     setSubs((sb ?? []) as Sub[]);
     setDeps((dp ?? []) as Dep[]);
     setWds((wd ?? []) as Wd[]);
-    setNotifs((nt ?? []) as Notif[]);
     setLoading(false);
   }
 
@@ -83,21 +78,6 @@ function InvestorPortal() {
   const pendingDeposits = deps.filter((d) => d.status === "pending").reduce((s, d) => s + Number(d.amount), 0);
   const activePackage = subs.find((s) => s.status === "active") ?? subs[0];
   const activePkgMeta = packages.find((p) => p.id === activePackage?.package_id);
-  const unreadCount = notifs.filter((n) => !n.read_at).length;
-
-  async function markRead(id: string) {
-    const { error } = await supabase.from("notifications").update({ read_at: new Date().toISOString() }).eq("id", id);
-    if (error) return toast.error(error.message);
-    setNotifs((prev) => prev.map((n) => (n.id === id ? { ...n, read_at: new Date().toISOString() } : n)));
-  }
-
-  async function markAllRead() {
-    if (!uid || unreadCount === 0) return;
-    const now = new Date().toISOString();
-    const { error } = await supabase.from("notifications").update({ read_at: now }).eq("user_id", uid).is("read_at", null);
-    if (error) return toast.error(error.message);
-    setNotifs((prev) => prev.map((n) => (n.read_at ? n : { ...n, read_at: now })));
-  }
 
   async function submitDeposit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
