@@ -16,15 +16,21 @@ export async function ensureMyKeypair(userId: string): Promise<KeyPair> {
   let secretKey = localStorage.getItem(LS_KEY(userId));
   let publicKey: string;
 
-  // Fetch the account-wide keypair from the server so any browser/device for
-  // the same account can decrypt past messages.
+  // Public key lives on `profiles` (readable by counterparties).
+  // Private key lives on `profile_keys` (owner-only via RLS) so admins
+  // and other users can never read it.
   const { data: profile } = await supabase
     .from("profiles")
-    .select("public_key, secret_key")
+    .select("public_key")
     .eq("id", userId)
     .maybeSingle();
+  const { data: keyRow } = await supabase
+    .from("profile_keys")
+    .select("secret_key")
+    .eq("user_id", userId)
+    .maybeSingle();
 
-  const serverSecret = (profile as { secret_key?: string | null } | null)?.secret_key ?? null;
+  const serverSecret = keyRow?.secret_key ?? null;
   const serverPublic = profile?.public_key ?? null;
 
   if (serverSecret) {
@@ -63,12 +69,14 @@ export async function ensureMyKeypair(userId: string): Promise<KeyPair> {
     localStorage.setItem(LS_KEY(userId), secretKey);
   }
 
-  // Publish/refresh both keys on the profile so other devices can sync.
-  if (serverPublic !== publicKey || serverSecret !== secretKey) {
+  // Publish/refresh keys so other devices can sync.
+  if (serverPublic !== publicKey) {
+    await supabase.from("profiles").update({ public_key: publicKey }).eq("id", userId);
+  }
+  if (serverSecret !== secretKey) {
     await supabase
-      .from("profiles")
-      .update({ public_key: publicKey, secret_key: secretKey } as never)
-      .eq("id", userId);
+      .from("profile_keys")
+      .upsert({ user_id: userId, secret_key: secretKey }, { onConflict: "user_id" });
   }
   return { publicKey, secretKey };
 }
