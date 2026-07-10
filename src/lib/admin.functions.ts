@@ -806,6 +806,35 @@ export const deleteUserAccount = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+export const impersonateUser = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { userId: string }) => data)
+  .handler(async ({ data, context }) => {
+    const auth = await assertAdmin(context);
+    if (!auth.ok || !auth.isSuper) throw new Error("Only super_admin can impersonate users");
+    if (data.userId === context.userId) throw new Error("Cannot impersonate yourself");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    // Prevent impersonating another admin/super_admin
+    const { data: targetIsAdmin } = await supabaseAdmin.rpc("has_any_role", {
+      _user_id: data.userId,
+      _roles: ADMIN_ROLES,
+    });
+    if (targetIsAdmin) throw new Error("Cannot impersonate an admin account");
+    const { data: userRes, error: userErr } = await supabaseAdmin.auth.admin.getUserById(
+      data.userId,
+    );
+    if (userErr || !userRes?.user?.email) throw new Error(userErr?.message ?? "User not found");
+    const email = userRes.user.email;
+    const { data: link, error } = await supabaseAdmin.auth.admin.generateLink({
+      type: "magiclink",
+      email,
+    });
+    if (error) throw new Error(error.message);
+    const token_hash = (link?.properties as { hashed_token?: string } | undefined)?.hashed_token;
+    if (!token_hash) throw new Error("Failed to mint impersonation link");
+    return { email, token_hash };
+  });
+
 export const listPaymentsAdmin = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: { status?: string } | undefined) => data ?? {})
