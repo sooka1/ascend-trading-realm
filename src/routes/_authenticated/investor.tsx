@@ -32,7 +32,7 @@ const depositSchema = z.object({
   notes: z.string().trim().max(500).optional(),
 });
 const withdrawSchema = z.object({
-  amount: z.coerce.number().positive().max(10_000_000),
+  amount: z.coerce.number().min(10, "الحد الأدنى للسحب 10$").max(10_000_000),
   destination: z.string().trim().min(2).max(120),
   iban: z.string().trim().max(64).optional(),
   swift: z.string().trim().max(32).optional(),
@@ -543,7 +543,7 @@ function InvestorPortal() {
               <h2 className="font-display text-lg font-semibold">طلب سحب</h2>
             </div>
             <form onSubmit={submitWithdraw} className="mt-4 grid gap-3 [&_input]:bg-white/10 [&_input]:text-foreground [&_input]:border-white/20 [&_input::placeholder]:text-muted-foreground [&_textarea]:bg-white/10 [&_textarea]:text-foreground [&_textarea]:border-white/20 [&_select]:text-foreground [&_select_option]:bg-neutral-900 [&_select_option]:text-foreground">
-              <Field label="المبلغ (USD)"><Input name="amount" type="number" min="1" step="0.01" required /></Field>
+              <Field label="المبلغ (USD) — الحد الأدنى 10$"><Input name="amount" type="number" min="10" step="0.01" required /></Field>
               <Field label="طريقة السحب">
                 <select
                   value={withdrawMethod}
