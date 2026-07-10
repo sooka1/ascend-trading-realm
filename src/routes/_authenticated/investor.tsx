@@ -471,10 +471,12 @@ function InvestorPortal() {
                         const remaining = Math.max(0, available - parsed);
                         return (
                           <div className="mt-2 grid gap-1 rounded-lg border border-gold/20 bg-gold/[0.04] p-3 text-[11px]">
-                            <div className="flex justify-between"><span className="text-muted-foreground">مبلغ الاستثمار</span><span className="font-mono text-foreground">{fmt(parsed)} {p.currency}</span></div>
-                            <div className="flex justify-between"><span className="text-muted-foreground">الربح الأسبوعي المتوقع</span><span className="font-mono text-emerald-300">+{fmt(weekly)} {p.currency}</span></div>
-                            <div className="flex justify-between"><span className="text-muted-foreground">الربح اليومي (5 أيام)</span><span className="font-mono text-emerald-300">+{fmt(daily)} {p.currency}</span></div>
-                            <div className="flex justify-between border-t border-white/5 pt-1"><span className="text-muted-foreground">المتبقي في المحفظة</span><span className="font-mono text-foreground">{fmt(remaining)} {p.currency}</span></div>
+                            <SummaryRow label="مبلغ الاستثمار" value={parsed} currency={p.currency} />
+                            <SummaryRow label="الربح الأسبوعي المتوقع" value={weekly} currency={p.currency} sign="+" tone="gain" />
+                            <SummaryRow label="الربح اليومي (5 أيام)" value={daily} currency={p.currency} sign="+" tone="gain" />
+                            <div className="border-t border-white/5 pt-1">
+                              <SummaryRow label="المتبقي في المحفظة" value={remaining} currency={p.currency} />
+                            </div>
                           </div>
                         );
                       })()}
