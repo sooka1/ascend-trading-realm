@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import type { RealtimeChannel } from "@supabase/supabase-js";
 import { MessageCircle, Send, LogIn, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -40,6 +41,10 @@ export function SupportFab() {
   const [adminPk, setAdminPk] = useState<string | null>(null);
   const [unread, setUnread] = useState(0);
   const [adminReadAt, setAdminReadAt] = useState<string | null>(null);
+  const [staffTyping, setStaffTyping] = useState(false);
+  const channelRef = useRef<RealtimeChannel | null>(null);
+  const lastTypingSentRef = useRef(0);
+  const typingClearRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const listRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -155,11 +160,30 @@ export function SupportFab() {
           setAdminReadAt(t.admin_last_read_at ?? null);
         },
       )
+      .on("broadcast", { event: "typing" }, (payload) => {
+        const p = payload.payload as { from?: string; uid?: string };
+        if (p?.from !== "staff") return;
+        setStaffTyping(true);
+        if (typingClearRef.current) clearTimeout(typingClearRef.current);
+        typingClearRef.current = setTimeout(() => setStaffTyping(false), 2500);
+      })
       .subscribe();
+    channelRef.current = channel;
     return () => {
+      channelRef.current = null;
+      if (typingClearRef.current) clearTimeout(typingClearRef.current);
       supabase.removeChannel(channel);
     };
   }, [ticketId, uid, open]);
+
+  function emitTyping() {
+    const ch = channelRef.current;
+    if (!ch || !uid) return;
+    const now = Date.now();
+    if (now - lastTypingSentRef.current < 1500) return;
+    lastTypingSentRef.current = now;
+    void ch.send({ type: "broadcast", event: "typing", payload: { from: "client", uid } });
+  }
 
   // Reset the unseen badge whenever the panel opens.
   useEffect(() => {
@@ -339,7 +363,10 @@ export function SupportFab() {
                   className="min-h-[42px] max-h-32 resize-none"
                   placeholder="اكتب رسالتك…"
                   value={draft}
-                  onChange={(e) => setDraft(e.target.value)}
+                  onChange={(e) => {
+                    setDraft(e.target.value);
+                    emitTyping();
+                  }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && !e.shiftKey) {
                       e.preventDefault();
@@ -352,6 +379,11 @@ export function SupportFab() {
                   <Send className="h-3.5 w-3.5" />
                 </Button>
               </div>
+              {staffTyping && (
+                <p className="mt-1 px-1 text-[10px] text-muted-foreground animate-pulse">
+                  دعم HK يكتب…
+                </p>
+              )}
             </div>
           </div>
         )}
