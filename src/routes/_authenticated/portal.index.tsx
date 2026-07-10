@@ -96,7 +96,7 @@ function PortalPage() {
           .filter((d) => d.status === "approved")
           .reduce((s, d) => s + Number(d.amount || 0), 0);
         const totalWithdrawn = withdrawals
-          .filter((w) => w.status === "approved" || w.status === "completed")
+          .filter((w) => w.status === "pending" || w.status === "approved" || w.status === "completed")
           .reduce((s, w) => s + Number(w.amount || 0), 0);
         const invested = subs
           .filter((s) => s.status === "active")
