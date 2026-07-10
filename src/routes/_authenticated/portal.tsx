@@ -78,9 +78,9 @@ function PortalPage() {
       {/* KPI trio */}
       <div className="grid gap-4 md:grid-cols-3">
         {[
-          { k: "إجمالي المحفظة", v: "$128,420", d: "+8.4% YTD", tone: "up" as const },
-          { k: "الرصيد المتاح", v: "$12,540", d: "OPTIMIZED", tone: "muted" as const },
-          { k: "عوائد الشهر", v: "+$2,180", d: "+2.1%", tone: "up" as const },
+          { k: "إجمالي المحفظة", v: "$0.00", d: "0.0% YTD", tone: "muted" as const },
+          { k: "الرصيد المتاح", v: "$0.00", d: "READY", tone: "muted" as const },
+          { k: "عوائد الشهر", v: "$0.00", d: "0.0%", tone: "muted" as const },
         ].map((s) => (
           <div key={s.k} className="relative overflow-hidden rounded-xl border border-white/10 bg-card/50 p-5 backdrop-blur-xl">
             <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-gold/80">{s.k}</p>

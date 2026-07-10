@@ -38,7 +38,7 @@ export function PageShell({ children, bare = false }: { children: ReactNode; bar
       <BackButton />
       <main className="flex-1">{children}</main>
       {!bare && <SiteFooter />}
-      {!bare && <SupportFab />}
+      <SupportFab />
     </div>
   );
 }
