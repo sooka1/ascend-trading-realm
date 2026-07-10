@@ -61,7 +61,7 @@ const TXID_RULES = {
 
 // Platform deposit destinations — super admin can update these values in code.
 const PLATFORM_WALLETS = {
-  binance_pay: "HK-BINANCE-PAY-ID-000000",
+  binance_pay: "194857355",
   usdt_trc20: "TXxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
   usdt_bep20: "0xHKxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 } as const;
