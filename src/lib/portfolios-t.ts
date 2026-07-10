@@ -21,7 +21,7 @@ export const PORTFOLIOS: Record<Lang, PortfoliosContent> = {
     subtitle:
       "Every portfolio is managed with the same discipline — you choose the risk profile that fits your objectives.",
     popular: "Most popular",
-    target: "Target annual return",
+    target: "Target weekly return",
     minimum: "Minimum",
     risk: "Risk profile",
     withdraw: "Min. profit withdrawal",
@@ -67,7 +67,7 @@ export const PORTFOLIOS: Record<Lang, PortfoliosContent> = {
     subtitle:
       "تُدار كل محفظة بالانضباط ذاته — تختار أنت مستوى المخاطر الذي يناسب أهدافك.",
     popular: "الأكثر شعبية",
-    target: "العائد السنوي المستهدف",
+    target: "العائد الأسبوعي المستهدف",
     minimum: "الحد الأدنى",
     risk: "ملف المخاطر",
     withdraw: "الحد الأدنى لسحب الأرباح",
