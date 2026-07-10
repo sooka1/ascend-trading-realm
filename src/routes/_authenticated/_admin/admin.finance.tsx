@@ -6,7 +6,7 @@ import { canViewSecurityAudit } from "@/lib/security-audit.functions";
 import { AdminShell, AdminCard } from "@/components/admin-shell";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { CheckCircle2, XCircle, Clock, ShieldAlert, History } from "lucide-react";
+import { CheckCircle2, XCircle, Clock, ShieldAlert, History, PlusCircle } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/_admin/admin/finance")({
   head: () => ({
@@ -34,6 +34,11 @@ function AdminFinance() {
   const [loading, setLoading] = useState(true);
   const [audit, setAudit] = useState<AuditRow[]>([]);
   const [openLog, setOpenLog] = useState<string | null>(null);
+  const [creditOpen, setCreditOpen] = useState(false);
+  const [creditEmail, setCreditEmail] = useState("");
+  const [creditAmount, setCreditAmount] = useState("");
+  const [creditNote, setCreditNote] = useState("");
+  const [creditBusy, setCreditBusy] = useState(false);
 
   async function load() {
     setLoading(true);
@@ -115,6 +120,68 @@ function AdminFinance() {
     await load();
   }
 
+  async function addManualCredit() {
+    const amount = Number(creditAmount);
+    if (!creditEmail.trim()) return toast.error("أدخل البريد الإلكتروني للمستثمر");
+    if (!Number.isFinite(amount) || amount <= 0) return toast.error("أدخل مبلغاً صحيحاً");
+    setCreditBusy(true);
+    try {
+      const { data: userRes } = await supabase.auth.getUser();
+      const adminId = userRes.user?.id;
+      if (!adminId) throw new Error("جلسة غير صالحة");
+      const { data: pr, error: prErr } = await supabase
+        .from("profiles")
+        .select("id,email,display_name")
+        .ilike("email", creditEmail.trim())
+        .maybeSingle();
+      if (prErr) throw prErr;
+      if (!pr) throw new Error("لم يتم العثور على المستثمر");
+      const nowIso = new Date().toISOString();
+      const { data: dep, error: depErr } = await supabase
+        .from("deposits")
+        .insert({
+          user_id: pr.id,
+          amount,
+          currency: "USD",
+          method: "manual_credit",
+          reference: "admin_manual",
+          notes: creditNote.trim() || "إيداع يدوي بواسطة الإدارة بعد تأكيد التحويل",
+          status: "approved",
+          reviewed_by: adminId,
+          reviewed_at: nowIso,
+        })
+        .select("id")
+        .single();
+      if (depErr) throw depErr;
+      await supabase.from("finance_audit_log").insert({
+        request_kind: "deposits",
+        request_id: dep.id,
+        target_user_id: pr.id,
+        admin_id: adminId,
+        action: "manual_credit",
+        from_status: null,
+        to_status: "approved",
+        reason: creditNote.trim() || null,
+        metadata: { amount, currency: "USD", manual: true },
+      });
+      await supabase.from("notifications").insert({
+        user_id: pr.id,
+        title: "تم إضافة رصيد إلى حسابك",
+        body: `تم إضافة ${amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD إلى رصيدك بواسطة الإدارة.`,
+      });
+      toast.success("تمت إضافة الرصيد بنجاح");
+      setCreditEmail("");
+      setCreditAmount("");
+      setCreditNote("");
+      setCreditOpen(false);
+      await load();
+    } catch (e: any) {
+      toast.error(e?.message ?? "تعذّر إضافة الرصيد");
+    } finally {
+      setCreditBusy(false);
+    }
+  }
+
   if (authorized === null || loading) {
     return (
       <AdminShell eyebrow="Financial Operations" title="طلبات مالية">
@@ -149,6 +216,47 @@ function AdminFinance() {
       subtitle="اعتمد أو ارفض الطلبات — سجل كامل بجميع الحالات."
     >
       <AdminCard title="الطلبات" icon={History}>
+        <div className="mb-4 rounded-xl border border-emerald-400/20 bg-emerald-400/[0.04] p-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <div className="text-sm font-semibold text-emerald-300">إضافة رصيد يدوي</div>
+              <p className="text-xs text-muted-foreground">بعد تأكيد استلام التحويل من المستثمر، أضف الرصيد إلى حسابه مباشرة.</p>
+            </div>
+            <Button size="sm" onClick={() => setCreditOpen((v) => !v)} className="bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30">
+              <PlusCircle className="mr-1 h-3.5 w-3.5" /> {creditOpen ? "إغلاق" : "أضف رصيد"}
+            </Button>
+          </div>
+          {creditOpen && (
+            <div className="mt-3 grid gap-2 sm:grid-cols-[1fr_140px_1fr_auto]">
+              <input
+                type="email"
+                placeholder="بريد المستثمر"
+                value={creditEmail}
+                onChange={(e) => setCreditEmail(e.target.value)}
+                className="rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm"
+              />
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="المبلغ (USD)"
+                value={creditAmount}
+                onChange={(e) => setCreditAmount(e.target.value)}
+                className="rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm"
+              />
+              <input
+                type="text"
+                placeholder="ملاحظة / مرجع التحويل"
+                value={creditNote}
+                onChange={(e) => setCreditNote(e.target.value)}
+                className="rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm"
+              />
+              <Button size="sm" disabled={creditBusy} onClick={addManualCredit} className="bg-emerald-500/30 text-emerald-200 hover:bg-emerald-500/40">
+                {creditBusy ? "جارٍ..." : "تأكيد الإضافة"}
+              </Button>
+            </div>
+          )}
+        </div>
         <div className="mb-4 flex flex-wrap items-center gap-2">
           <TabBtn active={tab === "deposits"} onClick={() => setTab("deposits")}>
             الإيداعات {counts.pendingDep > 0 && <span className="ml-1 rounded-full bg-amber-500/20 px-1.5 text-[10px] text-amber-300">{counts.pendingDep}</span>}
