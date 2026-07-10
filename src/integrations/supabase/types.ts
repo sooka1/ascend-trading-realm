@@ -406,6 +406,27 @@ export type Database = {
         }
         Relationships: []
       }
+      profile_keys: {
+        Row: {
+          created_at: string
+          secret_key: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          secret_key: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          secret_key?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -415,7 +436,6 @@ export type Database = {
           email: string | null
           id: string
           public_key: string | null
-          secret_key: string | null
           updated_at: string
         }
         Insert: {
@@ -426,7 +446,6 @@ export type Database = {
           email?: string | null
           id: string
           public_key?: string | null
-          secret_key?: string | null
           updated_at?: string
         }
         Update: {
@@ -437,7 +456,6 @@ export type Database = {
           email?: string | null
           id?: string
           public_key?: string | null
-          secret_key?: string | null
           updated_at?: string
         }
         Relationships: []
