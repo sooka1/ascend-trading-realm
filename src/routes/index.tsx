@@ -948,9 +948,9 @@ function Testimonials() {
             containScroll: "trimSnaps",
           }}
           plugins={[autoplay.current]}
-          className="mt-12 touch-pan-y [&_[data-slot=carousel-content]]:transform-gpu [&_[data-slot=carousel-content]]:will-change-transform [&_[data-slot=carousel-content]]:[backface-visibility:hidden]"
+          className="mt-12 touch-pan-y"
         >
-          <CarouselContent className="-ml-4">
+          <CarouselContent className="-ml-4 transform-gpu will-change-transform [backface-visibility:hidden]">
             {t.items.map((it) => (
               <CarouselItem
                 key={it.seed}
