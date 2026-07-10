@@ -25,6 +25,7 @@ type Pkg = { id: string; name: string; description: string | null; min_amount: n
 type Sub = { id: string; package_id: string; amount: number; currency: string; status: string; started_at: string | null; ends_at: string | null; created_at: string };
 type Dep = { id: string; amount: number; currency: string; method: string; reference: string | null; status: string; created_at: string };
 type Wd = { id: string; amount: number; currency: string; destination: string; iban: string | null; status: string; created_at: string };
+type AuditRow = { id: string; withdrawal_id: string; subscription_id: string | null; event: string; amount_before: number; amount_after: number; amount_delta: number; currency: string; metadata: Record<string, unknown> | null; created_at: string };
 const depositSchema = z.object({
   amount: z.coerce.number().positive().max(10_000_000),
   method: z.enum(["binance_pay", "usdt_trc20"]),
@@ -80,6 +81,7 @@ function InvestorPortal() {
   const [subs, setSubs] = useState<Sub[]>([]);
   const [deps, setDeps] = useState<Dep[]>([]);
   const [wds, setWds] = useState<Wd[]>([]);
+  const [audit, setAudit] = useState<AuditRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [busySub, setBusySub] = useState<string | null>(null);
   const [depositMethod, setDepositMethod] = useState<"binance_pay" | "usdt_trc20">("binance_pay");
@@ -90,16 +92,18 @@ function InvestorPortal() {
     const id = userRes.user?.id ?? null;
     setUid(id);
     if (!id) return setLoading(false);
-    const [{ data: pk }, { data: sb }, { data: dp }, { data: wd }] = await Promise.all([
+    const [{ data: pk }, { data: sb }, { data: dp }, { data: wd }, { data: al }] = await Promise.all([
       supabase.from("packages").select("*").eq("active", true).order("sort_order"),
       supabase.from("subscriptions").select("*").eq("user_id", id).order("created_at", { ascending: false }),
       supabase.from("deposits").select("*").eq("user_id", id).order("created_at", { ascending: false }),
       supabase.from("withdrawals").select("*").eq("user_id", id).order("created_at", { ascending: false }),
+      supabase.from("withdrawal_audit_log").select("*").eq("user_id", id).order("created_at", { ascending: false }),
     ]);
     setPackages((pk ?? []) as Pkg[]);
     setSubs((sb ?? []) as Sub[]);
     setDeps((dp ?? []) as Dep[]);
     setWds((wd ?? []) as Wd[]);
+    setAudit((al ?? []) as AuditRow[]);
     setLoading(false);
   }
 
@@ -599,8 +603,84 @@ function InvestorPortal() {
             })}
           />
         </div>
+
+        <div className="mt-6">
+          <WithdrawalAudit wds={wds} audit={audit} packages={packages} subs={subs} />
+        </div>
       </section>
     </PageShell>
+  );
+}
+
+function WithdrawalAudit({ wds, audit, packages, subs }: { wds: Wd[]; audit: AuditRow[]; packages: Pkg[]; subs: Sub[] }) {
+  const eventLabel = (e: string) => {
+    switch (e) {
+      case "deducted": return "خصم من الاشتراك";
+      case "cancelled": return "إيقاف الاشتراك (أقل من الحد الأدنى)";
+      case "returned_to_wallet": return "إعادة الرصيد إلى المحفظة العامة";
+      default: return e;
+    }
+  };
+  const eventColor = (e: string) => {
+    switch (e) {
+      case "deducted": return "text-amber-300";
+      case "cancelled": return "text-red-400";
+      case "returned_to_wallet": return "text-emerald-300";
+      default: return "text-muted-foreground";
+    }
+  };
+  const subPkgName = (subId: string | null) => {
+    if (!subId) return null;
+    const s = subs.find((x) => x.id === subId);
+    if (!s) return subId.slice(0, 8);
+    return packages.find((p) => p.id === s.package_id)?.name ?? s.package_id.slice(0, 8);
+  };
+
+  return (
+    <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-5">
+      <h3 className="mb-4 text-sm font-semibold text-white">سجل تدقيق السحوبات والخصومات</h3>
+      {wds.length === 0 ? (
+        <p className="text-xs text-muted-foreground">لا توجد عمليات سحب بعد.</p>
+      ) : (
+        <ul className="space-y-4">
+          {wds.map((w) => {
+            const entries = audit.filter((a) => a.withdrawal_id === w.id);
+            return (
+              <li key={w.id} className="rounded-xl border border-white/10 bg-black/20 p-4">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="text-sm text-white">
+                    طلب سحب <span className="font-semibold">{fmt(Number(w.amount))} {w.currency}</span>
+                    <span className="mx-2 text-muted-foreground">·</span>
+                    <span className="text-xs text-muted-foreground">{new Date(w.created_at).toLocaleString()}</span>
+                  </div>
+                  <span className="rounded-full border border-white/10 px-2 py-0.5 text-[11px] text-muted-foreground">{w.status}</span>
+                </div>
+                {entries.length === 0 ? (
+                  <p className="mt-3 text-xs text-muted-foreground">لا توجد سجلات تدقيق مرتبطة بهذا الطلب.</p>
+                ) : (
+                  <ul className="mt-3 space-y-2">
+                    {entries.map((a) => (
+                      <li key={a.id} className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-white/[0.03] px-3 py-2 text-xs">
+                        <div className="flex flex-col gap-0.5">
+                          <span className={`font-semibold ${eventColor(a.event)}`}>{eventLabel(a.event)}</span>
+                          {subPkgName(a.subscription_id) && (
+                            <span className="text-muted-foreground">الاشتراك: {subPkgName(a.subscription_id)}</span>
+                          )}
+                        </div>
+                        <div className="text-left text-muted-foreground">
+                          <div>المبلغ: <span className="text-white">{fmt(Number(a.amount_delta))} {a.currency}</span></div>
+                          <div className="text-[11px]">{fmt(Number(a.amount_before))} ← {fmt(Number(a.amount_after))}</div>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </div>
   );
 }
 
