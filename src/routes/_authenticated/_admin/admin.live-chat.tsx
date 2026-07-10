@@ -195,11 +195,16 @@ function AdminLiveChat() {
         },
       )
       .on("broadcast", { event: "typing" }, (payload) => {
-        const p = payload.payload as { from?: string };
+        const p = payload.payload as { from?: string; uid?: string };
+        console.debug("[typing] admin received", { ticketId: selected?.id, from: p?.from, uid: p?.uid });
         if (p?.from !== "client") return;
         setClientTyping(true);
+        console.debug("[typing] admin updated → clientTyping=true", { ticketId: selected?.id });
         if (typingClearRef.current) clearTimeout(typingClearRef.current);
-        typingClearRef.current = setTimeout(() => setClientTyping(false), 2500);
+        typingClearRef.current = setTimeout(() => {
+          setClientTyping(false);
+          console.debug("[typing] admin updated → clientTyping=false (timeout)", { ticketId: selected?.id });
+        }, 2500);
       })
       .subscribe();
     channelRef.current = ch;
@@ -212,11 +217,21 @@ function AdminLiveChat() {
 
   function emitTyping() {
     const ch = channelRef.current;
-    if (!ch || !uid) return;
+    if (!ch || !uid) {
+      console.debug("[typing] admin emit skipped (no channel/uid)", { hasChannel: !!ch, uid });
+      return;
+    }
     const now = Date.now();
-    if (now - lastTypingSentRef.current < 1500) return;
+    if (now - lastTypingSentRef.current < 1500) {
+      console.debug("[typing] admin emit throttled", { ticketId: selected?.id });
+      return;
+    }
     lastTypingSentRef.current = now;
-    void ch.send({ type: "broadcast", event: "typing", payload: { from: "staff", uid } });
+    console.debug("[typing] admin sending", { ticketId: selected?.id, uid });
+    void ch
+      .send({ type: "broadcast", event: "typing", payload: { from: "staff", uid } })
+      .then((res) => console.debug("[typing] admin send result", { ticketId: selected?.id, res }))
+      .catch((err) => console.debug("[typing] admin send error", { ticketId: selected?.id, err }));
   }
 
   useEffect(() => {

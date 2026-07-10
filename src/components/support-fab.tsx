@@ -181,10 +181,15 @@ export function SupportFab() {
       )
       .on("broadcast", { event: "typing" }, (payload) => {
         const p = payload.payload as { from?: string; uid?: string };
+        console.debug("[typing] client received", { ticketId, from: p?.from, uid: p?.uid });
         if (p?.from !== "staff") return;
         setStaffTyping(true);
+        console.debug("[typing] client updated → staffTyping=true", { ticketId });
         if (typingClearRef.current) clearTimeout(typingClearRef.current);
-        typingClearRef.current = setTimeout(() => setStaffTyping(false), 2500);
+        typingClearRef.current = setTimeout(() => {
+          setStaffTyping(false);
+          console.debug("[typing] client updated → staffTyping=false (timeout)", { ticketId });
+        }, 2500);
       })
       .subscribe();
     channelRef.current = channel;
@@ -197,11 +202,21 @@ export function SupportFab() {
 
   function emitTyping() {
     const ch = channelRef.current;
-    if (!ch || !uid) return;
+    if (!ch || !uid) {
+      console.debug("[typing] client emit skipped (no channel/uid)", { hasChannel: !!ch, uid });
+      return;
+    }
     const now = Date.now();
-    if (now - lastTypingSentRef.current < 1500) return;
+    if (now - lastTypingSentRef.current < 1500) {
+      console.debug("[typing] client emit throttled", { ticketId });
+      return;
+    }
     lastTypingSentRef.current = now;
-    void ch.send({ type: "broadcast", event: "typing", payload: { from: "client", uid } });
+    console.debug("[typing] client sending", { ticketId, uid });
+    void ch
+      .send({ type: "broadcast", event: "typing", payload: { from: "client", uid } })
+      .then((res) => console.debug("[typing] client send result", { ticketId, res }))
+      .catch((err) => console.debug("[typing] client send error", { ticketId, err }));
   }
 
   // Reset the unseen badge whenever the panel opens.
