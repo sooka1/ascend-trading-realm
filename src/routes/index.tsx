@@ -354,25 +354,15 @@ function TrustStrip({ c }: { c: LandingContent }) {
 }
 
 function CustodyBanks() {
-  const { lang } = useI18n();
-  const heading =
-    lang === "ar"
-      ? "أموالك محفوظة لدى مؤسسات من الدرجة الأولى"
-      : "Your funds are held with tier-one institutions";
   return (
     <section className="border-b border-white/5 bg-white/[0.02]">
-      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <h2 className="text-center font-display text-2xl font-semibold md:text-3xl">
-          {heading}
-        </h2>
-        <div className="mt-10 rounded-2xl border border-white/10 bg-white px-6 py-8 shadow-sm">
-          <img
-            src={custodyBanksImg.url}
-            alt="J.P. Morgan, UBS, Citi, J. Safra Sarasin, Deutsche Bank, Coutts, Pictet"
-            className="mx-auto h-auto w-full max-w-4xl"
-            loading="lazy"
-          />
-        </div>
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <img
+          src={custodyBanksImg.url}
+          alt="أموالك محفوظة لدى مؤسسات من الدرجة الأولى — J.P. Morgan, UBS, Citi, J. Safra Sarasin, Deutsche Bank, Coutts, Pictet"
+          className="mx-auto h-auto w-full max-w-4xl"
+          loading="lazy"
+        />
       </div>
     </section>
   );
