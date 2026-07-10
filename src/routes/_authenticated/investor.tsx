@@ -25,6 +25,7 @@ type Pkg = { id: string; name: string; description: string | null; min_amount: n
 type Sub = { id: string; package_id: string; amount: number; currency: string; status: string; started_at: string | null; ends_at: string | null; created_at: string };
 type Dep = { id: string; amount: number; currency: string; method: string; reference: string | null; status: string; created_at: string };
 type Wd = { id: string; amount: number; currency: string; destination: string; iban: string | null; status: string; created_at: string };
+type AuditRow = { id: string; withdrawal_id: string; subscription_id: string | null; event: string; amount_before: number; amount_after: number; amount_delta: number; currency: string; metadata: Record<string, unknown> | null; created_at: string };
 const depositSchema = z.object({
   amount: z.coerce.number().positive().max(10_000_000),
   method: z.enum(["binance_pay", "usdt_trc20"]),
@@ -80,6 +81,7 @@ function InvestorPortal() {
   const [subs, setSubs] = useState<Sub[]>([]);
   const [deps, setDeps] = useState<Dep[]>([]);
   const [wds, setWds] = useState<Wd[]>([]);
+  const [audit, setAudit] = useState<AuditRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [busySub, setBusySub] = useState<string | null>(null);
   const [depositMethod, setDepositMethod] = useState<"binance_pay" | "usdt_trc20">("binance_pay");
@@ -90,16 +92,18 @@ function InvestorPortal() {
     const id = userRes.user?.id ?? null;
     setUid(id);
     if (!id) return setLoading(false);
-    const [{ data: pk }, { data: sb }, { data: dp }, { data: wd }] = await Promise.all([
+    const [{ data: pk }, { data: sb }, { data: dp }, { data: wd }, { data: al }] = await Promise.all([
       supabase.from("packages").select("*").eq("active", true).order("sort_order"),
       supabase.from("subscriptions").select("*").eq("user_id", id).order("created_at", { ascending: false }),
       supabase.from("deposits").select("*").eq("user_id", id).order("created_at", { ascending: false }),
       supabase.from("withdrawals").select("*").eq("user_id", id).order("created_at", { ascending: false }),
+      supabase.from("withdrawal_audit_log").select("*").eq("user_id", id).order("created_at", { ascending: false }),
     ]);
     setPackages((pk ?? []) as Pkg[]);
     setSubs((sb ?? []) as Sub[]);
     setDeps((dp ?? []) as Dep[]);
     setWds((wd ?? []) as Wd[]);
+    setAudit((al ?? []) as AuditRow[]);
     setLoading(false);
   }
 
