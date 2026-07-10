@@ -30,7 +30,8 @@ function PortalPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [draft, setDraft] = useState("");
   const [uid, setUid] = useState<string | null>(null);
-  const { available, loading: balanceLoading } = useAvailableBalance();
+  const { available, balance, committed, loading: balanceLoading } = useAvailableBalance();
+  const totalPortfolio = balance + committed;
   const [profitsTotal, setProfitsTotal] = useState(0);
 
   useEffect(() => {
@@ -94,7 +95,7 @@ function PortalPage() {
       {/* KPI trio */}
       <div className="grid gap-4 md:grid-cols-3">
         {[
-          { k: "إجمالي المحفظة", v: "$0.00", d: "0.0% YTD", tone: "muted" as "up" | "muted" },
+          { k: "إجمالي المحفظة", v: balanceLoading ? "…" : `$${totalPortfolio.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, d: "Total Capital", tone: (totalPortfolio > 0 ? "up" : "muted") as "up" | "muted" },
           { k: "الرصيد المتاح", v: balanceLoading ? "…" : `$${available.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, d: "READY", tone: "muted" as "up" | "muted" },
           { k: "عوائد الاستثمار", v: `$${profitsTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, d: "Cumulative", tone: (profitsTotal > 0 ? "up" : "muted") as "up" | "muted" },
         ].map((s) => (
