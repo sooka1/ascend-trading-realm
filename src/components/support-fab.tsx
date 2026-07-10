@@ -13,6 +13,7 @@ import {
 } from "@/lib/e2ee";
 import { EncryptedBody } from "@/components/encrypted-body";
 import { notifyIncomingMessage } from "@/lib/chat-notify";
+import { MessageStatus } from "@/components/message-status";
 
 type ChatMsg = {
   id: string;
@@ -290,6 +291,7 @@ export function SupportFab() {
                         <p className="mt-1 text-[9px] opacity-60">
                           {new Date(m.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                         </p>
+                        <MessageStatus mine={mine} delivered={!!m.body_admin} />
                       </div>
                     </div>
                   );
