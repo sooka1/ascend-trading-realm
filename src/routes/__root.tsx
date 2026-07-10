@@ -196,6 +196,7 @@ function RootComponent() {
         <Outlet />
         <PublicPackagesAside />
         <Toaster theme="dark" position="top-right" richColors />
+        <ImpersonationBannerMount />
       </I18nProvider>
     </QueryClientProvider>
   );
