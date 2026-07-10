@@ -264,7 +264,7 @@ function Hero({ c }: { c: LandingContent }) {
           <div className="pointer-events-none absolute -inset-4 -z-10 rounded-2xl bg-[radial-gradient(ellipse_at_top,rgba(30,107,255,0.22),transparent_65%)] blur-3xl" aria-hidden />
 
           {/* Desktop monitor / display showing the same hero video */}
-          <div className="relative mx-auto w-full max-w-[560px] -mt-20 lg:-mt-48 xl:-mt-64">
+          <div className="relative mx-auto w-full max-w-[560px] -mt-40 lg:-mt-80 xl:-mt-96">
             {/* Monitor frame */}
             <div
               className="relative aspect-[16/10] w-full rounded-xl border border-neutral-700 p-2 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7),0_0_0_1px_rgba(255,255,255,0.06)_inset]"
