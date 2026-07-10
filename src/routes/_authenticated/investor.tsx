@@ -220,6 +220,13 @@ function InvestorPortal() {
     const fd = new FormData(e.currentTarget);
     const parsed = depositSchema.safeParse(Object.fromEntries(fd));
     if (!parsed.success) return toast.error(parsed.error.issues[0].message);
+    // Network-specific validation for crypto / Binance Pay deposits
+    if (parsed.data.method in TXID_RULES) {
+      const rule = TXID_RULES[parsed.data.method as keyof typeof TXID_RULES];
+      const ref = parsed.data.reference ?? "";
+      if (!ref) return toast.error("يرجى إدخال TxID / مرجع المعاملة");
+      if (!rule.regex.test(ref)) return toast.error(rule.label);
+    }
     const { error } = await supabase.from("deposits").insert({ user_id: uid, ...parsed.data });
     if (error) return toast.error(error.message);
     toast.success("تم إرسال طلب الإيداع بنجاح");
@@ -234,6 +241,11 @@ function InvestorPortal() {
     const parsed = withdrawSchema.safeParse(Object.fromEntries(fd));
     if (!parsed.success) return toast.error(parsed.error.issues[0].message);
     if (parsed.data.amount > balance) return toast.error("المبلغ يتجاوز الرصيد المتاح");
+    // Network-specific destination validation
+    if (withdrawMethod !== "bank") {
+      const rule = ADDRESS_RULES[withdrawMethod];
+      if (!rule.regex.test(parsed.data.destination)) return toast.error(rule.label);
+    }
     // Require MFA for withdrawals
     const { data: fx } = await supabase.auth.mfa.listFactors();
     const totp = (fx?.totp ?? []).find((f) => f.status === "verified");
