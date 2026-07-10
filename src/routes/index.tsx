@@ -1073,20 +1073,6 @@ function CertCard({
 
         <DialogFooter className="flex-col gap-2 sm:flex-row sm:justify-end">
           <Button
-            variant="outline"
-            className="border-white/15"
-            onClick={() =>
-              downloadCertStub({
-                name: cert.name,
-                body: cert.body,
-                id: meta.verifyId,
-                updated: meta.updated,
-              })
-            }
-          >
-            <Download className="me-2 h-4 w-4" /> {labels.download}
-          </Button>
-          <Button
             asChild
             className="bg-[var(--gradient-gold)] font-semibold text-background hover:opacity-95"
           >
