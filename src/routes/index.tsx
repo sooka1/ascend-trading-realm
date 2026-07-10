@@ -53,6 +53,7 @@ import {
 import { useI18n } from "@/lib/i18n";
 import { LANDING, type LandingContent } from "@/lib/landing-t";
 import heroVideo from "@/assets/hero-bg.mp4.asset.json";
+import heroPoster from "@/assets/hero-bg.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
