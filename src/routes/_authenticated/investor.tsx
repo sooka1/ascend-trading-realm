@@ -86,6 +86,7 @@ function InvestorPortal() {
   const [busySub, setBusySub] = useState<string | null>(null);
   const [depositMethod, setDepositMethod] = useState<"binance_pay" | "usdt_trc20">("binance_pay");
   const [withdrawMethod, setWithdrawMethod] = useState<"binance_pay" | "usdt_trc20">("binance_pay");
+  const [pkgAmounts, setPkgAmounts] = useState<Record<string, string>>({});
 
   async function load() {
     const { data: userRes } = await supabase.auth.getUser();
@@ -124,7 +125,7 @@ function InvestorPortal() {
   const committed = activeSubs.reduce((s, x) => s + Number(x.amount), 0);
   const available = Math.max(0, balance - committed);
 
-  async function subscribeToPackage(pkg: Pkg) {
+  async function subscribeToPackage(pkg: Pkg, requestedAmount: number) {
     if (!uid) return;
     if (busySub) return;
     // Prevent duplicate active/pending subscription in the same package
@@ -136,12 +137,7 @@ function InvestorPortal() {
       toast.error(`الرصيد المتاح غير كافٍ. الحد الأدنى ${fmt(Number(pkg.min_amount))} ${pkg.currency}`);
       return;
     }
-    const raw = window.prompt(
-      `أدخل المبلغ للاشتراك في باقة ${pkg.name} (الحد الأدنى ${fmt(Number(pkg.min_amount))} ${pkg.currency}، المتاح ${fmt(available)} ${pkg.currency})`,
-      String(pkg.min_amount),
-    );
-    if (!raw) return;
-    const amount = Number(raw);
+    const amount = requestedAmount;
     if (!Number.isFinite(amount) || amount < Number(pkg.min_amount)) {
       toast.error("المبلغ أقل من الحد الأدنى للباقة");
       return;
