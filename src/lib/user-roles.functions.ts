@@ -106,3 +106,33 @@ export const updateUserRoles = createServerFn({ method: "POST" })
   });
 
 export const ROLE_OPTIONS = ALL_ROLES;
+
+export const setUserPassword = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { email: string; password: string }) => {
+    const email = String(data.email ?? "").trim().toLowerCase();
+    const password = String(data.password ?? "");
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      throw new Error("بريد إلكتروني غير صالح");
+    }
+    if (password.length < 8) {
+      throw new Error("كلمة المرور يجب أن تكون 8 أحرف على الأقل");
+    }
+    return { email, password };
+  })
+  .handler(async ({ data, context }) => {
+    await assertSuper(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: list, error: listErr } = await supabaseAdmin.auth.admin.listUsers({
+      page: 1,
+      perPage: 200,
+    });
+    if (listErr) throw new Error(listErr.message);
+    const user = list.users.find((u) => (u.email ?? "").toLowerCase() === data.email);
+    if (!user) throw new Error("لم يتم العثور على مستخدم بهذا البريد");
+    const { error } = await supabaseAdmin.auth.admin.updateUserById(user.id, {
+      password: data.password,
+    });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
