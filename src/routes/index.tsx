@@ -20,7 +20,6 @@ import {
   Quote,
   Star,
   ScrollText,
-  Download,
   ExternalLink,
   CalendarCheck,
   Trophy,
