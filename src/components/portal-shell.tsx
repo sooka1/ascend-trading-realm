@@ -1,5 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { PageShell } from "@/components/page-shell";
+import { useRouter } from "@tanstack/react-router";
 import {
   LayoutDashboard,
   Wallet,
@@ -18,6 +19,7 @@ import {
   Zap,
   Star,
   Newspaper,
+  ArrowRight,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
@@ -64,6 +66,8 @@ export function PortalShell({
   children: ReactNode;
 }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const router = useRouter();
+  const showBack = pathname !== "/portal";
 
   const groups = Array.from(new Set(NAV.map((n) => n.group ?? "misc")));
 
@@ -142,6 +146,16 @@ export function PortalShell({
 
             <header className="mb-6 flex flex-wrap items-end justify-between gap-4 border-b border-white/5 pb-6">
               <div>
+                {showBack && (
+                  <button
+                    type="button"
+                    onClick={() => router.history.back()}
+                    className="mb-3 inline-flex items-center gap-1.5 rounded-md border border-white/10 bg-white/[0.03] px-2.5 py-1 text-xs text-muted-foreground transition hover:border-gold/40 hover:text-foreground"
+                  >
+                    <ArrowRight className="h-3.5 w-3.5" />
+                    رجوع
+                  </button>
+                )}
                 <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-gold/80">{eyebrow}</p>
                 <h1 className="mt-2 font-display text-3xl font-semibold md:text-4xl">{title}</h1>
                 {subtitle && <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{subtitle}</p>}
