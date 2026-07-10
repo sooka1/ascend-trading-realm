@@ -615,7 +615,10 @@ function InvestorPortal() {
               setBusySub(`cancel:${w.id}`);
               const { error } = await supabase.from("withdrawals").delete().eq("id", w.id);
               setBusySub(null);
-              if (error) return toast.error(error.message);
+              if (error) {
+                toast.error(error.message);
+                return;
+              }
               toast.success("تم إلغاء طلب السحب");
               await load();
               void router.invalidate();
