@@ -2,6 +2,7 @@ import { useRouter, useRouterState } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { decideBackAction } from "@/lib/back-button-logic";
+import { consumeTopBackHandler } from "@/lib/back-stack";
 
 // Floating "back" button rendered globally from the root layout so it
 // appears on every page (existing, new, and future) except the home page.
@@ -31,6 +32,10 @@ export function GlobalBackButton() {
     busyRef.current = true;
     // Release after a short lockout regardless of outcome.
     window.setTimeout(() => (busyRef.current = false), 400);
+
+    // If any overlay (modal/sheet/drawer/popover) is open, close it first
+    // instead of navigating between pages.
+    if (consumeTopBackHandler()) return;
 
     const action = decideBackAction({
       pathname,
