@@ -59,6 +59,11 @@ export function SupportFab() {
     value: boolean;
   } | null>(null);
   const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [uploadStatus, setUploadStatus] = useState<"idle" | "uploading" | "done" | "error">(
+    "idle",
+  );
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const channelRef = useRef<RealtimeChannel | null>(null);
   const lastTypingSentRef = useRef(0);
@@ -268,7 +273,19 @@ export function SupportFab() {
       }
       let attachment: Awaited<ReturnType<typeof uploadChatAttachment>> | null = null;
       if (pendingFile) {
-        attachment = await uploadChatAttachment(ticketId, pendingFile);
+        setUploadStatus("uploading");
+        setUploadProgress(0);
+        setUploadError(null);
+        try {
+          attachment = await uploadChatAttachment(ticketId, pendingFile, (f) =>
+            setUploadProgress(f),
+          );
+          setUploadStatus("done");
+        } catch (e) {
+          setUploadStatus("error");
+          setUploadError(e instanceof Error ? e.message : "فشل الرفع");
+          throw e;
+        }
       }
       const bodyForMe = body ? encryptFor(myPk, body) : null;
       const bodyForAdmin = body && apk ? encryptFor(apk, body) : null;
@@ -290,6 +307,9 @@ export function SupportFab() {
         .eq("id", ticketId);
       setDraft("");
       setPendingFile(null);
+      setUploadStatus("idle");
+      setUploadProgress(0);
+      setUploadError(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "تعذّر إرسال الرسالة");
@@ -438,8 +458,14 @@ export function SupportFab() {
                   file={pendingFile}
                   onRemove={() => {
                     setPendingFile(null);
+                    setUploadStatus("idle");
+                    setUploadProgress(0);
+                    setUploadError(null);
                     if (fileInputRef.current) fileInputRef.current.value = "";
                   }}
+                  status={uploadStatus}
+                  progress={uploadProgress}
+                  error={uploadError}
                 />
               )}
               <div className="flex items-end gap-2">
