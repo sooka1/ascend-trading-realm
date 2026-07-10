@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { ArrowDownToLine, ArrowRight, ArrowUpFromLine, CheckCircle2, Clock, Copy, Package as PackageIcon, ShieldCheck, Wallet, XCircle } from "lucide-react";
+import { ArrowDownToLine, ArrowRight, ArrowUpFromLine, CheckCircle2, Clock, Copy, Loader2, Package as PackageIcon, ShieldCheck, Wallet, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import trc20QrAsset from "@/assets/trc20-qr.png.asset.json";
@@ -621,7 +621,9 @@ function InvestorPortal() {
                                 onClick={() => updateSubscriptionAmount(s, parsedEdit)}
                                 className="h-9 bg-red-600 text-white hover:bg-red-700"
                               >
-                                {busySub === `edit:${s.id}` ? "..." : "حفظ"}
+                                {busySub === `edit:${s.id}` ? (
+                                  <><Loader2 className="me-1 h-4 w-4 animate-spin" />جارٍ الحفظ…</>
+                                ) : "حفظ"}
                               </Button>
                               <Button
                                 size="sm"
