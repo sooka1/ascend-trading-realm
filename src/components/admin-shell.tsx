@@ -182,6 +182,7 @@ export function AdminShell({
                 <>
                   <n.icon className={`h-4 w-4 shrink-0 ${active ? "text-gold" : "text-muted-foreground"}`} />
                   <span className="truncate">{n.label}</span>
+                  {active && <span className="sr-only"> (الصفحة الحالية)</span>}
                   {active && <span className="ms-auto h-2 w-2 rounded-full bg-gold shadow-[0_0_8px_theme(colors.amber.400)]" aria-hidden />}
                 </>
               );
