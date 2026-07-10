@@ -59,8 +59,14 @@ function ProfilePage() {
         setIdBackUrl((data.id_back_url as string) ?? null);
         setSelfieUrl((data.selfie_url as string) ?? null);
         setVerificationNotes((data.verification_notes as string) ?? null);
-        if (data.language) setLanguage(data.language as string);
-        if (data.timezone) setTz(data.timezone as string);
+        if (data.language) {
+          setLanguage(data.language as string);
+          setUserLocale(data.language as string);
+        }
+        if (data.timezone) {
+          setTz(data.timezone as string);
+          setUserTimezone(data.timezone as string);
+        }
       }
     })();
   }, []);
