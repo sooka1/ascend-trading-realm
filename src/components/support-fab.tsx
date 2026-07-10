@@ -20,7 +20,7 @@ import {
 } from "@/lib/chat-notify";
 import { MessageStatus } from "@/components/message-status";
 import { ChatAttachment } from "@/components/chat-attachment";
-import { uploadChatAttachment, formatBytes } from "@/lib/chat-attachments";
+import { uploadChatAttachment } from "@/lib/chat-attachments";
 import { ChatAttachmentPreview } from "@/components/chat-attachment-preview";
 
 type ChatMsg = {
