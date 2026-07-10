@@ -116,9 +116,9 @@ export function PortalShell({
                     to={n.to}
                     onClick={onNavigate}
                     aria-current={active ? "page" : undefined}
-                    className={`group relative flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
+                    className={`nav-item group relative flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
                       active
-                        ? "border border-gold/40 bg-gold/[0.12] text-foreground shadow-[inset_2px_0_0_theme(colors.amber.400)] font-medium"
+                        ? "nav-item-active border border-gold/40 bg-gold/[0.12] text-foreground shadow-[inset_2px_0_0_theme(colors.amber.400)] font-medium"
                         : "text-muted-foreground hover:bg-white/[0.03] hover:text-foreground"
                     }`}
                   >
