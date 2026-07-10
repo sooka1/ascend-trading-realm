@@ -20,7 +20,6 @@ import {
   Search,
   Zap,
   MessageCircle,
-  ArrowRight,
   LogOut,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
