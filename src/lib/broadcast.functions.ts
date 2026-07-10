@@ -55,6 +55,31 @@ export const broadcastNotification = createServerFn({ method: "POST" })
         .from("notification_broadcasts")
         .update({ status: "sent", recipients_count: sent })
         .eq("id", logId);
+
+      // Fire browser/phone push notifications to all registered devices.
+      try {
+        const { data: subs } = await supabaseAdmin
+          .from("push_subscriptions")
+          .select("id, endpoint, p256dh, auth");
+        if (subs && subs.length > 0) {
+          const { sendPushToRows } = await import("@/lib/push.server");
+          const res = await sendPushToRows(subs as any, {
+            title: data.title,
+            body: data.body || undefined,
+            url: "/portal/notifications",
+            tag: `broadcast-${logId}`,
+          });
+          if (res.staleIds.length > 0) {
+            await supabaseAdmin
+              .from("push_subscriptions")
+              .delete()
+              .in("id", res.staleIds);
+          }
+        }
+      } catch {
+        // Push failures should not roll back the DB notifications.
+      }
+
       return { sent };
     } catch (e: any) {
       await supabaseAdmin
