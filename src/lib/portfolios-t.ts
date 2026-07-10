@@ -51,7 +51,7 @@ export const PORTFOLIOS: Record<Lang, PortfoliosContent> = {
       },
       {
         name: "Growth",
-        risk: "Higher",
+        risk: "Low",
         features: [
           "Higher exposure to growth assets",
           "Tactical single-name equities",
@@ -97,7 +97,7 @@ export const PORTFOLIOS: Record<Lang, PortfoliosContent> = {
       },
       {
         name: "النمو",
-        risk: "أعلى",
+        risk: "منخفض",
         features: [
           "تعرّض أكبر لأصول النمو",
           "أسهم فردية تكتيكية",
@@ -143,7 +143,7 @@ export const PORTFOLIOS: Record<Lang, PortfoliosContent> = {
       },
       {
         name: "Croissance",
-        risk: "Élevé",
+        risk: "Faible",
         features: [
           "Exposition accrue aux actifs de croissance",
           "Actions individuelles tactiques",
@@ -189,7 +189,7 @@ export const PORTFOLIOS: Record<Lang, PortfoliosContent> = {
       },
       {
         name: "Crecimiento",
-        risk: "Alto",
+        risk: "Bajo",
         features: [
           "Mayor exposición a activos de crecimiento",
           "Acciones individuales tácticas",
@@ -235,7 +235,7 @@ export const PORTFOLIOS: Record<Lang, PortfoliosContent> = {
       },
       {
         name: "Büyüme",
-        risk: "Yüksek",
+        risk: "Düşük",
         features: [
           "Büyüme varlıklarına daha yüksek maruz kalma",
           "Taktiksel tekil hisse senetleri",
