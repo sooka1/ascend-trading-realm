@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageShell, PageHero } from "@/components/page-shell";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, Quote, Star } from "lucide-react";
+import { BadgeCheck, CheckCircle2, Quote, Star } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { PORTFOLIOS } from "@/lib/portfolios-t";
 import type { Lang } from "@/lib/i18n";
@@ -23,7 +23,7 @@ const MINS = ["$100", "$500", "$1,000"];
 const WITHDRAW = "$10";
 const HIGHLIGHT = [false, true, false];
 
-type Review = { name: string; role: string; tier: string; rating: number; quote: string };
+type Review = { name: string; role: string; tier: string; rating: number; quote: string; verified?: boolean };
 type ReviewsContent = { eyebrow: string; title: string; subtitle: string; items: Review[] };
 
 const REVIEWS: Record<Lang, ReviewsContent> = {
@@ -38,11 +38,11 @@ const REVIEWS: Record<Lang, ReviewsContent> = {
       { name: "ليلى القحطاني", role: "مديرة مالية — جدة", tier: "المتوازنة", rating: 4.5, quote: "التنويع بين الأصول واضح والتواصل مع المستشار احترافي جدًا." },
       { name: "يوسف البلوشي", role: "مهندس أول — مسقط", tier: "المحافظة", rating: 5, quote: "خيار مثالي لمن يبحث عن استثمار مستقر بعيدًا عن تقلبات السوق." },
       { name: "منى الشمري", role: "مستثمرة — الدوحة", tier: "النمو", rating: 4.5, quote: "التحديثات الأسبوعية عن الأداء ممتازة، وسحب الأرباح سهل وسريع." },
-      { name: "James Whitfield", role: "رجل أعمال — لندن", tier: "المتوازنة", rating: 5, quote: "أداء ثابت وتقارير شهرية شفافة. تجربة احترافية بكل المقاييس." },
-      { name: "Sofia Lindqvist", role: "مستثمرة خاصة — ستوكهولم", tier: "المحافظة", rating: 5, quote: "الحفاظ على رأس المال كان أولويتي، والنتائج فاقت توقعاتي." },
-      { name: "Michael Chen", role: "تنفيذي — سنغافورة", tier: "النمو", rating: 5, quote: "إدارة مخاطر منضبطة وأداء قوي يناسب استثماري طويل الأجل." },
-      { name: "Amelia Rossi", role: "مديرة مالية — ميلانو", tier: "المتوازنة", rating: 4.5, quote: "تنويع واضح بين الأصول وتواصل احترافي مع المستشار." },
-      { name: "Hugo Lefevre", role: "مهندس — مونتريال", tier: "المحافظة", rating: 5, quote: "خيار ممتاز للاستثمار المستقر بعيدًا عن ضجيج الأسواق." },
+      { name: "James Whitfield", role: "رجل أعمال — لندن", tier: "المتوازنة", rating: 5, quote: "أداء ثابت وتقارير شهرية شفافة. تجربة احترافية بكل المقاييس.", verified: true },
+      { name: "Sofia Lindqvist", role: "مستثمرة خاصة — ستوكهولم", tier: "المحافظة", rating: 5, quote: "الحفاظ على رأس المال كان أولويتي، والنتائج فاقت توقعاتي.", verified: true },
+      { name: "Michael Chen", role: "تنفيذي — سنغافورة", tier: "النمو", rating: 5, quote: "إدارة مخاطر منضبطة وأداء قوي يناسب استثماري طويل الأجل.", verified: true },
+      { name: "Amelia Rossi", role: "مديرة مالية — ميلانو", tier: "المتوازنة", rating: 4.5, quote: "تنويع واضح بين الأصول وتواصل احترافي مع المستشار.", verified: true },
+      { name: "Hugo Lefevre", role: "مهندس — مونتريال", tier: "المحافظة", rating: 5, quote: "خيار ممتاز للاستثمار المستقر بعيدًا عن ضجيج الأسواق.", verified: true },
     ],
   },
   en: {
@@ -198,8 +198,22 @@ function ReviewsSection() {
                   className="h-11 w-11 shrink-0 rounded-full border border-gold/30 bg-white/5"
                 />
                 <div className="min-w-0">
-                  <p className="truncate font-display text-base font-semibold text-foreground">{it.name}</p>
+                  <p className="flex items-center gap-1.5 truncate font-display text-base font-semibold text-foreground">
+                    <span className="truncate">{it.name}</span>
+                    {it.verified && (
+                      <BadgeCheck
+                        className="h-4 w-4 shrink-0 text-gold"
+                        aria-label="عميل مُوثّق"
+                      />
+                    )}
+                  </p>
                   <p className="truncate text-xs text-muted-foreground">{it.role}</p>
+                  {it.verified && (
+                    <span className="mt-1 inline-flex items-center gap-1 rounded-full border border-gold/30 bg-gold/10 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.16em] text-gold">
+                      <BadgeCheck className="h-3 w-3" />
+                      عميل مُوثّق
+                    </span>
+                  )}
                 </div>
                 <Quote className="ms-auto h-5 w-5 shrink-0 text-gold/60" />
               </div>
