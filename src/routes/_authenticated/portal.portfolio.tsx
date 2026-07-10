@@ -39,6 +39,7 @@ type Withdrawal = {
   destination: string;
   status: string;
   created_at: string;
+  updated_at: string | null;
 };
 
 const fmt = (n: number) => new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 }).format(n);
@@ -53,7 +54,11 @@ function PortfolioPage() {
       const [{ data: s }, { data: p }, { data: w }] = await Promise.all([
         supabase.from("portfolio_snapshots").select("*").order("as_of_date", { ascending: false }).limit(90),
         supabase.from("subscriptions").select("*, packages(name,risk_level,target_return_pct)").order("started_at", { ascending: false }),
-        supabase.from("withdrawals").select("id,amount,currency,destination,status,created_at").order("created_at", { ascending: false }).limit(10),
+        supabase
+          .from("withdrawals")
+          .select("id,amount,currency,destination,status,created_at,updated_at")
+          .order("created_at", { ascending: false })
+          .limit(10),
       ]);
       setSnaps((s ?? []) as Snapshot[]);
       setSubs((p ?? []) as unknown as Subscription[]);
@@ -74,6 +79,7 @@ function PortfolioPage() {
   }, [latest]);
 
   const totalInvested = subs.filter((s) => s.status === "active").reduce((a, b) => a + Number(b.amount || 0), 0);
+  const cancelledCount = subs.filter((s) => s.status === "cancelled").length;
 
   return (
     <PortalShell eyebrow="نظرة عامة" title="المحفظة" subtitle="توزيع أصولك، اللقطات الحديثة، والأداء التاريخي.">
@@ -196,17 +202,38 @@ function PortfolioPage() {
           ) : (
             <ul className="space-y-2.5">
               {wds.map((w) => (
-                <li key={w.id} className="flex items-center justify-between gap-3 rounded-md border border-white/10 bg-white/[0.02] p-3">
-                  <div className="min-w-0">
-                    <p className="truncate font-mono text-sm tabular-nums">{fmt(Number(w.amount))} {w.currency}</p>
-                    <p className="truncate font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                      {w.destination} · {new Date(w.created_at).toLocaleDateString()}
-                    </p>
+                <li key={w.id} className="rounded-md border border-white/10 bg-white/[0.02] p-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="truncate font-mono text-sm tabular-nums">
+                        {fmt(Number(w.amount))} {w.currency}
+                      </p>
+                      <p className="truncate font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                        {w.destination}
+                      </p>
+                    </div>
+                    <StatusBadge status={w.status} />
                   </div>
-                  <StatusBadge status={w.status} />
+                  <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[10px] text-muted-foreground">
+                    <span>أُنشئ: {new Date(w.created_at).toLocaleString()}</span>
+                    {w.updated_at && w.updated_at !== w.created_at && (
+                      <span>آخر تحديث: {new Date(w.updated_at).toLocaleString()}</span>
+                    )}
+                    {(w.status === "approved" || w.status === "completed") && (
+                      <span className="text-emerald-300/90">تم الخصم من رأس المال</span>
+                    )}
+                    {w.status === "pending" && (
+                      <span className="text-amber-300/90">قيد المعالجة — حجز مؤقت من رأس المال</span>
+                    )}
+                  </div>
                 </li>
               ))}
             </ul>
+          )}
+          {cancelledCount > 0 && (
+            <p className="mt-3 rounded-md border border-amber-400/30 bg-amber-400/10 p-2 font-mono text-[10px] text-amber-200">
+              تم إلغاء {cancelledCount} اشتراك تلقائيًا لانخفاض رأس المال تحت الحد الأدنى للباقة — أُعيد الفائض إلى المحفظة العامة.
+            </p>
           )}
         </PortalCard>
       </div>
@@ -224,17 +251,18 @@ function PortfolioPage() {
 const BAR_COLORS = ["#d4af37", "#8b6f2a", "#e8c866", "#5b4a1c", "#b8912e", "#f0d97a"];
 
 function StatusBadge({ status }: { status: string }) {
-  const map: Record<string, string> = {
-    pending: "border-amber-400/40 text-amber-300 bg-amber-400/10",
-    approved: "border-emerald-400/40 text-emerald-300 bg-emerald-400/10",
-    completed: "border-emerald-400/40 text-emerald-300 bg-emerald-400/10",
-    rejected: "border-red-400/40 text-red-300 bg-red-400/10",
-    canceled: "border-white/15 text-muted-foreground bg-white/[0.03]",
+  const map: Record<string, { cls: string; label: string }> = {
+    pending: { cls: "border-amber-400/40 text-amber-300 bg-amber-400/10", label: "قيد المعالجة" },
+    approved: { cls: "border-emerald-400/40 text-emerald-300 bg-emerald-400/10", label: "تم الخصم" },
+    completed: { cls: "border-emerald-400/40 text-emerald-300 bg-emerald-400/10", label: "مكتمل" },
+    rejected: { cls: "border-red-400/40 text-red-300 bg-red-400/10", label: "مرفوض" },
+    cancelled: { cls: "border-white/15 text-muted-foreground bg-white/[0.03]", label: "ملغى" },
+    canceled: { cls: "border-white/15 text-muted-foreground bg-white/[0.03]", label: "ملغى" },
   };
-  const cls = map[status] ?? "border-white/15 text-muted-foreground bg-white/[0.03]";
+  const info = map[status] ?? { cls: "border-white/15 text-muted-foreground bg-white/[0.03]", label: status };
   return (
-    <span className={`shrink-0 rounded-full border px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider ${cls}`}>
-      {status}
+    <span className={`shrink-0 rounded-full border px-2 py-0.5 font-mono text-[10px] tracking-wider ${info.cls}`}>
+      {info.label}
     </span>
   );
 }
