@@ -38,7 +38,7 @@ type NavItem = { to: string; icon: LucideIcon; label: string; group?: string };
 const NAV: NavItem[] = [
   { to: "/portal", icon: LayoutDashboard, label: "لوحة القيادة", group: "overview" },
   { to: "/portal/portfolio", icon: Wallet, label: "المحفظة", group: "overview" },
-  { to: "/portal/accounts", icon: Landmark, label: "الحسابات الاستثمارية", group: "overview" },
+  { to: "/portal/accounts", icon: Landmark, label: "الاشتراكات", group: "overview" },
   { to: "/portal/statements", icon: FileText, label: "الكشوف", group: "reports" },
   { to: "/investor", icon: PackageIcon, label: "الباقات والعروض", group: "reports" },
   { to: "/portal/transactions", icon: Receipt, label: "سجل العمليات", group: "reports" },
