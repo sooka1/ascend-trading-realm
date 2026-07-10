@@ -1,4 +1,4 @@
-import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageShell } from "@/components/page-shell";
@@ -21,7 +21,6 @@ export const Route = createFileRoute("/_authenticated/portal/mfa")({
 type Factor = { id: string; friendly_name: string | null; status: string; factor_type: string };
 
 function MfaPage() {
-  const router = useRouter();
   const [factors, setFactors] = useState<Factor[]>([]);
   const [loading, setLoading] = useState(true);
   const [enroll, setEnroll] = useState<{ factorId: string; qr: string; secret: string } | null>(null);
