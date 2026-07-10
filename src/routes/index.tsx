@@ -262,40 +262,39 @@ function Hero({ c }: { c: LandingContent }) {
         <div className="relative flex justify-center">
           <div className="pointer-events-none absolute -inset-4 -z-10 rounded-2xl bg-[radial-gradient(ellipse_at_top,rgba(30,107,255,0.22),transparent_65%)] blur-3xl" aria-hidden />
 
-          {/* Realistic iPhone mockup showing the same hero video */}
-          <div
-            className="relative mx-auto aspect-[9/19.5] w-[180px] rounded-[2.25rem] border border-neutral-700 bg-gradient-to-b from-neutral-800 via-neutral-900 to-black p-[7px] shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7),0_0_0_1px_rgba(255,255,255,0.06)_inset] sm:w-[210px] lg:w-[230px]"
-            style={{
-              backgroundImage:
-                "linear-gradient(145deg,#3a3a3c 0%,#1c1c1e 40%,#0a0a0a 100%)",
-            }}
-          >
-            {/* Titanium side rail highlights */}
-            <span aria-hidden className="pointer-events-none absolute inset-y-3 left-0 w-[1.5px] rounded-l bg-gradient-to-b from-white/40 via-white/10 to-white/30" />
-            <span aria-hidden className="pointer-events-none absolute inset-y-3 right-0 w-[1.5px] rounded-r bg-gradient-to-b from-white/40 via-white/10 to-white/30" />
-            {/* Side buttons */}
-            <span aria-hidden className="absolute -left-[2px] top-14 h-4 w-[2px] rounded-l bg-neutral-700" />
-            <span aria-hidden className="absolute -left-[2px] top-20 h-7 w-[2px] rounded-l bg-neutral-700" />
-            <span aria-hidden className="absolute -left-[2px] top-32 h-7 w-[2px] rounded-l bg-neutral-700" />
-            <span aria-hidden className="absolute -right-[2px] top-24 h-10 w-[2px] rounded-r bg-neutral-700" />
-            {/* Inner bezel */}
-            <div className="relative h-full w-full overflow-hidden rounded-[1.6rem] bg-black ring-1 ring-black/80">
-              <video
-                className="h-full w-full object-cover"
-                autoPlay
-                loop
-                muted
-                playsInline
-                preload="metadata"
-                poster={heroPoster}
-              >
-                <source src={heroVideo.url} type="video/mp4" />
-              </video>
-              {/* Dynamic Island */}
-              <div className="pointer-events-none absolute left-1/2 top-1.5 flex h-4 w-14 -translate-x-1/2 items-center justify-end gap-1 rounded-full bg-black px-1.5">
-                <span className="h-1 w-1 rounded-full bg-neutral-800" />
+          {/* Desktop monitor / display showing the same hero video */}
+          <div className="relative mx-auto w-full max-w-[560px]">
+            {/* Monitor frame */}
+            <div
+              className="relative aspect-[16/10] w-full rounded-xl border border-neutral-700 p-2 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7),0_0_0_1px_rgba(255,255,255,0.06)_inset]"
+              style={{
+                backgroundImage:
+                  "linear-gradient(145deg,#3a3a3c 0%,#1c1c1e 45%,#0a0a0a 100%)",
+              }}
+            >
+              {/* Screen */}
+              <div className="relative h-full w-full overflow-hidden rounded-md bg-black ring-1 ring-black/80">
+                <video
+                  className="h-full w-full object-cover"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  preload="metadata"
+                  poster={heroPoster}
+                >
+                  <source src={heroVideo.url} type="video/mp4" />
+                </video>
+                {/* Screen glare */}
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-transparent" />
+                {/* Camera notch */}
+                <div className="pointer-events-none absolute left-1/2 top-1 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-neutral-800 ring-1 ring-neutral-600" />
               </div>
             </div>
+            {/* Stand neck */}
+            <div className="relative mx-auto h-6 w-24 bg-gradient-to-b from-neutral-700 to-neutral-900" />
+            {/* Stand base */}
+            <div className="relative mx-auto h-2 w-48 rounded-b-2xl bg-gradient-to-b from-neutral-800 to-neutral-950 shadow-[0_10px_20px_-8px_rgba(0,0,0,0.6)]" />
           </div>
           <p className="pointer-events-none absolute -bottom-8 left-0 right-0 text-center font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground/70">{c.hero.disclaimer}</p>
         </div>
