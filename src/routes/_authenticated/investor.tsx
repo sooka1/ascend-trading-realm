@@ -118,18 +118,6 @@ function InvestorPortal() {
     await load();
   }
 
-  async function subscribe(pkg: Pkg) {
-    if (!uid) return;
-    const amountStr = window.prompt(`أدخل مبلغ الاشتراك في باقة "${pkg.name}" (الحد الأدنى ${pkg.min_amount} ${pkg.currency})`);
-    if (!amountStr) return;
-    const amount = Number(amountStr);
-    if (!Number.isFinite(amount) || amount < Number(pkg.min_amount)) return toast.error("مبلغ غير صالح");
-    const { error } = await supabase.from("subscriptions").insert({ user_id: uid, package_id: pkg.id, amount, currency: pkg.currency });
-    if (error) return toast.error(error.message);
-    toast.success("تم إرسال طلب الاشتراك");
-    await load();
-  }
-
   return (
     <PageShell bare>
       <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
@@ -192,42 +180,6 @@ function InvestorPortal() {
               <Field label="ملاحظات"><Textarea name="notes" maxLength={500} rows={2} /></Field>
               <Button type="submit" variant="outline" className="border-white/15">إرسال طلب السحب</Button>
             </form>
-          </div>
-        </div>
-
-        <div className="mt-10">
-          <h2 className="font-display text-xl font-semibold">الباقات الاستثمارية</h2>
-          <div className="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {loading ? (
-              <p className="text-sm text-muted-foreground">جارٍ التحميل…</p>
-            ) : packages.length === 0 ? (
-              <p className="text-sm text-muted-foreground">لا توجد باقات متاحة حاليًا.</p>
-            ) : (
-              packages.map((p) => {
-                const mine = subs.find((s) => s.package_id === p.id);
-                return (
-                  <div key={p.id} className="glass flex flex-col rounded-2xl p-5">
-                    <div className="flex items-start justify-between">
-                      <h3 className="font-display text-lg font-semibold">{p.name}</h3>
-                      <span className={`rounded-full px-2 py-0.5 text-[10px] uppercase tracking-widest ${riskClass(p.risk_level)}`}>{p.risk_level}</span>
-                    </div>
-                    <p className="mt-2 flex-1 text-xs text-muted-foreground">{p.description}</p>
-                    <ul className="mt-4 space-y-1 text-xs">
-                      <li>الحد الأدنى: <b>{fmt(Number(p.min_amount))} {p.currency}</b></li>
-                      <li>العائد المستهدف: <b>{p.target_return_pct ?? "—"}%</b></li>
-                      <li>مدة الحجز: <b>{p.lockup_months} شهر</b></li>
-                    </ul>
-                    {mine ? (
-                      <div className="mt-4 rounded-lg border border-white/10 bg-white/[0.03] p-2 text-[11px]">
-                        اشتراكك: {fmt(Number(mine.amount))} — <StatusPill status={mine.status} />
-                      </div>
-                    ) : (
-                      <Button size="sm" onClick={() => subscribe(p)} className="mt-4 bg-[var(--gradient-gold)] font-semibold text-background">اشترك في الباقة</Button>
-                    )}
-                  </div>
-                );
-              })
-            )}
           </div>
         </div>
 
@@ -303,10 +255,4 @@ function StatusPill({ status }: { status: string }) {
 
 function fmt(n: number) {
   return n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
-
-function riskClass(r: string) {
-  if (r === "low") return "bg-emerald-500/10 text-emerald-400";
-  if (r === "high") return "bg-red-500/10 text-red-400";
-  return "bg-amber-500/10 text-amber-400";
 }
