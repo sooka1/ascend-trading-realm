@@ -9,6 +9,7 @@ import { User, MapPin, Bell, Globe2, ShieldCheck, BadgeCheck, Upload, Clock, XCi
 import { toast } from "sonner";
 import { LANGUAGES, getAllTimezones } from "@/lib/locales";
 import { setUserTimezone, setUserLocale } from "@/lib/user-timezone";
+import { getBrowserLanguage, getBrowserTimezone } from "@/lib/browser-defaults";
 
 export const Route = createFileRoute("/_authenticated/portal/profile")({
   head: () => ({
@@ -25,8 +26,8 @@ function ProfilePage() {
   const [displayName, setDisplayName] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
-  const [language, setLanguage] = useState("ar");
-  const [tz, setTz] = useState(Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC");
+  const [language, setLanguage] = useState<string>(() => getBrowserLanguage());
+  const [tz, setTz] = useState<string>(() => getBrowserTimezone());
   const [emailNotif, setEmailNotif] = useState(true);
   const [smsNotif, setSmsNotif] = useState(false);
   const [saving, setSaving] = useState(false);

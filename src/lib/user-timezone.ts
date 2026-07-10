@@ -89,13 +89,20 @@ export function installTimezonePatch() {
 export async function loadUserTimezoneFromProfile() {
   if (typeof window === "undefined") return;
   const { supabase } = await import("@/integrations/supabase/client");
+  const { getBrowserLanguage, getBrowserTimezone } = await import("@/lib/browser-defaults");
   const { data: u } = await supabase.auth.getUser();
-  if (!u.user) return;
+  if (!u.user) {
+    // Signed-out visitors still get browser defaults so public pages
+    // render dates in their local zone.
+    if (!currentTz) setUserTimezone(getBrowserTimezone());
+    if (!currentLocale) setUserLocale(getBrowserLanguage());
+    return;
+  }
   const { data } = await supabase
     .from("profiles")
     .select("timezone,language")
     .eq("id", u.user.id)
     .maybeSingle();
-  if (data?.timezone) setUserTimezone(data.timezone as string);
-  if (data?.language) setUserLocale(data.language as string);
+  setUserTimezone((data?.timezone as string) || getBrowserTimezone());
+  setUserLocale((data?.language as string) || getBrowserLanguage());
 }
