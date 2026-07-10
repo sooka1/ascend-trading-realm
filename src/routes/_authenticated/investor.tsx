@@ -284,7 +284,7 @@ function InvestorPortal() {
                     type="button"
                     disabled={!eligible || busySub === `new:${p.id}` || !!busySub}
                     onClick={() => subscribeToPackage(p)}
-                    className="mt-4 w-full bg-[var(--gradient-gold)] font-semibold text-background disabled:opacity-50"
+                    className="mt-4 w-full bg-red-600 font-semibold text-white hover:bg-red-700 disabled:opacity-50"
                   >
                     {busySub === `new:${p.id}` ? "جارٍ التنفيذ..." : eligible ? "اشترك بهذه الباقة" : "الرصيد غير كافٍ"}
                   </Button>
@@ -345,7 +345,7 @@ function InvestorPortal() {
               </Field>
               <Field label="مرجع التحويل (اختياري)"><Input name="reference" maxLength={120} /></Field>
               <Field label="ملاحظات"><Textarea name="notes" maxLength={500} rows={2} /></Field>
-              <Button type="submit" className="bg-[var(--gradient-gold)] font-semibold text-background">إرسال طلب الإيداع</Button>
+              <Button type="submit" className="bg-red-600 font-semibold text-white hover:bg-red-700">إرسال طلب الإيداع</Button>
               <p className="text-[11px] text-muted-foreground">التحويل البنكي: يعتمده الفريق يدويًا بعد التأكد من الاستلام. سيتم إضافة الدفع بالبطاقة عبر بوابة آمنة قريبًا.</p>
             </form>
           </div>
@@ -361,7 +361,7 @@ function InvestorPortal() {
               <Field label="IBAN"><Input name="iban" maxLength={64} /></Field>
               <Field label="SWIFT"><Input name="swift" maxLength={32} /></Field>
               <Field label="ملاحظات"><Textarea name="notes" maxLength={500} rows={2} /></Field>
-              <Button type="submit" variant="outline" className="border-white/15">إرسال طلب السحب</Button>
+              <Button type="submit" className="bg-red-600 font-semibold text-white hover:bg-red-700">إرسال طلب السحب</Button>
             </form>
           </div>
         </div>
