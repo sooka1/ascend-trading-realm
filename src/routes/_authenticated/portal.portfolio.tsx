@@ -1,8 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { PortalShell, PortalCard } from "@/components/portal-shell";
-import { Wallet, PieChart, TrendingUp, Layers } from "lucide-react";
+import { Wallet, PieChart, TrendingUp, Layers, ArrowDownToLine, ArrowUpFromLine } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/portal/portfolio")({
   head: () => ({
@@ -141,6 +142,38 @@ function PortfolioPage() {
           ) : (
             <EquitySpark data={snaps.slice().reverse()} />
           )}
+        </PortalCard>
+      </div>
+
+      <div className="mt-6">
+        <PortalCard title="الإيداع والسحب" icon={Wallet}>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Button
+              asChild
+              className="h-auto justify-start rounded-md bg-gold py-3 font-semibold text-background hover:bg-[oklch(0.88_0.11_90)]"
+            >
+              <Link to="/investor">
+                <ArrowDownToLine className="ml-2 h-4 w-4" />
+                <span className="flex flex-col items-start">
+                  <span>إيداع أموال</span>
+                  <span className="font-mono text-[10px] font-normal opacity-80">Binance Pay · USDT TRC20</span>
+                </span>
+              </Link>
+            </Button>
+            <Button
+              asChild
+              variant="outline"
+              className="h-auto justify-start rounded-md border-white/15 py-3 hover:border-gold/60"
+            >
+              <Link to="/investor">
+                <ArrowUpFromLine className="ml-2 h-4 w-4" />
+                <span className="flex flex-col items-start">
+                  <span>سحب الأموال</span>
+                  <span className="font-mono text-[10px] font-normal text-muted-foreground">يتطلب المصادقة الثنائية</span>
+                </span>
+              </Link>
+            </Button>
+          </div>
         </PortalCard>
       </div>
 
