@@ -77,8 +77,10 @@ export const Route = createFileRoute("/api/public/webhooks/binance-pay")({
         if (!Number.isFinite(paidAmount) || Math.abs(paidAmount - Number(deposit.amount)) > 0.01) {
           await supabaseAdmin.from("finance_audit_log").insert({
             action: "binance_webhook_amount_mismatch",
-            entity: "deposit",
-            entity_id: deposit.id,
+            admin_id: "00000000-0000-0000-0000-000000000000",
+            request_id: deposit.id,
+            request_kind: "deposit",
+            target_user_id: deposit.user_id,
             from_status: deposit.status,
             to_status: deposit.status,
             reason: `Expected ${deposit.amount}, got ${paidAmount}`,
@@ -98,8 +100,10 @@ export const Route = createFileRoute("/api/public/webhooks/binance-pay")({
 
         await supabaseAdmin.from("finance_audit_log").insert({
           action: "binance_pay_auto_approved",
-          entity: "deposit",
-          entity_id: deposit.id,
+          admin_id: "00000000-0000-0000-0000-000000000000",
+          request_id: deposit.id,
+          request_kind: "deposit",
+          target_user_id: deposit.user_id,
           from_status: deposit.status,
           to_status: "approved",
           reason: `Binance txId ${orderData.transactionId ?? event.bizId}`,
