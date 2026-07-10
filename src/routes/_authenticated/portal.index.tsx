@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { PortalShell, PortalCard, QuickAction } from "@/components/portal-shell";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowDownToLine, ArrowUpFromLine, Bell, Download, FileText, LineChart, MessageSquare, Package as PackageIcon, Receipt, Send, Sparkles, Wallet } from "lucide-react";
+import { ArrowDownToLine, ArrowUpFromLine, Bell, Download, FileText, LineChart, MessageSquare, Package as PackageIcon, Receipt, Send, Wallet } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/portal/")({
