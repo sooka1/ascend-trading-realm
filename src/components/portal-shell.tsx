@@ -24,7 +24,7 @@ import {
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { useMfaEnforcement } from "@/hooks/use-mfa-enforcement";
 
 type NavItem = { to: string; icon: LucideIcon; label: string; group?: string };
@@ -72,6 +72,21 @@ export function PortalShell({
   const router = useRouter();
   useMfaEnforcement();
   const queryClient = useQueryClient();
+  const { data: unreadCount = 0 } = useQuery({
+    queryKey: ["portal", "notifications", "unread-count"],
+    queryFn: async () => {
+      const { data: userData } = await supabase.auth.getUser();
+      const uid = userData.user?.id;
+      if (!uid) return 0;
+      const { count } = await supabase
+        .from("notifications")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", uid)
+        .is("read_at", null);
+      return count ?? 0;
+    },
+    refetchInterval: 30000,
+  });
   async function handleSignOut() {
     await queryClient.cancelQueries();
     queryClient.clear();
@@ -161,6 +176,18 @@ export function PortalShell({
                 {subtitle && <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{subtitle}</p>}
               </div>
               {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
+              <Link
+                to="/portal/notifications"
+                aria-label="الإشعارات"
+                className="relative inline-flex h-9 w-9 items-center justify-center rounded-md border border-white/10 bg-white/[0.03] text-muted-foreground transition hover:border-gold/40 hover:text-gold"
+              >
+                <Bell className="h-4 w-4" />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -end-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-gold px-1 font-mono text-[10px] font-semibold text-background">
+                    {unreadCount > 99 ? "99+" : unreadCount}
+                  </span>
+                )}
+              </Link>
               <button
                 type="button"
                 onClick={handleSignOut}
