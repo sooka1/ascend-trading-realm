@@ -37,11 +37,25 @@ export async function ensureMyKeypair(userId: string): Promise<KeyPair> {
       );
     localStorage.setItem(LS_KEY(userId), secretKey);
   } else if (secretKey) {
-    // Local key exists but server doesn't have it yet — sync it up.
+    // Local key exists but server doesn't have it yet — sync it up
+    // ONLY if it matches the server's advertised public key (or none yet).
     publicKey = naclUtil.encodeBase64(
       nacl.box.keyPair.fromSecretKey(naclUtil.decodeBase64(secretKey)).publicKey,
     );
+    if (serverPublic && serverPublic !== publicKey) {
+      // A different device owns this account's real key. Do NOT overwrite
+      // the server public_key — that would break the other browser.
+      // Wait until the original device logs in and uploads its secret_key.
+      return { publicKey: serverPublic, secretKey: "" };
+    }
   } else {
+    // No local key and no server secret. If the server already has a
+    // public_key from a previous device, do NOT mint a new one — that would
+    // silently rotate the account's key and break past messages. Wait for
+    // the original device to sync its secret_key up.
+    if (serverPublic) {
+      return { publicKey: serverPublic, secretKey: "" };
+    }
     // Brand new account — mint a keypair.
     const raw = nacl.box.keyPair();
     secretKey = naclUtil.encodeBase64(raw.secretKey);
