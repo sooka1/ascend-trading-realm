@@ -22,6 +22,7 @@ import {
   LogOut,
   Menu,
   Users as UsersIcon,
+  Package as PackageIcon,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useMemo, useState, type ReactNode } from "react";
@@ -39,6 +40,7 @@ const NAV: NavItem[] = [
   { to: "/portal/portfolio", icon: Wallet, label: "المحفظة", group: "overview" },
   { to: "/portal/accounts", icon: Landmark, label: "الحسابات الاستثمارية", group: "overview" },
   { to: "/portal/statements", icon: FileText, label: "الكشوف", group: "reports" },
+  { to: "/investor", icon: PackageIcon, label: "الباقات والعروض", group: "reports" },
   { to: "/portal/transactions", icon: Receipt, label: "سجل العمليات", group: "reports" },
   { to: "/portal/performance", icon: LineChart, label: "تقارير الأداء", group: "reports" },
   { to: "/portal/documents", icon: FolderOpen, label: "المستندات", group: "reports" },

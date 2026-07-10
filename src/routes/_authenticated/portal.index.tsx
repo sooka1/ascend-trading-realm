@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { PortalShell, PortalCard, QuickAction } from "@/components/portal-shell";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowDownToLine, ArrowUpFromLine, Bell, Download, FileText, LineChart, MessageSquare, Receipt, Send, Wallet } from "lucide-react";
+import { ArrowDownToLine, ArrowUpFromLine, Bell, Download, FileText, LineChart, MessageSquare, Package as PackageIcon, Receipt, Send, Sparkles, Wallet } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/portal/")({
@@ -122,6 +122,47 @@ function PortalPage() {
               ))}
             </ul>
           )}
+        </PortalCard>
+
+        <PortalCard
+          title="الباقات والعروض"
+          icon={PackageIcon}
+          className="lg:col-span-2"
+          action={
+            <Link
+              to="/investor"
+              className="font-mono text-[10px] uppercase tracking-widest text-gold hover:text-[oklch(0.88_0.11_90)]"
+            >
+              استعراض الباقات →
+            </Link>
+          }
+        >
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Link
+              to="/investor"
+              className="group flex items-start gap-3 rounded-md border border-white/5 bg-white/[0.02] p-3 transition hover:border-gold/40"
+            >
+              <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-gold/20 bg-gold/[0.06]">
+                <PackageIcon className="h-4 w-4 text-gold" />
+              </span>
+              <div className="min-w-0 text-sm">
+                <p className="font-medium">اشترك في باقة استثمار</p>
+                <p className="mt-1 text-xs text-muted-foreground">Starter · Growth · Premier · Private</p>
+              </div>
+            </Link>
+            <Link
+              to="/investor"
+              className="group flex items-start gap-3 rounded-md border border-white/5 bg-white/[0.02] p-3 transition hover:border-gold/40"
+            >
+              <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-gold/20 bg-gold/[0.06]">
+                <Sparkles className="h-4 w-4 text-gold" />
+              </span>
+              <div className="min-w-0 text-sm">
+                <p className="font-medium">العروض الحالية</p>
+                <p className="mt-1 text-xs text-muted-foreground">تبديل الباقة أو ترقيتها في أي وقت وفق شروط الإيداع</p>
+              </div>
+            </Link>
+          </div>
         </PortalCard>
 
         <PortalCard title="الإشعارات" icon={Bell}
