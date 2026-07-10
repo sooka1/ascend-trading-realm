@@ -10,7 +10,63 @@ import {
   setUserPassword,
 } from "@/lib/user-roles.functions";
 import type { AppRole } from "@/lib/rbac.functions";
-import { Search, Save, UserCog, KeyRound } from "lucide-react";
+import {
+  Search,
+  Save,
+  UserCog,
+  KeyRound,
+  CheckCircle2,
+  XCircle,
+  Eye,
+  EyeOff,
+  Wand2,
+  Copy,
+} from "lucide-react";
+
+type Status = { kind: "success" | "error"; message: string } | null;
+
+function StatusBanner({ status }: { status: Status }) {
+  if (!status) return null;
+  const ok = status.kind === "success";
+  const Icon = ok ? CheckCircle2 : XCircle;
+  return (
+    <div
+      className={`mt-4 flex items-start gap-2 rounded-md border px-3 py-2 text-sm ${
+        ok
+          ? "border-emerald-400/40 bg-emerald-400/10 text-emerald-100"
+          : "border-red-400/40 bg-red-400/10 text-red-100"
+      }`}
+      role="status"
+      aria-live="polite"
+    >
+      <Icon className="mt-0.5 h-4 w-4 shrink-0" />
+      <span>{status.message}</span>
+    </div>
+  );
+}
+
+function StepBadge({ n, label }: { n: number; label: string }) {
+  return (
+    <span className="inline-flex items-center gap-2 rounded-full border border-gold/30 bg-gold/[0.06] px-3 py-1 text-xs text-foreground">
+      <span className="grid h-5 w-5 place-items-center rounded-full bg-gold/20 font-mono text-[10px] text-gold">
+        {n}
+      </span>
+      {label}
+    </span>
+  );
+}
+
+function generateStrongPassword(len = 16) {
+  const upper = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+  const lower = "abcdefghijkmnpqrstuvwxyz";
+  const digits = "23456789";
+  const symbols = "!@#$%^&*_+-=?";
+  const all = upper + lower + digits + symbols;
+  const pick = (s: string) => s[Math.floor(Math.random() * s.length)];
+  const chars = [pick(upper), pick(lower), pick(digits), pick(symbols)];
+  for (let i = chars.length; i < len; i++) chars.push(pick(all));
+  return chars.sort(() => Math.random() - 0.5).join("");
+}
 
 export const Route = createFileRoute("/_authenticated/_admin/admin/user-roles")({
   head: () => ({
