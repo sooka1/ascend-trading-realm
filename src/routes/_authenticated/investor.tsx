@@ -38,6 +38,27 @@ const withdrawSchema = z.object({
   notes: z.string().trim().max(500).optional(),
 });
 
+// Wallet / network address validators — enforced client-side before submit.
+const ADDRESS_RULES = {
+  usdt_trc20: {
+    regex: /^T[1-9A-HJ-NP-Za-km-z]{33}$/,
+    label: "عنوان TRC20 غير صالح (يجب أن يبدأ بحرف T ويتكوّن من 34 خانة)",
+  },
+  usdt_bep20: {
+    regex: /^0x[a-fA-F0-9]{40}$/,
+    label: "عنوان BEP20 غير صالح (يجب أن يبدأ بـ 0x ويتكوّن من 42 خانة)",
+  },
+  binance_pay: {
+    regex: /^[0-9]{6,20}$/,
+    label: "Binance Pay ID غير صالح (أرقام فقط، 6 إلى 20 خانة)",
+  },
+} as const;
+const TXID_RULES = {
+  usdt_trc20: { regex: /^[a-fA-F0-9]{64}$/, label: "TxID لشبكة TRC20 يجب أن يكون 64 خانة hex" },
+  usdt_bep20: { regex: /^0x[a-fA-F0-9]{64}$/, label: "TxID لشبكة BEP20 يجب أن يبدأ بـ 0x ويتكوّن من 66 خانة" },
+  binance_pay: { regex: /^[A-Za-z0-9-]{8,64}$/, label: "رقم مرجع Binance Pay غير صالح" },
+} as const;
+
 // Platform deposit destinations — super admin can update these values in code.
 const PLATFORM_WALLETS = {
   binance_pay: "HK-BINANCE-PAY-ID-000000",
