@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowDownToLine, ArrowUpFromLine, Bell, Download, FileText, LineChart, MessageSquare, Package as PackageIcon, Receipt, Send, Wallet } from "lucide-react";
 import { toast } from "sonner";
-import { useAvailableBalance } from "@/hooks/use-balance";
 
 export const Route = createFileRoute("/_authenticated/portal/")({
   head: () => ({
@@ -30,22 +29,6 @@ function PortalPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [draft, setDraft] = useState("");
   const [uid, setUid] = useState<string | null>(null);
-  const { available, balance, committed, loading: balanceLoading } = useAvailableBalance();
-  const [profitsTotal, setProfitsTotal] = useState(0);
-  const totalPortfolio = balance + committed + profitsTotal;
-
-  useEffect(() => {
-    void (async () => {
-      const { data: userRes } = await supabase.auth.getUser();
-      const id = userRes.user?.id;
-      if (!id) return;
-      const { data } = await supabase
-        .from("profit_distributions")
-        .select("amount")
-        .eq("user_id", id);
-      setProfitsTotal(((data ?? []) as { amount: number | string }[]).reduce((s, r) => s + Number(r.amount), 0));
-    })();
-  }, []);
 
   async function load() {
     const { data: userRes } = await supabase.auth.getUser();
