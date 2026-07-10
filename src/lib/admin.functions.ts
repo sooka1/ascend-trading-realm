@@ -585,6 +585,52 @@ export const listInvoicesAdmin = createServerFn({ method: "GET" })
     return { rows, totals };
   });
 
+export const decidePaymentAdmin = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(
+    (data: { kind: "deposit" | "withdrawal"; id: string; decision: "approved" | "rejected"; note?: string }) => {
+      if (!data || (data.kind !== "deposit" && data.kind !== "withdrawal")) throw new Error("Invalid kind");
+      if (!data.id || typeof data.id !== "string") throw new Error("Invalid id");
+      if (data.decision !== "approved" && data.decision !== "rejected") throw new Error("Invalid decision");
+      return data;
+    },
+  )
+  .handler(async ({ data, context }) => {
+    const auth = await assertAdmin(context);
+    if (!auth.ok) throw new Error("Forbidden");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const table = data.kind === "deposit" ? "deposits" : "withdrawals";
+    const patch: Record<string, unknown> = {
+      status: data.decision,
+      reviewed_at: new Date().toISOString(),
+      reviewed_by: context.userId,
+    };
+    if (data.note) patch.review_note = data.note;
+    const { data: row, error } = await supabaseAdmin
+      .from(table)
+      .update(patch)
+      .eq("id", data.id)
+      .select("id,user_id,amount,currency,status")
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    if (!row) throw new Error("Record not found");
+    // Notify investor
+    await supabaseAdmin.from("notifications").insert({
+      user_id: row.user_id,
+      kind: `${data.kind}_${data.decision}`,
+      title:
+        data.decision === "approved"
+          ? data.kind === "deposit"
+            ? "تم اعتماد إيداعك"
+            : "تم اعتماد طلب السحب"
+          : data.kind === "deposit"
+            ? "تم رفض إيداعك"
+            : "تم رفض طلب السحب",
+      body: `${row.amount} ${row.currency}${data.note ? " — " + data.note : ""}`,
+    });
+    return { ok: true };
+  });
+
 // ============================================================
 // Role Permissions Matrix
 // ============================================================
