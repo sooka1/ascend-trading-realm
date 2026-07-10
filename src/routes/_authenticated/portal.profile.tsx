@@ -46,7 +46,7 @@ function ProfilePage() {
       setEmail(u.user.email ?? "");
       const { data } = await supabase
         .from("profiles")
-        .select("display_name,avatar_url,verification_status,id_front_url,id_back_url,selfie_url,verification_notes")
+        .select("display_name,avatar_url,verification_status,id_front_url,id_back_url,selfie_url,verification_notes,language,timezone")
         .eq("id", u.user.id)
         .maybeSingle();
       if (data) {
@@ -57,6 +57,8 @@ function ProfilePage() {
         setIdBackUrl((data.id_back_url as string) ?? null);
         setSelfieUrl((data.selfie_url as string) ?? null);
         setVerificationNotes((data.verification_notes as string) ?? null);
+        if (data.language) setLanguage(data.language as string);
+        if (data.timezone) setTz(data.timezone as string);
       }
     })();
   }, []);
@@ -65,7 +67,10 @@ function ProfilePage() {
     setSaving(true);
     const { data: u } = await supabase.auth.getUser();
     if (u.user) {
-      const { error } = await supabase.from("profiles").update({ display_name: displayName }).eq("id", u.user.id);
+      const { error } = await supabase
+        .from("profiles")
+        .update({ display_name: displayName, language, timezone: tz })
+        .eq("id", u.user.id);
       if (error) toast.error(error.message);
       else toast.success("تم حفظ التغييرات");
     }
