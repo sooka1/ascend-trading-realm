@@ -29,6 +29,7 @@ import {
   Sparkle,
 } from "lucide-react";
 import { PageShell } from "@/components/page-shell";
+import { HKLogo } from "@/components/hk-logo";
 import { MarketTicker } from "@/components/market-ticker";
 import { AnimatedCounter } from "@/components/animated-counter";
 import { Button } from "@/components/ui/button";
