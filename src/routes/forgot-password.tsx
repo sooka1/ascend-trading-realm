@@ -50,7 +50,13 @@ function ForgotPassword() {
       if (error) throw error;
       setSent(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("auth.forgot.err.generic"));
+      const raw = err instanceof Error ? err.message : "";
+      const match = raw.match(/only request this after (\d+) seconds?/i);
+      if (match) {
+        setError(`لأسباب أمنية، يمكنك طلب رابط جديد بعد ${match[1]} ثانية. تحقّق من صندوق الوارد ومجلد الرسائل غير المرغوب فيها.`);
+      } else {
+        setError(raw || t("auth.forgot.err.generic"));
+      }
     } finally {
       setLoading(false);
     }
