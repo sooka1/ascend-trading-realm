@@ -184,16 +184,6 @@ export function AdminShell({
 
             <header className="mb-6 flex flex-wrap items-end justify-between gap-4 border-b border-white/5 pb-6">
               <div>
-                {showBack && (
-                  <button
-                    type="button"
-                    onClick={() => router.history.back()}
-                    className="mb-3 inline-flex items-center gap-1.5 rounded-md border border-white/10 bg-white/[0.03] px-2.5 py-1 text-xs text-muted-foreground transition hover:border-gold/40 hover:text-foreground"
-                  >
-                    <ArrowRight className="h-3.5 w-3.5" />
-                    رجوع
-                  </button>
-                )}
                 <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-gold/80">
                   {eyebrow}
                 </p>
