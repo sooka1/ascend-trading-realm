@@ -509,6 +509,16 @@ export function SupportFab() {
                   دعم HK يكتب…
                 </p>
               )}
+              {typingDebug && (
+                <div className="mt-1 rounded-md border border-white/10 bg-black/30 px-2 py-1 font-mono text-[9px] leading-relaxed text-muted-foreground">
+                  <span className="text-gold">[debug typing]</span>{" "}
+                  <span>{typingDebug.value ? "ON" : "OFF"}</span>
+                  {" · "}
+                  <span>{new Date(typingDebug.at).toLocaleTimeString()}</span>
+                  {" · "}
+                  <span>{typingDebug.reason}</span>
+                </div>
+              )}
             </div>
           </div>
         )}
