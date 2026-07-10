@@ -83,8 +83,7 @@ function useContent(): LandingContent {
 function Home() {
   const c = useContent();
   return (
-    <div className="landing-light">
-      <PageShell>
+    <PageShell>
         <Hero c={c} />
         <MarketTicker />
         <TrustStrip c={c} />
@@ -98,8 +97,7 @@ function Home() {
         <Credentials />
         <PortalPreview c={c} />
         <FinalCTA c={c} />
-      </PageShell>
-    </div>
+    </PageShell>
   );
 }
 
