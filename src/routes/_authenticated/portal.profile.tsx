@@ -87,10 +87,12 @@ function ProfilePage() {
       return;
     }
     const newStatus: "approved" | "pending" = verificationStatus === "approved" ? "approved" : "pending";
-    const patch: Record<string, string> = { verification_status: newStatus };
-    if (kind === "id_front") patch.id_front_url = path;
-    else if (kind === "id_back") patch.id_back_url = path;
-    else patch.selfie_url = path;
+    const patch = {
+      verification_status: newStatus,
+      id_front_url: kind === "id_front" ? path : idFrontUrl,
+      id_back_url: kind === "id_back" ? path : idBackUrl,
+      selfie_url: kind === "selfie" ? path : selfieUrl,
+    };
     const { error: updErr } = await supabase.from("profiles").update(patch).eq("id", uid);
     if (updErr) {
       toast.error(updErr.message);
