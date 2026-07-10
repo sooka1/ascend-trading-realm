@@ -8,6 +8,7 @@ export type PortfoliosContent = {
   target: string;
   minimum: string;
   risk: string;
+  withdraw: string;
   cta: string;
   disclaimer: string;
   tiers: { name: string; risk: string; features: string[] }[];
@@ -23,6 +24,7 @@ export const PORTFOLIOS: Record<Lang, PortfoliosContent> = {
     target: "Target annual return",
     minimum: "Minimum",
     risk: "Risk profile",
+    withdraw: "Min. profit withdrawal",
     cta: "Open this portfolio",
     disclaimer:
       "Target returns are illustrative and not guaranteed. Investing involves risk, including possible loss of principal. Past performance is not indicative of future results.",
@@ -68,6 +70,7 @@ export const PORTFOLIOS: Record<Lang, PortfoliosContent> = {
     target: "العائد السنوي المستهدف",
     minimum: "الحد الأدنى",
     risk: "ملف المخاطر",
+    withdraw: "الحد الأدنى لسحب الأرباح",
     cta: "افتح هذه المحفظة",
     disclaimer:
       "العوائد المستهدفة توضيحية وغير مضمونة. ينطوي الاستثمار على مخاطر، بما في ذلك احتمال خسارة رأس المال. الأداء السابق لا يضمن النتائج المستقبلية.",
@@ -113,6 +116,7 @@ export const PORTFOLIOS: Record<Lang, PortfoliosContent> = {
     target: "Rendement annuel visé",
     minimum: "Minimum",
     risk: "Profil de risque",
+    withdraw: "Retrait min. des gains",
     cta: "Ouvrir ce portefeuille",
     disclaimer:
       "Les rendements visés sont illustratifs et non garantis. Investir comporte des risques, y compris la perte possible du capital. Les performances passées ne préjugent pas des résultats futurs.",
@@ -158,6 +162,7 @@ export const PORTFOLIOS: Record<Lang, PortfoliosContent> = {
     target: "Rendimiento anual objetivo",
     minimum: "Mínimo",
     risk: "Perfil de riesgo",
+    withdraw: "Retiro mín. de ganancias",
     cta: "Abrir esta cartera",
     disclaimer:
       "Los rendimientos objetivo son ilustrativos y no están garantizados. Invertir implica riesgos, incluida la posible pérdida de capital. El rendimiento pasado no garantiza resultados futuros.",
@@ -203,6 +208,7 @@ export const PORTFOLIOS: Record<Lang, PortfoliosContent> = {
     target: "Hedef yıllık getiri",
     minimum: "Minimum",
     risk: "Risk profili",
+    withdraw: "Min. kâr çekimi",
     cta: "Bu portföyü aç",
     disclaimer:
       "Hedef getiriler örnek amaçlıdır ve garanti edilmez. Yatırım, anaparanın kaybı dahil riskler içerir. Geçmiş performans gelecekteki sonuçların göstergesi değildir.",
