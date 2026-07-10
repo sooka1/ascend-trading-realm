@@ -15,6 +15,9 @@ self.addEventListener('message', (event) => {
         badge: '/favicon-32x32.png',
         data: { url: url || '/' },
         renotify: true,
+        vibrate: [200, 100, 200],
+        silent: false,
+        requireInteraction: false,
       })
     );
   }
@@ -31,6 +34,9 @@ self.addEventListener('push', (event) => {
       badge: '/favicon-32x32.png',
       data: { url: payload.url || '/' },
       renotify: true,
+      vibrate: [200, 100, 200, 100, 200],
+      silent: false,
+      requireInteraction: false,
     })
   );
 });
