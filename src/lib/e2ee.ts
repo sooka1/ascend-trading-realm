@@ -15,24 +15,46 @@ export type KeyPair = { publicKey: string; secretKey: string };
 export async function ensureMyKeypair(userId: string): Promise<KeyPair> {
   let secretKey = localStorage.getItem(LS_KEY(userId));
   let publicKey: string;
-  if (secretKey) {
+
+  // Fetch the account-wide keypair from the server so any browser/device for
+  // the same account can decrypt past messages.
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("public_key, secret_key")
+    .eq("id", userId)
+    .maybeSingle();
+
+  const serverSecret = (profile as { secret_key?: string | null } | null)?.secret_key ?? null;
+  const serverPublic = profile?.public_key ?? null;
+
+  if (serverSecret) {
+    // Server copy wins — this is the source of truth across browsers.
+    secretKey = serverSecret;
+    publicKey =
+      serverPublic ??
+      naclUtil.encodeBase64(
+        nacl.box.keyPair.fromSecretKey(naclUtil.decodeBase64(serverSecret)).publicKey,
+      );
+    localStorage.setItem(LS_KEY(userId), secretKey);
+  } else if (secretKey) {
+    // Local key exists but server doesn't have it yet — sync it up.
     publicKey = naclUtil.encodeBase64(
       nacl.box.keyPair.fromSecretKey(naclUtil.decodeBase64(secretKey)).publicKey,
     );
   } else {
+    // Brand new account — mint a keypair.
     const raw = nacl.box.keyPair();
     secretKey = naclUtil.encodeBase64(raw.secretKey);
     publicKey = naclUtil.encodeBase64(raw.publicKey);
     localStorage.setItem(LS_KEY(userId), secretKey);
   }
-  // Publish public key so the other party can encrypt to us.
-  const { data } = await supabase
-    .from("profiles")
-    .select("public_key")
-    .eq("id", userId)
-    .maybeSingle();
-  if (!data?.public_key || data.public_key !== publicKey) {
-    await supabase.from("profiles").update({ public_key: publicKey }).eq("id", userId);
+
+  // Publish/refresh both keys on the profile so other devices can sync.
+  if (serverPublic !== publicKey || serverSecret !== secretKey) {
+    await supabase
+      .from("profiles")
+      .update({ public_key: publicKey, secret_key: secretKey } as never)
+      .eq("id", userId);
   }
   return { publicKey, secretKey };
 }
