@@ -282,11 +282,11 @@ function InvestorPortal() {
                   </div>
                   <Button
                     type="button"
-                    disabled={!eligible}
+                    disabled={!eligible || busySub === `new:${p.id}` || !!busySub}
                     onClick={() => subscribeToPackage(p)}
                     className="mt-4 w-full bg-[var(--gradient-gold)] font-semibold text-background disabled:opacity-50"
                   >
-                    {eligible ? "اشترك بهذه الباقة" : "الرصيد غير كافٍ"}
+                    {busySub === `new:${p.id}` ? "جارٍ التنفيذ..." : eligible ? "اشترك بهذه الباقة" : "الرصيد غير كافٍ"}
                   </Button>
                 </div>
               );
@@ -311,8 +311,14 @@ function InvestorPortal() {
                       </div>
                       <div className="flex items-center gap-2">
                         <StatusPill status={s.status} />
-                        <Button size="sm" variant="outline" onClick={() => cancelSubscription(s)} className="h-7 border-white/15 text-xs">
-                          تبديل / إلغاء
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          disabled={busySub === s.id || !!busySub}
+                          onClick={() => cancelSubscription(s)}
+                          className="h-7 border-white/15 text-xs"
+                        >
+                          {busySub === s.id ? "..." : "تبديل / إلغاء"}
                         </Button>
                       </div>
                     </li>
