@@ -285,8 +285,9 @@ function AdminLiveChat() {
           throw e;
         }
       }
-      const bodyForOwner = body && ownerPk ? encryptFor(ownerPk, body) : null;
-      const bodyForAdmin = body ? encryptFor(myPk, body) : null;
+      // Plaintext storage — messages are no longer end-to-end encrypted.
+      const bodyForOwner = body || null;
+      const bodyForAdmin = body || null;
       const insertPayload: Record<string, unknown> = {
         ticket_id: selected.id,
         sender_id: uid,

@@ -128,13 +128,22 @@ function attemptOne(
   secretKeyB64: string,
 ): { ok: true; text: string } | { ok: false; corrupt: boolean } {
   if (!s) return { ok: false, corrupt: false };
+  // Plaintext fallback: if the body isn't a JSON ciphertext envelope,
+  // treat it as plain text so admins/users can read messages without a key.
+  const trimmed = s.trim();
+  if (!trimmed.startsWith("{")) {
+    return { ok: true, text: s };
+  }
   let parsed: { e?: string; n?: string; c?: string };
   try {
     parsed = JSON.parse(s);
   } catch {
-    return { ok: false, corrupt: true };
+    return { ok: true, text: s };
   }
-  if (!parsed.e || !parsed.n || !parsed.c) return { ok: false, corrupt: true };
+  if (!parsed.e || !parsed.n || !parsed.c) {
+    return { ok: true, text: s };
+  }
+  if (!secretKeyB64) return { ok: false, corrupt: false };
   try {
     const opened = nacl.box.open(
       naclUtil.decodeBase64(parsed.c),
@@ -155,11 +164,12 @@ export function decryptChatBody(
   secretKeyB64: string | null,
 ): DecryptResult {
   if (!primary && !secondary) return { status: "empty" };
-  if (!secretKeyB64) return { status: "loading" };
-  const a = attemptOne(primary, secretKeyB64);
+  const key = secretKeyB64 ?? "";
+  const a = attemptOne(primary, key);
   if (a.ok) return { status: "ok", text: a.text };
-  const b = attemptOne(secondary, secretKeyB64);
+  const b = attemptOne(secondary, key);
   if (b.ok) return { status: "ok", text: b.text };
+  if (!secretKeyB64) return { status: "loading" };
   const anyValid = (primary && !a.corrupt) || (secondary && !b.corrupt);
   return anyValid ? { status: "not-for-me" } : { status: "corrupt" };
 }

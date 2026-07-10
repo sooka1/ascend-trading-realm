@@ -307,8 +307,9 @@ export function SupportFab() {
           throw e;
         }
       }
-      const bodyForMe = body ? encryptFor(myPk, body) : null;
-      const bodyForAdmin = body && apk ? encryptFor(apk, body) : null;
+      // Plaintext storage — messages are no longer end-to-end encrypted.
+      const bodyForMe = body || null;
+      const bodyForAdmin = body || null;
       const insertPayload: Record<string, unknown> = {
         ticket_id: ticketId,
         sender_id: uid,
