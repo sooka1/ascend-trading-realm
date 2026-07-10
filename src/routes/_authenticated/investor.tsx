@@ -227,7 +227,20 @@ function InvestorPortal() {
       if (!ref) return toast.error("يرجى إدخال TxID / مرجع المعاملة");
       if (!rule.regex.test(ref)) return toast.error(rule.label);
     }
-    const { error } = await supabase.from("deposits").insert({ user_id: uid, ...parsed.data });
+    // Optional receipt image upload
+    const receipt = (fd.get("receipt") as File | null) ?? null;
+    let receiptNote = "";
+    if (receipt && receipt.size > 0) {
+      if (receipt.size > 5 * 1024 * 1024) return toast.error("حجم صورة التحويل يجب ألا يتجاوز 5MB");
+      if (!/^image\/(png|jpe?g|webp)$/.test(receipt.type)) return toast.error("صيغة الصورة غير مدعومة (PNG/JPG/WEBP فقط)");
+      const ext = receipt.name.split(".").pop() ?? "png";
+      const path = `${uid}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+      const { error: upErr } = await supabase.storage.from("documents").upload(path, receipt, { upsert: false, contentType: receipt.type });
+      if (upErr) return toast.error("تعذّر رفع صورة التحويل: " + upErr.message);
+      receiptNote = `\n[receipt:documents/${path}]`;
+    }
+    const notesWithReceipt = ((parsed.data.notes ?? "") + receiptNote).trim() || undefined;
+    const { error } = await supabase.from("deposits").insert({ user_id: uid, ...parsed.data, notes: notesWithReceipt });
     if (error) return toast.error(error.message);
     toast.success("تم إرسال طلب الإيداع بنجاح");
     (e.currentTarget as HTMLFormElement).reset();
@@ -412,6 +425,10 @@ function InvestorPortal() {
                 </div>
               )}
               <Field label="مرجع التحويل / TxID"><Input name="reference" maxLength={120} placeholder={depositMethod === "bank_transfer" || depositMethod === "card" ? "" : "TxID / Hash المعاملة"} /></Field>
+              <Field label="صورة إثبات التحويل (اختياري)">
+                <Input name="receipt" type="file" accept="image/png,image/jpeg,image/webp" className="file:mr-2 file:rounded file:border-0 file:bg-white/10 file:px-2 file:py-1 file:text-xs file:text-foreground" />
+              </Field>
+              <p className="text-[11px] text-muted-foreground">ارفع لقطة شاشة أو إيصال التحويل (PNG/JPG/WEBP — بحد أقصى 5MB). سيراجعها الفريق قبل اعتماد الإيداع.</p>
               <Field label="ملاحظات"><Textarea name="notes" maxLength={500} rows={2} /></Field>
               <Button type="submit" className="bg-red-600 font-semibold text-white hover:bg-red-700">إرسال طلب الإيداع</Button>
               <p className="text-[11px] text-muted-foreground">جميع الإيداعات (بنكي / Binance / كريبتو) يعتمدها الفريق يدويًا بعد التأكد من استلام الأموال.</p>
