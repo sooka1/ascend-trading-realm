@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { MessageCircle, Send, LogIn } from "lucide-react";
+import { MessageCircle, Send, LogIn, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "@tanstack/react-router";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -164,9 +163,10 @@ export function SupportFab() {
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+    <>
+      {!open && (
         <button
+          onClick={() => setOpen(true)}
           aria-label="فتح شات الاستفسارات"
           className="group fixed bottom-6 left-6 z-50 flex items-center gap-2 rounded-full border border-primary/30 bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground shadow-glow transition hover:scale-[1.03] hover:bg-primary/90 active:scale-95"
         >
@@ -177,20 +177,34 @@ export function SupportFab() {
             <span className="relative inline-flex h-3 w-3 rounded-full bg-gold" />
           </span>
         </button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-md p-0 overflow-hidden" dir="rtl">
-        <DialogHeader className="border-b border-white/10 bg-card/60 px-4 py-3">
-          <DialogTitle className="flex items-center gap-2 text-base">
-            <MessageCircle className="h-4 w-4 text-gold" /> دعم HK — شات مباشر
-          </DialogTitle>
-          <DialogDescription className="text-xs">
-            {authed
-              ? "محادثتك محفوظة تلقائيًا ويستطيع فريق الدعم الرد في أي وقت."
-              : "يجب تسجيل الدخول أولاً لبدء محادثة الدعم."}
-          </DialogDescription>
-        </DialogHeader>
+      )}
 
-        {authed === false ? (
+      {open && (
+        <aside
+          dir="rtl"
+          className="fixed bottom-4 left-4 z-50 flex w-[min(92vw,22rem)] h-[min(78vh,32rem)] flex-col overflow-hidden rounded-2xl border border-white/10 bg-card/95 shadow-2xl backdrop-blur-xl animate-in slide-in-from-bottom-4 fade-in duration-200"
+        >
+          <div className="flex items-center justify-between border-b border-white/10 bg-card/60 px-4 py-3">
+            <div>
+              <h3 className="flex items-center gap-2 text-base font-semibold">
+                <MessageCircle className="h-4 w-4 text-gold" /> دعم HK — شات مباشر
+              </h3>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {authed
+                  ? "محادثتك محفوظة تلقائيًا."
+                  : "يجب تسجيل الدخول أولاً."}
+              </p>
+            </div>
+            <button
+              onClick={() => setOpen(false)}
+              aria-label="إغلاق"
+              className="rounded-full p-1.5 text-muted-foreground hover:bg-white/10 hover:text-foreground"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+
+          {authed === false ? (
           <div className="flex flex-col items-center gap-3 px-4 py-8 text-center">
             <p className="text-sm text-muted-foreground">سجّل الدخول أو أنشئ حسابًا لبدء المحادثة.</p>
             <Button asChild size="sm" onClick={() => setOpen(false)}>
@@ -201,7 +215,7 @@ export function SupportFab() {
             </Button>
           </div>
         ) : (
-          <div className="flex h-[420px] flex-col">
+          <div className="flex flex-1 min-h-0 flex-col">
             <div ref={listRef} className="flex-1 space-y-2 overflow-y-auto px-3 py-3">
               {loading ? (
                 <p className="py-6 text-center text-xs text-muted-foreground">جارٍ فتح المحادثة…</p>
@@ -259,7 +273,8 @@ export function SupportFab() {
             </div>
           </div>
         )}
-      </DialogContent>
-    </Dialog>
+        </aside>
+      )}
+    </>
   );
 }
