@@ -43,7 +43,14 @@ type Transaction = { id: string; occurred_at: string; symbol: string; side: stri
 
 function DashboardPage() {
   const navigate = useNavigate();
-  const { isAdmin } = useRoles();
+  const { isAdmin, has, loading: rolesLoading } = useRoles();
+
+  // Super admins land on the admin console, not the investor dashboard.
+  useEffect(() => {
+    if (!rolesLoading && has("super_admin")) {
+      navigate({ to: "/admin", replace: true });
+    }
+  }, [rolesLoading, has, navigate]);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [portfolio, setPortfolio] = useState<Portfolio | null>(null);
   const [snapshots, setSnapshots] = useState<Snapshot[]>([]);
