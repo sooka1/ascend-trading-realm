@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { ArrowDownToLine, ArrowRight, ArrowUpFromLine, CheckCircle2, Clock, Copy, Package as PackageIcon, ShieldCheck, Wallet, XCircle } from "lucide-react";
 import { toast } from "sonner";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import trc20QrAsset from "@/assets/trc20-qr.png.asset.json";
 
 export const Route = createFileRoute("/_authenticated/investor")({
@@ -87,6 +88,7 @@ function InvestorPortal() {
   const [depositMethod, setDepositMethod] = useState<"binance_pay" | "usdt_trc20">("binance_pay");
   const [withdrawMethod, setWithdrawMethod] = useState<"binance_pay" | "usdt_trc20">("binance_pay");
   const [pkgAmounts, setPkgAmounts] = useState<Record<string, string>>({});
+  const [confirmSub, setConfirmSub] = useState<{ pkg: Pkg; amount: number } | null>(null);
 
   async function load() {
     const { data: userRes } = await supabase.auth.getUser();
@@ -146,17 +148,11 @@ function InvestorPortal() {
       toast.error("المبلغ يتجاوز الرصيد المتاح");
       return;
     }
-    const weekly = amount * (Number(pkg.target_return_pct) || 0) / 100;
-    const daily = weekly / 5;
-    const remaining = Math.max(0, available - amount);
-    const summary =
-      `تأكيد الاشتراك في باقة ${pkg.name}:\n\n` +
-      `• مبلغ الاستثمار: ${fmt(amount)} ${pkg.currency}\n` +
-      `• الربح الأسبوعي المتوقع: +${fmt(weekly)} ${pkg.currency}\n` +
-      `• الربح اليومي (5 أيام): +${fmt(daily)} ${pkg.currency}\n` +
-      `• المتبقي في المحفظة: ${fmt(remaining)} ${pkg.currency}\n\n` +
-      `هل تريد المتابعة؟`;
-    if (!window.confirm(summary)) return;
+    setConfirmSub({ pkg, amount });
+  }
+
+  async function performSubscribe(pkg: Pkg, amount: number) {
+    if (!uid) return;
     setBusySub(`new:${pkg.id}`);
     const startedAt = new Date();
     const endsAt = new Date(startedAt);
