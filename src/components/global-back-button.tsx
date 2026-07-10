@@ -8,7 +8,19 @@ export function GlobalBackButton() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   if (pathname === "/") return null;
 
+  // On auth / recovery pages, history.back() often lands on a protected
+  // route that redirects right back here (loop), or on the previous auth
+  // step the user just left. Always go to a safe public destination.
+  const isAuthRoute =
+    pathname === "/auth" ||
+    pathname === "/forgot-password" ||
+    pathname === "/reset-password";
+
   const goBack = () => {
+    if (isAuthRoute) {
+      void router.navigate({ to: "/" });
+      return;
+    }
     // Smart back: if there's real in-app history, go back. Otherwise navigate
     // to a sensible fallback — the parent path when nested, else the home page.
     const hasInAppHistory =
