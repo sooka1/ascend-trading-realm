@@ -70,7 +70,7 @@ export function PortalShell({
 }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const router = useRouter();
-  const showBack = pathname !== "/portal";
+  const showBack = true;
   const queryClient = useQueryClient();
   async function handleSignOut() {
     await queryClient.cancelQueries();
