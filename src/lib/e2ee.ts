@@ -184,3 +184,42 @@ export function encryptForBoth(
     body_admin: encryptFor(adminPubB64, plaintext),
   };
 }
+
+// Self-test: try to decrypt the user's most recent chat messages to confirm
+// the current device's secret key is the right one for this account.
+export type DecryptCheck =
+  | { status: "no-messages" }
+  | { status: "no-key" }
+  | { status: "ok"; total: number }
+  | { status: "partial"; ok: number; total: number }
+  | { status: "failed"; total: number };
+
+export async function verifyDecryption(
+  userId: string,
+  secretKeyB64: string | null,
+  limit = 10,
+): Promise<DecryptCheck> {
+  const { data: tickets } = await supabase
+    .from("support_tickets")
+    .select("id")
+    .eq("user_id", userId);
+  const ids = (tickets ?? []).map((t) => t.id);
+  if (ids.length === 0) return { status: "no-messages" };
+  const { data: msgs } = await supabase
+    .from("ticket_messages")
+    .select("body, body_admin")
+    .in("ticket_id", ids)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  const rows = (msgs ?? []).filter((m) => m.body || m.body_admin);
+  if (rows.length === 0) return { status: "no-messages" };
+  if (!secretKeyB64) return { status: "no-key" };
+  let ok = 0;
+  for (const m of rows) {
+    const r = decryptChatBody(m.body, m.body_admin, secretKeyB64);
+    if (r.status === "ok") ok++;
+  }
+  if (ok === rows.length) return { status: "ok", total: rows.length };
+  if (ok === 0) return { status: "failed", total: rows.length };
+  return { status: "partial", ok, total: rows.length };
+}
