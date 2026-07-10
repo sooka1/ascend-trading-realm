@@ -91,8 +91,8 @@ function Home() {
         <MarketTicker />
         <TrustStrip c={c} />
         <CustodyBanks />
-        <Features c={c} />
         <SolutionsPreview c={c} />
+        <Features c={c} />
         <PerformanceBand c={c} />
         <RiskFramework c={c} />
         <SecurityBlock c={c} />
