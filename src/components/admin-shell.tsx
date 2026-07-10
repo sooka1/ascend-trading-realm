@@ -19,6 +19,7 @@ import {
   DatabaseBackup,
   Search,
   Zap,
+  MessageCircle,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
