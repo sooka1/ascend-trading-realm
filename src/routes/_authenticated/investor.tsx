@@ -26,7 +26,7 @@ type Dep = { id: string; amount: number; currency: string; method: string; refer
 type Wd = { id: string; amount: number; currency: string; destination: string; iban: string | null; status: string; created_at: string };
 const depositSchema = z.object({
   amount: z.coerce.number().positive().max(10_000_000),
-  method: z.enum(["bank_transfer", "card", "binance_pay", "usdt_trc20", "usdt_bep20"]),
+  method: z.enum(["binance_pay", "usdt_trc20"]),
   reference: z.string().trim().max(120).optional(),
   notes: z.string().trim().max(500).optional(),
 });
@@ -44,10 +44,6 @@ const ADDRESS_RULES = {
     regex: /^T[1-9A-HJ-NP-Za-km-z]{33}$/,
     label: "عنوان TRC20 غير صالح (يجب أن يبدأ بحرف T ويتكوّن من 34 خانة)",
   },
-  usdt_bep20: {
-    regex: /^0x[a-fA-F0-9]{40}$/,
-    label: "عنوان BEP20 غير صالح (يجب أن يبدأ بـ 0x ويتكوّن من 42 خانة)",
-  },
   binance_pay: {
     regex: /^[0-9]{6,20}$/,
     label: "Binance Pay ID غير صالح (أرقام فقط، 6 إلى 20 خانة)",
@@ -55,7 +51,6 @@ const ADDRESS_RULES = {
 } as const;
 const TXID_RULES = {
   usdt_trc20: { regex: /^[a-fA-F0-9]{64}$/, label: "TxID لشبكة TRC20 يجب أن يكون 64 خانة hex" },
-  usdt_bep20: { regex: /^0x[a-fA-F0-9]{64}$/, label: "TxID لشبكة BEP20 يجب أن يبدأ بـ 0x ويتكوّن من 66 خانة" },
   binance_pay: { regex: /^[A-Za-z0-9-]{8,64}$/, label: "رقم مرجع Binance Pay غير صالح" },
 } as const;
 
@@ -63,7 +58,6 @@ const TXID_RULES = {
 const PLATFORM_WALLETS = {
   binance_pay: "194857355",
   usdt_trc20: "TXxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-  usdt_bep20: "0xHKxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 } as const;
 
 // Guardrail: the platform's Binance Pay ID must match the same numeric format
