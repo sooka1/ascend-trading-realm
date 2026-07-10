@@ -815,7 +815,7 @@ export const listPaymentsAdmin = createServerFn({ method: "GET" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     let dq = supabaseAdmin
       .from("deposits")
-      .select("id,user_id,amount,currency,method,reference,status,created_at,reviewed_at")
+      .select("id,user_id,amount,currency,method,reference,status,created_at,reviewed_at,notes")
       .order("created_at", { ascending: false })
       .limit(300);
     let wq = supabaseAdmin
@@ -855,6 +855,11 @@ export const listPaymentsAdmin = createServerFn({ method: "GET" })
         status: r.status,
         created_at: r.created_at,
         reviewed_at: r.reviewed_at,
+        receipt_path: (() => {
+          const m = typeof r.notes === "string" ? r.notes.match(/\[receipt:documents\/([^\]\s]+)\]/) : null;
+          return m ? m[1] : null;
+        })(),
+        notes: r.notes ?? null,
       })),
       ...(wds.data ?? []).map((r: any) => ({
         id: r.id,
@@ -868,6 +873,8 @@ export const listPaymentsAdmin = createServerFn({ method: "GET" })
         status: r.status,
         created_at: r.created_at,
         reviewed_at: r.reviewed_at,
+        receipt_path: null,
+        notes: null,
       })),
     ].sort((a, b) => +new Date(b.created_at) - +new Date(a.created_at));
     const totals = {
@@ -950,4 +957,21 @@ export const getAccountingSummary = createServerFn({ method: "GET" })
       { revenue: 0, expenses: 0, net: 0, subscriptions: 0 },
     );
     return { rows, totals };
+  });
+
+export const getReceiptSignedUrlAdmin = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { path: string }) => {
+    if (!data?.path || typeof data.path !== "string") throw new Error("path required");
+    return data;
+  })
+  .handler(async ({ data, context }) => {
+    const auth = await assertAdmin(context);
+    if (!auth.ok) throw new Error("Forbidden");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: signed, error } = await supabaseAdmin.storage
+      .from("documents")
+      .createSignedUrl(data.path, 60 * 10);
+    if (error) throw new Error(error.message);
+    return { url: signed.signedUrl };
   });
