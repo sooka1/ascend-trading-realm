@@ -303,16 +303,50 @@ function InvestorPortal() {
     if (!code) return;
     const { error: mfaErr } = await supabase.auth.mfa.challengeAndVerify({ factorId: totp.id, code: code.trim() });
     if (mfaErr) return toast.error("رمز التحقق غير صحيح");
+    // Snapshot active subscriptions BEFORE insert so we can diff post-trigger.
+    const before = subs
+      .filter((s) => s.status === "active")
+      .map((s) => ({ id: s.id, amount: Number(s.amount) }));
     const { error } = await supabase.from("withdrawals").insert({ user_id: uid, ...parsed.data });
     if (error) return toast.error(error.message);
-    // Capital deduction from active subscriptions is applied atomically by the
-    // AFTER INSERT trigger `trg_withdrawals_apply_capital` on public.withdrawals.
+    // The AFTER INSERT trigger `trg_withdrawals_apply_capital` deducts capital
+    // atomically. Read the post-trigger state to surface a clear status.
+    const { data: after } = await supabase
+      .from("subscriptions")
+      .select("id,amount,status")
+      .eq("user_id", uid)
+      .in("id", before.map((b) => b.id));
+    const afterMap = new Map((after ?? []).map((s) => [s.id as string, s]));
+    let deducted = 0;
+    let cancelled = 0;
+    let returned = 0;
+    for (const b of before) {
+      const a = afterMap.get(b.id);
+      if (!a) continue;
+      const diff = b.amount - Number(a.amount);
+      if (diff > 0) deducted += diff;
+      if (a.status === "cancelled") {
+        cancelled++;
+        returned += Number(a.amount); // leftover returned to general wallet
+      }
+    }
     await supabase.from("notifications").insert({
       user_id: uid,
       title: "تم استلام طلب السحب",
       body: `${fmt(parsed.data.amount)} — قيد المراجعة`,
     });
-    toast.success("تم إرسال طلب السحب بنجاح");
+    toast.success(`تم إرسال طلب السحب بنجاح — ${fmt(parsed.data.amount)} قيد المراجعة`);
+    if (deducted > 0) {
+      toast.info(`تم خصم ${fmt(deducted)} من رأس المال في الاشتراكات النشطة`);
+    }
+    if (cancelled > 0) {
+      toast.warning(
+        `تم إلغاء ${cancelled} اشتراك${cancelled > 1 ? "ات" : ""} لانخفاض رأس المال تحت الحد الأدنى`,
+      );
+    }
+    if (returned > 0) {
+      toast.success(`تم تحويل ${fmt(returned)} إلى المحفظة العامة`);
+    }
     (e.currentTarget as HTMLFormElement).reset();
     await load();
     void router.invalidate();
