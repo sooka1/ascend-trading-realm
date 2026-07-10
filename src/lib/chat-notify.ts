@@ -3,6 +3,71 @@
 import { toast } from "sonner";
 
 let ctx: AudioContext | null = null;
+let swRegPromise: Promise<ServiceWorkerRegistration | null> | null = null;
+
+function isPreviewHost(): boolean {
+  if (typeof window === "undefined") return false;
+  const h = window.location.hostname;
+  return (
+    h.startsWith("id-preview--") ||
+    h.startsWith("preview--") ||
+    h === "lovableproject.com" ||
+    h.endsWith(".lovableproject.com") ||
+    h === "lovableproject-dev.com" ||
+    h.endsWith(".lovableproject-dev.com") ||
+    h === "beta.lovable.dev" ||
+    h.endsWith(".beta.lovable.dev") ||
+    window.self !== window.top
+  );
+}
+
+export function canUseChatNotifications(): boolean {
+  return (
+    typeof window !== "undefined" &&
+    "serviceWorker" in navigator &&
+    "Notification" in window &&
+    !isPreviewHost()
+  );
+}
+
+export function registerChatNotificationSW(): Promise<ServiceWorkerRegistration | null> {
+  if (!canUseChatNotifications()) return Promise.resolve(null);
+  if (!swRegPromise) {
+    swRegPromise = navigator.serviceWorker
+      .register("/chat-notification-sw.js", { scope: "/" })
+      .catch(() => null);
+  }
+  return swRegPromise;
+}
+
+export async function ensureChatNotificationPermission(): Promise<NotificationPermission> {
+  if (!canUseChatNotifications()) return "denied";
+  if (Notification.permission === "default") {
+    try { return await Notification.requestPermission(); } catch { return "denied"; }
+  }
+  return Notification.permission;
+}
+
+async function showSystemNotification(title: string, body?: string, url?: string) {
+  if (!canUseChatNotifications()) return;
+  if (Notification.permission !== "granted") return;
+  const reg = await registerChatNotificationSW();
+  const payload = { type: "chat-notify", title, body: body ?? "", url: url ?? window.location.pathname, tag: "hk-chat" };
+  if (reg && reg.active) {
+    reg.active.postMessage(payload);
+    return;
+  }
+  try {
+    const r = reg ?? (await navigator.serviceWorker.ready);
+    await r.showNotification(title, {
+      body: body ?? "",
+      tag: "hk-chat",
+      icon: "/android-chrome-192x192.png",
+      badge: "/favicon-32x32.png",
+      data: { url: url ?? window.location.pathname },
+    });
+  } catch { /* ignore */ }
+}
 
 export function playChatChime() {
   try {
@@ -33,7 +98,12 @@ export function playChatChime() {
   }
 }
 
-export function notifyIncomingMessage(title: string, description?: string) {
+export function notifyIncomingMessage(title: string, description?: string, url?: string) {
   playChatChime();
   toast(title, description ? { description } : undefined);
+  // Show OS/browser notification when the tab is hidden or unfocused,
+  // so the other party is alerted even without the chat tab open.
+  if (typeof document !== "undefined" && (document.hidden || !document.hasFocus())) {
+    void showSystemNotification(title, description, url);
+  }
 }
