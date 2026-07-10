@@ -260,6 +260,39 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_broadcasts: {
+        Row: {
+          body: string | null
+          created_at: string
+          error: string | null
+          id: string
+          recipients_count: number
+          sender_id: string
+          status: string
+          title: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          error?: string | null
+          id?: string
+          recipients_count?: number
+          sender_id: string
+          status?: string
+          title: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          error?: string | null
+          id?: string
+          recipients_count?: number
+          sender_id?: string
+          status?: string
+          title?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           body: string | null
