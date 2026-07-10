@@ -227,9 +227,16 @@ function ReviewsSection() {
           <p className="mt-3 text-muted-foreground">{r.subtitle}</p>
         </div>
         <Carousel
-          opts={{ align: "start", loop: true, direction: lang === "ar" ? "rtl" : "ltr" }}
+          opts={{
+            align: "start",
+            loop: true,
+            direction: lang === "ar" ? "rtl" : "ltr",
+            watchDrag: true,
+            dragFree: false,
+            dragThreshold: 8,
+          }}
           plugins={[autoplay.current]}
-          className="mt-10"
+          className="mt-10 touch-pan-y"
         >
           <CarouselContent className="-ml-5">
             {r.items.map((it) => (
