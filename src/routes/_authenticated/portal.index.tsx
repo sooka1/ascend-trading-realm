@@ -31,8 +31,8 @@ function PortalPage() {
   const [draft, setDraft] = useState("");
   const [uid, setUid] = useState<string | null>(null);
   const { available, balance, committed, loading: balanceLoading } = useAvailableBalance();
-  const totalPortfolio = balance + committed;
   const [profitsTotal, setProfitsTotal] = useState(0);
+  const totalPortfolio = balance + committed + profitsTotal;
 
   useEffect(() => {
     void (async () => {
