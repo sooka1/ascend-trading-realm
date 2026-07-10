@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { AdminShell, AdminCard } from "@/components/admin-shell";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { MessageCircle, Send } from "lucide-react";
+import { MessageCircle, Send, Paperclip, X } from "lucide-react";
 import { toast } from "sonner";
 import { ensureMyKeypair, encryptFor, decryptChatBody } from "@/lib/e2ee";
 import { EncryptedBody } from "@/components/encrypted-body";
@@ -15,6 +15,8 @@ import {
   ensureChatNotificationPermission,
 } from "@/lib/chat-notify";
 import { MessageStatus } from "@/components/message-status";
+import { ChatAttachment } from "@/components/chat-attachment";
+import { uploadChatAttachment, formatBytes } from "@/lib/chat-attachments";
 
 export const Route = createFileRoute("/_authenticated/_admin/admin/live-chat")({
   head: () => ({
@@ -44,6 +46,10 @@ type Msg = {
   body_admin: string | null;
   is_staff: boolean;
   created_at: string;
+  attachment_path?: string | null;
+  attachment_name?: string | null;
+  attachment_mime?: string | null;
+  attachment_size?: number | null;
 };
 type Profile = { id: string; display_name: string | null; email: string | null; public_key: string | null };
 
@@ -60,6 +66,8 @@ function AdminLiveChat() {
   const [unreadByTicket, setUnreadByTicket] = useState<Record<string, number>>({});
   const [clientReadAt, setClientReadAt] = useState<string | null>(null);
   const [clientTyping, setClientTyping] = useState(false);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const channelRef = useRef<RealtimeChannel | null>(null);
   const lastTypingSentRef = useRef(0);
   const typingClearRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -239,26 +247,43 @@ function AdminLiveChat() {
   }, [messages.length, selected?.id]);
 
   async function reply() {
-    if (!selected || !uid || !draft.trim() || sending) return;
+    if (!selected || !uid || sending) return;
+    if (!draft.trim() && !pendingFile) return;
     if (!mySk || !myPk) return toast.error("جارٍ تجهيز التشفير");
     setSending(true);
-    const body = draft.trim();
-    const ownerPk = profiles[selected.user_id]?.public_key ?? null;
-    // Encrypt a copy to the client when we know their public key; always
-    // encrypt a copy to self so admin can read the reply back.
-    const bodyForOwner = ownerPk ? encryptFor(ownerPk, body) : null;
-    const bodyForAdmin = encryptFor(myPk, body);
-    const { error } = await supabase
-      .from("ticket_messages")
-      .insert({ ticket_id: selected.id, sender_id: uid, body: bodyForOwner, body_admin: bodyForAdmin, is_staff: true });
-    if (!error) {
+    try {
+      const body = draft.trim();
+      const ownerPk = profiles[selected.user_id]?.public_key ?? null;
+      let attachment: Awaited<ReturnType<typeof uploadChatAttachment>> | null = null;
+      if (pendingFile) {
+        attachment = await uploadChatAttachment(selected.id, pendingFile);
+      }
+      const bodyForOwner = body && ownerPk ? encryptFor(ownerPk, body) : null;
+      const bodyForAdmin = body ? encryptFor(myPk, body) : null;
+      const insertPayload: Record<string, unknown> = {
+        ticket_id: selected.id,
+        sender_id: uid,
+        body: bodyForOwner,
+        body_admin: bodyForAdmin,
+        is_staff: true,
+      };
+      if (attachment) Object.assign(insertPayload, attachment);
+      const { error } = await supabase
+        .from("ticket_messages")
+        .insert(insertPayload as never);
+      if (error) throw error;
       await supabase
         .from("support_tickets")
         .update({ last_message_at: new Date().toISOString(), status: "open" })
         .eq("id", selected.id);
       setDraft("");
-    } else toast.error(error.message);
-    setSending(false);
+      setPendingFile(null);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "تعذّر إرسال الرد");
+    } finally {
+      setSending(false);
+    }
   }
 
   const nameFor = (userId: string) => {
@@ -351,6 +376,14 @@ function AdminLiveChat() {
                           <p className="whitespace-pre-wrap break-words">
                             <EncryptedBody result={decoded} />
                           </p>
+                          {m.attachment_path && m.attachment_name && m.attachment_mime && (
+                            <ChatAttachment
+                              path={m.attachment_path}
+                              name={m.attachment_name}
+                              mime={m.attachment_mime}
+                              size={m.attachment_size ?? 0}
+                            />
+                          )}
                           <p className="mt-1 text-[9px] opacity-60">
                             {new Date(m.created_at).toLocaleTimeString([], {
                               hour: "2-digit",
@@ -373,7 +406,51 @@ function AdminLiveChat() {
                   })
                 )}
               </div>
+              {pendingFile && (
+                <div className="mt-3 flex items-center justify-between gap-2 rounded-md border border-white/10 bg-white/[0.04] px-2 py-1 text-[11px]">
+                  <span className="truncate">
+                    📎 {pendingFile.name}{" "}
+                    <span className="opacity-60">({formatBytes(pendingFile.size)})</span>
+                  </span>
+                  <button
+                    type="button"
+                    className="text-muted-foreground hover:text-foreground"
+                    onClick={() => {
+                      setPendingFile(null);
+                      if (fileInputRef.current) fileInputRef.current.value = "";
+                    }}
+                    aria-label="إزالة المرفق"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+              )}
               <div className="mt-3 flex items-end gap-2 border-t border-white/5 pt-3">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  className="hidden"
+                  accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.rar,.csv"
+                  onChange={(e) => {
+                    const f = e.target.files?.[0] ?? null;
+                    if (f && f.size > 25 * 1024 * 1024) {
+                      toast.error("حجم الملف يتجاوز 25 ميغابايت");
+                      e.target.value = "";
+                      return;
+                    }
+                    setPendingFile(f);
+                  }}
+                />
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  aria-label="إرفاق ملف"
+                  className="h-9 w-9 p-0"
+                >
+                  <Paperclip className="h-4 w-4" />
+                </Button>
                 <Textarea
                   value={draft}
                   onChange={(e) => {
@@ -389,7 +466,11 @@ function AdminLiveChat() {
                   placeholder="اكتب رداً…"
                   className="min-h-[60px] bg-white/[0.02]"
                 />
-                <Button size="sm" onClick={reply} disabled={sending || !draft.trim()}>
+                <Button
+                  size="sm"
+                  onClick={reply}
+                  disabled={sending || (!draft.trim() && !pendingFile)}
+                >
                   <Send className="h-4 w-4" />
                 </Button>
               </div>
