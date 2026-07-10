@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
+import type { RealtimeChannel } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminShell, AdminCard } from "@/components/admin-shell";
 import { Button } from "@/components/ui/button";
@@ -54,6 +55,10 @@ function AdminLiveChat() {
   const [myPk, setMyPk] = useState<string | null>(null);
   const [unreadByTicket, setUnreadByTicket] = useState<Record<string, number>>({});
   const [clientReadAt, setClientReadAt] = useState<string | null>(null);
+  const [clientTyping, setClientTyping] = useState(false);
+  const channelRef = useRef<RealtimeChannel | null>(null);
+  const lastTypingSentRef = useRef(0);
+  const typingClearRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const listRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -143,6 +148,7 @@ function AdminLiveChat() {
   // Realtime: subscribe to messages of the selected ticket
   useEffect(() => {
     if (!selected) return;
+    setClientTyping(false);
     const ch = supabase
       .channel(`admin-ticket-${selected.id}`)
       .on(
@@ -178,11 +184,30 @@ function AdminLiveChat() {
           setClientReadAt(t.client_last_read_at ?? null);
         },
       )
+      .on("broadcast", { event: "typing" }, (payload) => {
+        const p = payload.payload as { from?: string };
+        if (p?.from !== "client") return;
+        setClientTyping(true);
+        if (typingClearRef.current) clearTimeout(typingClearRef.current);
+        typingClearRef.current = setTimeout(() => setClientTyping(false), 2500);
+      })
       .subscribe();
+    channelRef.current = ch;
     return () => {
+      channelRef.current = null;
+      if (typingClearRef.current) clearTimeout(typingClearRef.current);
       supabase.removeChannel(ch);
     };
   }, [selected?.id, uid]);
+
+  function emitTyping() {
+    const ch = channelRef.current;
+    if (!ch || !uid) return;
+    const now = Date.now();
+    if (now - lastTypingSentRef.current < 1500) return;
+    lastTypingSentRef.current = now;
+    void ch.send({ type: "broadcast", event: "typing", payload: { from: "staff", uid } });
+  }
 
   useEffect(() => {
     if (listRef.current) listRef.current.scrollTop = listRef.current.scrollHeight;
@@ -326,7 +351,10 @@ function AdminLiveChat() {
               <div className="mt-3 flex items-end gap-2 border-t border-white/5 pt-3">
                 <Textarea
                   value={draft}
-                  onChange={(e) => setDraft(e.target.value)}
+                  onChange={(e) => {
+                    setDraft(e.target.value);
+                    emitTyping();
+                  }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && !e.shiftKey) {
                       e.preventDefault();
@@ -340,6 +368,11 @@ function AdminLiveChat() {
                   <Send className="h-4 w-4" />
                 </Button>
               </div>
+              {clientTyping && (
+                <p className="mt-1 px-1 text-[10px] text-muted-foreground animate-pulse">
+                  {nameFor(selected.user_id)} يكتب…
+                </p>
+              )}
             </div>
           )}
         </AdminCard>
