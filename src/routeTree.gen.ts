@@ -53,6 +53,7 @@ import { Route as AuthenticatedAppPortfolioRouteImport } from './routes/_authent
 import { Route as AuthenticatedAppActivityRouteImport } from './routes/_authenticated/app.activity'
 import { Route as AuthenticatedAdminAdminIndexRouteImport } from './routes/_authenticated/_admin/admin.index'
 import { Route as AuthenticatedAdminAdminUsersRouteImport } from './routes/_authenticated/_admin/admin.users'
+import { Route as AuthenticatedAdminAdminSupportRouteImport } from './routes/_authenticated/_admin/admin.support'
 import { Route as AuthenticatedAdminAdminSubscriptionsRouteImport } from './routes/_authenticated/_admin/admin.subscriptions'
 import { Route as AuthenticatedAdminAdminRolesRouteImport } from './routes/_authenticated/_admin/admin.roles'
 import { Route as AuthenticatedAdminAdminPaymentsRouteImport } from './routes/_authenticated/_admin/admin.payments'
@@ -299,6 +300,12 @@ const AuthenticatedAdminAdminUsersRoute =
     path: '/admin/users',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
+const AuthenticatedAdminAdminSupportRoute =
+  AuthenticatedAdminAdminSupportRouteImport.update({
+    id: '/admin/support',
+    path: '/admin/support',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 const AuthenticatedAdminAdminSubscriptionsRoute =
   AuthenticatedAdminAdminSubscriptionsRouteImport.update({
     id: '/admin/subscriptions',
@@ -404,6 +411,7 @@ export interface FileRoutesByFullPath {
   '/admin/payments': typeof AuthenticatedAdminAdminPaymentsRoute
   '/admin/roles': typeof AuthenticatedAdminAdminRolesRoute
   '/admin/subscriptions': typeof AuthenticatedAdminAdminSubscriptionsRoute
+  '/admin/support': typeof AuthenticatedAdminAdminSupportRoute
   '/admin/users': typeof AuthenticatedAdminAdminUsersRoute
   '/admin/': typeof AuthenticatedAdminAdminIndexRoute
 }
@@ -457,6 +465,7 @@ export interface FileRoutesByTo {
   '/admin/payments': typeof AuthenticatedAdminAdminPaymentsRoute
   '/admin/roles': typeof AuthenticatedAdminAdminRolesRoute
   '/admin/subscriptions': typeof AuthenticatedAdminAdminSubscriptionsRoute
+  '/admin/support': typeof AuthenticatedAdminAdminSupportRoute
   '/admin/users': typeof AuthenticatedAdminAdminUsersRoute
   '/admin': typeof AuthenticatedAdminAdminIndexRoute
 }
@@ -513,6 +522,7 @@ export interface FileRoutesById {
   '/_authenticated/_admin/admin/payments': typeof AuthenticatedAdminAdminPaymentsRoute
   '/_authenticated/_admin/admin/roles': typeof AuthenticatedAdminAdminRolesRoute
   '/_authenticated/_admin/admin/subscriptions': typeof AuthenticatedAdminAdminSubscriptionsRoute
+  '/_authenticated/_admin/admin/support': typeof AuthenticatedAdminAdminSupportRoute
   '/_authenticated/_admin/admin/users': typeof AuthenticatedAdminAdminUsersRoute
   '/_authenticated/_admin/admin/': typeof AuthenticatedAdminAdminIndexRoute
 }
@@ -568,6 +578,7 @@ export interface FileRouteTypes {
     | '/admin/payments'
     | '/admin/roles'
     | '/admin/subscriptions'
+    | '/admin/support'
     | '/admin/users'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
@@ -621,6 +632,7 @@ export interface FileRouteTypes {
     | '/admin/payments'
     | '/admin/roles'
     | '/admin/subscriptions'
+    | '/admin/support'
     | '/admin/users'
     | '/admin'
   id:
@@ -676,6 +688,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_admin/admin/payments'
     | '/_authenticated/_admin/admin/roles'
     | '/_authenticated/_admin/admin/subscriptions'
+    | '/_authenticated/_admin/admin/support'
     | '/_authenticated/_admin/admin/users'
     | '/_authenticated/_admin/admin/'
   fileRoutesById: FileRoutesById
@@ -1011,6 +1024,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminAdminUsersRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/_admin/admin/support': {
+      id: '/_authenticated/_admin/admin/support'
+      path: '/admin/support'
+      fullPath: '/admin/support'
+      preLoaderRoute: typeof AuthenticatedAdminAdminSupportRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/_admin/admin/subscriptions': {
       id: '/_authenticated/_admin/admin/subscriptions'
       path: '/admin/subscriptions'
@@ -1087,6 +1107,7 @@ interface AuthenticatedAdminRouteRouteChildren {
   AuthenticatedAdminAdminPaymentsRoute: typeof AuthenticatedAdminAdminPaymentsRoute
   AuthenticatedAdminAdminRolesRoute: typeof AuthenticatedAdminAdminRolesRoute
   AuthenticatedAdminAdminSubscriptionsRoute: typeof AuthenticatedAdminAdminSubscriptionsRoute
+  AuthenticatedAdminAdminSupportRoute: typeof AuthenticatedAdminAdminSupportRoute
   AuthenticatedAdminAdminUsersRoute: typeof AuthenticatedAdminAdminUsersRoute
   AuthenticatedAdminAdminIndexRoute: typeof AuthenticatedAdminAdminIndexRoute
 }
@@ -1106,6 +1127,7 @@ const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren
     AuthenticatedAdminAdminRolesRoute: AuthenticatedAdminAdminRolesRoute,
     AuthenticatedAdminAdminSubscriptionsRoute:
       AuthenticatedAdminAdminSubscriptionsRoute,
+    AuthenticatedAdminAdminSupportRoute: AuthenticatedAdminAdminSupportRoute,
     AuthenticatedAdminAdminUsersRoute: AuthenticatedAdminAdminUsersRoute,
     AuthenticatedAdminAdminIndexRoute: AuthenticatedAdminAdminIndexRoute,
   }

@@ -41,6 +41,7 @@ const NAV: NavItem[] = [
   { to: "/admin/invoices", icon: FileText, label: "الفواتير", group: "operations", enabled: true },
   { to: "/admin/payments", icon: Wallet, label: "المدفوعات", group: "operations", enabled: true },
   { to: "/admin/accounting", icon: FileText, label: "التقارير المحاسبية", group: "operations", enabled: true },
+  { to: "/admin/support", icon: MessageCircle, label: "رسائل العملاء", group: "operations", enabled: true },
 
   { to: "/admin/users", icon: Users, label: "المستخدمون", group: "identity", enabled: true },
   { to: "/admin/roles", icon: ShieldCheck, label: "الأدوار والصلاحيات", group: "identity", enabled: true },
