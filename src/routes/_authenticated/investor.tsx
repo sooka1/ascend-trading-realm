@@ -89,25 +89,29 @@ function InvestorPortal() {
   const [withdrawMethod, setWithdrawMethod] = useState<"binance_pay" | "usdt_trc20">("binance_pay");
   const [pkgAmounts, setPkgAmounts] = useState<Record<string, string>>({});
   const [confirmSub, setConfirmSub] = useState<{ pkg: Pkg; amount: number } | null>(null);
-  const [editSub, setEditSub] = useState<{ id: string; value: string } | null>(null);
+  const [editSub, setEditSub] = useState<{ id: string; value: string; reason: string } | null>(null);
+  type AmountChange = { id: string; subscription_id: string; amount_before: number; amount_after: number; amount_delta: number; currency: string; reason: string | null; created_at: string };
+  const [amountChanges, setAmountChanges] = useState<AmountChange[]>([]);
 
   async function load() {
     const { data: userRes } = await supabase.auth.getUser();
     const id = userRes.user?.id ?? null;
     setUid(id);
     if (!id) return setLoading(false);
-    const [{ data: pk }, { data: sb }, { data: dp }, { data: wd }, { data: al }] = await Promise.all([
+    const [{ data: pk }, { data: sb }, { data: dp }, { data: wd }, { data: al }, { data: sac }] = await Promise.all([
       supabase.from("packages").select("*").eq("active", true).order("sort_order"),
       supabase.from("subscriptions").select("*").eq("user_id", id).order("created_at", { ascending: false }),
       supabase.from("deposits").select("*").eq("user_id", id).order("created_at", { ascending: false }),
       supabase.from("withdrawals").select("*").eq("user_id", id).order("created_at", { ascending: false }),
       supabase.from("withdrawal_audit_log").select("*").eq("user_id", id).order("created_at", { ascending: false }),
+      supabase.from("subscription_amount_changes").select("*").eq("user_id", id).order("created_at", { ascending: false }),
     ]);
     setPackages((pk ?? []) as Pkg[]);
     setSubs((sb ?? []) as Sub[]);
     setDeps((dp ?? []) as Dep[]);
     setWds((wd ?? []) as Wd[]);
     setAudit((al ?? []) as AuditRow[]);
+    setAmountChanges((sac ?? []) as AmountChange[]);
     setLoading(false);
   }
 
