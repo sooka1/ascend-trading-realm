@@ -215,7 +215,7 @@ function Hero({ c }: { c: LandingContent }) {
               {c.hero.badge}
             </span>
           </div>
-          <h1 className="mt-8 font-display text-[2.75rem] font-bold leading-[1.05] tracking-tight md:text-6xl lg:text-[4.5rem]">
+          <h1 className="mt-8 font-display text-[2.75rem] font-bold leading-[1.4] tracking-tight md:text-6xl md:leading-[1.35] lg:text-[4.5rem] lg:leading-[1.3]">
             {c.hero.titleA}{" "}
             <span className="italic font-normal text-gold">{c.hero.titleB}</span>
             <br />
