@@ -318,8 +318,15 @@ export function SupportFab() {
                         <p className="mt-1 text-[9px] opacity-60">
                           {new Date(m.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                         </p>
-                        <MessageStatus mine={mine} delivered={!!m.body_admin} />
-                        {(() => null)()}
+                        <MessageStatus
+                          mine={mine}
+                          delivered={!!m.body_admin}
+                          read={
+                            mine &&
+                            !!adminReadAt &&
+                            new Date(adminReadAt) >= new Date(m.created_at)
+                          }
+                        />
                       </div>
                     </div>
                   );
