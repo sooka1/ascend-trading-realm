@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { PortalShell, PortalCard } from "@/components/portal-shell";
-import { Wallet, PieChart, TrendingUp, Layers, ArrowDownToLine, ArrowUpFromLine } from "lucide-react";
+import { Wallet, PieChart, TrendingUp, Layers, ArrowDownToLine, ArrowUpFromLine, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/portal/portfolio")({
@@ -32,20 +32,32 @@ type Subscription = {
   packages: { name: string; risk_level: string | null; target_return_pct: number | null } | null;
 };
 
+type Withdrawal = {
+  id: string;
+  amount: number;
+  currency: string;
+  destination: string;
+  status: string;
+  created_at: string;
+};
+
 const fmt = (n: number) => new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 }).format(n);
 
 function PortfolioPage() {
   const [snaps, setSnaps] = useState<Snapshot[]>([]);
   const [subs, setSubs] = useState<Subscription[]>([]);
+  const [wds, setWds] = useState<Withdrawal[]>([]);
 
   useEffect(() => {
     void (async () => {
-      const [{ data: s }, { data: p }] = await Promise.all([
+      const [{ data: s }, { data: p }, { data: w }] = await Promise.all([
         supabase.from("portfolio_snapshots").select("*").order("as_of_date", { ascending: false }).limit(90),
         supabase.from("subscriptions").select("*, packages(name,risk_level,target_return_pct)").order("started_at", { ascending: false }),
+        supabase.from("withdrawals").select("id,amount,currency,destination,status,created_at").order("created_at", { ascending: false }).limit(10),
       ]);
       setSnaps((s ?? []) as Snapshot[]);
       setSubs((p ?? []) as unknown as Subscription[]);
+      setWds((w ?? []) as Withdrawal[]);
     })();
   }, []);
 
@@ -177,6 +189,28 @@ function PortfolioPage() {
         </PortalCard>
       </div>
 
+      <div className="mt-6">
+        <PortalCard title="طلبات السحب" icon={Clock}>
+          {wds.length === 0 ? (
+            <p className="py-6 text-center text-sm text-muted-foreground">لا توجد طلبات سحب بعد.</p>
+          ) : (
+            <ul className="space-y-2.5">
+              {wds.map((w) => (
+                <li key={w.id} className="flex items-center justify-between gap-3 rounded-md border border-white/10 bg-white/[0.02] p-3">
+                  <div className="min-w-0">
+                    <p className="truncate font-mono text-sm tabular-nums">{fmt(Number(w.amount))} {w.currency}</p>
+                    <p className="truncate font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                      {w.destination} · {new Date(w.created_at).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <StatusBadge status={w.status} />
+                </li>
+              ))}
+            </ul>
+          )}
+        </PortalCard>
+      </div>
+
       {snaps.length === 0 && !latest && (
         <div className="mt-6 flex items-center gap-3 rounded-md border border-white/10 bg-card/40 p-4 text-sm text-muted-foreground">
           <Wallet className="h-4 w-4 text-gold" />
@@ -188,6 +222,22 @@ function PortfolioPage() {
 }
 
 const BAR_COLORS = ["#d4af37", "#8b6f2a", "#e8c866", "#5b4a1c", "#b8912e", "#f0d97a"];
+
+function StatusBadge({ status }: { status: string }) {
+  const map: Record<string, string> = {
+    pending: "border-amber-400/40 text-amber-300 bg-amber-400/10",
+    approved: "border-emerald-400/40 text-emerald-300 bg-emerald-400/10",
+    completed: "border-emerald-400/40 text-emerald-300 bg-emerald-400/10",
+    rejected: "border-red-400/40 text-red-300 bg-red-400/10",
+    canceled: "border-white/15 text-muted-foreground bg-white/[0.03]",
+  };
+  const cls = map[status] ?? "border-white/15 text-muted-foreground bg-white/[0.03]";
+  return (
+    <span className={`shrink-0 rounded-full border px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider ${cls}`}>
+      {status}
+    </span>
+  );
+}
 
 function Kpi({ label, value, unit, positive }: { label: string; value: string; unit?: string; positive?: boolean }) {
   const tone = positive === undefined ? "text-foreground" : positive ? "text-emerald-400" : "text-red-400";
