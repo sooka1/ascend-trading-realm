@@ -70,6 +70,56 @@ export function tryDecrypt(cipherStr: string | null | undefined, secretKeyB64: s
   }
 }
 
+// Rich decryption result — lets the UI distinguish "still loading key",
+// "not for this device", "malformed", vs a successful decrypt.
+export type DecryptResult =
+  | { status: "ok"; text: string }
+  | { status: "loading" } // secret key not ready yet
+  | { status: "not-for-me" } // valid ciphertext but our key doesn't open it
+  | { status: "corrupt" } // unparseable / malformed
+  | { status: "empty" }; // no ciphertext at all
+
+function attemptOne(
+  s: string | null | undefined,
+  secretKeyB64: string,
+): { ok: true; text: string } | { ok: false; corrupt: boolean } {
+  if (!s) return { ok: false, corrupt: false };
+  let parsed: { e?: string; n?: string; c?: string };
+  try {
+    parsed = JSON.parse(s);
+  } catch {
+    return { ok: false, corrupt: true };
+  }
+  if (!parsed.e || !parsed.n || !parsed.c) return { ok: false, corrupt: true };
+  try {
+    const opened = nacl.box.open(
+      naclUtil.decodeBase64(parsed.c),
+      naclUtil.decodeBase64(parsed.n),
+      naclUtil.decodeBase64(parsed.e),
+      naclUtil.decodeBase64(secretKeyB64),
+    );
+    if (!opened) return { ok: false, corrupt: false };
+    return { ok: true, text: naclUtil.encodeUTF8(opened) };
+  } catch {
+    return { ok: false, corrupt: true };
+  }
+}
+
+export function decryptChatBody(
+  primary: string | null | undefined,
+  secondary: string | null | undefined,
+  secretKeyB64: string | null,
+): DecryptResult {
+  if (!primary && !secondary) return { status: "empty" };
+  if (!secretKeyB64) return { status: "loading" };
+  const a = attemptOne(primary, secretKeyB64);
+  if (a.ok) return { status: "ok", text: a.text };
+  const b = attemptOne(secondary, secretKeyB64);
+  if (b.ok) return { status: "ok", text: b.text };
+  const anyValid = (primary && !a.corrupt) || (secondary && !b.corrupt);
+  return anyValid ? { status: "not-for-me" } : { status: "corrupt" };
+}
+
 export async function getSuperAdminPublicKey(): Promise<string | null> {
   const { data, error } = await supabase.rpc("get_super_admin_public_key");
   if (error) return null;

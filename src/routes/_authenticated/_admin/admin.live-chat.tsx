@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { MessageCircle, Send } from "lucide-react";
 import { toast } from "sonner";
-import { ensureMyKeypair, encryptForBoth, tryDecrypt } from "@/lib/e2ee";
+import { ensureMyKeypair, encryptForBoth, decryptChatBody } from "@/lib/e2ee";
+import { EncryptedBody } from "@/components/encrypted-body";
 
 export const Route = createFileRoute("/_authenticated/_admin/admin/live-chat")({
   head: () => ({
@@ -227,10 +228,8 @@ function AdminLiveChat() {
                 ) : (
                   messages.map((m) => {
                     const staff = m.is_staff;
-                    // Admin decrypts its own copy (body_admin); older plaintext falls back.
-                    const plain = mySk
-                      ? tryDecrypt(m.body_admin, mySk) ?? tryDecrypt(m.body, mySk)
-                      : null;
+                    // Admin's copy is body_admin; fall back to body if needed.
+                    const decoded = decryptChatBody(m.body_admin, m.body, mySk);
                     return (
                       <div key={m.id} className={`flex ${staff ? "justify-start" : "justify-end"}`}>
                         <div
@@ -246,7 +245,7 @@ function AdminLiveChat() {
                             </p>
                           )}
                           <p className="whitespace-pre-wrap break-words">
-                            {plain ?? <span className="italic opacity-60">🔒 رسالة مشفّرة</span>}
+                            <EncryptedBody result={decoded} />
                           </p>
                           <p className="mt-1 text-[9px] opacity-60">
                             {new Date(m.created_at).toLocaleTimeString([], {

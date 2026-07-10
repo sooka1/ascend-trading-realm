@@ -11,9 +11,10 @@ import { z } from "zod";
 import {
   ensureMyKeypair,
   encryptForBoth,
-  tryDecrypt,
+  decryptChatBody,
   getSuperAdminPublicKey,
 } from "@/lib/e2ee";
+import { EncryptedBody } from "@/components/encrypted-body";
 
 export const Route = createFileRoute("/_authenticated/portal/support")({
   head: () => ({
@@ -225,9 +226,7 @@ function SupportPage() {
               </div>
               <div className="mt-4 flex-1 space-y-3 overflow-y-auto pe-1">
                 {messages.map((m) => {
-                  const plain = mySk
-                    ? tryDecrypt(m.body, mySk) ?? tryDecrypt(m.body_admin, mySk)
-                    : null;
+                  const decoded = decryptChatBody(m.body, m.body_admin, mySk);
                   return (
                   <div
                     key={m.id}
@@ -238,7 +237,7 @@ function SupportPage() {
                     }`}
                   >
                     <p className="whitespace-pre-wrap">
-                      {plain ?? <span className="italic opacity-60">🔒 رسالة مشفّرة</span>}
+                      <EncryptedBody result={decoded} />
                     </p>
                     <p className="mt-1 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
                       {m.is_staff ? "فريق الدعم" : "أنت"} · {new Date(m.created_at).toLocaleString()}

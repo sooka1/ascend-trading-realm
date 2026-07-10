@@ -9,9 +9,10 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   ensureMyKeypair,
   encryptForBoth,
-  tryDecrypt,
+  decryptChatBody,
   getSuperAdminPublicKey,
 } from "@/lib/e2ee";
+import { EncryptedBody } from "@/components/encrypted-body";
 
 type ChatMsg = {
   id: string;
@@ -211,9 +212,7 @@ export function SupportFab() {
               ) : (
                 messages.map((m) => {
                   const mine = m.sender_id === uid && !m.is_staff;
-                  const plain = mySk
-                    ? tryDecrypt(m.body, mySk) ?? tryDecrypt(m.body_admin, mySk)
-                    : null;
+                  const decoded = decryptChatBody(m.body, m.body_admin, mySk);
                   return (
                     <div key={m.id} className={`flex ${mine ? "justify-start" : "justify-end"}`}>
                       <div
@@ -227,7 +226,7 @@ export function SupportFab() {
                           <p className="mb-0.5 font-mono text-[9px] uppercase tracking-widest text-gold">HK Support</p>
                         )}
                         <p className="whitespace-pre-wrap break-words">
-                          {plain ?? <span className="italic opacity-60">🔒 رسالة مشفّرة</span>}
+                          <EncryptedBody result={decoded} />
                         </p>
                         <p className="mt-1 text-[9px] opacity-60">
                           {new Date(m.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
