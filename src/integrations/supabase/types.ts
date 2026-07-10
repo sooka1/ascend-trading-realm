@@ -929,6 +929,63 @@ export type Database = {
         }
         Relationships: []
       }
+      withdrawal_audit_log: {
+        Row: {
+          amount_after: number | null
+          amount_before: number | null
+          amount_delta: number
+          created_at: string
+          currency: string
+          event: string
+          id: string
+          metadata: Json | null
+          subscription_id: string | null
+          user_id: string
+          withdrawal_id: string
+        }
+        Insert: {
+          amount_after?: number | null
+          amount_before?: number | null
+          amount_delta: number
+          created_at?: string
+          currency?: string
+          event: string
+          id?: string
+          metadata?: Json | null
+          subscription_id?: string | null
+          user_id: string
+          withdrawal_id: string
+        }
+        Update: {
+          amount_after?: number | null
+          amount_before?: number | null
+          amount_delta?: number
+          created_at?: string
+          currency?: string
+          event?: string
+          id?: string
+          metadata?: Json | null
+          subscription_id?: string | null
+          user_id?: string
+          withdrawal_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "withdrawal_audit_log_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "subscriptions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "withdrawal_audit_log_withdrawal_id_fkey"
+            columns: ["withdrawal_id"]
+            isOneToOne: false
+            referencedRelation: "withdrawals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       withdrawals: {
         Row: {
           amount: number
