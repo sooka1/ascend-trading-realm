@@ -280,6 +280,16 @@ function InvestorPortal() {
         .eq("user_id", uid)
         .in("status", ["active", "pending"]);
       if (error) return toast.error(error.message);
+      const reason = (editSub?.reason ?? "").trim().slice(0, 200) || null;
+      await supabase.from("subscription_amount_changes").insert({
+        subscription_id: sub.id,
+        user_id: uid,
+        amount_before: oldAmount,
+        amount_after: newAmount,
+        amount_delta: delta,
+        currency: pkg.currency,
+        reason,
+      });
       await supabase.from("notifications").insert({
         user_id: uid,
         title: delta > 0 ? "تمت زيادة مبلغ الاشتراك" : "تم تخفيض مبلغ الاشتراك",
