@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { PageShell } from "@/components/page-shell";
@@ -471,10 +471,12 @@ function InvestorPortal() {
                         const remaining = Math.max(0, available - parsed);
                         return (
                           <div className="mt-2 grid gap-1 rounded-lg border border-gold/20 bg-gold/[0.04] p-3 text-[11px]">
-                            <div className="flex justify-between"><span className="text-muted-foreground">مبلغ الاستثمار</span><span className="font-mono text-foreground">{fmt(parsed)} {p.currency}</span></div>
-                            <div className="flex justify-between"><span className="text-muted-foreground">الربح الأسبوعي المتوقع</span><span className="font-mono text-emerald-300">+{fmt(weekly)} {p.currency}</span></div>
-                            <div className="flex justify-between"><span className="text-muted-foreground">الربح اليومي (5 أيام)</span><span className="font-mono text-emerald-300">+{fmt(daily)} {p.currency}</span></div>
-                            <div className="flex justify-between border-t border-white/5 pt-1"><span className="text-muted-foreground">المتبقي في المحفظة</span><span className="font-mono text-foreground">{fmt(remaining)} {p.currency}</span></div>
+                            <SummaryRow label="مبلغ الاستثمار" value={parsed} currency={p.currency} />
+                            <SummaryRow label="الربح الأسبوعي المتوقع" value={weekly} currency={p.currency} sign="+" tone="gain" />
+                            <SummaryRow label="الربح اليومي (5 أيام)" value={daily} currency={p.currency} sign="+" tone="gain" />
+                            <div className="border-t border-white/5 pt-1">
+                              <SummaryRow label="المتبقي في المحفظة" value={remaining} currency={p.currency} />
+                            </div>
                           </div>
                         );
                       })()}
@@ -852,6 +854,62 @@ function StatusPill({ status }: { status: string }) {
 
 function fmt(n: number) {
   return n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function fmtCurrency(n: number, currency = "USD") {
+  try {
+    return new Intl.NumberFormat(undefined, {
+      style: "currency",
+      currency,
+      currencyDisplay: "code",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(n);
+  } catch {
+    return `${fmt(n)} ${currency}`;
+  }
+}
+
+function useAnimatedNumber(value: number, duration = 280) {
+  const [display, setDisplay] = useState(value);
+  const fromRef = useRef(value);
+  const startRef = useRef<number>(0);
+  const rafRef = useRef<number>(0);
+  useEffect(() => {
+    const from = fromRef.current;
+    const to = value;
+    if (from === to) return;
+    startRef.current = performance.now();
+    const step = (now: number) => {
+      const t = Math.min(1, (now - startRef.current) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+      const next = from + (to - from) * eased;
+      setDisplay(next);
+      if (t < 1) {
+        rafRef.current = requestAnimationFrame(step);
+      } else {
+        fromRef.current = to;
+      }
+    };
+    cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [value, duration]);
+  return display;
+}
+
+function SummaryRow({ label, value, currency, sign = "", tone }: { label: string; value: number; currency: string; sign?: string; tone?: "gain" }) {
+  const animated = useAnimatedNumber(value);
+  const cls = tone === "gain" ? "text-emerald-300" : "text-foreground";
+  return (
+    <div className="flex items-center justify-between">
+      <span className="text-muted-foreground">{label}</span>
+      <span className={`font-mono tabular-nums transition-colors duration-200 ${cls}`}>
+        {sign}
+        {fmtCurrency(animated, currency)}
+      </span>
+    </div>
+  );
 }
 
 function returnRange(min: number) {
