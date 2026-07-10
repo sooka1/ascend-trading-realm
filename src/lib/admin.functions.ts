@@ -600,13 +600,13 @@ export const decidePaymentAdmin = createServerFn({ method: "POST" })
     if (!auth.ok) throw new Error("Forbidden");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const table = data.kind === "deposit" ? "deposits" : "withdrawals";
-    const patch: Record<string, unknown> = {
+    const patch = {
       status: data.decision,
       reviewed_at: new Date().toISOString(),
       reviewed_by: context.userId,
+      ...(data.note ? { notes: data.note } : {}),
     };
-    if (data.note) patch.review_note = data.note;
-    const { data: row, error } = await supabaseAdmin
+    const { data: row, error } = await (supabaseAdmin as any)
       .from(table)
       .update(patch)
       .eq("id", data.id)
