@@ -41,6 +41,21 @@ function Auth() {
   });
   const navigate = useNavigate();
 
+  // Route super_admin → /admin, everyone else → /dashboard.
+  async function goPostLogin(userId: string) {
+    try {
+      const { data } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", userId)
+        .eq("role", "super_admin")
+        .maybeSingle();
+      navigate({ to: data ? "/admin" : "/dashboard", replace: true });
+    } catch {
+      navigate({ to: "/dashboard", replace: true });
+    }
+  }
+
   // Persist confirm-email state across refreshes / tab reconnects.
   const STORAGE_KEY = "hk.auth.pendingConfirm";
 
