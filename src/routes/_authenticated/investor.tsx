@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { ArrowDownToLine, ArrowRight, ArrowUpFromLine, CheckCircle2, Clock, Copy, Loader2, Package as PackageIcon, ShieldCheck, Wallet, XCircle } from "lucide-react";
+import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from "recharts";
 import { toast } from "sonner";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import trc20QrAsset from "@/assets/trc20-qr.png.asset.json";
@@ -875,6 +876,37 @@ function InvestorPortal() {
         <div className="mt-6 glass rounded-3xl p-6">
           <h3 className="font-display text-lg font-semibold">سجل التوزيعات اليومية</h3>
           <p className="mt-1 text-xs text-muted-foreground">النسبة المُطلقة بعد مرور 24 ساعة من كل اشتراك مع وقت الإصدار.</p>
+          {payouts.length > 0 && (() => {
+            const chartData = [...payouts]
+              .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+              .map((p) => {
+                const sub = subs.find((s) => s.id === p.subscription_id);
+                const base = Number(sub?.amount ?? 0);
+                const pct = base > 0 ? (Number(p.amount) / base) * 100 : 0;
+                const d = new Date(p.created_at);
+                return {
+                  time: d.toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }),
+                  pct: Number(pct.toFixed(3)),
+                  amount: Number(p.amount),
+                };
+              });
+            return (
+              <div className="mt-4 h-56 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={chartData} margin={{ top: 8, right: 12, bottom: 0, left: -10 }}>
+                    <CartesianGrid stroke="rgba(255,255,255,0.06)" strokeDasharray="3 3" />
+                    <XAxis dataKey="time" stroke="rgba(255,255,255,0.5)" tick={{ fontSize: 10 }} />
+                    <YAxis stroke="rgba(255,255,255,0.5)" tick={{ fontSize: 10 }} tickFormatter={(v) => `${v}%`} />
+                    <Tooltip
+                      contentStyle={{ background: "rgba(10,10,10,0.9)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, fontSize: 12 }}
+                      formatter={(v: number, k) => k === "pct" ? [`${v}%`, "النسبة"] : [v, "المبلغ"]}
+                    />
+                    <Line type="monotone" dataKey="pct" stroke="#34d399" strokeWidth={2} dot={{ r: 3, fill: "#34d399" }} activeDot={{ r: 5 }} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            );
+          })()}
           {payouts.length === 0 ? (
             <p className="mt-3 text-sm text-muted-foreground">لا توجد توزيعات بعد.</p>
           ) : (
