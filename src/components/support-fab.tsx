@@ -52,6 +52,11 @@ export function SupportFab() {
   const [unread, setUnread] = useState(0);
   const [adminReadAt, setAdminReadAt] = useState<string | null>(null);
   const [staffTyping, setStaffTyping] = useState(false);
+  const [typingDebug, setTypingDebug] = useState<{
+    at: number;
+    reason: string;
+    value: boolean;
+  } | null>(null);
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const channelRef = useRef<RealtimeChannel | null>(null);
@@ -192,10 +197,12 @@ export function SupportFab() {
         console.debug("[typing] client received", { ticketId, from: p?.from, uid: p?.uid });
         if (p?.from !== "staff") return;
         setStaffTyping(true);
+        setTypingDebug({ at: Date.now(), reason: "broadcast من الدعم", value: true });
         console.debug("[typing] client updated → staffTyping=true", { ticketId });
         if (typingClearRef.current) clearTimeout(typingClearRef.current);
         typingClearRef.current = setTimeout(() => {
           setStaffTyping(false);
+          setTypingDebug({ at: Date.now(), reason: "انتهاء المهلة (2.5s)", value: false });
           console.debug("[typing] client updated → staffTyping=false (timeout)", { ticketId });
         }, 2500);
       })
