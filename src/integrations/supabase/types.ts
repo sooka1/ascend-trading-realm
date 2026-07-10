@@ -143,6 +143,51 @@ export type Database = {
         }
         Relationships: []
       }
+      guest_inquiries: {
+        Row: {
+          admin_reply: string | null
+          body: string
+          created_at: string
+          email: string | null
+          id: string
+          name: string | null
+          phone: string | null
+          replied_at: string | null
+          replied_by: string | null
+          status: Database["public"]["Enums"]["ticket_status"]
+          subject: string
+          updated_at: string
+        }
+        Insert: {
+          admin_reply?: string | null
+          body: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string | null
+          phone?: string | null
+          replied_at?: string | null
+          replied_by?: string | null
+          status?: Database["public"]["Enums"]["ticket_status"]
+          subject: string
+          updated_at?: string
+        }
+        Update: {
+          admin_reply?: string | null
+          body?: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string | null
+          phone?: string | null
+          replied_at?: string | null
+          replied_by?: string | null
+          status?: Database["public"]["Enums"]["ticket_status"]
+          subject?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       investment_requests: {
         Row: {
           capital_range: Database["public"]["Enums"]["capital_range"]
