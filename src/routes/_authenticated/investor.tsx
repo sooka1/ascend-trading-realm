@@ -386,14 +386,14 @@ function InvestorPortal() {
               <ArrowDownToLine className="h-5 w-5 text-gold" />
               <h2 className="font-display text-lg font-semibold">إيداع جديد</h2>
             </div>
-            <form onSubmit={submitDeposit} className="mt-4 grid gap-3">
+            <form onSubmit={submitDeposit} className="mt-4 grid gap-3 [&_input]:bg-white/10 [&_input]:text-foreground [&_input]:border-white/20 [&_input::placeholder]:text-muted-foreground [&_textarea]:bg-white/10 [&_textarea]:text-foreground [&_textarea]:border-white/20 [&_select]:text-foreground [&_select_option]:bg-neutral-900 [&_select_option]:text-foreground">
               <Field label="المبلغ (USD)"><Input name="amount" type="number" min="1" step="0.01" required /></Field>
               <Field label="طريقة الدفع">
                 <select
                   name="method"
                   value={depositMethod}
                   onChange={(e) => setDepositMethod(e.target.value as typeof depositMethod)}
-                  className="h-9 w-full rounded-md border border-white/10 bg-white/[0.03] px-3 text-sm"
+                  className="h-9 w-full rounded-md border border-white/20 bg-white/10 px-3 text-sm text-foreground"
                 >
                   <option value="bank_transfer">تحويل بنكي</option>
                   <option value="binance_pay">محفظة Binance Pay</option>
@@ -423,13 +423,13 @@ function InvestorPortal() {
               <ArrowUpFromLine className="h-5 w-5 text-gold" />
               <h2 className="font-display text-lg font-semibold">طلب سحب</h2>
             </div>
-            <form onSubmit={submitWithdraw} className="mt-4 grid gap-3">
+            <form onSubmit={submitWithdraw} className="mt-4 grid gap-3 [&_input]:bg-white/10 [&_input]:text-foreground [&_input]:border-white/20 [&_input::placeholder]:text-muted-foreground [&_textarea]:bg-white/10 [&_textarea]:text-foreground [&_textarea]:border-white/20 [&_select]:text-foreground [&_select_option]:bg-neutral-900 [&_select_option]:text-foreground">
               <Field label="المبلغ (USD)"><Input name="amount" type="number" min="1" step="0.01" required /></Field>
               <Field label="طريقة السحب">
                 <select
                   value={withdrawMethod}
                   onChange={(e) => setWithdrawMethod(e.target.value as typeof withdrawMethod)}
-                  className="h-9 w-full rounded-md border border-white/10 bg-white/[0.03] px-3 text-sm"
+                  className="h-9 w-full rounded-md border border-white/20 bg-white/10 px-3 text-sm text-foreground"
                 >
                   <option value="bank">تحويل بنكي</option>
                   <option value="binance_pay">Binance Pay ID</option>
