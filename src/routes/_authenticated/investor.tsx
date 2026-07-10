@@ -433,28 +433,28 @@ function InvestorPortal() {
           </div>
 
           {activeSubs.length > 0 && (
-            <div className="mt-6">
-              <h3 className="text-xs uppercase tracking-widest text-muted-foreground">اشتراكاتي الحالية</h3>
-              <ul className="mt-2 divide-y divide-white/5">
+            <div className="mt-8">
+              <h3 className="text-lg font-semibold tracking-wide text-foreground">اشتراكاتي الحالية</h3>
+              <ul className="mt-4 divide-y divide-white/10">
                 {activeSubs.map((s) => {
                   const meta = packages.find((p) => p.id === s.package_id);
                   return (
-                    <li key={s.id} className="flex flex-wrap items-center justify-between gap-2 py-3 text-sm">
+                    <li key={s.id} className="flex flex-wrap items-center justify-between gap-4 py-5 text-base">
                       <div>
-                        <p className="font-medium">{meta?.name ?? s.package_id.slice(0, 8)}</p>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-xl font-semibold">{meta?.name ?? s.package_id.slice(0, 8)}</p>
+                        <p className="mt-1 text-sm text-muted-foreground">
                           {fmt(Number(s.amount))} {s.currency}
                           {s.ends_at ? ` · حتى ${new Date(s.ends_at).toLocaleDateString()}` : ""}
                         </p>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-3">
                         <StatusPill status={s.status} />
                         <Button
                           size="sm"
                           variant="outline"
                           disabled={busySub === s.id || !!busySub}
                           onClick={() => cancelSubscription(s)}
-                          className="h-7 border-white/15 text-xs"
+                          className="h-9 border-white/15 text-sm"
                         >
                           {busySub === s.id ? "..." : "تبديل / إلغاء"}
                         </Button>
