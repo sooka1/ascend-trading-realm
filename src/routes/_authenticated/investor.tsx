@@ -313,6 +313,26 @@ function InvestorPortal() {
           <HistoryList title="سجل الإيداعات" empty="لا توجد إيداعات." rows={deps.map((d) => ({ id: d.id, primary: `${fmt(Number(d.amount))} ${d.currency}`, secondary: `${d.method} · ${new Date(d.created_at).toLocaleDateString()}`, status: d.status }))} />
           <HistoryList title="سجل السحوبات" empty="لا توجد سحوبات." rows={wds.map((w) => ({ id: w.id, primary: `${fmt(Number(w.amount))} ${w.currency}`, secondary: `${w.destination} · ${new Date(w.created_at).toLocaleDateString()}`, status: w.status }))} />
         </div>
+
+        <div className="mt-6">
+          <HistoryList
+            title="سجل الاشتراكات والعمليات"
+            empty="لا يوجد سجل اشتراكات بعد."
+            rows={subs.map((s) => {
+              const meta = packages.find((p) => p.id === s.package_id);
+              const created = new Date(s.created_at).toLocaleDateString();
+              const range = s.started_at
+                ? `${new Date(s.started_at).toLocaleDateString()}${s.ends_at ? ` → ${new Date(s.ends_at).toLocaleDateString()}` : ""}`
+                : `طلب بتاريخ ${created}`;
+              return {
+                id: s.id,
+                primary: `${meta?.name ?? s.package_id.slice(0, 8)} — ${fmt(Number(s.amount))} ${s.currency}`,
+                secondary: range,
+                status: s.status,
+              };
+            })}
+          />
+        </div>
       </section>
     </PageShell>
   );
@@ -369,6 +389,8 @@ function StatusPill({ status }: { status: string }) {
     approved: { cls: "bg-emerald-500/10 text-emerald-400", icon: <CheckCircle2 className="h-3 w-3" />, label: "مقبول" },
     active: { cls: "bg-emerald-500/10 text-emerald-400", icon: <CheckCircle2 className="h-3 w-3" />, label: "نشط" },
     rejected: { cls: "bg-red-500/10 text-red-400", icon: <XCircle className="h-3 w-3" />, label: "مرفوض" },
+    cancelled: { cls: "bg-white/5 text-muted-foreground", icon: <XCircle className="h-3 w-3" />, label: "ملغى" },
+    expired: { cls: "bg-white/5 text-muted-foreground", icon: <Clock className="h-3 w-3" />, label: "منتهية" },
   };
   const m = map[status] ?? { cls: "bg-white/5 text-muted-foreground", icon: null, label: status };
   return (
