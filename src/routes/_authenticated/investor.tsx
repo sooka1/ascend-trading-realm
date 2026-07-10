@@ -195,42 +195,6 @@ function InvestorPortal() {
           </div>
         </div>
 
-        <div className="mt-10">
-          <h2 className="font-display text-xl font-semibold">الباقات الاستثمارية</h2>
-          <div className="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {loading ? (
-              <p className="text-sm text-muted-foreground">جارٍ التحميل…</p>
-            ) : packages.length === 0 ? (
-              <p className="text-sm text-muted-foreground">لا توجد باقات متاحة حاليًا.</p>
-            ) : (
-              packages.map((p) => {
-                const mine = subs.find((s) => s.package_id === p.id);
-                return (
-                  <div key={p.id} className="glass flex flex-col rounded-2xl p-5">
-                    <div className="flex items-start justify-between">
-                      <h3 className="font-display text-lg font-semibold">{p.name}</h3>
-                      <span className={`rounded-full px-2 py-0.5 text-[10px] uppercase tracking-widest ${riskClass(p.risk_level)}`}>{p.risk_level}</span>
-                    </div>
-                    <p className="mt-2 flex-1 text-xs text-muted-foreground">{p.description}</p>
-                    <ul className="mt-4 space-y-1 text-xs">
-                      <li>الحد الأدنى: <b>{fmt(Number(p.min_amount))} {p.currency}</b></li>
-                      <li>العائد المستهدف: <b>{p.target_return_pct ?? "—"}%</b></li>
-                      <li>مدة الحجز: <b>{p.lockup_months} شهر</b></li>
-                    </ul>
-                    {mine ? (
-                      <div className="mt-4 rounded-lg border border-white/10 bg-white/[0.03] p-2 text-[11px]">
-                        اشتراكك: {fmt(Number(mine.amount))} — <StatusPill status={mine.status} />
-                      </div>
-                    ) : (
-                      <Button size="sm" onClick={() => subscribe(p)} className="mt-4 bg-[var(--gradient-gold)] font-semibold text-background">اشترك في الباقة</Button>
-                    )}
-                  </div>
-                );
-              })
-            )}
-          </div>
-        </div>
-
         <div className="mt-10 grid gap-6 lg:grid-cols-2">
           <HistoryList title="سجل الإيداعات" empty="لا توجد إيداعات." rows={deps.map((d) => ({ id: d.id, primary: `${fmt(Number(d.amount))} ${d.currency}`, secondary: `${d.method} · ${new Date(d.created_at).toLocaleDateString()}`, status: d.status }))} />
           <HistoryList title="سجل السحوبات" empty="لا توجد سحوبات." rows={wds.map((w) => ({ id: w.id, primary: `${fmt(Number(w.amount))} ${w.currency}`, secondary: `${w.destination} · ${new Date(w.created_at).toLocaleDateString()}`, status: w.status }))} />
