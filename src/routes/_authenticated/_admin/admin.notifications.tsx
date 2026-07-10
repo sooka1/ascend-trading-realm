@@ -2,12 +2,14 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { AdminShell, AdminCard } from "@/components/admin-shell";
-import { Bell, Send, History } from "lucide-react";
+import { Bell, Send, History, TestTube2, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { broadcastNotification, listBroadcasts } from "@/lib/broadcast.functions";
+import { sendTestPushToSelf } from "@/lib/push.functions";
+import { canUsePush, ensurePushSubscription } from "@/lib/push-client";
 
 export const Route = createFileRoute("/_authenticated/_admin/admin/notifications")({
   head: () => ({ meta: [{ title: "Admin — Notifications" }] }),
@@ -20,6 +22,57 @@ function AdminNotifications() {
   const [sending, setSending] = useState(false);
   const broadcast = useServerFn(broadcastNotification);
   const fetchLogs = useServerFn(listBroadcasts);
+  const sendTest = useServerFn(sendTestPushToSelf);
+  const [testing, setTesting] = useState(false);
+  const [envInfo, setEnvInfo] = useState<{ host: string; allowed: boolean; permission: string }>(
+    { host: "", allowed: false, permission: "default" },
+  );
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    setEnvInfo({
+      host: window.location.hostname,
+      allowed: canUsePush(),
+      permission:
+        typeof Notification !== "undefined" ? Notification.permission : "unsupported",
+    });
+  }, []);
+
+  async function onEnablePush() {
+    if (!envInfo.allowed) {
+      toast.error("افتح رابط الإنتاج على الهاتف: hk-global-trade.lovable.app");
+      return;
+    }
+    if (typeof Notification === "undefined") {
+      toast.error("المتصفح لا يدعم الإشعارات");
+      return;
+    }
+    const perm = await Notification.requestPermission();
+    setEnvInfo((s) => ({ ...s, permission: perm }));
+    if (perm !== "granted") {
+      toast.error("لم يتم منح إذن الإشعارات");
+      return;
+    }
+    const ok = await ensurePushSubscription();
+    if (ok) toast.success("تم تفعيل الإشعارات على هذا الجهاز");
+    else toast.error("تعذّر تسجيل الاشتراك");
+  }
+
+  async function onSendTest() {
+    setTesting(true);
+    try {
+      const res = await sendTest({ data: {} });
+      if (res.subscriptions === 0) {
+        toast.error("لا يوجد جهاز مسجل — فعّل الإشعارات أولاً");
+      } else {
+        toast.success(`تم الإرسال إلى ${res.sent}/${res.subscriptions} جهاز`);
+      }
+    } catch (e: any) {
+      toast.error(e?.message ?? "فشل إرسال الاختبار");
+    } finally {
+      setTesting(false);
+    }
+  }
   const [logs, setLogs] = useState<
     Array<{
       id: string;
@@ -76,6 +129,57 @@ function AdminNotifications() {
       title="الإشعارات"
       subtitle="أرسل رسالة تصل إلى جميع مستخدمي التطبيق كإشعار."
     >
+      <AdminCard title="اختبار الإشعارات على هذا الجهاز" icon={TestTube2}>
+        <div className="space-y-3 text-sm">
+          <div className="rounded-sm border border-white/10 bg-white/[0.02] p-3">
+            <div className="flex items-center justify-between gap-2">
+              <div className="font-mono text-[11px] text-muted-foreground">
+                النطاق الحالي: <span className="text-foreground">{envInfo.host || "…"}</span>
+              </div>
+              <span
+                className={`rounded-sm border px-2 py-0.5 font-mono text-[10px] uppercase ${
+                  envInfo.allowed
+                    ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
+                    : "border-amber-500/30 bg-amber-500/10 text-amber-300"
+                }`}
+              >
+                {envInfo.allowed ? "إنتاج" : "معاينة"}
+              </span>
+            </div>
+            {!envInfo.allowed && (
+              <p className="mt-2 text-xs text-amber-300/90">
+                الإشعارات الفورية لا تعمل في المعاينة. افتح رابط الإنتاج على الهاتف:
+                {" "}
+                <a
+                  href="https://hk-global-trade.lovable.app/admin/notifications"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1 underline"
+                >
+                  hk-global-trade.lovable.app <ExternalLink className="h-3 w-3" />
+                </a>
+              </p>
+            )}
+            <p className="mt-2 font-mono text-[11px] text-muted-foreground">
+              إذن الإشعارات: <span className="text-foreground">{envInfo.permission}</span>
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Button variant="outline" onClick={onEnablePush} disabled={!envInfo.allowed}>
+              <Bell className="me-1.5 h-3.5 w-3.5" />
+              تفعيل الإشعارات
+            </Button>
+            <Button onClick={onSendTest} disabled={testing || !envInfo.allowed}>
+              <Send className="me-1.5 h-3.5 w-3.5" />
+              {testing ? "جارٍ الإرسال…" : "إرسال إشعار تجريبي لي"}
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            على iOS يجب إضافة التطبيق إلى الشاشة الرئيسية أولاً ثم فتحه من الأيقونة.
+          </p>
+        </div>
+      </AdminCard>
+
       <AdminCard title="بث إشعار لجميع المستخدمين" icon={Bell}>
         <div className="space-y-3">
           <div>
