@@ -879,6 +879,31 @@ function InvestorPortal() {
         <div className="mt-6 glass rounded-3xl p-6">
           <h3 className="font-display text-lg font-semibold">سجل التوزيعات اليومية</h3>
           <p className="mt-1 text-xs text-muted-foreground">النسبة المُطلقة بعد مرور 24 ساعة من كل اشتراك مع وقت الإصدار.</p>
+          {(() => {
+            const totalAmount = payouts.reduce((a, p) => a + Number(p.amount), 0);
+            const totalPct = payouts.reduce((a, p) => {
+              const sub = subs.find((s) => s.id === p.subscription_id);
+              const base = Number(sub?.amount ?? 0);
+              return a + (base > 0 ? (Number(p.amount) / base) * 100 : 0);
+            }, 0);
+            const currency = payouts[0]?.currency ?? "USD";
+            return (
+              <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4">
+                  <p className="text-xs text-muted-foreground">إجمالي ما تم توزيعه</p>
+                  <p className="mt-1 font-display text-lg font-semibold text-emerald-400">+{fmt(totalAmount)} {currency}</p>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4">
+                  <p className="text-xs text-muted-foreground">إجمالي النسبة المفرج عنها</p>
+                  <p className="mt-1 font-display text-lg font-semibold text-emerald-400">{totalPct.toFixed(2)}%</p>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4">
+                  <p className="text-xs text-muted-foreground">عدد عمليات الصرف</p>
+                  <p className="mt-1 font-display text-lg font-semibold">{payouts.length}</p>
+                </div>
+              </div>
+            );
+          })()}
           <div className="mt-4 grid gap-2 sm:grid-cols-4">
             <div>
               <Label className="text-xs">من تاريخ</Label>
