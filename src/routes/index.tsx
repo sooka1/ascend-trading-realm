@@ -6,6 +6,7 @@ import {
   BarChart3,
   Briefcase,
   ChartLine,
+  CheckCircle2,
   FileText,
   Globe2,
   Headphones,
@@ -52,6 +53,7 @@ import {
 } from "@/components/ui/dialog";
 import { useI18n } from "@/lib/i18n";
 import { LANDING, type LandingContent } from "@/lib/landing-t";
+import { PORTFOLIOS } from "@/lib/portfolios-t";
 import heroVideo from "@/assets/hero-bg.mp4.asset.json";
 import heroPoster from "@/assets/hero-bg.jpg";
 import candlesVideo from "@/assets/hk-candles-intro.mp4.asset.json";
@@ -377,8 +379,11 @@ function Features({ c }: { c: LandingContent }) {
 }
 
 function SolutionsPreview({ c }: { c: LandingContent }) {
+  const { lang } = useI18n();
+  const p = PORTFOLIOS[lang];
   const targets = ["6 – 10%", "10 – 16%", "16 – 24%"];
   const mins = ["$100", "$500", "$1,000"];
+  const HIGHLIGHT = [false, true, false];
   return (
     <section className="border-y border-white/5 bg-white/[0.02] py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -392,31 +397,44 @@ function SolutionsPreview({ c }: { c: LandingContent }) {
           </Button>
         </div>
         <div className="mt-10 grid gap-5 lg:grid-cols-3">
-          {c.solutions.tiers.map((p, i) => (
+          {p.tiers.map((tier, i) => (
             <div
-              key={p.name}
-              className={`group relative overflow-hidden rounded-2xl border bg-card/60 p-8 backdrop-blur-xl transition hover:-translate-y-0.5 ${
-                i === 1 ? "border-gold/40 shadow-[0_0_40px_-12px_rgba(201,168,76,0.35)]" : "border-white/10"
-              }`}
+              key={tier.name}
+              className={`glass-strong rounded-3xl p-8 ${HIGHLIGHT[i] ? "ring-1 ring-gold/40" : ""}`}
             >
-              {i === 1 && (
-                <span className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-gold/30 bg-gold/10 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-gold">
-                  <span className="h-1.5 w-1.5 rounded-full bg-gold" />
-                  {c.solutions.popular}
+              {HIGHLIGHT[i] && (
+                <span className="mb-3 inline-block rounded-full bg-gold/15 px-3 py-1 text-xs text-gold">
+                  {p.popular}
                 </span>
               )}
-              <h3 className="font-display text-2xl font-semibold">{p.name}</h3>
-              <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.18em] text-gold/80">{c.solutions.target}</p>
-              <p className="mt-1 font-mono text-4xl font-medium tracking-tight text-foreground tabular-nums">{targets[i]}</p>
-              <dl className="mt-6 space-y-3 text-sm">
-                <Row k={c.solutions.risk} v={p.risk} />
-                <Row k={c.solutions.min} v={mins[i]} />
-                <Row k={c.solutions.withdraw} v="$10" />
+              <h3 className="font-display text-2xl font-semibold">{tier.name}</h3>
+              <p className="mt-2 text-sm text-muted-foreground">{p.target}</p>
+              <p className="font-display text-5xl font-semibold text-gradient">{targets[i]}</p>
+              <dl className="mt-6 grid grid-cols-2 gap-3 text-sm">
+                <div>
+                  <dt className="text-muted-foreground">{p.minimum}</dt>
+                  <dd className="font-medium">{mins[i]}</dd>
+                </div>
+                <div>
+                  <dt className="text-muted-foreground">{p.risk}</dt>
+                  <dd className="font-medium">{tier.risk}</dd>
+                </div>
+                <div>
+                  <dt className="text-muted-foreground">{p.withdraw}</dt>
+                  <dd className="font-medium">$10</dd>
+                </div>
               </dl>
-              <Button asChild className="mt-6 w-full rounded-sm border border-[#a0430a] bg-[#c2410c] font-semibold text-white shadow-[0_4px_14px_rgba(194,65,12,0.35)] transition-all duration-200 hover:border-[#ea580c] hover:bg-[#ea580c] hover:shadow-[0_6px_20px_rgba(234,88,12,0.5)] active:border-[#7c2d0a] active:bg-[#9a3412] active:scale-[0.98]">
-                <Link to="/auth">{c.solutions.open}</Link>
+              <ul className="mt-6 space-y-2 text-sm">
+                {tier.features.map((f) => (
+                  <li key={f} className="flex items-start gap-2">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-gold" />
+                    <span>{f}</span>
+                  </li>
+                ))}
+              </ul>
+              <Button asChild className="mt-8 w-full bg-[var(--gradient-gold)] font-semibold text-background">
+                <Link to="/auth">{p.cta}</Link>
               </Button>
-              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent" aria-hidden />
             </div>
           ))}
         </div>
