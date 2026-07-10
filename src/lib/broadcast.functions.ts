@@ -20,24 +20,65 @@ export const broadcastNotification = createServerFn({ method: "POST" })
     if (!isSuper) throw new Error("Forbidden");
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: users, error: uerr } = await supabaseAdmin
-      .from("profiles")
-      .select("id");
-    if (uerr) throw new Error(uerr.message);
-    const rows = (users ?? []).map((u) => ({
-      user_id: u.id,
-      title: data.title,
-      body: data.body || null,
-    }));
-    if (rows.length === 0) return { sent: 0 };
-    // Insert in chunks to keep payloads reasonable.
-    const chunkSize = 500;
-    let sent = 0;
-    for (let i = 0; i < rows.length; i += chunkSize) {
-      const chunk = rows.slice(i, i + chunkSize);
-      const { error } = await supabaseAdmin.from("notifications").insert(chunk);
-      if (error) throw new Error(error.message);
-      sent += chunk.length;
+    const { data: logRow, error: logErr } = await supabaseAdmin
+      .from("notification_broadcasts")
+      .insert({
+        sender_id: context.userId,
+        title: data.title,
+        body: data.body || null,
+        status: "pending",
+      })
+      .select("id")
+      .single();
+    if (logErr) throw new Error(logErr.message);
+    const logId = logRow.id as string;
+
+    try {
+      const { data: users, error: uerr } = await supabaseAdmin
+        .from("profiles")
+        .select("id");
+      if (uerr) throw new Error(uerr.message);
+      const rows = (users ?? []).map((u) => ({
+        user_id: u.id,
+        title: data.title,
+        body: data.body || null,
+      }));
+      const chunkSize = 500;
+      let sent = 0;
+      for (let i = 0; i < rows.length; i += chunkSize) {
+        const chunk = rows.slice(i, i + chunkSize);
+        const { error } = await supabaseAdmin.from("notifications").insert(chunk);
+        if (error) throw new Error(error.message);
+        sent += chunk.length;
+      }
+      await supabaseAdmin
+        .from("notification_broadcasts")
+        .update({ status: "sent", recipients_count: sent })
+        .eq("id", logId);
+      return { sent };
+    } catch (e: any) {
+      await supabaseAdmin
+        .from("notification_broadcasts")
+        .update({ status: "failed", error: String(e?.message ?? e) })
+        .eq("id", logId);
+      throw e;
     }
-    return { sent };
+  });
+
+// Super-admin only: list past broadcasts.
+export const listBroadcasts = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data: isSuper } = await context.supabase.rpc("has_role", {
+      _user_id: context.userId,
+      _role: "super_admin",
+    });
+    if (!isSuper) throw new Error("Forbidden");
+    const { data, error } = await context.supabase
+      .from("notification_broadcasts")
+      .select("id,title,body,recipients_count,status,error,created_at")
+      .order("created_at", { ascending: false })
+      .limit(100);
+    if (error) throw new Error(error.message);
+    return { items: data ?? [] };
   });
