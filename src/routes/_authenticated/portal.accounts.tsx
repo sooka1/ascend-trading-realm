@@ -7,7 +7,7 @@ import { Landmark, Calendar, CircleDollarSign, Target } from "lucide-react";
 export const Route = createFileRoute("/_authenticated/portal/accounts")({
   head: () => ({
     meta: [
-      { title: "الحسابات الاستثمارية — بوابة العميل" },
+      { title: "الاشتراكات — بوابة العميل" },
       { name: "description", content: "جميع اشتراكاتك الاستثمارية النشطة والمؤرشفة في مكان واحد." },
     ],
   }),
@@ -69,7 +69,7 @@ function AccountsPage() {
   }, [rows]);
 
   return (
-    <PortalShell eyebrow="نظرة عامة" title="الحسابات الاستثمارية" subtitle="جميع اشتراكاتك الاستثمارية حسب الحالة، مع تفاصيل المنتج وقيود الإغلاق.">
+    <PortalShell eyebrow="نظرة عامة" title="الاشتراكات" subtitle="جميع اشتراكاتك حسب الحالة مع تفاصيل الباقة.">
       <div className="mb-6 grid gap-4 sm:grid-cols-3">
         <Kpi label="إجمالي الحسابات" value={String(totals.count)} />
         <Kpi label="الحسابات النشطة" value={String(totals.activeCount)} positive />
