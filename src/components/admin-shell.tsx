@@ -21,9 +21,12 @@ import {
   Zap,
   MessageCircle,
   ArrowRight,
+  LogOut,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
 
 type NavItem = {
   to: string;
@@ -85,6 +88,13 @@ export function AdminShell({
   const router = useRouter();
   const showBack = pathname !== "/admin";
   const groups = Array.from(new Set(NAV.map((n) => n.group)));
+  const queryClient = useQueryClient();
+  async function handleSignOut() {
+    await queryClient.cancelQueries();
+    queryClient.clear();
+    await supabase.auth.signOut();
+    router.navigate({ to: "/auth", replace: true });
+  }
 
   const renderItem = (n: NavItem, mobile = false) => {
     const active =
@@ -192,6 +202,14 @@ export function AdminShell({
                 )}
               </div>
               {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
+              <button
+                type="button"
+                onClick={handleSignOut}
+                className="inline-flex items-center gap-1.5 rounded-md border border-white/10 bg-white/[0.03] px-2.5 py-1 text-xs text-muted-foreground transition hover:border-red-400/40 hover:text-red-200"
+              >
+                <LogOut className="h-3.5 w-3.5" />
+                تسجيل الخروج
+              </button>
             </header>
 
             <div>{children}</div>
