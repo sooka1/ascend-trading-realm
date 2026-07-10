@@ -262,14 +262,24 @@ function Hero({ c }: { c: LandingContent }) {
         <div className="relative flex justify-center">
           <div className="pointer-events-none absolute -inset-4 -z-10 rounded-2xl bg-[radial-gradient(ellipse_at_top,rgba(30,107,255,0.22),transparent_65%)] blur-3xl" aria-hidden />
 
-          {/* Phone mockup showing the same hero video */}
-          <div className="relative mx-auto aspect-[9/19] w-[260px] rounded-[2.5rem] border border-white/15 bg-neutral-950 p-3 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.6)] backdrop-blur-xl sm:w-[300px] lg:w-[320px]">
+          {/* Realistic iPhone mockup showing the same hero video */}
+          <div
+            className="relative mx-auto aspect-[9/19.5] w-[130px] rounded-[2rem] border border-neutral-700 bg-gradient-to-b from-neutral-800 via-neutral-900 to-black p-[6px] shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7),0_0_0_1px_rgba(255,255,255,0.06)_inset] sm:w-[150px] lg:w-[160px]"
+            style={{
+              backgroundImage:
+                "linear-gradient(145deg,#3a3a3c 0%,#1c1c1e 40%,#0a0a0a 100%)",
+            }}
+          >
+            {/* Titanium side rail highlights */}
+            <span aria-hidden className="pointer-events-none absolute inset-y-3 left-0 w-[1.5px] rounded-l bg-gradient-to-b from-white/40 via-white/10 to-white/30" />
+            <span aria-hidden className="pointer-events-none absolute inset-y-3 right-0 w-[1.5px] rounded-r bg-gradient-to-b from-white/40 via-white/10 to-white/30" />
             {/* Side buttons */}
-            <span aria-hidden className="absolute -left-[3px] top-24 h-10 w-[3px] rounded-l bg-white/20" />
-            <span aria-hidden className="absolute -left-[3px] top-40 h-14 w-[3px] rounded-l bg-white/20" />
-            <span aria-hidden className="absolute -right-[3px] top-32 h-16 w-[3px] rounded-r bg-white/20" />
-            {/* Screen */}
-            <div className="relative h-full w-full overflow-hidden rounded-[2rem] bg-black">
+            <span aria-hidden className="absolute -left-[2px] top-14 h-4 w-[2px] rounded-l bg-neutral-700" />
+            <span aria-hidden className="absolute -left-[2px] top-20 h-7 w-[2px] rounded-l bg-neutral-700" />
+            <span aria-hidden className="absolute -left-[2px] top-32 h-7 w-[2px] rounded-l bg-neutral-700" />
+            <span aria-hidden className="absolute -right-[2px] top-24 h-10 w-[2px] rounded-r bg-neutral-700" />
+            {/* Inner bezel */}
+            <div className="relative h-full w-full overflow-hidden rounded-[1.6rem] bg-black ring-1 ring-black/80">
               <video
                 className="h-full w-full object-cover"
                 autoPlay
@@ -281,8 +291,10 @@ function Hero({ c }: { c: LandingContent }) {
               >
                 <source src={heroVideo.url} type="video/mp4" />
               </video>
-              {/* Dynamic island / notch */}
-              <div className="pointer-events-none absolute left-1/2 top-2 h-6 w-24 -translate-x-1/2 rounded-full bg-black" />
+              {/* Dynamic Island */}
+              <div className="pointer-events-none absolute left-1/2 top-1.5 flex h-4 w-14 -translate-x-1/2 items-center justify-end gap-1 rounded-full bg-black px-1.5">
+                <span className="h-1 w-1 rounded-full bg-neutral-800" />
+              </div>
             </div>
           </div>
           <p className="pointer-events-none absolute -bottom-8 left-0 right-0 text-center font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground/70">{c.hero.disclaimer}</p>
