@@ -273,6 +273,7 @@ export const getExecutiveDashboard = createServerFn({ method: "GET" })
         withdrawalsApproved30d: sum(withdrawals30.data),
         newCapital30d: sum(subscriptions30.data as any[]),
         withdrawalsApprovedTotal: sum(withdrawalsAllApproved.data),
+        depositsApprovedTotal: sum(depositsAllApproved.data),
       },
       series: {
         deposits: bucketByDay(deposits30.data ?? [], 30),

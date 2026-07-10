@@ -141,11 +141,11 @@ function AdminIndex() {
         </KpiLink>
         <KpiLink to="/admin/analytics">
           <AdminKpi
-            icon={ArrowDownToLine}
-            label="إجمالي السحوبات"
-            value={isLoading ? "—" : `- ${fmtMoney(t?.withdrawalsApprovedTotal)}`}
-            hint="Total approved withdrawals"
-            tone="critical"
+            icon={ArrowLeftRight}
+            label="إجمالي الإيداع والسحب معاً"
+            value={isLoading ? "—" : fmtMoney((t?.depositsApprovedTotal ?? 0) + (t?.withdrawalsApprovedTotal ?? 0))}
+            hint="Total approved deposits + withdrawals"
+            tone="neutral"
           />
         </KpiLink>
         <KpiLink to="/admin/payments">
