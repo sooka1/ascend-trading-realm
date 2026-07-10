@@ -226,3 +226,41 @@ function Toggle({ label, hint, checked, onChange }: { label: string; hint?: stri
     </label>
   );
 }
+
+function VerificationPill({ status }: { status: "unverified" | "pending" | "approved" | "rejected" }) {
+  const map = {
+    approved: { label: "موثّق", icon: BadgeCheck, cls: "border-gold/40 bg-gold/10 text-gold" },
+    pending: { label: "قيد المراجعة", icon: Clock, cls: "border-amber-400/30 bg-amber-400/10 text-amber-200" },
+    rejected: { label: "مرفوض", icon: XCircle, cls: "border-red-400/30 bg-red-400/10 text-red-200" },
+    unverified: { label: "غير موثّق", icon: ShieldCheck, cls: "border-white/10 bg-white/[0.03] text-muted-foreground" },
+  } as const;
+  const { label, icon: Icon, cls } = map[status];
+  return (
+    <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-medium ${cls}`}>
+      <Icon className="h-3 w-3" />
+      {label}
+    </span>
+  );
+}
+
+function KycSlot({ label, path, busy, onFile }: { label: string; path: string | null; busy: boolean; onFile: (f: File) => void }) {
+  return (
+    <label className="group relative flex min-h-[130px] cursor-pointer flex-col items-center justify-center gap-2 rounded-md border border-dashed border-white/15 bg-white/[0.02] p-3 text-center transition hover:border-gold/40">
+      <input
+        type="file"
+        accept="image/*"
+        className="sr-only"
+        onChange={(e) => {
+          const f = e.currentTarget.files?.[0];
+          if (f) onFile(f);
+          e.currentTarget.value = "";
+        }}
+      />
+      <Upload className="h-5 w-5 text-gold/80" />
+      <span className="text-xs font-medium">{label}</span>
+      <span className="text-[10px] text-muted-foreground">
+        {busy ? "جارٍ الرفع…" : path ? "تم الرفع — انقر للاستبدال" : "انقر لاختيار صورة"}
+      </span>
+    </label>
+  );
+}
