@@ -53,6 +53,7 @@ import {
 } from "@/components/ui/dialog";
 import { useI18n } from "@/lib/i18n";
 import { LANDING, type LandingContent } from "@/lib/landing-t";
+import { PORTFOLIOS } from "@/lib/portfolios-t";
 import heroVideo from "@/assets/hero-bg.mp4.asset.json";
 import heroPoster from "@/assets/hero-bg.jpg";
 import candlesVideo from "@/assets/hk-candles-intro.mp4.asset.json";
