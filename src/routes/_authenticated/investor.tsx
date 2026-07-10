@@ -86,6 +86,7 @@ function InvestorPortal() {
   const [busySub, setBusySub] = useState<string | null>(null);
   const [depositMethod, setDepositMethod] = useState<"binance_pay" | "usdt_trc20">("binance_pay");
   const [withdrawMethod, setWithdrawMethod] = useState<"binance_pay" | "usdt_trc20">("binance_pay");
+  const [pkgAmounts, setPkgAmounts] = useState<Record<string, string>>({});
 
   async function load() {
     const { data: userRes } = await supabase.auth.getUser();
@@ -124,7 +125,7 @@ function InvestorPortal() {
   const committed = activeSubs.reduce((s, x) => s + Number(x.amount), 0);
   const available = Math.max(0, balance - committed);
 
-  async function subscribeToPackage(pkg: Pkg) {
+  async function subscribeToPackage(pkg: Pkg, requestedAmount: number) {
     if (!uid) return;
     if (busySub) return;
     // Prevent duplicate active/pending subscription in the same package
@@ -136,12 +137,7 @@ function InvestorPortal() {
       toast.error(`الرصيد المتاح غير كافٍ. الحد الأدنى ${fmt(Number(pkg.min_amount))} ${pkg.currency}`);
       return;
     }
-    const raw = window.prompt(
-      `أدخل المبلغ للاشتراك في باقة ${pkg.name} (الحد الأدنى ${fmt(Number(pkg.min_amount))} ${pkg.currency}، المتاح ${fmt(available)} ${pkg.currency})`,
-      String(pkg.min_amount),
-    );
-    if (!raw) return;
-    const amount = Number(raw);
+    const amount = requestedAmount;
     if (!Number.isFinite(amount) || amount < Number(pkg.min_amount)) {
       toast.error("المبلغ أقل من الحد الأدنى للباقة");
       return;
@@ -417,6 +413,11 @@ function InvestorPortal() {
           <div className="mt-4 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
             {packages.map((p) => {
               const eligible = available >= Number(p.min_amount);
+              const min = Number(p.min_amount);
+              const raw = pkgAmounts[p.id] ?? "";
+              const parsed = Number(raw);
+              const validAmount =
+                raw !== "" && Number.isFinite(parsed) && parsed >= min && parsed <= available;
               return (
                 <div key={p.id} className="rounded-2xl border border-white/10 bg-white/[0.02] p-4">
                   <div className="flex items-center justify-between">
@@ -430,10 +431,35 @@ function InvestorPortal() {
                     <div>الحد الأدنى<div className="font-mono text-foreground">{fmt(Number(p.min_amount))} {p.currency}</div></div>
                     <div>المخاطرة<div className="font-mono text-emerald-400">منخفضة</div></div>
                   </div>
+                  {eligible && (
+                    <div className="mt-3 grid gap-1">
+                      <Label className="text-[11px] text-muted-foreground">
+                        مبلغ الاشتراك (الحد الأدنى {fmt(min)} {p.currency}، المتاح {fmt(available)} {p.currency})
+                      </Label>
+                      <Input
+                        type="number"
+                        inputMode="decimal"
+                        min={min}
+                        max={available}
+                        step="0.01"
+                        placeholder={String(min)}
+                        value={raw}
+                        onChange={(e) => setPkgAmounts((s) => ({ ...s, [p.id]: e.target.value }))}
+                        className="h-9"
+                      />
+                      {raw !== "" && !validAmount && (
+                        <p className="text-[11px] text-red-400">
+                          {parsed < min
+                            ? `المبلغ أقل من الحد الأدنى ${fmt(min)} ${p.currency}`
+                            : `المبلغ يتجاوز الرصيد المتاح ${fmt(available)} ${p.currency}`}
+                        </p>
+                      )}
+                    </div>
+                  )}
                   <Button
                     type="button"
-                    disabled={!eligible || busySub === `new:${p.id}` || !!busySub}
-                    onClick={() => subscribeToPackage(p)}
+                    disabled={!eligible || !validAmount || busySub === `new:${p.id}` || !!busySub}
+                    onClick={() => subscribeToPackage(p, parsed)}
                     className="mt-4 w-full bg-red-600 font-semibold text-white hover:bg-red-700 disabled:opacity-50"
                   >
                     {busySub === `new:${p.id}` ? "جارٍ التنفيذ..." : eligible ? "اشترك بهذه الباقة" : "الرصيد غير كافٍ"}
