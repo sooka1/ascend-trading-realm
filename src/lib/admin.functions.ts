@@ -958,3 +958,20 @@ export const getAccountingSummary = createServerFn({ method: "GET" })
     );
     return { rows, totals };
   });
+
+export const getReceiptSignedUrlAdmin = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { path: string }) => {
+    if (!data?.path || typeof data.path !== "string") throw new Error("path required");
+    return data;
+  })
+  .handler(async ({ data, context }) => {
+    const auth = await assertAdmin(context);
+    if (!auth.ok) throw new Error("Forbidden");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: signed, error } = await supabaseAdmin.storage
+      .from("documents")
+      .createSignedUrl(data.path, 60 * 10);
+    if (error) throw new Error(error.message);
+    return { url: signed.signedUrl };
+  });
