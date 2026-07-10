@@ -27,6 +27,7 @@ import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
+import { useMfaEnforcement } from "@/hooks/use-mfa-enforcement";
 
 type NavItem = {
   to: string;
@@ -86,6 +87,7 @@ export function AdminShell({
 }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const router = useRouter();
+  useMfaEnforcement();
   const showBack = true;
   const groups = Array.from(new Set(NAV.map((n) => n.group)));
   const queryClient = useQueryClient();
