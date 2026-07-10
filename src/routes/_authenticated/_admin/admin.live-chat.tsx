@@ -16,7 +16,8 @@ import {
 } from "@/lib/chat-notify";
 import { MessageStatus } from "@/components/message-status";
 import { ChatAttachment } from "@/components/chat-attachment";
-import { uploadChatAttachment, formatBytes } from "@/lib/chat-attachments";
+import { uploadChatAttachment } from "@/lib/chat-attachments";
+import { ChatAttachmentPreview } from "@/components/chat-attachment-preview";
 
 export const Route = createFileRoute("/_authenticated/_admin/admin/live-chat")({
   head: () => ({
@@ -414,22 +415,14 @@ function AdminLiveChat() {
                 )}
               </div>
               {pendingFile && (
-                <div className="mt-3 flex items-center justify-between gap-2 rounded-md border border-white/10 bg-white/[0.04] px-2 py-1 text-[11px]">
-                  <span className="truncate">
-                    📎 {pendingFile.name}{" "}
-                    <span className="opacity-60">({formatBytes(pendingFile.size)})</span>
-                  </span>
-                  <button
-                    type="button"
-                    className="text-muted-foreground hover:text-foreground"
-                    onClick={() => {
+                <div className="mt-3">
+                  <ChatAttachmentPreview
+                    file={pendingFile}
+                    onRemove={() => {
                       setPendingFile(null);
                       if (fileInputRef.current) fileInputRef.current.value = "";
                     }}
-                    aria-label="إزالة المرفق"
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
+                  />
                 </div>
               )}
               <div className="mt-3 flex items-end gap-2 border-t border-white/5 pt-3">
