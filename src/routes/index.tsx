@@ -100,6 +100,44 @@ function Home() {
 
 function Hero({ c }: { c: LandingContent }) {
   const videoRef = React.useRef<HTMLDivElement | null>(null);
+  const videoElRef = React.useRef<HTMLVideoElement | null>(null);
+  const [videoReady, setVideoReady] = React.useState(false);
+  const [inView, setInView] = React.useState(true);
+
+  // Lazy-load video: only mount <source> when hero is near viewport, and
+  // respect prefers-reduced-motion + Save-Data.
+  React.useEffect(() => {
+    const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    const saveData = (navigator as any).connection?.saveData;
+    if (reduce || saveData) {
+      setVideoReady(false);
+      return;
+    }
+    const el = videoRef.current;
+    if (!el || !("IntersectionObserver" in window)) {
+      setVideoReady(true);
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        const visible = entries[0]?.isIntersecting ?? false;
+        setInView(visible);
+        if (visible) setVideoReady(true);
+      },
+      { rootMargin: "200px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  // Pause when off-screen to save CPU/battery during scroll.
+  React.useEffect(() => {
+    const v = videoElRef.current;
+    if (!v) return;
+    if (inView) v.play().catch(() => {});
+    else v.pause();
+  }, [inView, videoReady]);
+
   React.useEffect(() => {
     let raf = 0;
     const onScroll = () => {
@@ -128,15 +166,29 @@ function Hero({ c }: { c: LandingContent }) {
           className="absolute inset-0 will-change-transform"
           style={{ transform: "translate3d(0,0,0) scale(1.08)" }}
         >
-          <video
-            className="h-full w-full object-cover"
-            src={heroVideo.url}
-            autoPlay
-            loop
-            muted
-            playsInline
-            preload="auto"
-          />
+          {videoReady && (
+            <video
+              ref={videoElRef}
+              className="h-full w-full object-cover"
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="metadata"
+              poster={heroPoster}
+            >
+              <source src={heroVideo.url} type="video/mp4" />
+            </video>
+          )}
+          {!videoReady && (
+            <img
+              src={heroPoster}
+              alt=""
+              loading="lazy"
+              decoding="async"
+              className="h-full w-full object-cover"
+            />
+          )}
         </div>
         {/* Layered overlays: darken + brand tint + fade-to-page */}
         <div className="absolute inset-0 bg-background/78" />
