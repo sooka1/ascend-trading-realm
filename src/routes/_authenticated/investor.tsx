@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
@@ -41,6 +41,7 @@ const withdrawSchema = z.object({
 });
 
 function InvestorPortal() {
+  const router = useRouter();
   const [uid, setUid] = useState<string | null>(null);
   const [packages, setPackages] = useState<Pkg[]>([]);
   const [subs, setSubs] = useState<Sub[]>([]);
@@ -118,6 +119,18 @@ function InvestorPortal() {
     const parsed = withdrawSchema.safeParse(Object.fromEntries(fd));
     if (!parsed.success) return toast.error(parsed.error.issues[0].message);
     if (parsed.data.amount > balance) return toast.error("المبلغ يتجاوز الرصيد المتاح");
+    // Require MFA for withdrawals
+    const { data: fx } = await supabase.auth.mfa.listFactors();
+    const totp = (fx?.totp ?? []).find((f) => f.status === "verified");
+    if (!totp) {
+      toast.error("يجب تفعيل المصادقة الثنائية قبل تنفيذ السحب");
+      router.navigate({ to: "/portal/mfa" });
+      return;
+    }
+    const code = window.prompt("أدخل رمز المصادقة الثنائية (6 أرقام) لتأكيد السحب");
+    if (!code) return;
+    const { error: mfaErr } = await supabase.auth.mfa.challengeAndVerify({ factorId: totp.id, code: code.trim() });
+    if (mfaErr) return toast.error("رمز التحقق غير صحيح");
     const { error } = await supabase.from("withdrawals").insert({ user_id: uid, ...parsed.data });
     if (error) return toast.error(error.message);
     toast.success("تم إرسال طلب السحب بنجاح");
