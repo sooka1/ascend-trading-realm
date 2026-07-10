@@ -6,6 +6,7 @@ import {
   primeChatAudio,
   notifyIncomingMessage,
 } from "@/lib/chat-notify";
+import { ensurePushSubscription } from "@/lib/push-client";
 
 // Global listener: whenever a new row is inserted into `notifications`
 // for the signed-in user, play the notification sound and pop a system
@@ -23,7 +24,10 @@ export function NotificationsListener() {
 
       void registerChatNotificationSW();
       primeChatAudio();
-      void ensureChatNotificationPermission();
+      const perm = await ensureChatNotificationPermission();
+      if (perm === "granted") {
+        void ensurePushSubscription();
+      }
 
       channel = supabase
         .channel(`notifications:${uid}`)
