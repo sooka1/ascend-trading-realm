@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { RealtimeChannel } from "@supabase/supabase-js";
-import { MessageCircle, Send, LogIn, X } from "lucide-react";
+import { MessageCircle, Send, LogIn, X, Paperclip } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "@tanstack/react-router";
@@ -19,6 +19,8 @@ import {
   ensureChatNotificationPermission,
 } from "@/lib/chat-notify";
 import { MessageStatus } from "@/components/message-status";
+import { ChatAttachment } from "@/components/chat-attachment";
+import { uploadChatAttachment, formatBytes } from "@/lib/chat-attachments";
 
 type ChatMsg = {
   id: string;
@@ -28,6 +30,10 @@ type ChatMsg = {
   body_admin: string | null;
   is_staff: boolean;
   created_at: string;
+  attachment_path?: string | null;
+  attachment_name?: string | null;
+  attachment_mime?: string | null;
+  attachment_size?: number | null;
 };
 
 export function SupportFab() {
@@ -46,6 +52,8 @@ export function SupportFab() {
   const [unread, setUnread] = useState(0);
   const [adminReadAt, setAdminReadAt] = useState<string | null>(null);
   const [staffTyping, setStaffTyping] = useState(false);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const channelRef = useRef<RealtimeChannel | null>(null);
   const lastTypingSentRef = useRef(0);
   const typingClearRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -235,34 +243,51 @@ export function SupportFab() {
       return;
     }
     const body = draft.trim();
-    if (body.length < 1) return;
+    if (body.length < 1 && !pendingFile) return;
     if (!mySk || !myPk) {
       toast.error("جارٍ تجهيز التشفير، حاول بعد لحظة");
       return;
     }
     setSending(true);
-    // Refresh the super-admin's public key at send-time so a message
-    // never lands with body_admin=null just because the key hadn't
-    // been fetched yet on chat open.
-    let apk = adminPk;
-    if (!apk) {
-      apk = await getSuperAdminPublicKey();
-      if (apk) setAdminPk(apk);
-    }
-    const bodyForMe = encryptFor(myPk, body);
-    const bodyForAdmin = apk ? encryptFor(apk, body) : null;
-    const { error } = await supabase
-      .from("ticket_messages")
-      .insert({ ticket_id: ticketId, sender_id: uid, body: bodyForMe, body_admin: bodyForAdmin, is_staff: false });
-    if (!error) {
+    try {
+      // Refresh the super-admin's public key at send-time so a message
+      // never lands with body_admin=null just because the key hadn't
+      // been fetched yet on chat open.
+      let apk = adminPk;
+      if (!apk) {
+        apk = await getSuperAdminPublicKey();
+        if (apk) setAdminPk(apk);
+      }
+      let attachment: Awaited<ReturnType<typeof uploadChatAttachment>> | null = null;
+      if (pendingFile) {
+        attachment = await uploadChatAttachment(ticketId, pendingFile);
+      }
+      const bodyForMe = body ? encryptFor(myPk, body) : null;
+      const bodyForAdmin = body && apk ? encryptFor(apk, body) : null;
+      const insertPayload: Record<string, unknown> = {
+        ticket_id: ticketId,
+        sender_id: uid,
+        body: bodyForMe,
+        body_admin: bodyForAdmin,
+        is_staff: false,
+      };
+      if (attachment) Object.assign(insertPayload, attachment);
+      const { error } = await supabase
+        .from("ticket_messages")
+        .insert(insertPayload as never);
+      if (error) throw error;
       await supabase
         .from("support_tickets")
         .update({ last_message_at: new Date().toISOString() })
         .eq("id", ticketId);
+      setDraft("");
+      setPendingFile(null);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "تعذّر إرسال الرسالة");
+    } finally {
+      setSending(false);
     }
-    setSending(false);
-    if (error) return toast.error(error.message);
-    setDraft("");
   }
 
   // Back-fill body_admin on the user's own past messages once the admin
@@ -373,6 +398,14 @@ export function SupportFab() {
                         <p className="whitespace-pre-wrap break-words">
                           <EncryptedBody result={decoded} />
                         </p>
+                        {m.attachment_path && m.attachment_name && m.attachment_mime && (
+                          <ChatAttachment
+                            path={m.attachment_path}
+                            name={m.attachment_name}
+                            mime={m.attachment_mime}
+                            size={m.attachment_size ?? 0}
+                          />
+                        )}
                         <p className="mt-1 text-[9px] opacity-60">
                           {new Date(m.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                         </p>
@@ -392,7 +425,52 @@ export function SupportFab() {
               )}
             </div>
             <div className="border-t border-white/10 bg-card/40 p-2">
+              {pendingFile && (
+                <div className="mb-1 flex items-center justify-between gap-2 rounded-md border border-white/10 bg-white/[0.04] px-2 py-1 text-[11px]">
+                  <span className="truncate">
+                    📎 {pendingFile.name}{" "}
+                    <span className="opacity-60">({formatBytes(pendingFile.size)})</span>
+                  </span>
+                  <button
+                    type="button"
+                    className="text-muted-foreground hover:text-foreground"
+                    onClick={() => {
+                      setPendingFile(null);
+                      if (fileInputRef.current) fileInputRef.current.value = "";
+                    }}
+                    aria-label="إزالة المرفق"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+              )}
               <div className="flex items-end gap-2">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  className="hidden"
+                  accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.rar,.csv"
+                  onChange={(e) => {
+                    const f = e.target.files?.[0] ?? null;
+                    if (f && f.size > 25 * 1024 * 1024) {
+                      toast.error("حجم الملف يتجاوز 25 ميغابايت");
+                      e.target.value = "";
+                      return;
+                    }
+                    setPendingFile(f);
+                  }}
+                />
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={!ticketId || sending}
+                  aria-label="إرفاق ملف"
+                  className="h-9 w-9 p-0"
+                >
+                  <Paperclip className="h-4 w-4" />
+                </Button>
                 <Textarea
                   className="min-h-[42px] max-h-32 resize-none"
                   placeholder="اكتب رسالتك…"
@@ -409,7 +487,13 @@ export function SupportFab() {
                   }}
                   disabled={!ticketId || sending}
                 />
-                <Button size="sm" onClick={send} disabled={sending || !ticketId || draft.trim().length === 0}>
+                <Button
+                  size="sm"
+                  onClick={send}
+                  disabled={
+                    sending || !ticketId || (draft.trim().length === 0 && !pendingFile)
+                  }
+                >
                   <Send className="h-3.5 w-3.5" />
                 </Button>
               </div>
