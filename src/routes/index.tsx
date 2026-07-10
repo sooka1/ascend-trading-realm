@@ -112,45 +112,51 @@ function Hero({ c }: { c: LandingContent }) {
           poster=""
         />
         {/* Layered overlays: darken + brand tint + fade-to-page */}
-        <div className="absolute inset-0 bg-background/70" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(212,175,55,0.18),transparent_60%)]" />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/60 to-background" />
-        <div className="absolute inset-0 bg-grid opacity-20" />
+        <div className="absolute inset-0 bg-background/78" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,oklch(0.30_0.08_165/0.55),transparent_65%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,oklch(0.76_0.13_85/0.16),transparent_60%)]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/65 to-background" />
+        <div className="absolute inset-0 bg-grid opacity-[0.12]" />
       </div>
 
       <div className="relative mx-auto grid max-w-7xl gap-10 px-4 pt-24 pb-16 sm:px-6 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:px-8 lg:pt-32 lg:pb-24">
         <div>
-          <span className="inline-flex items-center gap-2 rounded-full border border-gold/25 bg-gold/[0.06] px-3 py-1 text-[11px] uppercase tracking-[0.22em] text-gold backdrop-blur-md">
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-gold opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-gold" />
+          <div className="flex items-center gap-4">
+            <span className="h-px w-10 bg-gold/60" aria-hidden />
+            <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-gold/90">
+              {c.hero.badge}
             </span>
-            {c.hero.badge}
-          </span>
-          <h1 className="mt-6 font-display text-5xl font-semibold leading-[1.05] tracking-tight md:text-6xl lg:text-7xl">
-            {c.hero.titleA} <span className="italic text-gold">{c.hero.titleB}</span> {c.hero.titleC}
+          </div>
+          <h1 className="mt-8 font-display text-[2.75rem] font-bold leading-[1.05] tracking-tight md:text-6xl lg:text-[4.5rem]">
+            {c.hero.titleA}{" "}
+            <span className="italic font-normal text-gold">{c.hero.titleB}</span>
+            <br />
+            {c.hero.titleC}
           </h1>
-          <p className="mt-6 max-w-xl text-lg text-muted-foreground">{c.hero.subtitle}</p>
-          <div className="mt-8 flex flex-wrap items-center gap-3">
+          <div className="mt-6 h-px w-24 bg-gradient-to-l from-transparent via-gold/70 to-gold" aria-hidden />
+          <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
+            {c.hero.subtitle}
+          </p>
+          <div className="mt-10 flex flex-wrap items-center gap-3">
             <Button asChild size="lg" className="rounded-sm bg-gold font-semibold text-background shadow-[0_0_28px_rgba(201,168,76,0.22)] transition hover:bg-[oklch(0.88_0.11_90)] active:scale-[0.98]">
               <Link to="/auth">{c.hero.ctaOpen} <ArrowRight className="ml-2 h-4 w-4" /></Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="rounded-sm border-white/10 transition hover:border-gold/60 hover:text-foreground">
+            <Button asChild size="lg" variant="outline" className="rounded-sm border-gold/30 bg-transparent text-foreground transition hover:border-gold/70 hover:bg-gold/[0.06]">
               <Link to="/contact">{c.hero.ctaAdvisor}</Link>
             </Button>
             <Button asChild size="lg" variant="ghost">
               <Link to="/solutions">{c.hero.ctaLearn}</Link>
             </Button>
           </div>
-          <dl className="mt-12 grid max-w-lg grid-cols-3 gap-6 border-t border-white/5 pt-8 text-sm">
+          <dl className="mt-14 grid max-w-lg grid-cols-3 gap-6 border-t border-gold/15 pt-8 text-sm">
             {[
               { k: c.hero.statAum, v: "$1.2B+", d: "+12.4%", tone: "up" },
               { k: c.hero.statClients, v: "18,400+", d: "OPTIMIZED", tone: "muted" },
               { k: c.hero.statCountries, v: "62", d: "GLOBAL", tone: "muted" },
             ].map((s) => (
               <div key={s.k} className="space-y-1">
-                <dt className="text-[10px] font-medium uppercase tracking-[0.18em] text-gold/80">{s.k}</dt>
-                <dd className="font-mono text-2xl font-medium text-foreground tabular-nums">{s.v}</dd>
+                <dt className="font-mono text-[10px] font-medium uppercase tracking-[0.24em] text-gold/85">{s.k}</dt>
+                <dd className="font-display text-3xl font-normal text-foreground tabular-nums">{s.v}</dd>
                 <p className={`font-mono text-[10px] tracking-wide ${s.tone === "up" ? "text-emerald-400" : "text-muted-foreground"}`}>
                   {s.tone === "up" ? "↑ " : ""}{s.d}
                 </p>
@@ -161,29 +167,33 @@ function Hero({ c }: { c: LandingContent }) {
 
         <div className="relative">
           {/* Ambient gold glow behind card */}
-          <div className="pointer-events-none absolute -inset-1 -z-10 rounded-2xl bg-[radial-gradient(ellipse_at_top_left,rgba(201,168,76,0.22),transparent_60%)] blur-2xl" aria-hidden />
+          <div className="pointer-events-none absolute -inset-1 -z-10 rounded-sm bg-[radial-gradient(ellipse_at_top_left,rgba(201,168,76,0.20),transparent_60%)] blur-2xl" aria-hidden />
 
-          <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-card/60 shadow-elegant backdrop-blur-2xl">
+          {/* Editorial corner brackets */}
+          <span className="pointer-events-none absolute -top-3 -right-3 h-10 w-10 border-t border-r border-gold/50" aria-hidden />
+          <span className="pointer-events-none absolute -bottom-3 -left-3 h-10 w-10 border-b border-l border-gold/50" aria-hidden />
+
+          <div className="relative overflow-hidden rounded-sm border border-gold/20 bg-card/60 shadow-elegant backdrop-blur-2xl">
             {/* Frosted saturation layer */}
             <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.035),transparent_40%)]" aria-hidden />
 
             {/* Terminal header */}
-            <div className="relative flex items-center justify-between border-b border-white/[0.06] bg-white/[0.02] px-5 py-3 backdrop-blur-xl">
+            <div className="relative flex items-center justify-between border-b border-gold/15 bg-white/[0.02] px-5 py-3 backdrop-blur-xl">
               <div className="flex items-center gap-2.5">
                 <span className="relative flex h-2 w-2">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
                 </span>
-                <span className="font-mono text-[11px] tracking-wider text-foreground/80">HK / MODEL PORTFOLIO</span>
+                <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-foreground/80">HK · Model Portfolio</span>
               </div>
-              <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">Live Terminal Data</span>
+              <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-gold/70">Live Terminal</span>
             </div>
 
             {/* Headline stat */}
             <div className="relative px-6 pt-6">
-              <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-gold/80">{c.hero.cardTitle}</p>
-              <div className="mt-2 flex items-baseline gap-3">
-                <span className="font-mono text-4xl font-medium tracking-tight text-foreground tabular-nums">+18.4%</span>
+              <p className="font-mono text-[10px] font-medium uppercase tracking-[0.28em] text-gold/85">{c.hero.cardTitle}</p>
+              <div className="mt-3 flex items-baseline gap-3">
+                <span className="font-display text-5xl font-normal tracking-tight text-foreground tabular-nums">+18.4%</span>
                 <span className="font-mono text-sm text-emerald-400">+2.45%</span>
                 <span className="ml-auto font-mono text-[10px] uppercase tracking-widest text-muted-foreground">{c.hero.ytd}</span>
               </div>
@@ -195,7 +205,7 @@ function Hero({ c }: { c: LandingContent }) {
             </div>
 
             {/* Timeframe rail */}
-            <div className="relative grid grid-cols-3 border-t border-white/[0.06] bg-white/[0.015]">
+            <div className="relative grid grid-cols-3 border-t border-gold/15 bg-white/[0.015]">
               {[
                 { k: "1M", v: "+2.1%" },
                 { k: "6M", v: "+9.7%" },
@@ -203,22 +213,22 @@ function Hero({ c }: { c: LandingContent }) {
               ].map((r, i) => (
                 <div
                   key={r.k}
-                  className={`px-4 py-3 ${i > 0 ? "border-l border-white/[0.06]" : ""}`}
+                  className={`px-4 py-3 ${i > 0 ? "border-l border-gold/15" : ""}`}
                 >
-                  <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">{r.k}</p>
+                  <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-gold/70">{r.k}</p>
                   <p className="mt-1 font-mono text-sm text-foreground tabular-nums">{r.v}</p>
                 </div>
               ))}
             </div>
 
             {/* Bid / Ask footer */}
-            <div className="relative grid grid-cols-2 border-t border-white/[0.06] bg-background/40 backdrop-blur-xl">
-              <div className="border-l border-white/[0.06] px-5 py-3">
-                <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Bid</p>
+            <div className="relative grid grid-cols-2 border-t border-gold/15 bg-background/40 backdrop-blur-xl">
+              <div className="border-l border-gold/15 px-5 py-3">
+                <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-gold/70">Bid</p>
                 <p className="mt-0.5 font-mono text-sm text-foreground tabular-nums">1,284.10</p>
               </div>
               <div className="px-5 py-3">
-                <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Ask</p>
+                <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-gold/70">Ask</p>
                 <p className="mt-0.5 font-mono text-sm text-foreground tabular-nums">1,284.50</p>
               </div>
             </div>
@@ -226,7 +236,7 @@ function Hero({ c }: { c: LandingContent }) {
             {/* Hairline gold accent */}
             <div className="h-px w-full bg-gradient-to-l from-transparent via-gold/40 to-transparent" aria-hidden />
           </div>
-          <p className="mt-3 text-xs text-muted-foreground">{c.hero.disclaimer}</p>
+          <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground/80">{c.hero.disclaimer}</p>
         </div>
       </div>
     </section>
