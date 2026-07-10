@@ -319,6 +319,7 @@ export function SupportFab() {
                           {new Date(m.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                         </p>
                         <MessageStatus mine={mine} delivered={!!m.body_admin} />
+                        {(() => null)()}
                       </div>
                     </div>
                   );
