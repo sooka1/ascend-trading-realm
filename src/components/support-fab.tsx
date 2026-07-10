@@ -45,7 +45,7 @@ export function SupportFab() {
         .from("support_tickets")
         .select("id")
         .eq("user_id", uid)
-        .in("status", ["open", "pending", "in_progress"])
+        .in("status", ["open", "pending"])
         .order("last_message_at", { ascending: false })
         .limit(1)
         .maybeSingle();
