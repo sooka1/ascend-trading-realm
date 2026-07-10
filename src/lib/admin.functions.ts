@@ -617,7 +617,6 @@ export const decidePaymentAdmin = createServerFn({ method: "POST" })
     // Notify investor
     await supabaseAdmin.from("notifications").insert({
       user_id: row.user_id,
-      kind: `${data.kind}_${data.decision}`,
       title:
         data.decision === "approved"
           ? data.kind === "deposit"
