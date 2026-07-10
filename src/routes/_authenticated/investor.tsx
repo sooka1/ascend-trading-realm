@@ -98,6 +98,77 @@ function InvestorPortal() {
   const [payoutFrom, setPayoutFrom] = useState<string>("");
   const [payoutTo, setPayoutTo] = useState<string>("");
   const [payoutQuery, setPayoutQuery] = useState<string>("");
+
+  function getFilteredPayouts() {
+    const fromTs = payoutFrom ? new Date(payoutFrom + "T00:00:00").getTime() : -Infinity;
+    const toTs = payoutTo ? new Date(payoutTo + "T23:59:59").getTime() : Infinity;
+    const q = payoutQuery.trim().toLowerCase();
+    return payouts.filter((p) => {
+      const t = new Date(p.created_at).getTime();
+      if (t < fromTs || t > toTs) return false;
+      if (q) {
+        const sub = subs.find((s) => s.id === p.subscription_id);
+        const name = (packages.find((pk) => pk.id === sub?.package_id)?.name ?? "").toLowerCase();
+        if (!name.includes(q)) return false;
+      }
+      return true;
+    });
+  }
+
+  function exportPayouts(format: "csv" | "pdf") {
+    const rows = getFilteredPayouts().map((p) => {
+      const sub = subs.find((s) => s.id === p.subscription_id);
+      const pkgName = packages.find((pk) => pk.id === sub?.package_id)?.name ?? p.subscription_id.slice(0, 8);
+      const base = Number(sub?.amount ?? 0);
+      const pct = base > 0 ? (Number(p.amount) / base) * 100 : 0;
+      return {
+        time: new Date(p.created_at).toLocaleString(),
+        pkg: pkgName,
+        amount: Number(p.amount).toFixed(2),
+        currency: p.currency,
+        pct: pct.toFixed(3),
+      };
+    });
+    if (rows.length === 0) return toast.error("لا توجد بيانات للتصدير");
+
+    if (format === "csv") {
+      const header = ["الوقت", "الباقة", "المبلغ", "العملة", "النسبة %"];
+      const csv = [header, ...rows.map((r) => [r.time, r.pkg, r.amount, r.currency, r.pct])]
+        .map((row) => row.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(","))
+        .join("\n");
+      const blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `payouts-${new Date().toISOString().slice(0, 10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      return;
+    }
+
+    // PDF via print window
+    const html = `<!doctype html><html dir="rtl" lang="ar"><head><meta charset="utf-8"><title>سجل التوزيعات اليومية</title>
+      <style>
+        body { font-family: system-ui, -apple-system, "Segoe UI", Tahoma, sans-serif; padding: 24px; color: #111; }
+        h1 { font-size: 18px; margin: 0 0 12px; }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        th, td { border: 1px solid #ddd; padding: 6px 8px; text-align: right; }
+        th { background: #f3f4f6; }
+        tfoot td { font-weight: 600; background: #fafafa; }
+      </style></head><body>
+      <h1>سجل التوزيعات اليومية</h1>
+      <p style="font-size:12px;color:#555">تم التصدير في ${new Date().toLocaleString()}</p>
+      <table>
+        <thead><tr><th>الوقت</th><th>الباقة</th><th>المبلغ</th><th>العملة</th><th>النسبة %</th></tr></thead>
+        <tbody>${rows.map((r) => `<tr><td>${r.time}</td><td>${r.pkg}</td><td>${r.amount}</td><td>${r.currency}</td><td>${r.pct}%</td></tr>`).join("")}</tbody>
+      </table>
+      <script>window.onload = () => { window.print(); };</script>
+    </body></html>`;
+    const w = window.open("", "_blank");
+    if (!w) return toast.error("تعذّر فتح نافذة الطباعة");
+    w.document.write(html);
+    w.document.close();
+  }
   const [now, setNow] = useState<number>(() => Date.now());
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 60_000);
@@ -917,13 +988,19 @@ function InvestorPortal() {
               <Label className="text-xs">بحث باسم الباقة</Label>
               <Input value={payoutQuery} onChange={(e) => setPayoutQuery(e.target.value)} placeholder="اكتب اسم الباقة…" className="h-9" />
             </div>
-            {(payoutFrom || payoutTo || payoutQuery) && (
-              <div className="sm:col-span-4">
+            <div className="sm:col-span-4 flex flex-wrap gap-2">
+              {(payoutFrom || payoutTo || payoutQuery) && (
                 <Button size="sm" variant="outline" className="h-8 border-white/15" onClick={() => { setPayoutFrom(""); setPayoutTo(""); setPayoutQuery(""); }}>
                   إعادة ضبط الفلاتر
                 </Button>
-              </div>
-            )}
+              )}
+              <Button size="sm" variant="outline" className="h-8 border-white/15" onClick={() => exportPayouts("csv")}>
+                تصدير CSV
+              </Button>
+              <Button size="sm" variant="outline" className="h-8 border-white/15" onClick={() => exportPayouts("pdf")}>
+                تصدير PDF
+              </Button>
+            </div>
           </div>
           {(() => {
             const fromTs = payoutFrom ? new Date(payoutFrom + "T00:00:00").getTime() : -Infinity;
