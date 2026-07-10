@@ -584,6 +584,10 @@ export type Database = {
       }
       ticket_messages: {
         Row: {
+          attachment_mime: string | null
+          attachment_name: string | null
+          attachment_path: string | null
+          attachment_size: number | null
           body: string | null
           body_admin: string | null
           created_at: string
@@ -593,6 +597,10 @@ export type Database = {
           ticket_id: string
         }
         Insert: {
+          attachment_mime?: string | null
+          attachment_name?: string | null
+          attachment_path?: string | null
+          attachment_size?: number | null
           body?: string | null
           body_admin?: string | null
           created_at?: string
@@ -602,6 +610,10 @@ export type Database = {
           ticket_id: string
         }
         Update: {
+          attachment_mime?: string | null
+          attachment_name?: string | null
+          attachment_path?: string | null
+          attachment_size?: number | null
           body?: string | null
           body_admin?: string | null
           created_at?: string
