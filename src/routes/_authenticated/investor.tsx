@@ -118,18 +118,6 @@ function InvestorPortal() {
     await load();
   }
 
-  async function subscribe(pkg: Pkg) {
-    if (!uid) return;
-    const amountStr = window.prompt(`أدخل مبلغ الاشتراك في باقة "${pkg.name}" (الحد الأدنى ${pkg.min_amount} ${pkg.currency})`);
-    if (!amountStr) return;
-    const amount = Number(amountStr);
-    if (!Number.isFinite(amount) || amount < Number(pkg.min_amount)) return toast.error("مبلغ غير صالح");
-    const { error } = await supabase.from("subscriptions").insert({ user_id: uid, package_id: pkg.id, amount, currency: pkg.currency });
-    if (error) return toast.error(error.message);
-    toast.success("تم إرسال طلب الاشتراك");
-    await load();
-  }
-
   return (
     <PageShell bare>
       <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
