@@ -4,6 +4,43 @@ import { toast } from "sonner";
 
 let ctx: AudioContext | null = null;
 let swRegPromise: Promise<ServiceWorkerRegistration | null> | null = null;
+let audioUnlocked = false;
+let unlockBound = false;
+
+function getCtx(): AudioContext | null {
+  const AC =
+    (window as unknown as { AudioContext?: typeof AudioContext; webkitAudioContext?: typeof AudioContext })
+      .AudioContext ??
+    (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+  if (!AC) return null;
+  ctx = ctx ?? new AC();
+  return ctx;
+}
+
+export function primeChatAudio() {
+  if (typeof window === "undefined" || unlockBound) return;
+  unlockBound = true;
+  const unlock = () => {
+    try {
+      const c = getCtx();
+      if (!c) return;
+      if (c.state === "suspended") void c.resume();
+      // Play a silent buffer to fully unlock on iOS/Safari.
+      const buffer = c.createBuffer(1, 1, 22050);
+      const src = c.createBufferSource();
+      src.buffer = buffer;
+      src.connect(c.destination);
+      src.start(0);
+      audioUnlocked = true;
+    } catch {
+      /* ignore */
+    }
+  };
+  const opts: AddEventListenerOptions = { once: true, capture: true };
+  window.addEventListener("pointerdown", unlock, opts);
+  window.addEventListener("keydown", unlock, opts);
+  window.addEventListener("touchstart", unlock, opts);
+}
 
 function isPreviewHost(): boolean {
   if (typeof window === "undefined") return false;
@@ -71,28 +108,25 @@ async function showSystemNotification(title: string, body?: string, url?: string
 
 export function playChatChime() {
   try {
-    const AC =
-      (window as unknown as { AudioContext?: typeof AudioContext; webkitAudioContext?: typeof AudioContext })
-        .AudioContext ??
-      (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-    if (!AC) return;
-    ctx = ctx ?? new AC();
-    if (ctx.state === "suspended") void ctx.resume();
-    const now = ctx.currentTime;
+    const c = getCtx();
+    if (!c) return;
+    if (c.state === "suspended") void c.resume();
+    const now = c.currentTime;
     const notes = [880, 1320];
     notes.forEach((freq, i) => {
-      const osc = ctx!.createOscillator();
-      const gain = ctx!.createGain();
+      const osc = c.createOscillator();
+      const gain = c.createGain();
       osc.type = "sine";
       osc.frequency.value = freq;
       const start = now + i * 0.12;
       gain.gain.setValueAtTime(0.0001, start);
       gain.gain.exponentialRampToValueAtTime(0.18, start + 0.02);
       gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.22);
-      osc.connect(gain).connect(ctx!.destination);
+      osc.connect(gain).connect(c.destination);
       osc.start(start);
       osc.stop(start + 0.24);
     });
+    audioUnlocked = true;
   } catch {
     /* ignore audio failures */
   }

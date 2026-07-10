@@ -17,6 +17,7 @@ import {
   notifyIncomingMessage,
   registerChatNotificationSW,
   ensureChatNotificationPermission,
+  primeChatAudio,
 } from "@/lib/chat-notify";
 import { MessageStatus } from "@/components/message-status";
 import { ChatAttachment } from "@/components/chat-attachment";
@@ -89,6 +90,7 @@ export function SupportFab() {
   // when the tab is not focused.
   useEffect(() => {
     void registerChatNotificationSW();
+    primeChatAudio();
   }, []);
   useEffect(() => {
     if (!open) return;

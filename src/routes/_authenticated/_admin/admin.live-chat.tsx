@@ -13,6 +13,7 @@ import {
   notifyIncomingMessage,
   registerChatNotificationSW,
   ensureChatNotificationPermission,
+  primeChatAudio,
 } from "@/lib/chat-notify";
 import { MessageStatus } from "@/components/message-status";
 import { ChatAttachment } from "@/components/chat-attachment";
@@ -98,6 +99,7 @@ function AdminLiveChat() {
     })();
     void registerChatNotificationSW();
     void ensureChatNotificationPermission();
+    primeChatAudio();
   }, []);
 
   async function loadTickets() {
