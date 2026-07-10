@@ -115,14 +115,14 @@ export function PortalShell({
                   <Link
                     to={n.to}
                     onClick={onNavigate}
-                    className={`group flex items-center gap-2.5 rounded-md px-2 py-2 text-sm transition ${
+                    className={`group flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition ${
                       active
                         ? "bg-gold/[0.08] text-foreground"
                         : "text-muted-foreground hover:bg-white/[0.03] hover:text-foreground"
                     }`}
                   >
                     <n.icon
-                      className={`h-4 w-4 shrink-0 ${active ? "text-gold" : "text-muted-foreground group-hover:text-gold"}`}
+                      className={`h-5 w-5 shrink-0 ${active ? "text-gold" : "text-muted-foreground group-hover:text-gold"}`}
                     />
                     <span className="truncate">{n.label}</span>
                     {active && (
@@ -157,30 +157,30 @@ export function PortalShell({
             <header className="mb-6 border-b border-white/5 pb-6">
               <div className="mb-4 flex items-center justify-between gap-2 lg:hidden">
                 <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
-                  <SheetTrigger className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-white/10 bg-white/[0.03] text-muted-foreground transition hover:border-gold/40 hover:text-gold">
-                    <Menu className="h-4 w-4" />
+                  <SheetTrigger className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03] text-muted-foreground transition hover:border-gold/40 hover:text-gold">
+                    <Menu className="h-5 w-5" />
                     <span className="sr-only">القائمة</span>
                   </SheetTrigger>
-                  <SheetContent side="right" className="w-[85vw] max-w-sm overflow-y-auto border-white/10 bg-card/95 backdrop-blur-xl">
+                  <SheetContent side="right" className="w-[88vw] max-w-sm overflow-y-auto border-white/10 bg-card/95 p-5 backdrop-blur-xl">
                     <SheetHeader>
                       <SheetTitle className="text-right font-mono text-[10px] uppercase tracking-[0.22em] text-gold/80">
                         Investor Portal
                       </SheetTitle>
                     </SheetHeader>
-                    <div className="mt-4">
+                    <div className="mt-6 space-y-1">
                       <NavList onNavigate={() => setMobileNavOpen(false)} />
                     </div>
                   </SheetContent>
                 </Sheet>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2.5">
                   <Link
                     to="/portal/notifications"
                     aria-label="الإشعارات"
-                    className="relative inline-flex h-9 w-9 items-center justify-center rounded-md border border-white/10 bg-white/[0.03] text-muted-foreground transition hover:border-gold/40 hover:text-gold"
+                    className="relative inline-flex h-11 w-11 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03] text-muted-foreground transition hover:border-gold/40 hover:text-gold"
                   >
-                    <Bell className="h-4 w-4" />
+                    <Bell className="h-5 w-5" />
                     {unreadCount > 0 && (
-                      <span className="absolute -top-1 -end-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-gold px-1 font-mono text-[10px] font-semibold text-background">
+                      <span className="absolute -top-1 -end-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-gold px-1 font-mono text-[10px] font-semibold text-background">
                         {unreadCount > 99 ? "99+" : unreadCount}
                       </span>
                     )}
@@ -188,10 +188,10 @@ export function PortalShell({
                   <button
                     type="button"
                     onClick={handleSignOut}
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-white/10 bg-white/[0.03] text-muted-foreground transition hover:border-red-400/40 hover:text-red-200"
+                    className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03] text-muted-foreground transition hover:border-red-400/40 hover:text-red-200"
                     aria-label="تسجيل الخروج"
                   >
-                    <LogOut className="h-4 w-4" />
+                    <LogOut className="h-5 w-5" />
                   </button>
                 </div>
               </div>
