@@ -5,6 +5,15 @@ import { BadgeCheck, CheckCircle2, Quote, Star } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { PORTFOLIOS } from "@/lib/portfolios-t";
 import type { Lang } from "@/lib/i18n";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
+import * as React from "react";
 
 export const Route = createFileRoute("/portfolios")({
   head: () => ({
