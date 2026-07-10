@@ -131,11 +131,6 @@ function InvestorPortal() {
   async function subscribeToPackage(pkg: Pkg, requestedAmount: number) {
     if (!uid) return;
     if (busySub) return;
-    // Prevent duplicate active/pending subscription in the same package
-    if (subs.some((s) => s.package_id === pkg.id && (s.status === "active" || s.status === "pending"))) {
-      toast.error("لديك اشتراك نشط أو قيد المراجعة في هذه الباقة بالفعل");
-      return;
-    }
     if (available < Number(pkg.min_amount)) {
       toast.error(`الرصيد المتاح غير كافٍ. الحد الأدنى ${fmt(Number(pkg.min_amount))} ${pkg.currency}`);
       return;
@@ -176,10 +171,6 @@ function InvestorPortal() {
         toast.error("الرصيد المتاح تغيّر — أعد المحاولة");
         return;
       }
-      if ((fresh ?? []).some((s) => s.package_id === pkg.id && (s.status === "active" || s.status === "pending"))) {
-        toast.error("لديك اشتراك نشط أو قيد المراجعة في هذه الباقة بالفعل");
-        return;
-      }
       const { error } = await supabase.from("subscriptions").insert({
         user_id: uid,
         package_id: pkg.id,
@@ -209,6 +200,15 @@ function InvestorPortal() {
     if (busySub) return;
     if (sub.status !== "active" && sub.status !== "pending") {
       toast.error("لا يمكن إلغاء اشتراك بهذه الحالة");
+      return;
+    }
+    // Enforce 24-hour lock after start
+    const startTs = sub.started_at ? new Date(sub.started_at).getTime() : new Date(sub.created_at).getTime();
+    const ageMs = Date.now() - startTs;
+    const DAY_MS = 24 * 60 * 60 * 1000;
+    if (Number.isFinite(startTs) && ageMs < DAY_MS) {
+      const hoursLeft = Math.ceil((DAY_MS - ageMs) / (60 * 60 * 1000));
+      toast.error(`لا يمكن إلغاء الاشتراك قبل مرور 24 ساعة — تبقّى ${hoursLeft} ساعة`);
       return;
     }
     // Investors can withdraw their capital at any time — no lockup enforcement.
