@@ -120,11 +120,6 @@ function AccountsPage() {
                         label="تاريخ البدء"
                         value={s.started_at ? new Date(s.started_at).toLocaleDateString() : "—"}
                       />
-                      <Row
-                        icon={Calendar}
-                        label="تاريخ الانتهاء"
-                        value={s.ends_at ? new Date(s.ends_at).toLocaleDateString() : (s.packages?.lockup_months ? `قفل ${s.packages.lockup_months}ش` : "—")}
-                      />
                     </dl>
                   </article>
                 ))}
