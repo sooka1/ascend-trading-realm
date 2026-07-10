@@ -94,24 +94,34 @@ function AdminUserRoles() {
   const [saving, setSaving] = useState(false);
   const [password, setPassword] = useState("");
   const [savingPassword, setSavingPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [searchStatus, setSearchStatus] = useState<Status>(null);
+  const [rolesStatus, setRolesStatus] = useState<Status>(null);
+  const [passwordStatus, setPasswordStatus] = useState<Status>(null);
 
   async function onSearch(e?: React.FormEvent) {
     e?.preventDefault();
     if (!email.trim()) return;
     setSearching(true);
+    setSearchStatus(null);
+    setRolesStatus(null);
+    setPasswordStatus(null);
     try {
       const r = await lookup({ data: { email } });
       if (!r.found) {
         setLoaded(null);
         setSelected(new Set());
-        toast.error("لم يتم العثور على مستخدم بهذا البريد");
+        setSearchStatus({ kind: "error", message: "لم يتم العثور على مستخدم بهذا البريد." });
         return;
       }
       setLoaded({ email: r.email ?? email, userId: r.userId, initial: r.roles });
       setSelected(new Set(r.roles));
-      toast.success(`تم تحميل ${r.roles.length} دور/أدوار`);
+      setSearchStatus({
+        kind: "success",
+        message: `تم العثور على المستخدم — عدد الأدوار الحالية: ${r.roles.length}.`,
+      });
     } catch (err) {
-      toast.error((err as Error).message);
+      setSearchStatus({ kind: "error", message: (err as Error).message });
     } finally {
       setSearching(false);
     }
@@ -129,13 +139,17 @@ function AdminUserRoles() {
   async function onSave() {
     if (!loaded) return;
     setSaving(true);
+    setRolesStatus(null);
     try {
       const roles = Array.from(selected);
       const r = await save({ data: { email: loaded.email, roles } });
       setLoaded({ ...loaded, initial: r.roles as AppRole[] });
-      toast.success("تم حفظ الأدوار بنجاح");
+      setRolesStatus({
+        kind: "success",
+        message: `تم حفظ الأدوار بنجاح (${r.roles.length}).`,
+      });
     } catch (err) {
-      toast.error((err as Error).message);
+      setRolesStatus({ kind: "error", message: (err as Error).message });
     } finally {
       setSaving(false);
     }
@@ -144,14 +158,34 @@ function AdminUserRoles() {
   async function onSavePassword() {
     if (!loaded || password.length < 8) return;
     setSavingPassword(true);
+    setPasswordStatus(null);
     try {
       await savePassword({ data: { email: loaded.email, password } });
-      setPassword("");
-      toast.success("تم تحديث كلمة المرور بنجاح");
+      setPasswordStatus({
+        kind: "success",
+        message: `تم تحديث كلمة المرور بنجاح لـ ${loaded.email}.`,
+      });
     } catch (err) {
-      toast.error((err as Error).message);
+      setPasswordStatus({ kind: "error", message: (err as Error).message });
     } finally {
       setSavingPassword(false);
+    }
+  }
+
+  function onGeneratePassword() {
+    const pw = generateStrongPassword(16);
+    setPassword(pw);
+    setShowPassword(true);
+    setPasswordStatus(null);
+  }
+
+  async function onCopyPassword() {
+    if (!password) return;
+    try {
+      await navigator.clipboard.writeText(password);
+      toast.success("تم نسخ كلمة المرور");
+    } catch {
+      toast.error("تعذّر النسخ");
     }
   }
 
@@ -166,7 +200,13 @@ function AdminUserRoles() {
       title="إدارة أدوار المستخدمين"
       subtitle="ابحث عن مستخدم بالبريد الإلكتروني ثم فعّل/عطّل الأدوار واحفظ التغييرات. متاح لـ super_admin فقط."
     >
-      <AdminCard title="البحث بالبريد الإلكتروني" icon={Search} className="mb-6">
+      <div className="mb-6 flex flex-wrap items-center gap-2">
+        <StepBadge n={1} label="ابحث عن المستخدم" />
+        <StepBadge n={2} label="عدّل الأدوار واحفظ" />
+        <StepBadge n={3} label="عيّن كلمة مرور جديدة (اختياري)" />
+      </div>
+
+      <AdminCard title="١. البحث بالبريد الإلكتروني" icon={Search} className="mb-6">
         <form onSubmit={onSearch} className="flex flex-wrap items-center gap-2">
           <input
             type="email"
@@ -185,11 +225,12 @@ function AdminUserRoles() {
             {searching ? "جارٍ البحث…" : "بحث"}
           </button>
         </form>
+        <StatusBanner status={searchStatus} />
       </AdminCard>
 
       {loaded ? (
         <AdminCard
-          title={loaded.email}
+          title={`٢. الأدوار — ${loaded.email}`}
           icon={UserCog}
           action={
             <button
@@ -236,19 +277,50 @@ function AdminUserRoles() {
           ) : (
             <p className="mt-4 text-xs text-muted-foreground">لا توجد تغييرات.</p>
           )}
+          <StatusBanner status={rolesStatus} />
         </AdminCard>
       ) : null}
 
       {loaded ? (
-        <AdminCard title="تعيين كلمة مرور جديدة" icon={KeyRound} className="mt-6">
+        <AdminCard title="٣. تعيين كلمة مرور جديدة" icon={KeyRound} className="mt-6">
+          <p className="mb-3 text-xs text-muted-foreground">
+            اكتب كلمة مرور (٨ أحرف على الأقل) أو اضغط "توليد" للحصول على كلمة قوية عشوائية.
+          </p>
           <div className="flex flex-wrap items-center gap-2">
-            <input
-              type="text"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="كلمة المرور الجديدة (٨ أحرف على الأقل)"
-              className="min-w-[260px] flex-1 rounded-md border border-white/10 bg-white/[0.03] px-3 py-2 font-mono text-sm outline-none focus:border-gold/50"
-            />
+            <div className="relative min-w-[260px] flex-1">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="كلمة المرور الجديدة"
+                className="w-full rounded-md border border-white/10 bg-white/[0.03] px-3 py-2 pr-10 font-mono text-sm outline-none focus:border-gold/50"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                className="absolute inset-y-0 right-2 grid place-items-center text-muted-foreground hover:text-foreground"
+                aria-label={showPassword ? "إخفاء" : "إظهار"}
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
+            <button
+              type="button"
+              onClick={onGeneratePassword}
+              className="inline-flex items-center gap-2 rounded-md border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-foreground transition hover:bg-white/[0.06]"
+            >
+              <Wand2 className="h-4 w-4" />
+              توليد
+            </button>
+            <button
+              type="button"
+              onClick={onCopyPassword}
+              disabled={!password}
+              className="inline-flex items-center gap-2 rounded-md border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-foreground transition hover:bg-white/[0.06] disabled:opacity-40"
+            >
+              <Copy className="h-4 w-4" />
+              نسخ
+            </button>
             <button
               type="button"
               onClick={onSavePassword}
@@ -259,6 +331,14 @@ function AdminUserRoles() {
               {savingPassword ? "جارٍ التحديث…" : "تحديث كلمة المرور"}
             </button>
           </div>
+          <p className="mt-2 text-[11px] text-muted-foreground">
+            {password.length === 0
+              ? "لم يتم إدخال كلمة مرور بعد."
+              : password.length < 8
+                ? `تحتاج ${8 - password.length} أحرف إضافية.`
+                : `الطول: ${password.length} — جاهزة للحفظ.`}
+          </p>
+          <StatusBanner status={passwordStatus} />
         </AdminCard>
       ) : (
         <div className="rounded-xl border border-dashed border-white/10 bg-white/[0.02] p-10 text-center text-sm text-muted-foreground">
