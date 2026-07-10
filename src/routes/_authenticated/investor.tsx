@@ -227,7 +227,20 @@ function InvestorPortal() {
       if (!ref) return toast.error("يرجى إدخال TxID / مرجع المعاملة");
       if (!rule.regex.test(ref)) return toast.error(rule.label);
     }
-    const { error } = await supabase.from("deposits").insert({ user_id: uid, ...parsed.data });
+    // Optional receipt image upload
+    const receipt = (fd.get("receipt") as File | null) ?? null;
+    let receiptNote = "";
+    if (receipt && receipt.size > 0) {
+      if (receipt.size > 5 * 1024 * 1024) return toast.error("حجم صورة التحويل يجب ألا يتجاوز 5MB");
+      if (!/^image\/(png|jpe?g|webp)$/.test(receipt.type)) return toast.error("صيغة الصورة غير مدعومة (PNG/JPG/WEBP فقط)");
+      const ext = receipt.name.split(".").pop() ?? "png";
+      const path = `${uid}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+      const { error: upErr } = await supabase.storage.from("documents").upload(path, receipt, { upsert: false, contentType: receipt.type });
+      if (upErr) return toast.error("تعذّر رفع صورة التحويل: " + upErr.message);
+      receiptNote = `\n[receipt:documents/${path}]`;
+    }
+    const notesWithReceipt = ((parsed.data.notes ?? "") + receiptNote).trim() || undefined;
+    const { error } = await supabase.from("deposits").insert({ user_id: uid, ...parsed.data, notes: notesWithReceipt });
     if (error) return toast.error(error.message);
     toast.success("تم إرسال طلب الإيداع بنجاح");
     (e.currentTarget as HTMLFormElement).reset();
