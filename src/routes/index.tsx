@@ -923,6 +923,9 @@ function StarRating({ value }: { value: number }) {
 function Testimonials() {
   const { lang, dir } = useI18n();
   const t = TESTIMONIALS[lang] ?? TESTIMONIALS.en;
+  const autoplay = React.useRef(
+    Autoplay({ delay: 4500, stopOnInteraction: false, stopOnMouseEnter: true }),
+  );
   return (
     <section className="border-y border-white/5 bg-white/[0.02] py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -933,8 +936,16 @@ function Testimonials() {
         </div>
 
         <Carousel
-          opts={{ align: "start", loop: true, direction: dir === "rtl" ? "rtl" : "ltr" }}
-          className="mt-12"
+          opts={{
+            align: "start",
+            loop: true,
+            direction: dir === "rtl" ? "rtl" : "ltr",
+            watchDrag: true,
+            dragFree: false,
+            dragThreshold: 8,
+          }}
+          plugins={[autoplay.current]}
+          className="mt-12 touch-pan-y"
         >
           <CarouselContent className="-ml-4">
             {t.items.map((it) => (
@@ -953,10 +964,22 @@ function Testimonials() {
                       className="h-12 w-12 shrink-0 rounded-full border border-gold/30 bg-white/5 object-cover"
                     />
                     <div className="min-w-0">
-                      <p className="truncate font-display text-base font-semibold text-foreground">
-                        {it.name}
+                      <p className="flex items-center gap-1.5 truncate font-display text-base font-semibold text-foreground">
+                        <span className="truncate">{it.name}</span>
+                        {it.verified && (
+                          <BadgeCheck
+                            className="h-4 w-4 shrink-0 text-gold"
+                            aria-label="عميل مُوثّق"
+                          />
+                        )}
                       </p>
                       <p className="truncate text-xs text-muted-foreground">{it.role}</p>
+                      {it.verified && (
+                        <span className="mt-1 inline-flex items-center gap-1 rounded-full border border-gold/30 bg-gold/10 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.16em] text-gold">
+                          <BadgeCheck className="h-3 w-3" />
+                          عميل مُوثّق
+                        </span>
+                      )}
                     </div>
                     <Quote className="ms-auto h-5 w-5 shrink-0 text-gold/60" />
                   </div>
