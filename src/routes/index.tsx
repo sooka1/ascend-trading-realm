@@ -54,6 +54,7 @@ import { useI18n } from "@/lib/i18n";
 import { LANDING, type LandingContent } from "@/lib/landing-t";
 import heroVideo from "@/assets/hero-bg.mp4.asset.json";
 import heroPoster from "@/assets/hero-bg.jpg";
+import candlesVideo from "@/assets/hk-candles-intro.mp4.asset.json";
 import custodyBanksImg from "@/assets/custody-banks.png.asset.json";
 
 export const Route = createFileRoute("/")({
@@ -283,7 +284,7 @@ function Hero({ c }: { c: LandingContent }) {
                   preload="metadata"
                   poster={heroPoster}
                 >
-                  <source src={heroVideo.url} type="video/mp4" />
+                <source src={candlesVideo.url} type="video/mp4" />
                 </video>
                 {/* Screen glare */}
                 <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-transparent" />
