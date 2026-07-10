@@ -220,7 +220,7 @@ function Hero({ c }: { c: LandingContent }) {
             {c.hero.titleC}
           </h1>
           <div className="mt-6 h-px w-24 bg-gradient-to-l from-transparent via-gold/70 to-gold" aria-hidden />
-          <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
+          <p className="mt-6 max-w-xl whitespace-pre-line text-lg leading-relaxed text-muted-foreground">
             {c.hero.subtitle}
           </p>
           <div className="mt-10 flex flex-wrap items-center gap-3">
