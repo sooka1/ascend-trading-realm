@@ -94,23 +94,8 @@ function AdminLiveChat() {
         const kp = await ensureMyKeypair(id);
         setMySk(kp.secretKey);
         setMyPk(kp.publicKey);
-        // Self-test: confirm past messages decrypt on this browser.
-        const check = await verifyAdminDecryption(kp.secretKey || null);
-        if (check.status === "ok") {
-          toast.success("تم التحقق من فك تشفير كل الرسائل السابقة بنجاح", {
-            description: `تم فحص ${check.total} رسالة`,
-          });
-        } else if (check.status === "partial") {
-          toast.warning("بعض الرسائل السابقة لم يتم فك تشفيرها", {
-            description: `${check.ok} من ${check.total} — سجّل الدخول من المتصفح الأصلي لمزامنة المفتاح`,
-          });
-        } else if (check.status === "failed") {
-          toast.error("تعذّر فك تشفير الرسائل السابقة على هذا المتصفح", {
-            description: "سجّل الدخول مرة على جهازك الأصلي لمزامنة المفتاح",
-          });
-        } else if (check.status === "no-key") {
-          toast.message("بانتظار مزامنة مفتاح التشفير من جهازك الأصلي");
-        }
+        // Self-test kept for internal diagnostics; user-facing toasts intentionally suppressed.
+        await verifyAdminDecryption(kp.secretKey || null);
       }
       await loadTickets();
     })();
