@@ -272,13 +272,13 @@ function InvestorPortal() {
                   <div className="flex items-center justify-between">
                     <h3 className="font-display text-base font-semibold">{p.name}</h3>
                     <span className="rounded-full border border-gold/30 bg-gold/[0.08] px-2 py-0.5 font-mono text-[10px] text-gold">
-                      {p.target_return_pct != null ? `${Number(p.target_return_pct).toFixed(1)}%` : "—"}
+                      {returnRange(Number(p.min_amount))} <span className="text-[9px]">/ أسبوعي</span>
                     </span>
                   </div>
                   {p.description && <p className="mt-1 text-xs text-muted-foreground">{p.description}</p>}
                   <div className="mt-3 grid grid-cols-2 gap-2 text-[11px] text-muted-foreground">
                     <div>الحد الأدنى<div className="font-mono text-foreground">{fmt(Number(p.min_amount))} {p.currency}</div></div>
-                    <div>مدة القفل<div className="font-mono text-foreground">{p.lockup_months} شهر</div></div>
+                    <div>المخاطرة<div className="font-mono text-emerald-400">منخفضة</div></div>
                   </div>
                   <Button
                     type="button"
