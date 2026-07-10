@@ -13,7 +13,11 @@ import {
   getSuperAdminPublicKey,
 } from "@/lib/e2ee";
 import { EncryptedBody } from "@/components/encrypted-body";
-import { notifyIncomingMessage } from "@/lib/chat-notify";
+import {
+  notifyIncomingMessage,
+  registerChatNotificationSW,
+  ensureChatNotificationPermission,
+} from "@/lib/chat-notify";
 import { MessageStatus } from "@/components/message-status";
 
 type ChatMsg = {
@@ -140,7 +144,11 @@ export function SupportFab() {
           setMessages((prev) => (prev.some((x) => x.id === m.id) ? prev : [...prev, m]));
           // Notify only on incoming staff replies, not on our own echo.
           if (m.is_staff && m.sender_id !== uid) {
-            notifyIncomingMessage("رسالة جديدة من دعم HK");
+            notifyIncomingMessage(
+              "رسالة جديدة من دعم HK",
+              undefined,
+              "/",
+            );
             if (!open) setUnread((n) => n + 1);
             // If the panel is open, mark as read immediately.
             if (open) {
