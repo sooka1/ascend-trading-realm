@@ -235,6 +235,57 @@ function InvestorPortal() {
     }
   }
 
+  async function updateSubscriptionAmount(sub: Sub, newAmount: number) {
+    if (!uid) return;
+    if (busySub) return;
+    const pkg = packages.find((p) => p.id === sub.package_id);
+    if (!pkg) {
+      toast.error("تعذّر إيجاد بيانات الباقة");
+      return;
+    }
+    const min = Number(pkg.min_amount);
+    const oldAmount = Number(sub.amount);
+    if (!Number.isFinite(newAmount) || newAmount <= 0) {
+      toast.error("المبلغ غير صالح");
+      return;
+    }
+    if (newAmount < min) {
+      toast.error(`لا يمكن أن يقل مبلغ الاشتراك عن الحد الأدنى ${fmt(min)} ${pkg.currency}`);
+      return;
+    }
+    const maxAllowed = available + oldAmount;
+    if (newAmount > maxAllowed) {
+      toast.error(`المبلغ يتجاوز الرصيد المتاح — الحد الأقصى ${fmt(maxAllowed)} ${pkg.currency}`);
+      return;
+    }
+    if (newAmount === oldAmount) {
+      setEditSub(null);
+      return;
+    }
+    setBusySub(`edit:${sub.id}`);
+    try {
+      const { error } = await supabase
+        .from("subscriptions")
+        .update({ amount: newAmount })
+        .eq("id", sub.id)
+        .eq("user_id", uid)
+        .in("status", ["active", "pending"]);
+      if (error) return toast.error(error.message);
+      const delta = newAmount - oldAmount;
+      await supabase.from("notifications").insert({
+        user_id: uid,
+        title: delta > 0 ? "تمت زيادة مبلغ الاشتراك" : "تم تخفيض مبلغ الاشتراك",
+        body: `${pkg.name} — ${fmt(oldAmount)} → ${fmt(newAmount)} ${pkg.currency}`,
+      });
+      toast.success("تم تحديث مبلغ الاشتراك");
+      setEditSub(null);
+      await load();
+      void router.invalidate();
+    } finally {
+      setBusySub(null);
+    }
+  }
+
   const primarySub = activeSubs[0];
   const primaryPkg = packages.find((p) => p.id === primarySub?.package_id);
 
