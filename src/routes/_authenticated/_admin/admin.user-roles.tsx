@@ -7,9 +7,10 @@ import {
   lookupUserByEmail,
   updateUserRoles,
   ROLE_OPTIONS,
+  setUserPassword,
 } from "@/lib/user-roles.functions";
 import type { AppRole } from "@/lib/rbac.functions";
-import { Search, Save, UserCog } from "lucide-react";
+import { Search, Save, UserCog, KeyRound } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/_admin/admin/user-roles")({
   head: () => ({
@@ -24,6 +25,7 @@ export const Route = createFileRoute("/_authenticated/_admin/admin/user-roles")(
 function AdminUserRoles() {
   const lookup = useServerFn(lookupUserByEmail);
   const save = useServerFn(updateUserRoles);
+  const savePassword = useServerFn(setUserPassword);
 
   const [email, setEmail] = useState("");
   const [loaded, setLoaded] = useState<{
@@ -34,6 +36,8 @@ function AdminUserRoles() {
   const [selected, setSelected] = useState<Set<AppRole>>(new Set());
   const [searching, setSearching] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [password, setPassword] = useState("");
+  const [savingPassword, setSavingPassword] = useState(false);
 
   async function onSearch(e?: React.FormEvent) {
     e?.preventDefault();
@@ -78,6 +82,20 @@ function AdminUserRoles() {
       toast.error((err as Error).message);
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function onSavePassword() {
+    if (!loaded || password.length < 8) return;
+    setSavingPassword(true);
+    try {
+      await savePassword({ data: { email: loaded.email, password } });
+      setPassword("");
+      toast.success("تم تحديث كلمة المرور بنجاح");
+    } catch (err) {
+      toast.error((err as Error).message);
+    } finally {
+      setSavingPassword(false);
     }
   }
 
@@ -162,6 +180,29 @@ function AdminUserRoles() {
           ) : (
             <p className="mt-4 text-xs text-muted-foreground">لا توجد تغييرات.</p>
           )}
+        </AdminCard>
+      ) : null}
+
+      {loaded ? (
+        <AdminCard title="تعيين كلمة مرور جديدة" icon={KeyRound} className="mt-6">
+          <div className="flex flex-wrap items-center gap-2">
+            <input
+              type="text"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="كلمة المرور الجديدة (٨ أحرف على الأقل)"
+              className="min-w-[260px] flex-1 rounded-md border border-white/10 bg-white/[0.03] px-3 py-2 font-mono text-sm outline-none focus:border-gold/50"
+            />
+            <button
+              type="button"
+              onClick={onSavePassword}
+              disabled={savingPassword || password.length < 8}
+              className="inline-flex items-center gap-2 rounded-md border border-emerald-400/40 bg-emerald-400/10 px-4 py-2 text-sm font-medium text-emerald-100 transition hover:bg-emerald-400/20 disabled:opacity-40"
+            >
+              <KeyRound className="h-4 w-4" />
+              {savingPassword ? "جارٍ التحديث…" : "تحديث كلمة المرور"}
+            </button>
+          </div>
         </AdminCard>
       ) : (
         <div className="rounded-xl border border-dashed border-white/10 bg-white/[0.02] p-10 text-center text-sm text-muted-foreground">
