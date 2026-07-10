@@ -209,6 +209,8 @@ export const getExecutiveDashboard = createServerFn({ method: "GET" })
       subscriptions30,
       activityFeed,
       recentRequests,
+      depositsAllApproved,
+      withdrawalsAllApproved,
     ] = await Promise.all([
       supabaseAdmin.from("profiles").select("id", { count: "exact", head: true }),
       supabaseAdmin.from("profiles").select("id", { count: "exact", head: true }).gte("created_at", since30),
@@ -242,10 +244,19 @@ export const getExecutiveDashboard = createServerFn({ method: "GET" })
         .select("id,amount,currency,status,created_at")
         .order("created_at", { ascending: false })
         .limit(8),
+      supabaseAdmin
+        .from("deposits")
+        .select("amount,currency")
+        .eq("status", "approved"),
+      supabaseAdmin
+        .from("withdrawals")
+        .select("amount,currency")
+        .eq("status", "approved"),
     ]);
 
     const sum = (rows: any[] | null) => (rows ?? []).reduce((a, r) => a + Number(r.amount || 0), 0);
-    const aum = sum(activeSubs.data);
+    // Company capital = all approved deposits minus all approved withdrawals
+    const aum = sum(depositsAllApproved.data) - sum(withdrawalsAllApproved.data);
 
     return {
       totals: {
