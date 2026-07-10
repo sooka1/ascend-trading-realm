@@ -599,28 +599,28 @@ const AWARD_META: Record<
     issuer: "International Investor Magazine",
     verifyUrl: "https://www.internationalinvestor.com/",
     icon: Medal,
-    accent: "from-amber-400/25 to-amber-400/5",
+    accent: "from-gold/25 to-gold/5",
   },
   riskExcellence: {
     year: "2024",
     issuer: "MENA Investment Summit",
     verifyUrl: "https://www.menafn.com/",
     icon: Crown,
-    accent: "from-emerald-400/20 to-emerald-400/5",
+    accent: "from-primary/25 to-primary/5",
   },
   fintechInnovation: {
     year: "2025",
     issuer: "World Finance Awards",
     verifyUrl: "https://www.worldfinance.com/awards",
     icon: Gem,
-    accent: "from-cyan-400/20 to-cyan-400/5",
+    accent: "from-brand-blue/25 to-brand-blue/5",
   },
   clientTrust: {
     year: "2025",
     issuer: "Euromoney Private Banking",
     verifyUrl: "https://www.euromoney.com/research-and-awards",
     icon: Sparkle,
-    accent: "from-fuchsia-400/20 to-fuchsia-400/5",
+    accent: "from-gold-soft/25 to-gold-soft/5",
   },
 };
 
