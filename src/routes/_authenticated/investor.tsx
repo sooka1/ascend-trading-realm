@@ -54,6 +54,8 @@ function InvestorPortal() {
   const [wds, setWds] = useState<Wd[]>([]);
   const [loading, setLoading] = useState(true);
   const [busySub, setBusySub] = useState<string | null>(null);
+  const [depositMethod, setDepositMethod] = useState<"bank_transfer" | "card" | "binance_pay" | "usdt_trc20" | "usdt_bep20">("bank_transfer");
+  const [withdrawMethod, setWithdrawMethod] = useState<"bank" | "binance_pay" | "usdt_trc20" | "usdt_bep20">("bank");
 
   async function load() {
     const { data: userRes } = await supabase.auth.getUser();
