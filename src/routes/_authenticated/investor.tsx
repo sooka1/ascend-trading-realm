@@ -46,6 +46,7 @@ function InvestorPortal() {
   const [deps, setDeps] = useState<Dep[]>([]);
   const [wds, setWds] = useState<Wd[]>([]);
   const [loading, setLoading] = useState(true);
+  const [busySub, setBusySub] = useState<string | null>(null);
 
   async function load() {
     const { data: userRes } = await supabase.auth.getUser();
@@ -82,6 +83,12 @@ function InvestorPortal() {
 
   async function subscribeToPackage(pkg: Pkg) {
     if (!uid) return;
+    if (busySub) return;
+    // Prevent duplicate active/pending subscription in the same package
+    if (subs.some((s) => s.package_id === pkg.id && (s.status === "active" || s.status === "pending"))) {
+      toast.error("لديك اشتراك نشط أو قيد المراجعة في هذه الباقة بالفعل");
+      return;
+    }
     if (available < Number(pkg.min_amount)) {
       toast.error(`الرصيد المتاح غير كافٍ. الحد الأدنى ${fmt(Number(pkg.min_amount))} ${pkg.currency}`);
       return;
@@ -100,34 +107,78 @@ function InvestorPortal() {
       toast.error("المبلغ يتجاوز الرصيد المتاح");
       return;
     }
+    setBusySub(`new:${pkg.id}`);
     const startedAt = new Date();
     const endsAt = new Date(startedAt);
     endsAt.setMonth(endsAt.getMonth() + Number(pkg.lockup_months || 0));
-    const { error } = await supabase.from("subscriptions").insert({
-      user_id: uid,
-      package_id: pkg.id,
-      amount,
-      currency: pkg.currency,
-      status: "active",
-      started_at: startedAt.toISOString(),
-      ends_at: endsAt.toISOString(),
-    });
-    if (error) return toast.error(error.message);
-    toast.success("تم الاشتراك في الباقة");
-    await load();
+    try {
+      // Re-check freshest state server-side to avoid race with rapid clicks / stale UI
+      const { data: fresh } = await supabase
+        .from("subscriptions")
+        .select("id,package_id,amount,status")
+        .eq("user_id", uid);
+      const committedNow = (fresh ?? [])
+        .filter((s) => s.status === "active" || s.status === "pending")
+        .reduce((a, s) => a + Number(s.amount), 0);
+      const inSum = deps.filter((d) => d.status === "approved").reduce((a, d) => a + Number(d.amount), 0);
+      const outSum = wds.filter((w) => w.status === "approved").reduce((a, w) => a + Number(w.amount), 0);
+      const availNow = Math.max(0, inSum - outSum - committedNow);
+      if (amount > availNow) {
+        toast.error("الرصيد المتاح تغيّر — أعد المحاولة");
+        return;
+      }
+      if ((fresh ?? []).some((s) => s.package_id === pkg.id && (s.status === "active" || s.status === "pending"))) {
+        toast.error("لديك اشتراك نشط أو قيد المراجعة في هذه الباقة بالفعل");
+        return;
+      }
+      const { error } = await supabase.from("subscriptions").insert({
+        user_id: uid,
+        package_id: pkg.id,
+        amount,
+        currency: pkg.currency,
+        status: "active",
+        started_at: startedAt.toISOString(),
+        ends_at: endsAt.toISOString(),
+      });
+      if (error) return toast.error(error.message);
+      toast.success("تم الاشتراك في الباقة");
+      await load();
+    } finally {
+      setBusySub(null);
+    }
   }
 
   async function cancelSubscription(sub: Sub) {
     if (!uid) return;
+    if (busySub) return;
+    if (sub.status !== "active" && sub.status !== "pending") {
+      toast.error("لا يمكن إلغاء اشتراك بهذه الحالة");
+      return;
+    }
+    // Enforce lockup: block cancel before ends_at when a lockup was set
+    if (sub.status === "active" && sub.ends_at) {
+      const endsAt = new Date(sub.ends_at).getTime();
+      if (Number.isFinite(endsAt) && endsAt > Date.now()) {
+        const daysLeft = Math.ceil((endsAt - Date.now()) / 86_400_000);
+        toast.error(`الباقة ضمن فترة القفل — متبقٍ ${daysLeft} يوم حتى ${new Date(endsAt).toLocaleDateString()}`);
+        return;
+      }
+    }
     if (!window.confirm("تأكيد إلغاء الاشتراك في هذه الباقة؟")) return;
-    const { error } = await supabase
-      .from("subscriptions")
-      .update({ status: "cancelled" })
-      .eq("id", sub.id)
-      .eq("user_id", uid);
-    if (error) return toast.error(error.message);
-    toast.success("تم إلغاء الاشتراك — يمكنك الاشتراك في باقة أخرى الآن");
-    await load();
+    setBusySub(sub.id);
+    try {
+      const { error } = await supabase
+        .from("subscriptions")
+        .update({ status: "cancelled" })
+        .eq("id", sub.id)
+        .eq("user_id", uid)
+        .in("status", ["active", "pending"]);
+      if (error) return toast.error(error.message);
+      toast.success("تم إلغاء الاشتراك — يمكنك الاشتراك في باقة أخرى الآن");
+      await load();
+    } finally {
+      setBusySub(null);
+    }
   }
 
   const primarySub = activeSubs[0];
@@ -231,11 +282,11 @@ function InvestorPortal() {
                   </div>
                   <Button
                     type="button"
-                    disabled={!eligible}
+                    disabled={!eligible || busySub === `new:${p.id}` || !!busySub}
                     onClick={() => subscribeToPackage(p)}
                     className="mt-4 w-full bg-[var(--gradient-gold)] font-semibold text-background disabled:opacity-50"
                   >
-                    {eligible ? "اشترك بهذه الباقة" : "الرصيد غير كافٍ"}
+                    {busySub === `new:${p.id}` ? "جارٍ التنفيذ..." : eligible ? "اشترك بهذه الباقة" : "الرصيد غير كافٍ"}
                   </Button>
                 </div>
               );
@@ -260,8 +311,14 @@ function InvestorPortal() {
                       </div>
                       <div className="flex items-center gap-2">
                         <StatusPill status={s.status} />
-                        <Button size="sm" variant="outline" onClick={() => cancelSubscription(s)} className="h-7 border-white/15 text-xs">
-                          تبديل / إلغاء
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          disabled={busySub === s.id || !!busySub}
+                          onClick={() => cancelSubscription(s)}
+                          className="h-7 border-white/15 text-xs"
+                        >
+                          {busySub === s.id ? "..." : "تبديل / إلغاء"}
                         </Button>
                       </div>
                     </li>
