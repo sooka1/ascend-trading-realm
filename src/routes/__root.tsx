@@ -14,7 +14,6 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { I18nProvider } from "../lib/i18n";
 import { Toaster } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { GlobalBackButton } from "@/components/global-back-button";
 
 function NotFoundComponent() {
   return (
