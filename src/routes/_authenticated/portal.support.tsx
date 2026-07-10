@@ -224,7 +224,11 @@ function SupportPage() {
                 <StatusPill status={selected.status} />
               </div>
               <div className="mt-4 flex-1 space-y-3 overflow-y-auto pe-1">
-                {messages.map((m) => (
+                {messages.map((m) => {
+                  const plain = mySk
+                    ? tryDecrypt(m.body, mySk) ?? tryDecrypt(m.body_admin, mySk)
+                    : null;
+                  return (
                   <div
                     key={m.id}
                     className={`max-w-[85%] rounded-md border px-3 py-2 text-sm ${
@@ -233,12 +237,15 @@ function SupportPage() {
                         : "ms-auto border-gold/20 bg-gold/[0.08]"
                     }`}
                   >
-                    <p className="whitespace-pre-wrap">{m.body}</p>
+                    <p className="whitespace-pre-wrap">
+                      {plain ?? <span className="italic opacity-60">🔒 رسالة مشفّرة</span>}
+                    </p>
                     <p className="mt-1 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
                       {m.is_staff ? "فريق الدعم" : "أنت"} · {new Date(m.created_at).toLocaleString()}
                     </p>
                   </div>
-                ))}
+                  );
+                })}
               </div>
               {selected.status !== "closed" && (
                 <div className="mt-4 flex items-end gap-2 border-t border-white/5 pt-4">
