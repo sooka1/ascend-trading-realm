@@ -1006,19 +1006,6 @@ function Testimonials() {
   );
 }
 
-function downloadCertStub(cert: { name: string; body: string; id: string; updated: string }) {
-  const text = `HK Investment Management\n\nCertificate: ${cert.name}\nCertificate ID: ${cert.id}\nLast updated: ${cert.updated}\n\n${cert.body}\n\nThis document is a placeholder pending upload of the official signed certificate.\n`;
-  const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `${cert.id}.txt`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-}
-
 function CertCard({
   cert,
   labels,
