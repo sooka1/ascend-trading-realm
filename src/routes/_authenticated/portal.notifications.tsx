@@ -5,6 +5,7 @@ import { PortalShell, PortalCard } from "@/components/portal-shell";
 import { Button } from "@/components/ui/button";
 import { Bell, CheckCheck } from "lucide-react";
 import { toast } from "sonner";
+import { PushPermissionButton } from "@/components/push-permission-button";
 
 export const Route = createFileRoute("/_authenticated/portal/notifications")({
   head: () => ({
@@ -52,9 +53,12 @@ function NotificationsPage() {
       title="الإشعارات"
       subtitle="كل ما يخص حسابك ومحفظتك ومستنداتك ومحادثات الدعم في مكان واحد."
       actions={
-        <Button onClick={markAllRead} variant="outline" className="rounded-sm border-white/10 hover:border-gold/60">
-          <CheckCheck className="ml-2 h-4 w-4" /> وضع علامة على الكل كمقروء
-        </Button>
+        <div className="flex flex-wrap items-center gap-2">
+          <PushPermissionButton />
+          <Button onClick={markAllRead} variant="outline" className="rounded-sm border-white/10 hover:border-gold/60">
+            <CheckCheck className="ml-2 h-4 w-4" /> وضع علامة على الكل كمقروء
+          </Button>
+        </div>
       }
     >
       <div className="mb-5 inline-flex gap-1 rounded-md border border-white/10 bg-card/40 p-1 backdrop-blur-xl">
