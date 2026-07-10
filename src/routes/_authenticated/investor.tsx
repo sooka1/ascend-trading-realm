@@ -89,6 +89,7 @@ function InvestorPortal() {
   const [withdrawMethod, setWithdrawMethod] = useState<"binance_pay" | "usdt_trc20">("binance_pay");
   const [pkgAmounts, setPkgAmounts] = useState<Record<string, string>>({});
   const [confirmSub, setConfirmSub] = useState<{ pkg: Pkg; amount: number } | null>(null);
+  const [editSub, setEditSub] = useState<{ id: string; value: string } | null>(null);
 
   async function load() {
     const { data: userRes } = await supabase.auth.getUser();
