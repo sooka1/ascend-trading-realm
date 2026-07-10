@@ -192,6 +192,8 @@ export function AdminShell({
                       to={n.to}
                       onClick={onNavigate}
                       aria-current={active ? "page" : undefined}
+                      data-active={active ? "true" : "false"}
+                      data-testid={`admin-nav-${n.to.replace(/^\/admin\/?/, "") || "home"}`}
                       className={`nav-item group flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background ${cls}`}
                     >
                       {content}
@@ -232,7 +234,14 @@ export function AdminShell({
                       <Menu className="h-5 w-5" />
                       <span className="sr-only">القائمة</span>
                     </SheetTrigger>
-                    <span className="inline-flex min-w-0 items-center gap-1.5 rounded-full border border-gold/40 bg-gold/[0.10] px-2.5 py-1 text-xs font-medium text-gold shadow-[inset_0_0_0_1px_theme(colors.amber.400/0.15)]">
+                    <span
+                      role="status"
+                      aria-live="polite"
+                      aria-label={`القسم الحالي: ${activeNav.label}`}
+                      data-testid="admin-active-section"
+                      data-active-path={activeNav.to}
+                      className="inline-flex min-w-0 items-center gap-1.5 rounded-full border border-gold/40 bg-gold/[0.10] px-2.5 py-1 text-xs font-medium text-gold shadow-[inset_0_0_0_1px_theme(colors.amber.400/0.15)]"
+                    >
                       <ActiveIcon className="h-3.5 w-3.5 shrink-0" />
                       <span className="truncate">{activeNav.label}</span>
                     </span>
