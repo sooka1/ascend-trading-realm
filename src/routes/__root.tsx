@@ -161,16 +161,23 @@ function RootComponent() {
 
   useEffect(() => {
     installTimezonePatch();
-    void loadUserTimezoneFromProfile();
+    void loadUserTimezoneFromProfile().then(() => {
+      // Re-render everything so freshly-loaded locale/timezone reach existing
+      // dates rendered during first paint.
+      router.invalidate();
+      queryClient.invalidateQueries();
+    });
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {
       if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
-      router.invalidate();
       if (event !== "SIGNED_OUT") {
-        queryClient.invalidateQueries();
-        void loadUserTimezoneFromProfile();
+        void loadUserTimezoneFromProfile().then(() => {
+          router.invalidate();
+          queryClient.invalidateQueries();
+        });
       } else {
         setUserTimezone(null);
         setUserLocale(null);
+        router.invalidate();
       }
     });
     return () => sub.subscription.unsubscribe();
