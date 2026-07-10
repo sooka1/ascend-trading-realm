@@ -35,7 +35,7 @@ function AboutPage() {
       <section className="mx-auto max-w-5xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="glass-strong rounded-3xl p-10">
           <h2 className="font-display text-3xl font-semibold">{p.values.missionT}</h2>
-          <p className="mt-4 text-muted-foreground">{p.values.missionB}</p>
+          <p className="mt-4 whitespace-pre-line text-muted-foreground">{p.values.missionB}</p>
         </div>
       </section>
       <section className="mx-auto max-w-7xl px-4 pb-24 sm:px-6 lg:px-8">
