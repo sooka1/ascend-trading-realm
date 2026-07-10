@@ -28,6 +28,8 @@ type Ticket = {
   status: "open" | "pending" | "resolved" | "closed";
   last_message_at: string;
   created_at: string;
+  client_last_read_at: string | null;
+  admin_last_read_at: string | null;
 };
 type Msg = {
   id: string;
@@ -51,6 +53,7 @@ function AdminLiveChat() {
   const [mySk, setMySk] = useState<string | null>(null);
   const [myPk, setMyPk] = useState<string | null>(null);
   const [unreadByTicket, setUnreadByTicket] = useState<Record<string, number>>({});
+  const [clientReadAt, setClientReadAt] = useState<string | null>(null);
   const listRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -70,7 +73,7 @@ function AdminLiveChat() {
   async function loadTickets() {
     const { data, error } = await supabase
       .from("support_tickets")
-      .select("id,user_id,subject,status,last_message_at,created_at")
+      .select("id,user_id,subject,status,last_message_at,created_at,client_last_read_at,admin_last_read_at")
       .order("last_message_at", { ascending: false });
     if (error) return toast.error(error.message);
     const t = (data ?? []) as Ticket[];
@@ -90,6 +93,11 @@ function AdminLiveChat() {
   async function openTicket(t: Ticket) {
     setSelected(t);
     setUnreadByTicket((m) => ({ ...m, [t.id]: 0 }));
+    setClientReadAt(t.client_last_read_at);
+    await supabase
+      .from("support_tickets")
+      .update({ admin_last_read_at: new Date().toISOString() })
+      .eq("id", t.id);
     const { data, error } = await supabase
       .from("ticket_messages")
       .select("*")
