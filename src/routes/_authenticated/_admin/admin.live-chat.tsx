@@ -150,7 +150,7 @@ function AdminLiveChat() {
     if (!selected) return;
     setClientTyping(false);
     const ch = supabase
-      .channel(`admin-ticket-${selected.id}`)
+      .channel(`ticket-${selected.id}`)
       .on(
         "postgres_changes",
         {
