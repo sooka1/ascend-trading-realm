@@ -1,3 +1,4 @@
+import * as React from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   ArrowRight,
@@ -97,20 +98,45 @@ function Home() {
 }
 
 function Hero({ c }: { c: LandingContent }) {
+  const videoRef = React.useRef<HTMLDivElement | null>(null);
+  React.useEffect(() => {
+    let raf = 0;
+    const onScroll = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        const el = videoRef.current;
+        if (!el) return;
+        const y = Math.min(window.scrollY, 800);
+        el.style.transform = `translate3d(0, ${y * 0.35}px, 0) scale(1.08)`;
+      });
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
   return (
     <section className="relative isolate overflow-hidden border-b border-white/5">
       {/* Cinematic brand video */}
-      <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden>
-        <video
-          className="h-full w-full object-cover"
-          src={heroVideo.url}
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="auto"
-          poster=""
-        />
+      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden" aria-hidden>
+        <div
+          ref={videoRef}
+          className="absolute inset-0 will-change-transform"
+          style={{ transform: "translate3d(0,0,0) scale(1.08)" }}
+        >
+          <video
+            className="h-full w-full object-cover"
+            src={heroVideo.url}
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="auto"
+          />
+        </div>
         {/* Layered overlays: darken + brand tint + fade-to-page */}
         <div className="absolute inset-0 bg-background/78" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,oklch(0.30_0.08_165/0.55),transparent_65%)]" />
