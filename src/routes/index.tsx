@@ -143,6 +143,12 @@ function Hero({ c }: { c: LandingContent }) {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,oklch(0.76_0.13_85/0.16),transparent_60%)]" />
         <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/65 to-background" />
         <div className="absolute inset-0 bg-grid opacity-[0.12]" />
+        {/* Persistent brand watermark — guarantees the HK Global Trade logo is
+            visible at every frame regardless of what the AI video shows. */}
+        <div className="absolute right-6 top-6 flex items-center gap-3 rounded-md border border-gold/25 bg-background/40 px-3 py-2 backdrop-blur-sm sm:right-10 sm:top-10">
+          <HKLogo size="sm" showWordmark={false} />
+          <span className="font-mono text-[10px] uppercase tracking-[0.28em] text-gold/90">hk global trade</span>
+        </div>
       </div>
 
       <div className="relative mx-auto grid max-w-7xl gap-10 px-4 pt-24 pb-16 sm:px-6 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:px-8 lg:pt-32 lg:pb-24">
