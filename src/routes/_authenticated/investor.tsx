@@ -593,7 +593,7 @@ function InvestorPortal() {
                                 max={maxAllowed}
                                 step="0.01"
                                 value={editSub!.value}
-                                onChange={(e) => setEditSub({ id: s.id, value: e.target.value })}
+                                onChange={(e) => setEditSub({ id: s.id, value: e.target.value, reason: editSub?.reason ?? "" })}
                                 className="h-9"
                               />
                               <Button
@@ -621,6 +621,14 @@ function InvestorPortal() {
                                   : `المبلغ يتجاوز الحد الأقصى ${fmt(maxAllowed)} ${s.currency}`}
                               </p>
                             )}
+                            <Label className="mt-2 text-[11px] text-muted-foreground">السبب (اختياري)</Label>
+                            <Input
+                              value={editSub!.reason}
+                              maxLength={200}
+                              placeholder="مثال: إضافة رأس مال إضافي / تخفيض للسحب"
+                              onChange={(e) => setEditSub({ id: s.id, value: editSub!.value, reason: e.target.value })}
+                              className="h-9"
+                            />
                           </div>
                         )}
                       </div>
@@ -631,7 +639,7 @@ function InvestorPortal() {
                             size="sm"
                             variant="outline"
                             disabled={!!busySub}
-                            onClick={() => setEditSub({ id: s.id, value: String(oldAmount) })}
+                            onClick={() => setEditSub({ id: s.id, value: String(oldAmount), reason: "" })}
                             className="h-9 border-white/15 text-sm"
                           >
                             تعديل المبلغ
