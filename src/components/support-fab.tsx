@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
   ensureMyKeypair,
-  encryptForBoth,
+  encryptFor,
   decryptChatBody,
   getSuperAdminPublicKey,
 } from "@/lib/e2ee";
@@ -143,15 +143,15 @@ export function SupportFab() {
       toast.error("جارٍ تجهيز التشفير، حاول بعد لحظة");
       return;
     }
-    if (!adminPk) {
-      toast.error("لم يفعّل السوبر ادمن التشفير بعد. لا يمكن إرسال رسالة مشفّرة.");
-      return;
-    }
     setSending(true);
-    const payload = encryptForBoth(myPk, adminPk, body);
+    // Always encrypt a copy to self so the sender can read it back. Encrypt a
+    // second copy for the super admin when we know their public key; otherwise
+    // leave body_admin null and admin can decrypt once they publish a key.
+    const bodyForMe = encryptFor(myPk, body);
+    const bodyForAdmin = adminPk ? encryptFor(adminPk, body) : null;
     const { error } = await supabase
       .from("ticket_messages")
-      .insert({ ticket_id: ticketId, sender_id: uid, body: payload.body, body_admin: payload.body_admin, is_staff: false });
+      .insert({ ticket_id: ticketId, sender_id: uid, body: bodyForMe, body_admin: bodyForAdmin, is_staff: false });
     if (!error) {
       await supabase
         .from("support_tickets")

@@ -578,7 +578,7 @@ export type Database = {
       }
       ticket_messages: {
         Row: {
-          body: string
+          body: string | null
           body_admin: string | null
           created_at: string
           id: string
@@ -587,7 +587,7 @@ export type Database = {
           ticket_id: string
         }
         Insert: {
-          body: string
+          body?: string | null
           body_admin?: string | null
           created_at?: string
           id?: string
@@ -596,7 +596,7 @@ export type Database = {
           ticket_id: string
         }
         Update: {
-          body?: string
+          body?: string | null
           body_admin?: string | null
           created_at?: string
           id?: string
