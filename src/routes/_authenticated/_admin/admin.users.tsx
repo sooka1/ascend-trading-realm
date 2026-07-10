@@ -370,7 +370,7 @@ function AdminUsers() {
                                 <Trash2 className="h-3.5 w-3.5 text-red-400" />
                               </Button>
                             ) : null}
-                            {data?.isSuper && u.id !== data?.currentUserId ? (
+                            {data?.isSuper ? (
                               <Button
                                 size="sm"
                                 variant="outline"
