@@ -93,6 +93,11 @@ export function AdminShell({
   const groups = Array.from(new Set(NAV.map((n) => n.group)));
   const queryClient = useQueryClient();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const activeNav =
+    [...NAV]
+      .sort((a, b) => b.to.length - a.to.length)
+      .find((n) => (n.to === "/admin" ? pathname === "/admin" : pathname.startsWith(n.to))) ?? NAV[0];
+  const ActiveIcon = activeNav.icon;
   async function handleSignOut() {
     await queryClient.cancelQueries();
     queryClient.clear();
@@ -222,10 +227,16 @@ export function AdminShell({
             <header className="mb-6 border-b border-white/5 pb-6">
               <div className="mb-4 flex items-center justify-between gap-2 lg:hidden">
                 <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
-                  <SheetTrigger className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03] text-muted-foreground transition hover:border-gold/40 hover:text-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background">
-                    <Menu className="h-5 w-5" />
-                    <span className="sr-only">القائمة</span>
-                  </SheetTrigger>
+                  <div className="flex min-w-0 items-center gap-2">
+                    <SheetTrigger className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-gold/40 bg-gold/[0.08] text-gold transition hover:border-gold/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background">
+                      <Menu className="h-5 w-5" />
+                      <span className="sr-only">القائمة</span>
+                    </SheetTrigger>
+                    <span className="inline-flex min-w-0 items-center gap-1.5 rounded-full border border-gold/40 bg-gold/[0.10] px-2.5 py-1 text-xs font-medium text-gold shadow-[inset_0_0_0_1px_theme(colors.amber.400/0.15)]">
+                      <ActiveIcon className="h-3.5 w-3.5 shrink-0" />
+                      <span className="truncate">{activeNav.label}</span>
+                    </span>
+                  </div>
                   <SheetContent side="right" className="w-[88vw] max-w-sm overflow-y-auto border-white/10 bg-card/95 p-5 backdrop-blur-xl">
                     <SheetHeader>
                       <SheetTitle className="pe-8 text-right font-mono text-[10px] uppercase tracking-[0.22em] text-gold/80">
