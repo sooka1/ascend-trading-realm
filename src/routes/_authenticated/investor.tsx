@@ -121,17 +121,19 @@ function InvestorPortal() {
   return (
     <PageShell bare>
       <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-        <Link
-          to="/portal"
-          className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-muted-foreground transition hover:border-gold/40 hover:text-foreground"
-        >
-          <ArrowRight className="h-3.5 w-3.5" />
-          <span>رجوع إلى بوابة العميل</span>
-        </Link>
-        <div>
-          <p className="mt-4 text-xs uppercase tracking-widest text-gold">Investor Portal</p>
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className="text-xs uppercase tracking-widest text-gold">Investor Portal</p>
           <h1 className="mt-1 font-display text-3xl font-semibold md:text-4xl">حسابك الاستثماري</h1>
           <p className="mt-2 text-sm text-muted-foreground">الرصيد، الإيداعات، السحوبات، والباقات — كل شيء في مكان واحد.</p>
+          </div>
+          <Link
+            to="/portal"
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-muted-foreground transition hover:border-gold/40 hover:text-foreground"
+          >
+            <ArrowRight className="h-3.5 w-3.5" />
+            <span>رجوع</span>
+          </Link>
         </div>
 
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
