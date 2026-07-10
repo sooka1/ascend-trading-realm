@@ -34,3 +34,15 @@ export const hasAnyRole = createServerFn({ method: "GET" })
     if (error) return { authorized: false };
     return { authorized: Boolean(ok) };
   });
+
+export const checkEmailHasRole = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { email: string; role: AppRole }) => data)
+  .handler(async ({ data, context }) => {
+    const { data: ok, error } = await context.supabase.rpc("email_has_role", {
+      _email: data.email,
+      _role: data.role,
+    });
+    if (error) return { ok: false, error: error.message };
+    return { ok: Boolean(ok) };
+  });

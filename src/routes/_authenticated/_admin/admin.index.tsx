@@ -12,6 +12,7 @@ import {
   fmtMoney,
 } from "@/components/admin-shell";
 import { getExecutiveDashboard } from "@/lib/admin.functions";
+import { checkEmailHasRole } from "@/lib/rbac.functions";
 import {
   Users,
   Wallet,
@@ -27,6 +28,7 @@ import {
   Zap,
   Bell,
 } from "lucide-react";
+import { CheckCircle2, XCircle } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/_admin/admin/")({
   head: () => ({
@@ -45,6 +47,15 @@ function AdminIndex() {
     queryFn: () => fetchDashboard(),
     staleTime: 15_000,
     refetchInterval: 60_000,
+  });
+
+  const checkRole = useServerFn(checkEmailHasRole);
+  const TARGET_EMAIL = "hassan.muorad@gmail.com";
+  const { data: superAdminCheck, isFetching: isCheckingRole } = useQuery({
+    queryKey: ["admin", "verify-super-admin", TARGET_EMAIL],
+    queryFn: () => checkRole({ data: { email: TARGET_EMAIL, role: "super_admin" } }),
+    refetchInterval: 15_000,
+    refetchOnWindowFocus: true,
   });
 
   const t = data?.totals;
@@ -69,6 +80,36 @@ function AdminIndex() {
           تعذّر تحميل البيانات: {(error as Error).message}
         </div>
       ) : null}
+
+      {/* Super admin verification */}
+      <div
+        className={`mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border p-4 text-sm ${
+          superAdminCheck?.ok
+            ? "border-emerald-400/20 bg-emerald-400/[0.06] text-emerald-100"
+            : "border-amber-400/20 bg-amber-400/[0.06] text-amber-100"
+        }`}
+      >
+        <div className="flex items-center gap-3">
+          {superAdminCheck?.ok ? (
+            <CheckCircle2 className="h-5 w-5 text-emerald-300" />
+          ) : (
+            <XCircle className="h-5 w-5 text-amber-300" />
+          )}
+          <div>
+            <p className="font-medium">
+              {superAdminCheck?.ok
+                ? "تم التحقق: هذا الحساب يملك دور super_admin"
+                : "لم يتم العثور على دور super_admin لهذا الحساب"}
+            </p>
+            <p className="mt-0.5 font-mono text-[11px] text-muted-foreground">
+              {TARGET_EMAIL}
+            </p>
+          </div>
+        </div>
+        <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+          {isCheckingRole ? "جارٍ التحقق…" : "تحديث تلقائي كل 15 ث"}
+        </span>
+      </div>
 
       {/* KPI grid */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
