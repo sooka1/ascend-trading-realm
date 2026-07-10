@@ -26,6 +26,7 @@ import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
+import { useMfaEnforcement } from "@/hooks/use-mfa-enforcement";
 
 type NavItem = { to: string; icon: LucideIcon; label: string; group?: string };
 
@@ -70,6 +71,7 @@ export function PortalShell({
 }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const router = useRouter();
+  useMfaEnforcement();
   const showBack = true;
   const queryClient = useQueryClient();
   async function handleSignOut() {
