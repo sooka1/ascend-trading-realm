@@ -92,6 +92,11 @@ function InvestorPortal() {
   const [editSub, setEditSub] = useState<{ id: string; value: string; reason: string } | null>(null);
   type AmountChange = { id: string; subscription_id: string; amount_before: number; amount_after: number; amount_delta: number; currency: string; reason: string | null; created_at: string };
   const [amountChanges, setAmountChanges] = useState<AmountChange[]>([]);
+  const [now, setNow] = useState<number>(() => Date.now());
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 60_000);
+    return () => clearInterval(t);
+  }, []);
 
   async function load() {
     const { data: userRes } = await supabase.auth.getUser();
@@ -804,10 +809,23 @@ function InvestorPortal() {
               const range = s.started_at
                 ? `${new Date(s.started_at).toLocaleDateString()}${s.ends_at ? ` → ${new Date(s.ends_at).toLocaleDateString()}` : ""}`
                 : `طلب بتاريخ ${created}`;
+              let countdown = "";
+              if (s.status === "active") {
+                const startTs = s.started_at ? new Date(s.started_at).getTime() : new Date(s.created_at).getTime();
+                const DAY_MS = 24 * 60 * 60 * 1000;
+                const msLeft = startTs + DAY_MS - now;
+                if (msLeft > 0) {
+                  const h = Math.floor(msLeft / (60 * 60 * 1000));
+                  const m = Math.floor((msLeft % (60 * 60 * 1000)) / (60 * 1000));
+                  countdown = ` · ⏳ يمكن الإلغاء بعد ${h}س ${m}د`;
+                } else {
+                  countdown = " · ✓ متاح الإلغاء";
+                }
+              }
               return {
                 id: s.id,
                 primary: `${meta?.name ?? s.package_id.slice(0, 8)} — ${fmt(Number(s.amount))} ${s.currency}`,
-                secondary: range,
+                secondary: range + countdown,
                 status: s.status,
               };
             })}
