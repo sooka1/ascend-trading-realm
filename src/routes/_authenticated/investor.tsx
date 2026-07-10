@@ -672,6 +672,46 @@ function InvestorPortal() {
           <WithdrawalAudit wds={wds} audit={audit} packages={packages} subs={subs} />
         </div>
       </section>
+
+      <AlertDialog open={!!confirmSub} onOpenChange={(o) => { if (!o) setConfirmSub(null); }}>
+        <AlertDialogContent className="border-white/10 bg-neutral-950/95 text-foreground backdrop-blur data-[state=open]:animate-scale-in">
+          {confirmSub && (() => {
+            const { pkg, amount } = confirmSub;
+            const weekly = amount * (Number(pkg.target_return_pct) || 0) / 100;
+            const daily = weekly / 5;
+            const remaining = Math.max(0, available - amount);
+            return (
+              <>
+                <AlertDialogHeader>
+                  <AlertDialogTitle className="font-display">تأكيد الاشتراك — {pkg.name}</AlertDialogTitle>
+                  <AlertDialogDescription>راجع تفاصيل الاشتراك قبل التنفيذ. لا يمكن التراجع تلقائيًا بعد التأكيد.</AlertDialogDescription>
+                </AlertDialogHeader>
+                <div className="my-2 grid gap-2 rounded-xl border border-gold/20 bg-gold/[0.05] p-4 text-sm">
+                  <SummaryRow label="مبلغ الاستثمار" value={amount} currency={pkg.currency} />
+                  <SummaryRow label="الربح الأسبوعي المتوقع" value={weekly} currency={pkg.currency} sign="+" tone="gain" />
+                  <SummaryRow label="الربح اليومي (5 أيام)" value={daily} currency={pkg.currency} sign="+" tone="gain" />
+                  <div className="border-t border-white/5 pt-2">
+                    <SummaryRow label="المتبقي في المحفظة" value={remaining} currency={pkg.currency} />
+                  </div>
+                </div>
+                <AlertDialogFooter>
+                  <AlertDialogCancel className="border-white/10 bg-transparent hover:bg-white/5">إلغاء</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => {
+                      const c = confirmSub;
+                      setConfirmSub(null);
+                      void performSubscribe(c.pkg, c.amount);
+                    }}
+                    className="bg-red-600 font-semibold text-white hover:bg-red-700"
+                  >
+                    تأكيد الاشتراك
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </>
+            );
+          })()}
+        </AlertDialogContent>
+      </AlertDialog>
     </PageShell>
   );
 }
