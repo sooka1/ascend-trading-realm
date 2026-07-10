@@ -204,7 +204,7 @@ function Hero({ c }: { c: LandingContent }) {
       <Link
         to="/portfolios"
         aria-label="HK Global Trade — عرض باقات الاستثمار"
-        className="group absolute right-6 top-6 z-20 flex items-center gap-3 rounded-md border border-[#a0430a] bg-[#c2410c] px-3 py-2 text-white shadow-sm backdrop-blur-sm transition hover:border-[#7c2d0a] hover:bg-[#9a3412] hover:shadow-md active:scale-[0.98] sm:right-10 sm:top-10"
+        className="group absolute right-6 top-6 z-20 flex items-center gap-3 rounded-md border border-[#a0430a] bg-[#c2410c] px-3 py-2 text-white shadow-[0_4px_14px_rgba(194,65,12,0.35)] backdrop-blur-sm transition-all duration-200 hover:border-[#ea580c] hover:bg-[#ea580c] hover:text-white hover:shadow-[0_6px_20px_rgba(234,88,12,0.5)] active:border-[#7c2d0a] active:bg-[#9a3412] active:shadow-[0_2px_8px_rgba(122,45,10,0.4)] active:scale-[0.98] sm:right-10 sm:top-10"
       >
         <HKLogo size="sm" showWordmark={false} />
         <span className="font-mono text-[10px] uppercase tracking-[0.28em]">hk global trade</span>
