@@ -471,6 +471,8 @@ export type Database = {
           id_back_url: string | null
           id_front_url: string | null
           public_key: string | null
+          referral_code: string | null
+          referred_by: string | null
           selfie_url: string | null
           updated_at: string
           verification_notes: string | null
@@ -487,6 +489,8 @@ export type Database = {
           id_back_url?: string | null
           id_front_url?: string | null
           public_key?: string | null
+          referral_code?: string | null
+          referred_by?: string | null
           selfie_url?: string | null
           updated_at?: string
           verification_notes?: string | null
@@ -503,6 +507,8 @@ export type Database = {
           id_back_url?: string | null
           id_front_url?: string | null
           public_key?: string | null
+          referral_code?: string | null
+          referred_by?: string | null
           selfie_url?: string | null
           updated_at?: string
           verification_notes?: string | null
@@ -540,6 +546,50 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      referral_earnings: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          deposit_id: string | null
+          id: string
+          rate: number
+          referee_id: string
+          referrer_id: string
+          status: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency?: string
+          deposit_id?: string | null
+          id?: string
+          rate?: number
+          referee_id: string
+          referrer_id: string
+          status?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          deposit_id?: string | null
+          id?: string
+          rate?: number
+          referee_id?: string
+          referrer_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referral_earnings_deposit_id_fkey"
+            columns: ["deposit_id"]
+            isOneToOne: true
+            referencedRelation: "deposits"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       role_permissions: {
         Row: {
@@ -862,6 +912,7 @@ export type Database = {
         Args: { _email: string; _role: Database["public"]["Enums"]["app_role"] }
         Returns: boolean
       }
+      generate_referral_code: { Args: never; Returns: string }
       get_super_admin_public_key: { Args: never; Returns: string }
       get_ticket_owner_public_key: {
         Args: { _ticket_id: string }
