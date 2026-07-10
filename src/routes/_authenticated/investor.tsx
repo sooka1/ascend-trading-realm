@@ -745,6 +745,43 @@ function StatCard({ icon, label, value, sub }: { icon: React.ReactNode; label: s
   );
 }
 
+function WithdrawList({ wds, busy, onCancel }: { wds: Wd[]; busy: string | null; onCancel: (w: Wd) => void | Promise<void> }) {
+  return (
+    <div className="glass rounded-3xl p-6">
+      <h2 className="font-display text-lg font-semibold">سجل السحوبات</h2>
+      {wds.length === 0 ? (
+        <p className="mt-3 text-sm text-muted-foreground">لا توجد سحوبات.</p>
+      ) : (
+        <ul className="mt-4 divide-y divide-white/5">
+          {wds.map((w) => (
+            <li key={w.id} className="flex items-center justify-between gap-2 py-3 text-sm">
+              <div className="min-w-0">
+                <p className="font-medium">{fmt(Number(w.amount))} {w.currency}</p>
+                <p className="text-xs text-muted-foreground">{w.destination} · {new Date(w.created_at).toLocaleDateString()}</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <StatusPill status={w.status} />
+                {w.status === "pending" && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={busy === `cancel:${w.id}` || !!busy}
+                    onClick={() => void onCancel(w)}
+                    className="h-8 border-red-500/40 text-red-300 hover:bg-red-500/10"
+                  >
+                    {busy === `cancel:${w.id}` ? "..." : "إلغاء"}
+                  </Button>
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 function HistoryList({ title, rows, empty }: { title: string; empty: string; rows: { id: string; primary: string; secondary: string; status: string }[] }) {
   return (
     <div className="glass rounded-3xl p-6">
