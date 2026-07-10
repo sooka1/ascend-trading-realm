@@ -17,6 +17,21 @@ export function pushBackHandler(fn: Handler): () => void {
 }
 
 export function consumeTopBackHandler(): boolean {
+  // First, try to close any open Radix overlay (Dialog/Sheet/Drawer/
+  // AlertDialog/Popover/DropdownMenu/HoverCard) by dispatching Escape —
+  // Radix listens for it and closes the top-most layer. This covers every
+  // shadcn overlay without wrapping each primitive.
+  if (typeof document !== "undefined") {
+    const openOverlay = document.querySelector(
+      '[data-state="open"][role="dialog"], [data-state="open"][role="alertdialog"], [data-state="open"][role="menu"], [data-radix-popper-content-wrapper] [data-state="open"]',
+    );
+    if (openOverlay) {
+      document.dispatchEvent(
+        new KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true }),
+      );
+      return true;
+    }
+  }
   const fn = stack.pop();
   if (!fn) return false;
   try {
