@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { PageShell } from "@/components/page-shell";
@@ -872,9 +872,9 @@ function fmtCurrency(n: number, currency = "USD") {
 
 function useAnimatedNumber(value: number, duration = 280) {
   const [display, setDisplay] = useState(value);
-  const fromRef = React.useRef(value);
-  const startRef = React.useRef<number>(0);
-  const rafRef = React.useRef<number>(0);
+  const fromRef = useRef(value);
+  const startRef = useRef<number>(0);
+  const rafRef = useRef<number>(0);
   useEffect(() => {
     const from = fromRef.current;
     const to = value;
