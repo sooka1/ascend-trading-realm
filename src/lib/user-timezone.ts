@@ -60,15 +60,15 @@ export function installTimezonePatch() {
   const origToLocaleDateString = proto.toLocaleDateString;
   const origToLocaleTimeString = proto.toLocaleTimeString;
 
-  proto.toLocaleString = function (locale?: unknown, opts?: Intl.DateTimeFormatOptions) {
+  proto.toLocaleString = function (this: Date, locale?: unknown, opts?: Intl.DateTimeFormatOptions) {
     return origToLocaleString.call(this, mapLocale(locale) as string | string[] | undefined, mergeOptions(opts));
   } as typeof proto.toLocaleString;
 
-  proto.toLocaleDateString = function (locale?: unknown, opts?: Intl.DateTimeFormatOptions) {
+  proto.toLocaleDateString = function (this: Date, locale?: unknown, opts?: Intl.DateTimeFormatOptions) {
     return origToLocaleDateString.call(this, mapLocale(locale) as string | string[] | undefined, mergeOptions(opts));
   } as typeof proto.toLocaleDateString;
 
-  proto.toLocaleTimeString = function (locale?: unknown, opts?: Intl.DateTimeFormatOptions) {
+  proto.toLocaleTimeString = function (this: Date, locale?: unknown, opts?: Intl.DateTimeFormatOptions) {
     return origToLocaleTimeString.call(this, mapLocale(locale) as string | string[] | undefined, mergeOptions(opts));
   } as typeof proto.toLocaleTimeString;
 
