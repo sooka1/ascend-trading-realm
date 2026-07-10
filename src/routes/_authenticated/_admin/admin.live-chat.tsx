@@ -227,6 +227,10 @@ function AdminLiveChat() {
                 ) : (
                   messages.map((m) => {
                     const staff = m.is_staff;
+                    // Admin decrypts its own copy (body_admin); older plaintext falls back.
+                    const plain = mySk
+                      ? tryDecrypt(m.body_admin, mySk) ?? tryDecrypt(m.body, mySk)
+                      : null;
                     return (
                       <div key={m.id} className={`flex ${staff ? "justify-start" : "justify-end"}`}>
                         <div
@@ -241,7 +245,9 @@ function AdminLiveChat() {
                               {nameFor(selected.user_id)}
                             </p>
                           )}
-                          <p className="whitespace-pre-wrap break-words">{m.body}</p>
+                          <p className="whitespace-pre-wrap break-words">
+                            {plain ?? <span className="italic opacity-60">🔒 رسالة مشفّرة</span>}
+                          </p>
                           <p className="mt-1 text-[9px] opacity-60">
                             {new Date(m.created_at).toLocaleTimeString([], {
                               hour: "2-digit",
