@@ -13,30 +13,38 @@ export function MessageStatus({
   counterpartyLabel?: string;
 }) {
   return (
-    <span className="mt-1 flex items-center gap-1 text-[9px] opacity-70">
-      <Lock className="h-2.5 w-2.5" />
-      <span>مشفّرة</span>
-      {mine && (
+    <span className="mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[9px] opacity-75">
+      <span className="inline-flex items-center gap-0.5">
+        <Lock className="h-2.5 w-2.5" />
+        مشفّرة
+      </span>
+      {mine ? (
         <>
-          <span className="opacity-60">·</span>
+          <span className="opacity-40">•</span>
+          <span className="inline-flex items-center gap-0.5">
+            <Check className="h-2.5 w-2.5" />
+            أُرسلت
+          </span>
+          <span className="opacity-40">•</span>
           {delivered ? (
-            <>
-              <CheckCheck className="h-2.5 w-2.5 text-emerald-400" />
-              <span>متاحة لـ{counterpartyLabel}</span>
-            </>
+            <span className="inline-flex items-center gap-0.5 text-emerald-400">
+              <CheckCheck className="h-3 w-3" />
+              تم التسليم لـ{counterpartyLabel}
+            </span>
           ) : (
-            <>
-              <Clock className="h-2.5 w-2.5 text-amber-400" />
-              <span>لم يتم تسليمها بعد</span>
-            </>
+            <span className="inline-flex items-center gap-0.5 text-amber-400">
+              <Clock className="h-2.5 w-2.5" />
+              بانتظار التسليم
+            </span>
           )}
         </>
-      )}
-      {!mine && (
+      ) : (
         <>
-          <span className="opacity-60">·</span>
-          <Check className="h-2.5 w-2.5 text-emerald-400" />
-          <span>مستلمة</span>
+          <span className="opacity-40">•</span>
+          <span className="inline-flex items-center gap-0.5 text-emerald-400">
+            <CheckCheck className="h-3 w-3" />
+            تم الاستلام
+          </span>
         </>
       )}
     </span>
