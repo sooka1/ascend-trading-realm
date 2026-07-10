@@ -136,7 +136,6 @@ function AdminFinance() {
         .maybeSingle();
       if (prErr) throw prErr;
       if (!pr) throw new Error("لم يتم العثور على المستثمر");
-      const nowIso = new Date().toISOString();
       const { data: dep, error: depErr } = await supabase
         .from("deposits")
         .insert({
@@ -145,10 +144,8 @@ function AdminFinance() {
           currency: "USD",
           method: "manual_credit",
           reference: "admin_manual",
-          notes: creditNote.trim() || "إيداع يدوي بواسطة الإدارة بعد تأكيد التحويل",
-          status: "approved",
-          reviewed_by: adminId,
-          reviewed_at: nowIso,
+          notes: creditNote.trim() || "إيداع يدوي — بانتظار مراجعة الاعتماد",
+          status: "pending",
         })
         .select("id")
         .single();
@@ -158,18 +155,13 @@ function AdminFinance() {
         request_id: dep.id,
         target_user_id: pr.id,
         admin_id: adminId,
-        action: "manual_credit",
+        action: "manual_credit_submitted",
         from_status: null,
-        to_status: "approved",
+        to_status: "pending",
         reason: creditNote.trim() || null,
         metadata: { amount, currency: "USD", manual: true },
       });
-      await supabase.from("notifications").insert({
-        user_id: pr.id,
-        title: "تم إضافة رصيد إلى حسابك",
-        body: `تم إضافة ${amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD إلى رصيدك بواسطة الإدارة.`,
-      });
-      toast.success("تمت إضافة الرصيد بنجاح");
+      toast.success("تم إنشاء طلب رصيد يدوي — يلزم اعتماده من قائمة الإيداعات لإضافة الرصيد.");
       setCreditEmail("");
       setCreditAmount("");
       setCreditNote("");
