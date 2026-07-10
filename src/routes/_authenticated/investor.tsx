@@ -38,6 +38,27 @@ const withdrawSchema = z.object({
   notes: z.string().trim().max(500).optional(),
 });
 
+// Wallet / network address validators — enforced client-side before submit.
+const ADDRESS_RULES = {
+  usdt_trc20: {
+    regex: /^T[1-9A-HJ-NP-Za-km-z]{33}$/,
+    label: "عنوان TRC20 غير صالح (يجب أن يبدأ بحرف T ويتكوّن من 34 خانة)",
+  },
+  usdt_bep20: {
+    regex: /^0x[a-fA-F0-9]{40}$/,
+    label: "عنوان BEP20 غير صالح (يجب أن يبدأ بـ 0x ويتكوّن من 42 خانة)",
+  },
+  binance_pay: {
+    regex: /^[0-9]{6,20}$/,
+    label: "Binance Pay ID غير صالح (أرقام فقط، 6 إلى 20 خانة)",
+  },
+} as const;
+const TXID_RULES = {
+  usdt_trc20: { regex: /^[a-fA-F0-9]{64}$/, label: "TxID لشبكة TRC20 يجب أن يكون 64 خانة hex" },
+  usdt_bep20: { regex: /^0x[a-fA-F0-9]{64}$/, label: "TxID لشبكة BEP20 يجب أن يبدأ بـ 0x ويتكوّن من 66 خانة" },
+  binance_pay: { regex: /^[A-Za-z0-9-]{8,64}$/, label: "رقم مرجع Binance Pay غير صالح" },
+} as const;
+
 // Platform deposit destinations — super admin can update these values in code.
 const PLATFORM_WALLETS = {
   binance_pay: "HK-BINANCE-PAY-ID-000000",
@@ -199,6 +220,13 @@ function InvestorPortal() {
     const fd = new FormData(e.currentTarget);
     const parsed = depositSchema.safeParse(Object.fromEntries(fd));
     if (!parsed.success) return toast.error(parsed.error.issues[0].message);
+    // Network-specific validation for crypto / Binance Pay deposits
+    if (parsed.data.method in TXID_RULES) {
+      const rule = TXID_RULES[parsed.data.method as keyof typeof TXID_RULES];
+      const ref = parsed.data.reference ?? "";
+      if (!ref) return toast.error("يرجى إدخال TxID / مرجع المعاملة");
+      if (!rule.regex.test(ref)) return toast.error(rule.label);
+    }
     const { error } = await supabase.from("deposits").insert({ user_id: uid, ...parsed.data });
     if (error) return toast.error(error.message);
     toast.success("تم إرسال طلب الإيداع بنجاح");
@@ -213,6 +241,11 @@ function InvestorPortal() {
     const parsed = withdrawSchema.safeParse(Object.fromEntries(fd));
     if (!parsed.success) return toast.error(parsed.error.issues[0].message);
     if (parsed.data.amount > balance) return toast.error("المبلغ يتجاوز الرصيد المتاح");
+    // Network-specific destination validation
+    if (withdrawMethod !== "bank") {
+      const rule = ADDRESS_RULES[withdrawMethod];
+      if (!rule.regex.test(parsed.data.destination)) return toast.error(rule.label);
+    }
     // Require MFA for withdrawals
     const { data: fx } = await supabase.auth.mfa.listFactors();
     const totp = (fx?.totp ?? []).find((f) => f.status === "verified");
