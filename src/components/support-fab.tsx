@@ -1,8 +1,9 @@
-import { useState } from "react";
-import { MessageCircle, Send } from "lucide-react";
+import { useEffect, useState } from "react";
+import { MessageCircle, Send, LogIn } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
+import { Link } from "@tanstack/react-router";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,14 +21,32 @@ export function SupportFab() {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", phone: "", subject: "", body: "" });
   const [sending, setSending] = useState(false);
+  const [authed, setAuthed] = useState<boolean | null>(null);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      setAuthed(!!data.user);
+      setUserEmail(data.user?.email ?? null);
+    });
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
+      setAuthed(!!session?.user);
+      setUserEmail(session?.user?.email ?? null);
+    });
+    return () => sub.subscription.unsubscribe();
+  }, []);
 
   async function send() {
+    if (!authed) {
+      toast.error("يجب تسجيل الدخول لإرسال رسالتك");
+      return;
+    }
     const parsed = schema.safeParse(form);
     if (!parsed.success) return toast.error(parsed.error.issues[0]?.message ?? "بيانات غير صالحة");
     setSending(true);
     const { error } = await supabase.from("guest_inquiries").insert({
       name: parsed.data.name || null,
-      email: parsed.data.email || null,
+      email: parsed.data.email || userEmail,
       phone: parsed.data.phone || null,
       subject: parsed.data.subject,
       body: parsed.data.body,
@@ -60,10 +79,25 @@ export function SupportFab() {
             <MessageCircle className="h-4 w-4 text-gold" /> تواصل مع الإدارة
           </DialogTitle>
           <DialogDescription>
-            أرسل استفسارك مباشرة — لا حاجة لتسجيل الدخول. اترك بيانات التواصل ليتمكن فريقنا من الرد عليك.
+            {authed
+              ? "أرسل استفسارك وسنتواصل معك على بريدك المسجّل قريباً."
+              : "يجب تسجيل الدخول أولاً لإرسال استفسار حتى نتمكن من الرد عليك."}
           </DialogDescription>
         </DialogHeader>
 
+        {authed === false ? (
+          <div className="flex flex-col items-center gap-3 py-4 text-center">
+            <p className="text-sm text-muted-foreground">
+              سجّل الدخول أو أنشئ حسابًا للتواصل مع الإدارة.
+            </p>
+            <Button asChild size="sm" onClick={() => setOpen(false)}>
+              <Link to="/auth">
+                <LogIn className="me-1.5 h-3.5 w-3.5" />
+                تسجيل الدخول
+              </Link>
+            </Button>
+          </div>
+        ) : (
         <div className="space-y-3">
           <div className="grid gap-3 sm:grid-cols-2">
             <Input
@@ -94,12 +128,13 @@ export function SupportFab() {
             onChange={(e) => setForm((f) => ({ ...f, body: e.target.value }))}
           />
           <div className="flex justify-end">
-            <Button size="sm" onClick={send} disabled={sending}>
+            <Button size="sm" onClick={send} disabled={sending || !authed}>
               <Send className="me-1.5 h-3.5 w-3.5" />
               {sending ? "جارٍ الإرسال…" : "إرسال"}
             </Button>
           </div>
         </div>
+        )}
       </DialogContent>
     </Dialog>
   );
