@@ -53,7 +53,7 @@ export async function ensurePushSubscription(): Promise<boolean> {
       if (!publicKey) return false;
       sub = await reg.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: urlB64ToUint8Array(publicKey),
+        applicationServerKey: urlB64ToUint8Array(publicKey).buffer as ArrayBuffer,
       });
     }
     const json = sub.toJSON();
