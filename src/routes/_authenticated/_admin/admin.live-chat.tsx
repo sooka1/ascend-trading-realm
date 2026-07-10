@@ -73,6 +73,11 @@ function AdminLiveChat() {
     value: boolean;
   } | null>(null);
   const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [uploadStatus, setUploadStatus] = useState<"idle" | "uploading" | "done" | "error">(
+    "idle",
+  );
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const channelRef = useRef<RealtimeChannel | null>(null);
   const lastTypingSentRef = useRef(0);
@@ -264,7 +269,19 @@ function AdminLiveChat() {
       const ownerPk = profiles[selected.user_id]?.public_key ?? null;
       let attachment: Awaited<ReturnType<typeof uploadChatAttachment>> | null = null;
       if (pendingFile) {
-        attachment = await uploadChatAttachment(selected.id, pendingFile);
+        setUploadStatus("uploading");
+        setUploadProgress(0);
+        setUploadError(null);
+        try {
+          attachment = await uploadChatAttachment(selected.id, pendingFile, (f) =>
+            setUploadProgress(f),
+          );
+          setUploadStatus("done");
+        } catch (e) {
+          setUploadStatus("error");
+          setUploadError(e instanceof Error ? e.message : "فشل الرفع");
+          throw e;
+        }
       }
       const bodyForOwner = body && ownerPk ? encryptFor(ownerPk, body) : null;
       const bodyForAdmin = body ? encryptFor(myPk, body) : null;
@@ -286,6 +303,9 @@ function AdminLiveChat() {
         .eq("id", selected.id);
       setDraft("");
       setPendingFile(null);
+      setUploadStatus("idle");
+      setUploadProgress(0);
+      setUploadError(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "تعذّر إرسال الرد");
@@ -420,8 +440,14 @@ function AdminLiveChat() {
                     file={pendingFile}
                     onRemove={() => {
                       setPendingFile(null);
+                      setUploadStatus("idle");
+                      setUploadProgress(0);
+                      setUploadError(null);
                       if (fileInputRef.current) fileInputRef.current.value = "";
                     }}
+                    status={uploadStatus}
+                    progress={uploadProgress}
+                    error={uploadError}
                   />
                 </div>
               )}
