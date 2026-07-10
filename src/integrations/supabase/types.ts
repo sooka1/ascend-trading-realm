@@ -740,6 +740,33 @@ export type Database = {
         }
         Relationships: []
       }
+      system_backfill_log: {
+        Row: {
+          id: string
+          notes: string | null
+          operation: string
+          ran_at: string
+          rows_skipped: number
+          rows_updated: number
+        }
+        Insert: {
+          id?: string
+          notes?: string | null
+          operation: string
+          ran_at?: string
+          rows_skipped?: number
+          rows_updated?: number
+        }
+        Update: {
+          id?: string
+          notes?: string | null
+          operation?: string
+          ran_at?: string
+          rows_skipped?: number
+          rows_updated?: number
+        }
+        Relationships: []
+      }
       ticket_messages: {
         Row: {
           attachment_mime: string | null
