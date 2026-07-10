@@ -76,8 +76,62 @@ function InvestorPortal() {
   }, [deps, wds]);
 
   const pendingDeposits = deps.filter((d) => d.status === "pending").reduce((s, d) => s + Number(d.amount), 0);
-  const activePackage = subs.find((s) => s.status === "active") ?? subs[0];
-  const activePkgMeta = packages.find((p) => p.id === activePackage?.package_id);
+  const activeSubs = subs.filter((s) => s.status === "active" || s.status === "pending");
+  const committed = activeSubs.reduce((s, x) => s + Number(x.amount), 0);
+  const available = Math.max(0, balance - committed);
+
+  async function subscribeToPackage(pkg: Pkg) {
+    if (!uid) return;
+    if (available < Number(pkg.min_amount)) {
+      toast.error(`الرصيد المتاح غير كافٍ. الحد الأدنى ${fmt(Number(pkg.min_amount))} ${pkg.currency}`);
+      return;
+    }
+    const raw = window.prompt(
+      `أدخل المبلغ للاشتراك في باقة ${pkg.name} (الحد الأدنى ${fmt(Number(pkg.min_amount))} ${pkg.currency}، المتاح ${fmt(available)} ${pkg.currency})`,
+      String(pkg.min_amount),
+    );
+    if (!raw) return;
+    const amount = Number(raw);
+    if (!Number.isFinite(amount) || amount < Number(pkg.min_amount)) {
+      toast.error("المبلغ أقل من الحد الأدنى للباقة");
+      return;
+    }
+    if (amount > available) {
+      toast.error("المبلغ يتجاوز الرصيد المتاح");
+      return;
+    }
+    const startedAt = new Date();
+    const endsAt = new Date(startedAt);
+    endsAt.setMonth(endsAt.getMonth() + Number(pkg.lockup_months || 0));
+    const { error } = await supabase.from("subscriptions").insert({
+      user_id: uid,
+      package_id: pkg.id,
+      amount,
+      currency: pkg.currency,
+      status: "active",
+      started_at: startedAt.toISOString(),
+      ends_at: endsAt.toISOString(),
+    });
+    if (error) return toast.error(error.message);
+    toast.success("تم الاشتراك في الباقة");
+    await load();
+  }
+
+  async function cancelSubscription(sub: Sub) {
+    if (!uid) return;
+    if (!window.confirm("تأكيد إلغاء الاشتراك في هذه الباقة؟")) return;
+    const { error } = await supabase
+      .from("subscriptions")
+      .update({ status: "cancelled" })
+      .eq("id", sub.id)
+      .eq("user_id", uid);
+    if (error) return toast.error(error.message);
+    toast.success("تم إلغاء الاشتراك — يمكنك الاشتراك في باقة أخرى الآن");
+    await load();
+  }
+
+  const primarySub = activeSubs[0];
+  const primaryPkg = packages.find((p) => p.id === primarySub?.package_id);
 
   async function submitDeposit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -142,10 +196,80 @@ function InvestorPortal() {
           <StatCard
             icon={<PackageIcon className="h-5 w-5" />}
             label="الباقة النشطة"
-            value={activePkgMeta?.name ?? "—"}
-            sub={activePackage ? `${activePackage.status}` : "لا يوجد اشتراك"}
+            value={primaryPkg?.name ?? "—"}
+            sub={activeSubs.length > 1 ? `${activeSubs.length} باقات نشطة` : primarySub ? primarySub.status : "لا يوجد اشتراك"}
           />
           <StatCard icon={<ShieldCheck className="h-5 w-5" />} label="حالة الحساب" value={uid ? "موثّق" : "—"} sub="KYC" />
+        </div>
+
+        <div className="mt-8 glass rounded-3xl p-6">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <PackageIcon className="h-5 w-5 text-gold" />
+              <h2 className="font-display text-lg font-semibold">الباقات المتاحة</h2>
+            </div>
+            <p className="text-[11px] text-muted-foreground">
+              المتاح للاشتراك: <span className="font-mono text-foreground">{fmt(available)} USD</span>
+              {loading ? "" : ""}
+            </p>
+          </div>
+          <div className="mt-4 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+            {packages.map((p) => {
+              const eligible = available >= Number(p.min_amount);
+              return (
+                <div key={p.id} className="rounded-2xl border border-white/10 bg-white/[0.02] p-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-display text-base font-semibold">{p.name}</h3>
+                    <span className="rounded-full border border-gold/30 bg-gold/[0.08] px-2 py-0.5 font-mono text-[10px] text-gold">
+                      {p.target_return_pct != null ? `${Number(p.target_return_pct).toFixed(1)}%` : "—"}
+                    </span>
+                  </div>
+                  {p.description && <p className="mt-1 text-xs text-muted-foreground">{p.description}</p>}
+                  <div className="mt-3 grid grid-cols-2 gap-2 text-[11px] text-muted-foreground">
+                    <div>الحد الأدنى<div className="font-mono text-foreground">{fmt(Number(p.min_amount))} {p.currency}</div></div>
+                    <div>مدة القفل<div className="font-mono text-foreground">{p.lockup_months} شهر</div></div>
+                  </div>
+                  <Button
+                    type="button"
+                    disabled={!eligible}
+                    onClick={() => subscribeToPackage(p)}
+                    className="mt-4 w-full bg-[var(--gradient-gold)] font-semibold text-background disabled:opacity-50"
+                  >
+                    {eligible ? "اشترك بهذه الباقة" : "الرصيد غير كافٍ"}
+                  </Button>
+                </div>
+              );
+            })}
+            {packages.length === 0 && <p className="text-sm text-muted-foreground">لا توجد باقات متاحة حاليًا.</p>}
+          </div>
+
+          {activeSubs.length > 0 && (
+            <div className="mt-6">
+              <h3 className="text-xs uppercase tracking-widest text-muted-foreground">اشتراكاتي الحالية</h3>
+              <ul className="mt-2 divide-y divide-white/5">
+                {activeSubs.map((s) => {
+                  const meta = packages.find((p) => p.id === s.package_id);
+                  return (
+                    <li key={s.id} className="flex flex-wrap items-center justify-between gap-2 py-3 text-sm">
+                      <div>
+                        <p className="font-medium">{meta?.name ?? s.package_id.slice(0, 8)}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {fmt(Number(s.amount))} {s.currency}
+                          {s.ends_at ? ` · حتى ${new Date(s.ends_at).toLocaleDateString()}` : ""}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <StatusPill status={s.status} />
+                        <Button size="sm" variant="outline" onClick={() => cancelSubscription(s)} className="h-7 border-white/15 text-xs">
+                          تبديل / إلغاء
+                        </Button>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          )}
         </div>
 
         <div className="mt-8 grid gap-6 lg:grid-cols-2">
