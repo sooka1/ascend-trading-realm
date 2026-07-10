@@ -67,6 +67,7 @@ import { Route as AuthenticatedAdminAdminNotificationsRouteImport } from './rout
 import { Route as AuthenticatedAdminAdminMonitoringRouteImport } from './routes/_authenticated/_admin/admin.monitoring'
 import { Route as AuthenticatedAdminAdminMarketingRouteImport } from './routes/_authenticated/_admin/admin.marketing'
 import { Route as AuthenticatedAdminAdminLiveChatRouteImport } from './routes/_authenticated/_admin/admin.live-chat'
+import { Route as AuthenticatedAdminAdminKycRouteImport } from './routes/_authenticated/_admin/admin.kyc'
 import { Route as AuthenticatedAdminAdminInvoicesRouteImport } from './routes/_authenticated/_admin/admin.invoices'
 import { Route as AuthenticatedAdminAdminFinanceRouteImport } from './routes/_authenticated/_admin/admin.finance'
 import { Route as AuthenticatedAdminAdminBackupsRouteImport } from './routes/_authenticated/_admin/admin.backups'
@@ -394,6 +395,12 @@ const AuthenticatedAdminAdminLiveChatRoute =
     path: '/admin/live-chat',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
+const AuthenticatedAdminAdminKycRoute =
+  AuthenticatedAdminAdminKycRouteImport.update({
+    id: '/admin/kyc',
+    path: '/admin/kyc',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 const AuthenticatedAdminAdminInvoicesRoute =
   AuthenticatedAdminAdminInvoicesRouteImport.update({
     id: '/admin/invoices',
@@ -479,6 +486,7 @@ export interface FileRoutesByFullPath {
   '/admin/backups': typeof AuthenticatedAdminAdminBackupsRoute
   '/admin/finance': typeof AuthenticatedAdminAdminFinanceRoute
   '/admin/invoices': typeof AuthenticatedAdminAdminInvoicesRoute
+  '/admin/kyc': typeof AuthenticatedAdminAdminKycRoute
   '/admin/live-chat': typeof AuthenticatedAdminAdminLiveChatRoute
   '/admin/marketing': typeof AuthenticatedAdminAdminMarketingRoute
   '/admin/monitoring': typeof AuthenticatedAdminAdminMonitoringRoute
@@ -543,6 +551,7 @@ export interface FileRoutesByTo {
   '/admin/backups': typeof AuthenticatedAdminAdminBackupsRoute
   '/admin/finance': typeof AuthenticatedAdminAdminFinanceRoute
   '/admin/invoices': typeof AuthenticatedAdminAdminInvoicesRoute
+  '/admin/kyc': typeof AuthenticatedAdminAdminKycRoute
   '/admin/live-chat': typeof AuthenticatedAdminAdminLiveChatRoute
   '/admin/marketing': typeof AuthenticatedAdminAdminMarketingRoute
   '/admin/monitoring': typeof AuthenticatedAdminAdminMonitoringRoute
@@ -610,6 +619,7 @@ export interface FileRoutesById {
   '/_authenticated/_admin/admin/backups': typeof AuthenticatedAdminAdminBackupsRoute
   '/_authenticated/_admin/admin/finance': typeof AuthenticatedAdminAdminFinanceRoute
   '/_authenticated/_admin/admin/invoices': typeof AuthenticatedAdminAdminInvoicesRoute
+  '/_authenticated/_admin/admin/kyc': typeof AuthenticatedAdminAdminKycRoute
   '/_authenticated/_admin/admin/live-chat': typeof AuthenticatedAdminAdminLiveChatRoute
   '/_authenticated/_admin/admin/marketing': typeof AuthenticatedAdminAdminMarketingRoute
   '/_authenticated/_admin/admin/monitoring': typeof AuthenticatedAdminAdminMonitoringRoute
@@ -676,6 +686,7 @@ export interface FileRouteTypes {
     | '/admin/backups'
     | '/admin/finance'
     | '/admin/invoices'
+    | '/admin/kyc'
     | '/admin/live-chat'
     | '/admin/marketing'
     | '/admin/monitoring'
@@ -740,6 +751,7 @@ export interface FileRouteTypes {
     | '/admin/backups'
     | '/admin/finance'
     | '/admin/invoices'
+    | '/admin/kyc'
     | '/admin/live-chat'
     | '/admin/marketing'
     | '/admin/monitoring'
@@ -806,6 +818,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_admin/admin/backups'
     | '/_authenticated/_admin/admin/finance'
     | '/_authenticated/_admin/admin/invoices'
+    | '/_authenticated/_admin/admin/kyc'
     | '/_authenticated/_admin/admin/live-chat'
     | '/_authenticated/_admin/admin/marketing'
     | '/_authenticated/_admin/admin/monitoring'
@@ -1252,6 +1265,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminAdminLiveChatRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/_admin/admin/kyc': {
+      id: '/_authenticated/_admin/admin/kyc'
+      path: '/admin/kyc'
+      fullPath: '/admin/kyc'
+      preLoaderRoute: typeof AuthenticatedAdminAdminKycRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/_admin/admin/invoices': {
       id: '/_authenticated/_admin/admin/invoices'
       path: '/admin/invoices'
@@ -1304,6 +1324,7 @@ interface AuthenticatedAdminRouteRouteChildren {
   AuthenticatedAdminAdminBackupsRoute: typeof AuthenticatedAdminAdminBackupsRoute
   AuthenticatedAdminAdminFinanceRoute: typeof AuthenticatedAdminAdminFinanceRoute
   AuthenticatedAdminAdminInvoicesRoute: typeof AuthenticatedAdminAdminInvoicesRoute
+  AuthenticatedAdminAdminKycRoute: typeof AuthenticatedAdminAdminKycRoute
   AuthenticatedAdminAdminLiveChatRoute: typeof AuthenticatedAdminAdminLiveChatRoute
   AuthenticatedAdminAdminMarketingRoute: typeof AuthenticatedAdminAdminMarketingRoute
   AuthenticatedAdminAdminMonitoringRoute: typeof AuthenticatedAdminAdminMonitoringRoute
@@ -1331,6 +1352,7 @@ const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren
     AuthenticatedAdminAdminBackupsRoute: AuthenticatedAdminAdminBackupsRoute,
     AuthenticatedAdminAdminFinanceRoute: AuthenticatedAdminAdminFinanceRoute,
     AuthenticatedAdminAdminInvoicesRoute: AuthenticatedAdminAdminInvoicesRoute,
+    AuthenticatedAdminAdminKycRoute: AuthenticatedAdminAdminKycRoute,
     AuthenticatedAdminAdminLiveChatRoute: AuthenticatedAdminAdminLiveChatRoute,
     AuthenticatedAdminAdminMarketingRoute:
       AuthenticatedAdminAdminMarketingRoute,

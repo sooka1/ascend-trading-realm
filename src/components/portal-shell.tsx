@@ -28,6 +28,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { useMfaEnforcement } from "@/hooks/use-mfa-enforcement";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { UserBadge } from "@/components/user-badge";
 
 type NavItem = { to: string; icon: LucideIcon; label: string; group?: string };
 
@@ -210,6 +211,7 @@ export function PortalShell({
                   </SheetContent>
                 </Sheet>
                 <div className="flex items-center gap-2.5">
+                  <UserBadge />
                   <Link
                     to="/portal/notifications"
                     aria-label="الإشعارات"
@@ -240,6 +242,7 @@ export function PortalShell({
                 </div>
                 {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
                 <div className="hidden items-center gap-2 lg:flex">
+                  <UserBadge />
                   <Link
                 to="/portal/notifications"
                 aria-label="الإشعارات"

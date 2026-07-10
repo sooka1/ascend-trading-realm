@@ -468,8 +468,14 @@ export type Database = {
           display_name: string | null
           email: string | null
           id: string
+          id_back_url: string | null
+          id_front_url: string | null
           public_key: string | null
+          selfie_url: string | null
           updated_at: string
+          verification_notes: string | null
+          verification_status: Database["public"]["Enums"]["verification_status"]
+          verified_at: string | null
         }
         Insert: {
           avatar_url?: string | null
@@ -478,8 +484,14 @@ export type Database = {
           display_name?: string | null
           email?: string | null
           id: string
+          id_back_url?: string | null
+          id_front_url?: string | null
           public_key?: string | null
+          selfie_url?: string | null
           updated_at?: string
+          verification_notes?: string | null
+          verification_status?: Database["public"]["Enums"]["verification_status"]
+          verified_at?: string | null
         }
         Update: {
           avatar_url?: string | null
@@ -488,8 +500,14 @@ export type Database = {
           display_name?: string | null
           email?: string | null
           id?: string
+          id_back_url?: string | null
+          id_front_url?: string | null
           public_key?: string | null
+          selfie_url?: string | null
           updated_at?: string
+          verification_notes?: string | null
+          verification_status?: Database["public"]["Enums"]["verification_status"]
+          verified_at?: string | null
         }
         Relationships: []
       }
@@ -883,6 +901,7 @@ export type Database = {
       risk_preference: "conservative" | "balanced" | "aggressive"
       ticket_priority: "low" | "normal" | "high" | "urgent"
       ticket_status: "open" | "pending" | "resolved" | "closed"
+      verification_status: "unverified" | "pending" | "approved" | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1025,6 +1044,7 @@ export const Constants = {
       risk_preference: ["conservative", "balanced", "aggressive"],
       ticket_priority: ["low", "normal", "high", "urgent"],
       ticket_status: ["open", "pending", "resolved", "closed"],
+      verification_status: ["unverified", "pending", "approved", "rejected"],
     },
   },
 } as const
