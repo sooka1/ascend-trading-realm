@@ -239,9 +239,28 @@ function InvestorPortal() {
       if (!/^image\/(png|jpe?g|webp)$/.test(receipt.type)) return toast.error("صيغة الصورة غير مدعومة (PNG/JPG/WEBP فقط)");
       const ext = receipt.name.split(".").pop() ?? "png";
       const path = `${uid}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-      const { error: upErr } = await supabase.storage.from("documents").upload(path, receipt, { upsert: false, contentType: receipt.type });
-      if (upErr) return toast.error("تعذّر رفع صورة التحويل: " + upErr.message);
-      receiptNote = `\n[receipt:documents/${path}]`;
+      try {
+        const { error: upErr } = await supabase.storage.from("documents").upload(path, receipt, { upsert: false, contentType: receipt.type });
+        if (upErr) {
+          const msg = (upErr.message || "").toLowerCase();
+          if (msg.includes("row-level") || msg.includes("unauthorized") || msg.includes("permission") || msg.includes("policy")) {
+            return toast.error("لا تملك صلاحية رفع صورة التحويل حاليًا — يرجى التواصل مع الدعم");
+          }
+          if (msg.includes("exceeded") || msg.includes("payload") || msg.includes("too large") || msg.includes("size")) {
+            return toast.error("حجم الصورة كبير جدًا — يرجى تقليله والمحاولة مرة أخرى");
+          }
+          if (msg.includes("mime") || msg.includes("type")) {
+            return toast.error("صيغة الصورة غير مسموح بها — استخدم PNG أو JPG أو WEBP");
+          }
+          if (msg.includes("network") || msg.includes("fetch") || msg.includes("failed")) {
+            return toast.error("تعذّر الاتصال أثناء رفع الصورة — تحقق من الإنترنت وأعد المحاولة");
+          }
+          return toast.error("تعذّر رفع صورة التحويل: " + upErr.message);
+        }
+        receiptNote = `\n[receipt:documents/${path}]`;
+      } catch (err) {
+        return toast.error("حدث خطأ أثناء رفع الصورة: " + ((err as Error).message || "غير معروف"));
+      }
     }
     const notesWithReceipt = ((parsed.data.notes ?? "") + receiptNote).trim() || undefined;
     const { error } = await supabase.from("deposits").insert({ user_id: uid, ...parsed.data, notes: notesWithReceipt });
