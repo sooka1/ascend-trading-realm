@@ -39,6 +39,7 @@ export function SupportFab() {
   const [myPk, setMyPk] = useState<string | null>(null);
   const [adminPk, setAdminPk] = useState<string | null>(null);
   const [unread, setUnread] = useState(0);
+  const [adminReadAt, setAdminReadAt] = useState<string | null>(null);
   const listRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -97,6 +98,17 @@ export function SupportFab() {
       }
       if (cancelled || !tid) return;
       setTicketId(tid);
+      // Load current admin_last_read_at + mark this side as having read now.
+      const { data: trow } = await supabase
+        .from("support_tickets")
+        .select("admin_last_read_at")
+        .eq("id", tid)
+        .maybeSingle();
+      if (!cancelled) setAdminReadAt((trow?.admin_last_read_at as string | null) ?? null);
+      await supabase
+        .from("support_tickets")
+        .update({ client_last_read_at: new Date().toISOString() })
+        .eq("id", tid);
       const { data: msgs } = await supabase
         .from("ticket_messages")
         .select("*")
@@ -125,7 +137,22 @@ export function SupportFab() {
           if (m.is_staff && m.sender_id !== uid) {
             notifyIncomingMessage("رسالة جديدة من دعم HK");
             if (!open) setUnread((n) => n + 1);
+            // If the panel is open, mark as read immediately.
+            if (open) {
+              void supabase
+                .from("support_tickets")
+                .update({ client_last_read_at: new Date().toISOString() })
+                .eq("id", ticketId);
+            }
           }
+        },
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "support_tickets", filter: `id=eq.${ticketId}` },
+        (payload) => {
+          const t = payload.new as { admin_last_read_at: string | null };
+          setAdminReadAt(t.admin_last_read_at ?? null);
         },
       )
       .subscribe();
@@ -291,7 +318,15 @@ export function SupportFab() {
                         <p className="mt-1 text-[9px] opacity-60">
                           {new Date(m.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                         </p>
-                        <MessageStatus mine={mine} delivered={!!m.body_admin} />
+                        <MessageStatus
+                          mine={mine}
+                          delivered={!!m.body_admin}
+                          read={
+                            mine &&
+                            !!adminReadAt &&
+                            new Date(adminReadAt) >= new Date(m.created_at)
+                          }
+                        />
                       </div>
                     </div>
                   );

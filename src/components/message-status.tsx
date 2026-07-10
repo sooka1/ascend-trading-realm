@@ -1,4 +1,4 @@
-import { Lock, Check, CheckCheck, Clock } from "lucide-react";
+import { Lock, Check, CheckCheck, Clock, Eye } from "lucide-react";
 
 // Small status row shown under the timestamp inside a chat bubble.
 // - Every message is E2EE, so the lock icon is always present.
@@ -6,10 +6,12 @@ import { Lock, Check, CheckCheck, Clock } from "lucide-react";
 export function MessageStatus({
   mine,
   delivered,
+  read,
   counterpartyLabel = "السوبر ادمن",
 }: {
   mine: boolean;
   delivered: boolean;
+  read?: boolean;
   counterpartyLabel?: string;
 }) {
   return (
@@ -26,7 +28,12 @@ export function MessageStatus({
             أُرسلت
           </span>
           <span className="opacity-40">•</span>
-          {delivered ? (
+          {read ? (
+            <span className="inline-flex items-center gap-0.5 text-sky-400">
+              <Eye className="h-3 w-3" />
+              تمت القراءة
+            </span>
+          ) : delivered ? (
             <span className="inline-flex items-center gap-0.5 text-emerald-400">
               <CheckCheck className="h-3 w-3" />
               تم التسليم لـ{counterpartyLabel}
