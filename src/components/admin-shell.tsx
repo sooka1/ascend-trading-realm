@@ -48,16 +48,16 @@ const NAV: NavItem[] = [
   { to: "/admin/users", icon: Users, label: "المستخدمون", group: "identity", enabled: true },
   { to: "/admin/roles", icon: ShieldCheck, label: "الأدوار والصلاحيات", group: "identity", enabled: true },
   { to: "/admin/user-roles", icon: ShieldCheck, label: "تعيين أدوار المستخدمين", group: "identity", enabled: true },
-  { to: "/admin/organizations", icon: Building2, label: "المؤسسات", group: "identity", enabled: false },
+  { to: "/admin/organizations", icon: Building2, label: "المؤسسات", group: "identity", enabled: true },
 
   { to: "/admin/audit", icon: History, label: "سجل التدقيق", group: "governance", enabled: true },
-  { to: "/admin/notifications", icon: Bell, label: "الإشعارات", group: "governance", enabled: false },
-  { to: "/admin/marketing", icon: Megaphone, label: "التسويق", group: "governance", enabled: false },
-  { to: "/admin/partners", icon: Handshake, label: "الشركاء", group: "governance", enabled: false },
+  { to: "/admin/notifications", icon: Bell, label: "الإشعارات", group: "governance", enabled: true },
+  { to: "/admin/marketing", icon: Megaphone, label: "التسويق", group: "governance", enabled: true },
+  { to: "/admin/partners", icon: Handshake, label: "الشركاء", group: "governance", enabled: true },
 
-  { to: "/admin/backups", icon: DatabaseBackup, label: "النسخ الاحتياطي", group: "system", enabled: false },
-  { to: "/admin/settings", icon: Settings, label: "إعدادات النظام", group: "system", enabled: false },
-  { to: "/admin/search", icon: Search, label: "البحث الشامل", group: "system", enabled: false },
+  { to: "/admin/backups", icon: DatabaseBackup, label: "النسخ الاحتياطي", group: "system", enabled: true },
+  { to: "/admin/settings", icon: Settings, label: "إعدادات النظام", group: "system", enabled: true },
+  { to: "/admin/search", icon: Search, label: "البحث الشامل", group: "system", enabled: true },
 ];
 
 const GROUP_LABELS: Record<string, string> = {
