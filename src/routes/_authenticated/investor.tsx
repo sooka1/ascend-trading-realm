@@ -305,6 +305,51 @@ function InvestorPortal() {
     if (mfaErr) return toast.error("رمز التحقق غير صحيح");
     const { error } = await supabase.from("withdrawals").insert({ user_id: uid, ...parsed.data });
     if (error) return toast.error(error.message);
+    // Deduct requested amount immediately from active invested capital.
+    // If a subscription's remaining capital drops below its package minimum,
+    // cancel that subscription — the leftover returns to the general wallet
+    // and weekly profits stop until the user re-subscribes to a fitting package.
+    {
+      const { data: pkgList } = await supabase.from("packages").select("id,min_amount");
+      const pkgMin = new Map((pkgList ?? []).map((p) => [p.id as string, Number(p.min_amount)]));
+      const { data: active } = await supabase
+        .from("subscriptions")
+        .select("id,package_id,amount")
+        .eq("user_id", uid)
+        .eq("status", "active")
+        .order("created_at", { ascending: false });
+      let remaining = parsed.data.amount;
+      let cancelledCount = 0;
+      for (const s of active ?? []) {
+        if (remaining <= 0) break;
+        const cur = Number(s.amount);
+        const take = Math.min(remaining, cur);
+        const newAmt = +(cur - take).toFixed(2);
+        const min = pkgMin.get(s.package_id as string) ?? 0;
+        if (newAmt < min) {
+          await supabase
+            .from("subscriptions")
+            .update({ status: "cancelled" })
+            .eq("id", s.id)
+            .eq("user_id", uid);
+          cancelledCount++;
+        } else {
+          await supabase
+            .from("subscriptions")
+            .update({ amount: newAmt })
+            .eq("id", s.id)
+            .eq("user_id", uid);
+        }
+        remaining -= take;
+      }
+      if (cancelledCount > 0) {
+        await supabase.from("notifications").insert({
+          user_id: uid,
+          title: "تم إيقاف اشتراك بسبب السحب",
+          body: "انخفض رأس المال المتبقي عن الحد الأدنى للباقة — أُعيد الرصيد إلى المحفظة العامة وأُوقفت الأرباح الأسبوعية حتى الاشتراك في باقة مناسبة.",
+        });
+      }
+    }
     await supabase.from("notifications").insert({
       user_id: uid,
       title: "تم استلام طلب السحب",
