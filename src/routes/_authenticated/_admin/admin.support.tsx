@@ -4,110 +4,85 @@ import { supabase } from "@/integrations/supabase/client";
 import { PageShell } from "@/components/page-shell";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { MessageCircle, Send } from "lucide-react";
+import { MessageCircle, Send, Mail, Phone, User } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/_admin/admin/support")({
   head: () => ({
     meta: [
       { title: "Admin — رسائل العملاء" },
-      { name: "description", content: "استفسارات العملاء ورسائل الدعم." },
+      { name: "description", content: "استفسارات الزوار والعملاء." },
     ],
   }),
   component: AdminSupport,
 });
 
-type Ticket = {
+type Inquiry = {
   id: string;
-  user_id: string;
+  name: string | null;
+  email: string | null;
+  phone: string | null;
   subject: string;
-  category: string | null;
-  status: "open" | "pending" | "resolved" | "closed";
-  last_message_at: string;
-  created_at: string;
-};
-
-type Msg = {
-  id: string;
-  ticket_id: string;
-  sender_id: string;
   body: string;
-  is_staff: boolean;
+  status: "open" | "pending" | "resolved" | "closed";
+  admin_reply: string | null;
+  replied_at: string | null;
   created_at: string;
 };
 
 function AdminSupport() {
-  const [tickets, setTickets] = useState<Ticket[]>([]);
-  const [profiles, setProfiles] = useState<Record<string, { display_name: string | null; email: string | null }>>({});
-  const [selected, setSelected] = useState<Ticket | null>(null);
-  const [messages, setMessages] = useState<Msg[]>([]);
-  const [draft, setDraft] = useState("");
   const [uid, setUid] = useState<string | null>(null);
+  const [items, setItems] = useState<Inquiry[]>([]);
+  const [selected, setSelected] = useState<Inquiry | null>(null);
+  const [reply, setReply] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     void (async () => {
       const { data: u } = await supabase.auth.getUser();
       setUid(u.user?.id ?? null);
-      await loadTickets();
+      await load();
       setLoading(false);
     })();
   }, []);
 
-  async function loadTickets() {
+  async function load() {
     const { data, error } = await supabase
-      .from("support_tickets")
-      .select("id,user_id,subject,category,status,last_message_at,created_at")
-      .order("last_message_at", { ascending: false });
-    if (error) return toast.error(error.message);
-    const list = (data ?? []) as Ticket[];
-    setTickets(list);
-    const ids = Array.from(new Set(list.map((t) => t.user_id)));
-    if (ids.length) {
-      const { data: profs } = await supabase
-        .from("profiles")
-        .select("id,display_name,email")
-        .in("id", ids);
-      const map: Record<string, { display_name: string | null; email: string | null }> = {};
-      (profs ?? []).forEach((p: any) => {
-        map[p.id] = { display_name: p.display_name, email: p.email };
-      });
-      setProfiles(map);
-    }
-  }
-
-  async function openTicket(t: Ticket) {
-    setSelected(t);
-    const { data, error } = await supabase
-      .from("ticket_messages")
+      .from("guest_inquiries")
       .select("*")
-      .eq("ticket_id", t.id)
-      .order("created_at", { ascending: true });
+      .order("created_at", { ascending: false });
     if (error) return toast.error(error.message);
-    setMessages((data ?? []) as Msg[]);
+    setItems((data ?? []) as Inquiry[]);
   }
 
-  async function reply() {
-    if (!selected || !uid || !draft.trim()) return;
+  function pick(i: Inquiry) {
+    setSelected(i);
+    setReply(i.admin_reply ?? "");
+  }
+
+  async function saveReply() {
+    if (!selected || !uid || !reply.trim()) return;
     const { error } = await supabase
-      .from("ticket_messages")
-      .insert({ ticket_id: selected.id, sender_id: uid, body: draft.trim(), is_staff: true });
-    if (error) return toast.error(error.message);
-    await supabase
-      .from("support_tickets")
-      .update({ last_message_at: new Date().toISOString(), status: "pending" })
+      .from("guest_inquiries")
+      .update({
+        admin_reply: reply.trim(),
+        replied_at: new Date().toISOString(),
+        replied_by: uid,
+        status: "resolved",
+      })
       .eq("id", selected.id);
-    setDraft("");
-    await openTicket(selected);
-    await loadTickets();
+    if (error) return toast.error(error.message);
+    toast.success("تم حفظ الرد");
+    await load();
+    setSelected({ ...selected, admin_reply: reply.trim(), status: "resolved" });
   }
 
-  async function setStatus(status: Ticket["status"]) {
+  async function setStatus(status: Inquiry["status"]) {
     if (!selected) return;
-    const { error } = await supabase.from("support_tickets").update({ status }).eq("id", selected.id);
+    const { error } = await supabase.from("guest_inquiries").update({ status }).eq("id", selected.id);
     if (error) return toast.error(error.message);
     setSelected({ ...selected, status });
-    await loadTickets();
+    await load();
   }
 
   return (
@@ -118,44 +93,40 @@ function AdminSupport() {
           <MessageCircle className="h-6 w-6 text-gold" /> رسائل العملاء
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          استفسارات العملاء الواردة عبر شات الاستفسارات — يمكنك الرد وتغيير حالة الرسالة.
+          استفسارات الزوار الواردة عبر شات الاستفسارات — يمكنك عرضها والرد عليها.
         </p>
 
         <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,340px)_1fr]">
           <div className="glass rounded-2xl p-4">
             <p className="mb-3 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-              الرسائل · {tickets.length}
+              الرسائل · {items.length}
             </p>
             {loading ? (
               <p className="py-6 text-center text-sm text-muted-foreground">جارٍ التحميل…</p>
-            ) : tickets.length === 0 ? (
+            ) : items.length === 0 ? (
               <p className="py-6 text-center text-sm text-muted-foreground">لا توجد رسائل بعد.</p>
             ) : (
               <ul className="space-y-1">
-                {tickets.map((t) => {
-                  const p = profiles[t.user_id];
-                  return (
-                    <li key={t.id}>
-                      <button
-                        onClick={() => openTicket(t)}
-                        className={`w-full rounded-md border px-3 py-2.5 text-start text-sm transition ${
-                          selected?.id === t.id
-                            ? "border-gold/40 bg-gold/[0.08]"
-                            : "border-white/10 bg-white/[0.02] hover:border-gold/30"
-                        }`}
-                      >
-                        <div className="flex items-center justify-between gap-2">
-                          <span className="truncate font-medium">{t.subject}</span>
-                          <StatusPill status={t.status} />
-                        </div>
-                        <p className="mt-1 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                          {p?.display_name ?? p?.email ?? t.user_id.slice(0, 8)} ·{" "}
-                          {new Date(t.last_message_at).toLocaleString()}
-                        </p>
-                      </button>
-                    </li>
-                  );
-                })}
+                {items.map((i) => (
+                  <li key={i.id}>
+                    <button
+                      onClick={() => pick(i)}
+                      className={`w-full rounded-md border px-3 py-2.5 text-start text-sm transition ${
+                        selected?.id === i.id
+                          ? "border-gold/40 bg-gold/[0.08]"
+                          : "border-white/10 bg-white/[0.02] hover:border-gold/30"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="truncate font-medium">{i.subject}</span>
+                        <StatusPill status={i.status} />
+                      </div>
+                      <p className="mt-1 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                        {i.name ?? i.email ?? i.phone ?? "زائر"} · {new Date(i.created_at).toLocaleString()}
+                      </p>
+                    </button>
+                  </li>
+                ))}
               </ul>
             )}
           </div>
@@ -163,15 +134,14 @@ function AdminSupport() {
           <div className="glass rounded-2xl p-4">
             {!selected ? (
               <div className="grid min-h-[280px] place-items-center text-center text-sm text-muted-foreground">
-                اختر رسالة من القائمة لعرضها والرد عليها.
+                اختر رسالة لعرضها والرد عليها.
               </div>
             ) : (
-              <div className="flex flex-col">
+              <div className="flex flex-col gap-4">
                 <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/5 pb-3">
                   <div>
                     <h2 className="font-display text-lg font-semibold">{selected.subject}</h2>
                     <p className="mt-1 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                      {profiles[selected.user_id]?.display_name ?? profiles[selected.user_id]?.email ?? selected.user_id} ·{" "}
                       {new Date(selected.created_at).toLocaleString()}
                     </p>
                   </div>
@@ -179,7 +149,7 @@ function AdminSupport() {
                     <StatusPill status={selected.status} />
                     <select
                       value={selected.status}
-                      onChange={(e) => setStatus(e.target.value as Ticket["status"])}
+                      onChange={(e) => setStatus(e.target.value as Inquiry["status"])}
                       className="rounded-md border border-white/10 bg-white/[0.02] px-2 py-1 text-xs"
                     >
                       <option value="open">مفتوحة</option>
@@ -189,36 +159,34 @@ function AdminSupport() {
                     </select>
                   </div>
                 </div>
-                <div className="mt-4 flex-1 space-y-3 overflow-y-auto pe-1">
-                  {messages.map((m) => (
-                    <div
-                      key={m.id}
-                      className={`max-w-[85%] rounded-md border px-3 py-2 text-sm ${
-                        m.is_staff
-                          ? "ms-auto border-gold/20 bg-gold/[0.08]"
-                          : "me-auto border-white/5 bg-white/[0.03]"
-                      }`}
-                    >
-                      <p className="whitespace-pre-wrap">{m.body}</p>
-                      <p className="mt-1 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                        {m.is_staff ? "الإدارة" : "العميل"} · {new Date(m.created_at).toLocaleString()}
-                      </p>
-                    </div>
-                  ))}
+
+                <div className="grid gap-2 text-sm sm:grid-cols-3">
+                  <InfoRow icon={User} label={selected.name ?? "—"} />
+                  <InfoRow icon={Mail} label={selected.email ?? "—"} href={selected.email ? `mailto:${selected.email}` : undefined} />
+                  <InfoRow icon={Phone} label={selected.phone ?? "—"} href={selected.phone ? `tel:${selected.phone}` : undefined} />
                 </div>
-                {selected.status !== "closed" && (
-                  <div className="mt-4 flex items-end gap-2 border-t border-white/5 pt-4">
-                    <Textarea
-                      value={draft}
-                      onChange={(e) => setDraft(e.target.value)}
-                      placeholder="اكتب رداً للعميل…"
-                      className="min-h-[70px] bg-white/[0.02]"
-                    />
-                    <Button size="sm" onClick={reply}>
-                      <Send className="h-4 w-4" />
+
+                <div className="rounded-md border border-white/5 bg-white/[0.03] p-3 text-sm">
+                  <p className="mb-1 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">رسالة العميل</p>
+                  <p className="whitespace-pre-wrap">{selected.body}</p>
+                </div>
+
+                <div className="border-t border-white/5 pt-3">
+                  <p className="mb-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                    رد الإدارة {selected.replied_at ? `· ${new Date(selected.replied_at).toLocaleString()}` : ""}
+                  </p>
+                  <Textarea
+                    value={reply}
+                    onChange={(e) => setReply(e.target.value)}
+                    placeholder="اكتب رداً للعميل…"
+                    className="min-h-[100px] bg-white/[0.02]"
+                  />
+                  <div className="mt-2 flex justify-end">
+                    <Button size="sm" onClick={saveReply}>
+                      <Send className="me-1.5 h-3.5 w-3.5" /> حفظ الرد
                     </Button>
                   </div>
-                )}
+                </div>
               </div>
             )}
           </div>
@@ -228,8 +196,18 @@ function AdminSupport() {
   );
 }
 
-function StatusPill({ status }: { status: Ticket["status"] }) {
-  const map: Record<Ticket["status"], { label: string; className: string }> = {
+function InfoRow({ icon: Icon, label, href }: { icon: any; label: string; href?: string }) {
+  const content = (
+    <div className="flex items-center gap-2 rounded-md border border-white/5 bg-white/[0.02] px-3 py-2">
+      <Icon className="h-3.5 w-3.5 text-gold" />
+      <span className="truncate">{label}</span>
+    </div>
+  );
+  return href ? <a href={href} className="hover:text-gold">{content}</a> : content;
+}
+
+function StatusPill({ status }: { status: Inquiry["status"] }) {
+  const map: Record<Inquiry["status"], { label: string; className: string }> = {
     open: { label: "مفتوحة", className: "border-emerald-500/30 bg-emerald-500/10 text-emerald-300" },
     pending: { label: "معلّقة", className: "border-amber-500/30 bg-amber-500/10 text-amber-300" },
     resolved: { label: "محلولة", className: "border-sky-500/30 bg-sky-500/10 text-sky-300" },
