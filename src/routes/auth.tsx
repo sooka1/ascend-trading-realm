@@ -92,9 +92,10 @@ function Auth() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: "/dashboard", replace: true });
+      if (data.session) goPostLogin(data.session.user.id);
     });
-  }, [navigate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (resendState.cooldown <= 0) return;
@@ -110,7 +111,7 @@ function Auth() {
       if (session && (event === "SIGNED_IN" || event === "USER_UPDATED" || event === "TOKEN_REFRESHED")) {
         clearCooldown();
         toast.success(t("auth.toast.email_confirmed"));
-        navigate({ to: "/dashboard", replace: true });
+        goPostLogin(session.user.id);
       }
     });
     // Fallback poll in case storage events don't fire (e.g. different browser).
@@ -120,14 +121,15 @@ function Auth() {
         clearInterval(interval);
         clearCooldown();
         toast.success(t("auth.toast.email_confirmed"));
-        navigate({ to: "/dashboard", replace: true });
+        goPostLogin(data.session.user.id);
       }
     }, 5000);
     return () => {
       sub.subscription.unsubscribe();
       clearInterval(interval);
     };
-  }, [pendingEmail, navigate, t]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pendingEmail, t]);
 
   const loginSchema = z.object({
     email: z.string().trim().min(1, t("auth.err.email.required")).email(t("auth.err.email.invalid")).max(255),
