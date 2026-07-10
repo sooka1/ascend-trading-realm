@@ -262,6 +262,11 @@ function InvestorPortal() {
       setEditSub(null);
       return;
     }
+    const delta = newAmount - oldAmount;
+    const deltaLabel = delta > 0 ? `زيادة بمقدار ${fmt(delta)}` : `تخفيض بمقدار ${fmt(Math.abs(delta))}`;
+    if (!window.confirm(`تأكيد تعديل مبلغ اشتراك ${pkg.name}؟\n${fmt(oldAmount)} → ${fmt(newAmount)} ${pkg.currency}\n(${deltaLabel})`)) {
+      return;
+    }
     setBusySub(`edit:${sub.id}`);
     try {
       const { error } = await supabase
@@ -271,7 +276,6 @@ function InvestorPortal() {
         .eq("user_id", uid)
         .in("status", ["active", "pending"]);
       if (error) return toast.error(error.message);
-      const delta = newAmount - oldAmount;
       await supabase.from("notifications").insert({
         user_id: uid,
         title: delta > 0 ? "تمت زيادة مبلغ الاشتراك" : "تم تخفيض مبلغ الاشتراك",
