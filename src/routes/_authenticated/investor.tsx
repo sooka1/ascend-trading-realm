@@ -66,6 +66,18 @@ const PLATFORM_WALLETS = {
   usdt_bep20: "0xHKxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 } as const;
 
+// Guardrail: the platform's Binance Pay ID must match the same numeric format
+// we enforce on user input. It is used ONLY as the deposit destination shown
+// to investors and referenced when creating a Binance Pay order — never as a
+// withdraw destination or a user-supplied value.
+const IS_BINANCE_PAY_ID_VALID = ADDRESS_RULES.binance_pay.regex.test(PLATFORM_WALLETS.binance_pay);
+function getPlatformBinancePayId(): string {
+  if (!IS_BINANCE_PAY_ID_VALID) {
+    throw new Error("Binance Pay ID الخاص بالمنصة غير صالح — يرجى مراجعة الإدارة");
+  }
+  return PLATFORM_WALLETS.binance_pay;
+}
+
 function InvestorPortal() {
   const router = useRouter();
   const [uid, setUid] = useState<string | null>(null);
