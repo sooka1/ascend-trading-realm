@@ -917,13 +917,19 @@ function InvestorPortal() {
               <Label className="text-xs">بحث باسم الباقة</Label>
               <Input value={payoutQuery} onChange={(e) => setPayoutQuery(e.target.value)} placeholder="اكتب اسم الباقة…" className="h-9" />
             </div>
-            {(payoutFrom || payoutTo || payoutQuery) && (
-              <div className="sm:col-span-4">
+            <div className="sm:col-span-4 flex flex-wrap gap-2">
+              {(payoutFrom || payoutTo || payoutQuery) && (
                 <Button size="sm" variant="outline" className="h-8 border-white/15" onClick={() => { setPayoutFrom(""); setPayoutTo(""); setPayoutQuery(""); }}>
                   إعادة ضبط الفلاتر
                 </Button>
-              </div>
-            )}
+              )}
+              <Button size="sm" variant="outline" className="h-8 border-white/15" onClick={() => exportPayouts("csv")}>
+                تصدير CSV
+              </Button>
+              <Button size="sm" variant="outline" className="h-8 border-white/15" onClick={() => exportPayouts("pdf")}>
+                تصدير PDF
+              </Button>
+            </div>
           </div>
           {(() => {
             const fromTs = payoutFrom ? new Date(payoutFrom + "T00:00:00").getTime() : -Infinity;
