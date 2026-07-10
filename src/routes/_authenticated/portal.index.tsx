@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { PortalShell, PortalCard, QuickAction } from "@/components/portal-shell";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowDownToLine, ArrowUpFromLine, Bell, Download, FileText, LineChart, MessageSquare, Package as PackageIcon, Receipt, Send, Wallet } from "lucide-react";
+import { ArrowDownToLine, ArrowUpFromLine, Bell, Download, FileText, LineChart, MessageSquare, Package as PackageIcon, PiggyBank, Receipt, Send, TrendingUp, Wallet } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/portal/")({
@@ -21,12 +21,20 @@ type Statement = { id: string; kind: string; period: string; title: string; file
 type Transaction = { id: string; occurred_at: string; symbol: string; side: string; quantity: number; price: number; pnl: number };
 type Notification = { id: string; title: string; body: string | null; read_at: string | null; created_at: string };
 type Message = { id: string; from_role: string; body: string; created_at: string };
+type Deposit = { amount: number; status: string };
+type Withdrawal = { amount: number; status: string };
+type Subscription = { amount: number; status: string };
+
+const fmt = (n: number) => new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 }).format(n);
 
 function PortalPage() {
   const [statements, setStatements] = useState<Statement[]>([]);
   const [txs, setTxs] = useState<Transaction[]>([]);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [deposits, setDeposits] = useState<Deposit[]>([]);
+  const [withdrawals, setWithdrawals] = useState<Withdrawal[]>([]);
+  const [subs, setSubs] = useState<Subscription[]>([]);
   const [draft, setDraft] = useState("");
   const [uid, setUid] = useState<string | null>(null);
 
@@ -35,16 +43,22 @@ function PortalPage() {
     const id = userRes.user?.id ?? null;
     setUid(id);
     if (!id) return;
-    const [{ data: st }, { data: tx }, { data: no }, { data: ms }] = await Promise.all([
+    const [{ data: st }, { data: tx }, { data: no }, { data: ms }, { data: dp }, { data: wd }, { data: sb }] = await Promise.all([
       supabase.from("statements").select("*").eq("user_id", id).order("created_at", { ascending: false }),
       supabase.from("transactions").select("*").eq("user_id", id).order("occurred_at", { ascending: false }).limit(50),
       supabase.from("notifications").select("*").eq("user_id", id).order("created_at", { ascending: false }).limit(20),
       supabase.from("messages").select("*").eq("user_id", id).order("created_at"),
+      supabase.from("deposits").select("amount,status").eq("user_id", id),
+      supabase.from("withdrawals").select("amount,status").eq("user_id", id),
+      supabase.from("subscriptions").select("amount,status").eq("user_id", id),
     ]);
     setStatements((st ?? []) as Statement[]);
     setTxs((tx ?? []) as Transaction[]);
     setNotifications((no ?? []) as Notification[]);
     setMessages((ms ?? []) as Message[]);
+    setDeposits((dp ?? []) as Deposit[]);
+    setWithdrawals((wd ?? []) as Withdrawal[]);
+    setSubs((sb ?? []) as Subscription[]);
   }
 
   useEffect(() => {
@@ -75,6 +89,29 @@ function PortalPage() {
         </>
       }
     >
+      {/* General balance overview — reflects every approved deposit, whether
+          it is currently sitting in the wallet or subscribed to a package. */}
+      {(() => {
+        const totalDeposited = deposits
+          .filter((d) => d.status === "approved")
+          .reduce((s, d) => s + Number(d.amount || 0), 0);
+        const totalWithdrawn = withdrawals
+          .filter((w) => w.status === "approved" || w.status === "completed")
+          .reduce((s, w) => s + Number(w.amount || 0), 0);
+        const invested = subs
+          .filter((s) => s.status === "active")
+          .reduce((s, x) => s + Number(x.amount || 0), 0);
+        const generalBalance = totalDeposited - totalWithdrawn;
+        const walletFree = Math.max(0, generalBalance - invested);
+        return (
+          <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <BalanceCard icon={PiggyBank} label="الرصيد العام" hint="إجمالي رصيدك بعد الإيداعات والسحوبات — يشمل المستثمر في الباقات" value={fmt(generalBalance)} accent />
+            <BalanceCard icon={TrendingUp} label="المستثمر في الباقات" hint="مجموع الاشتراكات النشطة" value={fmt(invested)} />
+            <BalanceCard icon={Wallet} label="المتاح في المحفظة" hint="القابل للاستثمار أو السحب الآن" value={fmt(walletFree)} />
+          </div>
+        );
+      })()}
+
       {/* Quick actions */}
       <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
         <QuickAction to="/portal/portfolio" icon={Wallet} label="عرض المحفظة" hint="Allocation" />
@@ -217,4 +254,31 @@ function PortalPage() {
 
 function cap(s: string) {
   return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+function BalanceCard({
+  icon: Icon,
+  label,
+  hint,
+  value,
+  accent,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  hint: string;
+  value: string;
+  accent?: boolean;
+}) {
+  return (
+    <div className={`rounded-xl border p-4 backdrop-blur-xl ${accent ? "border-gold/40 bg-gold/[0.06]" : "border-white/10 bg-card/50"}`}>
+      <div className="flex items-center gap-2">
+        <span className={`inline-flex h-8 w-8 items-center justify-center rounded-md border ${accent ? "border-gold/40 bg-gold/[0.1]" : "border-white/10 bg-white/[0.03]"}`}>
+          <Icon className={`h-4 w-4 ${accent ? "text-gold" : "text-gold/80"}`} />
+        </span>
+        <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-gold/80">{label}</p>
+      </div>
+      <p className="mt-3 font-display text-2xl font-semibold tabular-nums">{value} <span className="font-mono text-xs text-muted-foreground">USD</span></p>
+      <p className="mt-1 text-[11px] text-muted-foreground">{hint}</p>
+    </div>
+  );
 }
