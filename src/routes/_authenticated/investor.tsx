@@ -89,25 +89,29 @@ function InvestorPortal() {
   const [withdrawMethod, setWithdrawMethod] = useState<"binance_pay" | "usdt_trc20">("binance_pay");
   const [pkgAmounts, setPkgAmounts] = useState<Record<string, string>>({});
   const [confirmSub, setConfirmSub] = useState<{ pkg: Pkg; amount: number } | null>(null);
-  const [editSub, setEditSub] = useState<{ id: string; value: string } | null>(null);
+  const [editSub, setEditSub] = useState<{ id: string; value: string; reason: string } | null>(null);
+  type AmountChange = { id: string; subscription_id: string; amount_before: number; amount_after: number; amount_delta: number; currency: string; reason: string | null; created_at: string };
+  const [amountChanges, setAmountChanges] = useState<AmountChange[]>([]);
 
   async function load() {
     const { data: userRes } = await supabase.auth.getUser();
     const id = userRes.user?.id ?? null;
     setUid(id);
     if (!id) return setLoading(false);
-    const [{ data: pk }, { data: sb }, { data: dp }, { data: wd }, { data: al }] = await Promise.all([
+    const [{ data: pk }, { data: sb }, { data: dp }, { data: wd }, { data: al }, { data: sac }] = await Promise.all([
       supabase.from("packages").select("*").eq("active", true).order("sort_order"),
       supabase.from("subscriptions").select("*").eq("user_id", id).order("created_at", { ascending: false }),
       supabase.from("deposits").select("*").eq("user_id", id).order("created_at", { ascending: false }),
       supabase.from("withdrawals").select("*").eq("user_id", id).order("created_at", { ascending: false }),
       supabase.from("withdrawal_audit_log").select("*").eq("user_id", id).order("created_at", { ascending: false }),
+      supabase.from("subscription_amount_changes").select("*").eq("user_id", id).order("created_at", { ascending: false }),
     ]);
     setPackages((pk ?? []) as Pkg[]);
     setSubs((sb ?? []) as Sub[]);
     setDeps((dp ?? []) as Dep[]);
     setWds((wd ?? []) as Wd[]);
     setAudit((al ?? []) as AuditRow[]);
+    setAmountChanges((sac ?? []) as AmountChange[]);
     setLoading(false);
   }
 
@@ -276,6 +280,16 @@ function InvestorPortal() {
         .eq("user_id", uid)
         .in("status", ["active", "pending"]);
       if (error) return toast.error(error.message);
+      const reason = (editSub?.reason ?? "").trim().slice(0, 200) || null;
+      await supabase.from("subscription_amount_changes").insert({
+        subscription_id: sub.id,
+        user_id: uid,
+        amount_before: oldAmount,
+        amount_after: newAmount,
+        amount_delta: delta,
+        currency: pkg.currency,
+        reason,
+      });
       await supabase.from("notifications").insert({
         user_id: uid,
         title: delta > 0 ? "تمت زيادة مبلغ الاشتراك" : "تم تخفيض مبلغ الاشتراك",
@@ -589,7 +603,7 @@ function InvestorPortal() {
                                 max={maxAllowed}
                                 step="0.01"
                                 value={editSub!.value}
-                                onChange={(e) => setEditSub({ id: s.id, value: e.target.value })}
+                                onChange={(e) => setEditSub({ id: s.id, value: e.target.value, reason: editSub?.reason ?? "" })}
                                 className="h-9"
                               />
                               <Button
@@ -617,6 +631,14 @@ function InvestorPortal() {
                                   : `المبلغ يتجاوز الحد الأقصى ${fmt(maxAllowed)} ${s.currency}`}
                               </p>
                             )}
+                            <Label className="mt-2 text-[11px] text-muted-foreground">السبب (اختياري)</Label>
+                            <Input
+                              value={editSub!.reason}
+                              maxLength={200}
+                              placeholder="مثال: إضافة رأس مال إضافي / تخفيض للسحب"
+                              onChange={(e) => setEditSub({ id: s.id, value: editSub!.value, reason: e.target.value })}
+                              className="h-9"
+                            />
                           </div>
                         )}
                       </div>
@@ -627,7 +649,7 @@ function InvestorPortal() {
                             size="sm"
                             variant="outline"
                             disabled={!!busySub}
-                            onClick={() => setEditSub({ id: s.id, value: String(oldAmount) })}
+                            onClick={() => setEditSub({ id: s.id, value: String(oldAmount), reason: "" })}
                             className="h-9 border-white/15 text-sm"
                           >
                             تعديل المبلغ
@@ -794,6 +816,36 @@ function InvestorPortal() {
 
         <div className="mt-6">
           <WithdrawalAudit wds={wds} audit={audit} packages={packages} subs={subs} />
+        </div>
+
+        <div className="mt-6 glass rounded-3xl p-6">
+          <h3 className="font-display text-lg font-semibold">سجل تعديلات مبلغ الاشتراك</h3>
+          {amountChanges.length === 0 ? (
+            <p className="mt-3 text-sm text-muted-foreground">لا توجد تعديلات بعد.</p>
+          ) : (
+            <ul className="mt-4 divide-y divide-white/10 text-sm">
+              {amountChanges.map((c) => {
+                const sub = subs.find((s) => s.id === c.subscription_id);
+                const pkgName = packages.find((p) => p.id === sub?.package_id)?.name ?? c.subscription_id.slice(0, 8);
+                const positive = Number(c.amount_delta) > 0;
+                return (
+                  <li key={c.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
+                    <div className="min-w-0">
+                      <p className="font-semibold">{pkgName}</p>
+                      <p className="mt-0.5 font-mono text-xs text-muted-foreground">
+                        {fmt(Number(c.amount_before))} → {fmt(Number(c.amount_after))} {c.currency}
+                        <span className={`ms-2 ${positive ? "text-emerald-400" : "text-red-400"}`}>
+                          ({positive ? "+" : ""}{fmt(Number(c.amount_delta))})
+                        </span>
+                      </p>
+                      {c.reason && <p className="mt-0.5 text-xs text-muted-foreground">السبب: {c.reason}</p>}
+                    </div>
+                    <p className="text-xs text-muted-foreground">{new Date(c.created_at).toLocaleString()}</p>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
         </div>
       </section>
 

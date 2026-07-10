@@ -689,6 +689,50 @@ export type Database = {
         }
         Relationships: []
       }
+      subscription_amount_changes: {
+        Row: {
+          amount_after: number
+          amount_before: number
+          amount_delta: number
+          created_at: string
+          currency: string
+          id: string
+          reason: string | null
+          subscription_id: string
+          user_id: string
+        }
+        Insert: {
+          amount_after: number
+          amount_before: number
+          amount_delta: number
+          created_at?: string
+          currency?: string
+          id?: string
+          reason?: string | null
+          subscription_id: string
+          user_id: string
+        }
+        Update: {
+          amount_after?: number
+          amount_before?: number
+          amount_delta?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          reason?: string | null
+          subscription_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscription_amount_changes_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       subscriptions: {
         Row: {
           amount: number
