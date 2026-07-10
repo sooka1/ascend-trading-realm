@@ -9,6 +9,8 @@ export function BackButton({ className = "" }: { className?: string }) {
   const router = useRouter();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   if (pathname === "/") return null;
+  // Admin & portal shells render their own back button
+  if (pathname.startsWith("/admin") || pathname.startsWith("/portal")) return null;
   return (
     <div className={`mx-auto max-w-7xl px-4 pt-4 sm:px-6 lg:px-8 ${className}`}>
       <button
@@ -33,7 +35,7 @@ export function PageShell({ children, bare = false }: { children: ReactNode; bar
   return (
     <div className="flex min-h-screen flex-col">
       {!bare && <SiteHeader />}
-      {!bare && <BackButton />}
+      <BackButton />
       <main className="flex-1">{children}</main>
       {!bare && <SiteFooter />}
       {!bare && <SupportFab />}
