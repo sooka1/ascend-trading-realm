@@ -420,7 +420,7 @@ function InvestorPortal() {
               {loading ? "" : ""}
             </p>
           </div>
-          <div className="mt-4 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {packages.map((p) => {
               const eligible = available >= Number(p.min_amount);
               const min = Number(p.min_amount);
@@ -429,17 +429,17 @@ function InvestorPortal() {
               const validAmount =
                 raw !== "" && Number.isFinite(parsed) && parsed >= min && parsed <= available;
               return (
-                <div key={p.id} className="rounded-2xl border border-white/10 bg-white/[0.02] p-4">
+                <div key={p.id} className="rounded-2xl border border-white/15 bg-white/[0.05] p-6 shadow-lg shadow-black/20 transition hover:border-gold/40 hover:bg-white/[0.07]">
                   <div className="flex items-center justify-between">
-                    <h3 className="font-display text-base font-semibold">{p.name}</h3>
-                    <span className="rounded-full border border-gold/30 bg-gold/[0.08] px-2 py-0.5 font-mono text-[10px] text-gold">
-                      {returnRange(Number(p.min_amount))} <span className="text-[9px]">/ أسبوعي</span>
+                    <h3 className="font-display text-xl font-bold">{p.name}</h3>
+                    <span className="rounded-full border border-gold/40 bg-gold/[0.12] px-3 py-1 font-mono text-xs text-gold">
+                      {returnRange(Number(p.min_amount))} <span className="text-[10px]">/ أسبوعي</span>
                     </span>
                   </div>
-                  {p.description && <p className="mt-1 text-xs text-muted-foreground">{p.description}</p>}
-                  <div className="mt-3 grid grid-cols-2 gap-2 text-[11px] text-muted-foreground">
-                    <div>الحد الأدنى<div className="font-mono text-foreground">{fmt(Number(p.min_amount))} {p.currency}</div></div>
-                    <div>المخاطرة<div className="font-mono text-emerald-400">منخفضة</div></div>
+                  {p.description && <p className="mt-2 text-sm text-muted-foreground">{p.description}</p>}
+                  <div className="mt-4 grid grid-cols-2 gap-3 text-xs text-muted-foreground">
+                    <div>الحد الأدنى<div className="mt-0.5 font-mono text-base text-foreground">{fmt(Number(p.min_amount))} {p.currency}</div></div>
+                    <div>المخاطرة<div className="mt-0.5 font-mono text-base text-emerald-400">منخفضة</div></div>
                   </div>
                   {eligible && (
                     <div className="mt-3 grid gap-1">
@@ -485,7 +485,7 @@ function InvestorPortal() {
                     type="button"
                     disabled={!eligible || !validAmount || busySub === `new:${p.id}` || !!busySub}
                     onClick={() => subscribeToPackage(p, parsed)}
-                    className="mt-4 w-full bg-red-600 font-semibold text-white hover:bg-red-700 disabled:opacity-50"
+                    className="mt-5 h-11 w-full bg-red-600 text-base font-semibold text-white shadow-md shadow-red-900/30 hover:bg-red-700 disabled:opacity-50"
                   >
                     {busySub === `new:${p.id}` ? "جارٍ التنفيذ..." : eligible ? "اشترك بهذه الباقة" : "الرصيد غير كافٍ"}
                   </Button>
