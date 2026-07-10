@@ -9,11 +9,25 @@ export function GlobalBackButton() {
   if (pathname === "/") return null;
 
   const goBack = () => {
-    if (typeof window !== "undefined" && window.history.length > 1) {
+    // Smart back: if there's real in-app history, go back. Otherwise navigate
+    // to a sensible fallback — the parent path when nested, else the home page.
+    const hasInAppHistory =
+      typeof window !== "undefined" &&
+      window.history.length > 1 &&
+      (!document.referrer || new URL(document.referrer).origin === window.location.origin);
+
+    if (hasInAppHistory) {
       router.history.back();
-    } else {
-      void router.navigate({ to: "/" });
+      // If back() didn't change the location shortly, fall back.
+      const before = window.location.pathname;
+      window.setTimeout(() => {
+        if (window.location.pathname === before) {
+          void router.navigate({ to: fallbackPath(before) });
+        }
+      }, 120);
+      return;
     }
+    void router.navigate({ to: fallbackPath(pathname) });
   };
 
   return (
@@ -27,4 +41,10 @@ export function GlobalBackButton() {
       <span>رجوع</span>
     </button>
   );
+}
+
+function fallbackPath(current: string): string {
+  const trimmed = current.replace(/\/+$/, "");
+  const parent = trimmed.slice(0, trimmed.lastIndexOf("/"));
+  return parent && parent !== "" ? parent : "/";
 }
