@@ -16,6 +16,7 @@ import { Toaster } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { installTimezonePatch, loadUserTimezoneFromProfile, setUserTimezone, setUserLocale } from "@/lib/user-timezone";
 import { PublicPackagesAside } from "@/components/public-packages-aside";
+import { ImpersonationBanner } from "@/components/impersonation-banner";
 
 function NotFoundComponent() {
   return (
@@ -196,6 +197,7 @@ function RootComponent() {
         <Outlet />
         <PublicPackagesAside />
         <Toaster theme="dark" position="top-right" richColors />
+        <ImpersonationBanner />
       </I18nProvider>
     </QueryClientProvider>
   );
