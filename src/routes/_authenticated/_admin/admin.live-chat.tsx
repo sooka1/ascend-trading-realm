@@ -8,6 +8,7 @@ import { MessageCircle, Send } from "lucide-react";
 import { toast } from "sonner";
 import { ensureMyKeypair, encryptFor, decryptChatBody } from "@/lib/e2ee";
 import { EncryptedBody } from "@/components/encrypted-body";
+import { notifyIncomingMessage } from "@/lib/chat-notify";
 
 export const Route = createFileRoute("/_authenticated/_admin/admin/live-chat")({
   head: () => ({
@@ -48,6 +49,7 @@ function AdminLiveChat() {
   const [sending, setSending] = useState(false);
   const [mySk, setMySk] = useState<string | null>(null);
   const [myPk, setMyPk] = useState<string | null>(null);
+  const [unreadByTicket, setUnreadByTicket] = useState<Record<string, number>>({});
   const listRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -86,6 +88,7 @@ function AdminLiveChat() {
 
   async function openTicket(t: Ticket) {
     setSelected(t);
+    setUnreadByTicket((m) => ({ ...m, [t.id]: 0 }));
     const { data, error } = await supabase
       .from("ticket_messages")
       .select("*")
@@ -107,13 +110,26 @@ function AdminLiveChat() {
       .on(
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "ticket_messages" },
-        () => void loadTickets(),
+        (payload) => {
+          const m = payload.new as Msg;
+          void loadTickets();
+          // Alert on incoming client messages, not our own staff replies.
+          if (!m.is_staff && m.sender_id !== uid) {
+            notifyIncomingMessage("رسالة عميل جديدة", nameFor(m.sender_id));
+            if (selected?.id !== m.ticket_id) {
+              setUnreadByTicket((prev) => ({
+                ...prev,
+                [m.ticket_id]: (prev[m.ticket_id] ?? 0) + 1,
+              }));
+            }
+          }
+        },
       )
       .subscribe();
     return () => {
       supabase.removeChannel(ch);
     };
-  }, []);
+  }, [uid, selected?.id, profiles]);
 
   // Realtime: subscribe to messages of the selected ticket
   useEffect(() => {
@@ -200,8 +216,15 @@ function AdminLiveChat() {
                   >
                     <div className="flex items-center justify-between gap-2">
                       <span className="truncate font-medium">{nameFor(t.user_id)}</span>
-                      <span className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground">
-                        {new Date(t.last_message_at).toLocaleDateString()}
+                      <span className="flex items-center gap-1.5">
+                        {(unreadByTicket[t.id] ?? 0) > 0 && (
+                          <span className="rounded-full bg-gold px-1.5 py-0.5 font-mono text-[9px] font-bold text-black">
+                            {unreadByTicket[t.id]}
+                          </span>
+                        )}
+                        <span className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground">
+                          {new Date(t.last_message_at).toLocaleDateString()}
+                        </span>
                       </span>
                     </div>
                     <p className="mt-1 truncate font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
