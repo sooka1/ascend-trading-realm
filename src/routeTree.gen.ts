@@ -54,6 +54,7 @@ import { Route as AuthenticatedAppProfileRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAppPortfolioRouteImport } from './routes/_authenticated/app.portfolio'
 import { Route as AuthenticatedAppActivityRouteImport } from './routes/_authenticated/app.activity'
 import { Route as AuthenticatedAdminAdminIndexRouteImport } from './routes/_authenticated/_admin/admin.index'
+import { Route as ApiPublicWebhooksBinancePayRouteImport } from './routes/api/public/webhooks/binance-pay'
 import { Route as AuthenticatedAdminAdminUsersRouteImport } from './routes/_authenticated/_admin/admin.users'
 import { Route as AuthenticatedAdminAdminUserRolesRouteImport } from './routes/_authenticated/_admin/admin.user-roles'
 import { Route as AuthenticatedAdminAdminSupportRouteImport } from './routes/_authenticated/_admin/admin.support'
@@ -318,6 +319,12 @@ const AuthenticatedAdminAdminIndexRoute =
     path: '/admin/',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
+const ApiPublicWebhooksBinancePayRoute =
+  ApiPublicWebhooksBinancePayRouteImport.update({
+    id: '/api/public/webhooks/binance-pay',
+    path: '/api/public/webhooks/binance-pay',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedAdminAdminUsersRoute =
   AuthenticatedAdminAdminUsersRouteImport.update({
     id: '/admin/users',
@@ -509,6 +516,7 @@ export interface FileRoutesByFullPath {
   '/admin/support': typeof AuthenticatedAdminAdminSupportRoute
   '/admin/user-roles': typeof AuthenticatedAdminAdminUserRolesRoute
   '/admin/users': typeof AuthenticatedAdminAdminUsersRoute
+  '/api/public/webhooks/binance-pay': typeof ApiPublicWebhooksBinancePayRoute
   '/admin/': typeof AuthenticatedAdminAdminIndexRoute
 }
 export interface FileRoutesByTo {
@@ -575,6 +583,7 @@ export interface FileRoutesByTo {
   '/admin/support': typeof AuthenticatedAdminAdminSupportRoute
   '/admin/user-roles': typeof AuthenticatedAdminAdminUserRolesRoute
   '/admin/users': typeof AuthenticatedAdminAdminUsersRoute
+  '/api/public/webhooks/binance-pay': typeof ApiPublicWebhooksBinancePayRoute
   '/admin': typeof AuthenticatedAdminAdminIndexRoute
 }
 export interface FileRoutesById {
@@ -644,6 +653,7 @@ export interface FileRoutesById {
   '/_authenticated/_admin/admin/support': typeof AuthenticatedAdminAdminSupportRoute
   '/_authenticated/_admin/admin/user-roles': typeof AuthenticatedAdminAdminUserRolesRoute
   '/_authenticated/_admin/admin/users': typeof AuthenticatedAdminAdminUsersRoute
+  '/api/public/webhooks/binance-pay': typeof ApiPublicWebhooksBinancePayRoute
   '/_authenticated/_admin/admin/': typeof AuthenticatedAdminAdminIndexRoute
 }
 export interface FileRouteTypes {
@@ -712,6 +722,7 @@ export interface FileRouteTypes {
     | '/admin/support'
     | '/admin/user-roles'
     | '/admin/users'
+    | '/api/public/webhooks/binance-pay'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -778,6 +789,7 @@ export interface FileRouteTypes {
     | '/admin/support'
     | '/admin/user-roles'
     | '/admin/users'
+    | '/api/public/webhooks/binance-pay'
     | '/admin'
   id:
     | '__root__'
@@ -846,6 +858,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_admin/admin/support'
     | '/_authenticated/_admin/admin/user-roles'
     | '/_authenticated/_admin/admin/users'
+    | '/api/public/webhooks/binance-pay'
     | '/_authenticated/_admin/admin/'
   fileRoutesById: FileRoutesById
 }
@@ -868,6 +881,7 @@ export interface RootRouteChildren {
   RiskRoute: typeof RiskRoute
   SolutionsRoute: typeof SolutionsRoute
   TermsRoute: typeof TermsRoute
+  ApiPublicWebhooksBinancePayRoute: typeof ApiPublicWebhooksBinancePayRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1187,6 +1201,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminAdminIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/api/public/webhooks/binance-pay': {
+      id: '/api/public/webhooks/binance-pay'
+      path: '/api/public/webhooks/binance-pay'
+      fullPath: '/api/public/webhooks/binance-pay'
+      preLoaderRoute: typeof ApiPublicWebhooksBinancePayRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/_admin/admin/users': {
       id: '/_authenticated/_admin/admin/users'
       path: '/admin/users'
@@ -1499,6 +1520,7 @@ const rootRouteChildren: RootRouteChildren = {
   RiskRoute: RiskRoute,
   SolutionsRoute: SolutionsRoute,
   TermsRoute: TermsRoute,
+  ApiPublicWebhooksBinancePayRoute: ApiPublicWebhooksBinancePayRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
