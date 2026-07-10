@@ -21,12 +21,14 @@ import {
   Zap,
   MessageCircle,
   LogOut,
+  Menu,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMfaEnforcement } from "@/hooks/use-mfa-enforcement";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 type NavItem = {
   to: string;
@@ -90,6 +92,7 @@ export function AdminShell({
   useMfaEnforcement();
   const groups = Array.from(new Set(NAV.map((n) => n.group)));
   const queryClient = useQueryClient();
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   async function handleSignOut() {
     await queryClient.cancelQueries();
     queryClient.clear();
@@ -143,11 +146,63 @@ export function AdminShell({
       );
     }
     return (
-      <Link key={n.to} to={n.to} className={`${base} ${cls}`}>
+      <Link
+        key={n.to}
+        to={n.to}
+        onClick={() => mobile && setMobileNavOpen(false)}
+        className={`${base} ${cls}`}
+      >
         {inner}
       </Link>
     );
   };
+
+  const renderSidebarNav = (onNavigate?: () => void) => (
+    <nav className="space-y-5">
+      {groups.map((g) => (
+        <div key={g}>
+          <p className="mb-1.5 px-2 font-mono text-[9px] uppercase tracking-[0.2em] text-muted-foreground">
+            {GROUP_LABELS[g] ?? g}
+          </p>
+          <ul className="space-y-0.5">
+            {NAV.filter((n) => n.group === g).map((n) => {
+              const active = n.to === "/admin" ? pathname === "/admin" : pathname.startsWith(n.to);
+              const enabled = n.enabled !== false;
+              const cls = active
+                ? "bg-gold/[0.08] text-foreground"
+                : enabled
+                  ? "text-muted-foreground hover:bg-white/[0.03] hover:text-foreground"
+                  : "text-muted-foreground/40 cursor-not-allowed";
+              const content = (
+                <>
+                  <n.icon className={`h-4 w-4 shrink-0 ${active ? "text-gold" : "text-muted-foreground"}`} />
+                  <span className="truncate">{n.label}</span>
+                  {active && <span className="ms-auto h-1.5 w-1.5 rounded-full bg-gold" aria-hidden />}
+                </>
+              );
+              return (
+                <li key={n.to}>
+                  {enabled ? (
+                    <Link
+                      to={n.to}
+                      onClick={onNavigate}
+                      className={`group flex items-center gap-2.5 rounded-md px-2 py-2 text-sm transition ${cls}`}
+                    >
+                      {content}
+                    </Link>
+                  ) : (
+                    <span className={`flex items-center gap-2.5 rounded-md px-2 py-2 text-sm ${cls}`} aria-disabled="true">
+                      {content}
+                    </span>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      ))}
+    </nav>
+  );
 
   return (
     <PageShell bare>
@@ -158,49 +213,56 @@ export function AdminShell({
               <p className="mb-4 px-2 font-mono text-[10px] uppercase tracking-[0.22em] text-gold/80">
                 Super Admin
               </p>
-              <nav className="space-y-5">
-                {groups.map((g) => (
-                  <div key={g}>
-                    <p className="mb-1.5 px-2 font-mono text-[9px] uppercase tracking-[0.2em] text-muted-foreground">
-                      {GROUP_LABELS[g] ?? g}
-                    </p>
-                    <ul className="space-y-0.5">
-                      {NAV.filter((n) => n.group === g).map((n) => (
-                        <li key={n.to}>{renderItem(n)}</li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-              </nav>
+              {renderSidebarNav()}
             </div>
           </aside>
 
           <main className="min-w-0">
-            <div className="mb-4 flex gap-2 overflow-x-auto pb-2 lg:hidden">
-              {NAV.filter((n) => n.enabled !== false).map((n) => renderItem(n, true))}
-            </div>
-
-            <header className="mb-6 flex flex-wrap items-end justify-between gap-4 border-b border-white/5 pb-6">
-              <div>
-                <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-gold/80">
-                  {eyebrow}
-                </p>
-                <h1 className="mt-2 font-display text-3xl font-semibold md:text-4xl">
-                  {title}
-                </h1>
-                {subtitle && (
-                  <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{subtitle}</p>
-                )}
+            <header className="mb-6 border-b border-white/5 pb-6">
+              <div className="mb-4 flex items-center justify-between gap-2 lg:hidden">
+                <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
+                  <SheetTrigger className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-white/10 bg-white/[0.03] text-muted-foreground transition hover:border-gold/40 hover:text-gold">
+                    <Menu className="h-4 w-4" />
+                    <span className="sr-only">القائمة</span>
+                  </SheetTrigger>
+                  <SheetContent side="right" className="w-[85vw] max-w-sm overflow-y-auto border-white/10 bg-card/95 backdrop-blur-xl">
+                    <SheetHeader>
+                      <SheetTitle className="text-right font-mono text-[10px] uppercase tracking-[0.22em] text-gold/80">
+                        Super Admin
+                      </SheetTitle>
+                    </SheetHeader>
+                    <div className="mt-4">
+                      {renderSidebarNav(() => setMobileNavOpen(false))}
+                    </div>
+                  </SheetContent>
+                </Sheet>
+                <button
+                  type="button"
+                  onClick={handleSignOut}
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-white/10 bg-white/[0.03] text-muted-foreground transition hover:border-red-400/40 hover:text-red-200"
+                  aria-label="تسجيل الخروج"
+                >
+                  <LogOut className="h-4 w-4" />
+                </button>
               </div>
-              {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
-              <button
-                type="button"
-                onClick={handleSignOut}
-                className="inline-flex items-center gap-1.5 rounded-md border border-white/10 bg-white/[0.03] px-2.5 py-1 text-xs text-muted-foreground transition hover:border-red-400/40 hover:text-red-200"
-              >
-                <LogOut className="h-3.5 w-3.5" />
-                تسجيل الخروج
-              </button>
+              <div className="flex flex-wrap items-end justify-between gap-4">
+                <div className="min-w-0">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-gold/80">{eyebrow}</p>
+                  <h1 className="mt-2 font-display text-2xl font-semibold sm:text-3xl md:text-4xl">{title}</h1>
+                  {subtitle && (
+                    <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{subtitle}</p>
+                  )}
+                </div>
+                {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
+                <button
+                  type="button"
+                  onClick={handleSignOut}
+                  className="hidden items-center gap-1.5 rounded-md border border-white/10 bg-white/[0.03] px-2.5 py-1 text-xs text-muted-foreground transition hover:border-red-400/40 hover:text-red-200 lg:inline-flex"
+                >
+                  <LogOut className="h-3.5 w-3.5" />
+                  تسجيل الخروج
+                </button>
+              </div>
             </header>
 
             <div>{children}</div>
