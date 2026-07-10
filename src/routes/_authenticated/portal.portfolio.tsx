@@ -123,7 +123,7 @@ function PortfolioPage() {
                     <div className="text-end">
                       <p className="font-mono text-sm tabular-nums">{fmt(Number(s.amount))} {s.currency}</p>
                       {s.packages?.target_return_pct != null && (
-                        <p className="font-mono text-[10px] text-gold/80">target {fmt(Number(s.packages.target_return_pct))}%</p>
+                        <p className="font-mono text-[10px] text-gold/80">weekly {fmt(Number(s.packages.target_return_pct))}%</p>
                       )}
                     </div>
                   </div>

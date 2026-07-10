@@ -111,7 +111,7 @@ function AccountsPage() {
                       <Row icon={CircleDollarSign} label="المبلغ" value={`${fmt(Number(s.amount))} ${s.currency}`} />
                       <Row
                         icon={Target}
-                        label="العائد المستهدف"
+                        label="العائد الأسبوعي المستهدف"
                         value={s.packages?.target_return_pct != null ? `${fmt(Number(s.packages.target_return_pct))}%` : "—"}
                         accent
                       />
