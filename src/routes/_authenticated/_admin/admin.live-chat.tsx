@@ -310,6 +310,11 @@ function AdminLiveChat() {
                           <MessageStatus
                             mine={staff}
                             delivered={!!m.body}
+                            read={
+                              staff &&
+                              !!clientReadAt &&
+                              new Date(clientReadAt) >= new Date(m.created_at)
+                            }
                             counterpartyLabel="العميل"
                           />
                         </div>
