@@ -188,10 +188,11 @@ function Auth() {
     setLoading(true);
     try {
       if (mode === "login") {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { data: signIn, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         toast.success(t("auth.toast.signed_in"));
-        navigate({ to: "/dashboard", replace: true });
+        if (signIn.user) await goPostLogin(signIn.user.id);
+        else navigate({ to: "/dashboard", replace: true });
       } else {
         const { data, error } = await supabase.auth.signUp({
           email,
@@ -206,7 +207,7 @@ function Auth() {
         if (data.session) {
           clearCooldown();
           toast.success(t("auth.toast.created"));
-          navigate({ to: "/dashboard", replace: true });
+          await goPostLogin(data.session.user.id);
         } else {
           setPendingEmail(email);
           setResendState({ loading: false, cooldown: 30 });
@@ -270,8 +271,10 @@ function Auth() {
         return;
       }
       if (result.redirected) return; // browser navigates away
-      // Popup / web_message flow: session is set — go to dashboard
-      navigate({ to: "/dashboard", replace: true });
+      // Popup / web_message flow: session is set — route by role
+      const { data: u } = await supabase.auth.getUser();
+      if (u.user) await goPostLogin(u.user.id);
+      else navigate({ to: "/dashboard", replace: true });
     } finally {
       setLoading(false);
     }
