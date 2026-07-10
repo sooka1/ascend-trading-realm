@@ -256,6 +256,3 @@ function StatusPill({ status }: { status: string }) {
 function fmt(n: number) {
   return n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
-
-  return "bg-amber-500/10 text-amber-400";
-}
