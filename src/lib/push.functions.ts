@@ -48,3 +48,32 @@ export const deletePushSubscription = createServerFn({ method: "POST" })
       .eq("user_id", context.userId);
     return { ok: true };
   });
+
+// Sends a test push to the current user's own subscriptions only.
+export const sendTestPushToSelf = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data?: { title?: string; body?: string }) => data ?? {})
+  .handler(async ({ data, context }) => {
+    const { data: subs, error } = await context.supabase
+      .from("push_subscriptions")
+      .select("id, endpoint, p256dh, auth")
+      .eq("user_id", context.userId);
+    if (error) throw new Error(error.message);
+    if (!subs || subs.length === 0) {
+      return { sent: 0, failed: 0, subscriptions: 0 };
+    }
+    const { sendPushToRows } = await import("@/lib/push.server");
+    const res = await sendPushToRows(subs as any, {
+      title: data.title ?? "إشعار تجريبي",
+      body: data.body ?? "يعمل الإشعار على هذا الجهاز ✓",
+      url: "/portal/notifications",
+      tag: "test-push",
+    });
+    if (res.staleIds.length > 0) {
+      await context.supabase
+        .from("push_subscriptions")
+        .delete()
+        .in("id", res.staleIds);
+    }
+    return { sent: res.sent, failed: res.failed, subscriptions: subs.length };
+  });
