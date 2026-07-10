@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { PageShell } from "@/components/page-shell";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { MessageCircle, Send, Mail, Phone, User, Trash2, CheckCheck, Circle } from "lucide-react";
+import { MessageCircle, Send, Mail, Phone, User, Trash2, CheckCheck, Circle, CheckCheckIcon } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/_admin/admin/support")({
@@ -69,6 +69,16 @@ function AdminSupport() {
     if (selected?.id === i.id) setSelected({ ...i, is_read: value });
   }
 
+  async function markAllRead() {
+    const unreadIds = items.filter((i) => !i.is_read).map((i) => i.id);
+    if (unreadIds.length === 0) return;
+    const { error } = await supabase.from("guest_inquiries").update({ is_read: true }).in("id", unreadIds);
+    if (error) return toast.error(error.message);
+    toast.success(`تم تعليم ${unreadIds.length} رسالة كمقروءة`);
+    setItems((prev) => prev.map((x) => ({ ...x, is_read: true })));
+    if (selected) setSelected({ ...selected, is_read: true });
+  }
+
   async function remove(i: Inquiry) {
     if (!confirm("هل تريد حذف هذه الرسالة نهائياً؟")) return;
     const { error } = await supabase.from("guest_inquiries").delete().eq("id", i.id);
@@ -117,9 +127,19 @@ function AdminSupport() {
         {(() => {
           const unread = items.filter((i) => !i.is_read).length;
           return (
-            <p className="mt-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-              غير مقروءة: {unread} · الإجمالي: {items.length}
-            </p>
+            <div className="mt-2 flex flex-wrap items-center gap-3">
+              <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                غير مقروءة: {unread} · الإجمالي: {items.length}
+              </p>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={markAllRead}
+                disabled={unread === 0}
+              >
+                <CheckCheckIcon className="me-1.5 h-3.5 w-3.5" /> تعليم الكل كمقروءة
+              </Button>
+            </div>
           );
         })()}
 
