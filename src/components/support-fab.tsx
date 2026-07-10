@@ -12,6 +12,7 @@ import {
   getSuperAdminPublicKey,
 } from "@/lib/e2ee";
 import { EncryptedBody } from "@/components/encrypted-body";
+import { notifyIncomingMessage } from "@/lib/chat-notify";
 
 type ChatMsg = {
   id: string;
@@ -36,6 +37,7 @@ export function SupportFab() {
   const [mySk, setMySk] = useState<string | null>(null);
   const [myPk, setMyPk] = useState<string | null>(null);
   const [adminPk, setAdminPk] = useState<string | null>(null);
+  const [unread, setUnread] = useState(0);
   const listRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -118,13 +120,23 @@ export function SupportFab() {
         (payload) => {
           const m = payload.new as ChatMsg;
           setMessages((prev) => (prev.some((x) => x.id === m.id) ? prev : [...prev, m]));
+          // Notify only on incoming staff replies, not on our own echo.
+          if (m.is_staff && m.sender_id !== uid) {
+            notifyIncomingMessage("رسالة جديدة من دعم HK");
+            if (!open) setUnread((n) => n + 1);
+          }
         },
       )
       .subscribe();
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [ticketId]);
+  }, [ticketId, uid, open]);
+
+  // Reset the unseen badge whenever the panel opens.
+  useEffect(() => {
+    if (open) setUnread(0);
+  }, [open]);
 
   // Auto-scroll on new message.
   useEffect(() => {
@@ -199,10 +211,16 @@ export function SupportFab() {
         >
           <MessageCircle className="h-4 w-4" />
           <span className="hidden sm:inline">استفسارات</span>
-          <span className="absolute -top-1 -right-1 flex h-3 w-3">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-gold/70 opacity-70" />
-            <span className="relative inline-flex h-3 w-3 rounded-full bg-gold" />
-          </span>
+          {unread > 0 ? (
+            <span className="absolute -top-2 -right-2 min-w-[1.25rem] rounded-full bg-gold px-1.5 py-0.5 text-center font-mono text-[10px] font-bold text-black shadow">
+              {unread > 9 ? "9+" : unread}
+            </span>
+          ) : (
+            <span className="absolute -top-1 -right-1 flex h-3 w-3">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-gold/70 opacity-70" />
+              <span className="relative inline-flex h-3 w-3 rounded-full bg-gold" />
+            </span>
+          )}
         </button>
       )}
 
