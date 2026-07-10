@@ -105,13 +105,14 @@ function InvestorPortal() {
     const id = userRes.user?.id ?? null;
     setUid(id);
     if (!id) return setLoading(false);
-    const [{ data: pk }, { data: sb }, { data: dp }, { data: wd }, { data: al }, { data: sac }] = await Promise.all([
+    const [{ data: pk }, { data: sb }, { data: dp }, { data: wd }, { data: al }, { data: sac }, { data: pdist }] = await Promise.all([
       supabase.from("packages").select("*").eq("active", true).order("sort_order"),
       supabase.from("subscriptions").select("*").eq("user_id", id).order("created_at", { ascending: false }),
       supabase.from("deposits").select("*").eq("user_id", id).order("created_at", { ascending: false }),
       supabase.from("withdrawals").select("*").eq("user_id", id).order("created_at", { ascending: false }),
       supabase.from("withdrawal_audit_log").select("*").eq("user_id", id).order("created_at", { ascending: false }),
       supabase.from("subscription_amount_changes").select("*").eq("user_id", id).order("created_at", { ascending: false }),
+      supabase.from("profit_distributions").select("*").eq("user_id", id).order("created_at", { ascending: false }),
     ]);
     setPackages((pk ?? []) as Pkg[]);
     setSubs((sb ?? []) as Sub[]);
@@ -119,6 +120,7 @@ function InvestorPortal() {
     setWds((wd ?? []) as Wd[]);
     setAudit((al ?? []) as AuditRow[]);
     setAmountChanges((sac ?? []) as AmountChange[]);
+    setPayouts((pdist ?? []) as Payout[]);
     setLoading(false);
   }
 
