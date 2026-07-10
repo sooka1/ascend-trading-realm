@@ -410,18 +410,18 @@ function SolutionsPreview({ c }: { c: LandingContent }) {
               <h3 className="font-display text-2xl font-semibold">{tier.name}</h3>
               <p className="mt-2 text-sm text-muted-foreground">{p.target}</p>
               <p className="font-display text-5xl font-semibold text-gradient">{targets[i]}</p>
-              <dl className="mt-6 grid grid-cols-2 gap-3 text-sm">
+              <dl className="mt-6 grid grid-cols-2 gap-x-4 gap-y-5">
                 <div>
-                  <dt className="text-muted-foreground">{p.minimum}</dt>
-                  <dd className="font-medium">{mins[i]}</dd>
+                  <dt className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">{p.minimum}</dt>
+                  <dd className="mt-1 font-display text-2xl font-semibold tabular-nums text-foreground">{mins[i]}</dd>
                 </div>
                 <div>
-                  <dt className="text-muted-foreground">{p.risk}</dt>
-                  <dd className="font-medium">{tier.risk}</dd>
+                  <dt className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">{p.risk}</dt>
+                  <dd className="mt-1 font-display text-2xl font-semibold text-foreground">{tier.risk}</dd>
                 </div>
                 <div>
-                  <dt className="text-muted-foreground">{p.withdraw}</dt>
-                  <dd className="font-medium">$10</dd>
+                  <dt className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">{p.withdraw}</dt>
+                  <dd className="mt-1 font-display text-2xl font-semibold tabular-nums text-foreground">$10</dd>
                 </div>
               </dl>
               <ul className="mt-6 space-y-2 text-sm">
