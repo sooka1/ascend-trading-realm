@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { ArrowDownToLine, ArrowRight, ArrowUpFromLine, CheckCircle2, Clock, Package as PackageIcon, ShieldCheck, Wallet, XCircle } from "lucide-react";
 import { toast } from "sonner";
+import trc20QrAsset from "@/assets/trc20-qr.png.asset.json";
 
 export const Route = createFileRoute("/_authenticated/investor")({
   head: () => ({
@@ -432,6 +433,11 @@ function InvestorPortal() {
                   ) : (
                     <>
                       <div className="break-all font-mono text-[11px] text-foreground">{PLATFORM_WALLETS[depositMethod]}</div>
+                      {depositMethod === "usdt_trc20" && (
+                        <div className="mt-2 flex justify-center">
+                          <img src={trc20QrAsset.url} alt="TRC20 wallet QR code" width={140} height={140} className="rounded-md bg-white p-1" />
+                        </div>
+                      )}
                       <p className="mt-2 text-muted-foreground">أرسل المبلغ إلى العنوان أعلاه ثم ألصق hash المعاملة (TxID) في حقل المرجع. سيُضاف الرصيد بعد تأكيد الاستلام من الإدارة.</p>
                     </>
                   )}
