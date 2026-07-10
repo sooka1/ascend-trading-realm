@@ -65,6 +65,17 @@ export function SupportFab() {
     return () => sub.subscription.unsubscribe();
   }, []);
 
+  // Register the chat notification service worker once, and request permission
+  // the first time the user opens the chat panel so we can alert them even
+  // when the tab is not focused.
+  useEffect(() => {
+    void registerChatNotificationSW();
+  }, []);
+  useEffect(() => {
+    if (!open) return;
+    void ensureChatNotificationPermission();
+  }, [open]);
+
   // Generate/load the user's E2EE keypair once signed in, and fetch the admin's public key.
   useEffect(() => {
     if (!uid) return;
