@@ -523,6 +523,47 @@ export type Database = {
         }
         Relationships: []
       }
+      profit_distributions: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          id: string
+          period_end: string
+          period_start: string
+          subscription_id: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency?: string
+          id?: string
+          period_end: string
+          period_start: string
+          subscription_id: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          period_end?: string
+          period_start?: string
+          subscription_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profit_distributions_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       push_subscriptions: {
         Row: {
           auth: string
@@ -941,6 +982,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      distribute_weekly_profits: { Args: never; Returns: number }
       email_has_role: {
         Args: { _email: string; _role: Database["public"]["Enums"]["app_role"] }
         Returns: boolean
