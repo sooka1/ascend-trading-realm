@@ -188,6 +188,9 @@ function PortfoliosPage() {
 function ReviewsSection() {
   const { lang } = useI18n();
   const r = REVIEWS[lang];
+  const autoplay = React.useRef(
+    Autoplay({ delay: 4500, stopOnInteraction: false, stopOnMouseEnter: true }),
+  );
   return (
     <section className="border-t border-white/5 bg-white/[0.02] py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -196,9 +199,18 @@ function ReviewsSection() {
           <h2 className="mt-3 font-display text-3xl font-semibold md:text-4xl">{r.title}</h2>
           <p className="mt-3 text-muted-foreground">{r.subtitle}</p>
         </div>
-        <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-          {r.items.map((it) => (
-            <figure key={it.name} className="glass-strong flex h-full flex-col rounded-2xl p-6">
+        <Carousel
+          opts={{ align: "start", loop: true, direction: lang === "ar" ? "rtl" : "ltr" }}
+          plugins={[autoplay.current]}
+          className="mt-10"
+        >
+          <CarouselContent className="-ml-5">
+            {r.items.map((it) => (
+              <CarouselItem
+                key={it.name}
+                className="pl-5 md:basis-1/2 lg:basis-1/3"
+              >
+                <figure className="glass-strong flex h-full flex-col rounded-2xl p-6">
               <div className="flex items-center gap-3">
                 <img
                   src={`https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(it.name)}&backgroundType=gradientLinear&fontFamily=Georgia`}
@@ -235,9 +247,15 @@ function ReviewsSection() {
               <blockquote className="mt-4 flex-1 text-sm leading-relaxed text-muted-foreground">
                 "{it.quote}"
               </blockquote>
-            </figure>
-          ))}
-        </div>
+                </figure>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <div className="mt-6 flex items-center justify-end gap-2">
+            <CarouselPrevious className="static translate-y-0 border-white/15 bg-white/5 text-foreground hover:bg-white/10" />
+            <CarouselNext className="static translate-y-0 border-white/15 bg-white/5 text-foreground hover:bg-white/10" />
+          </div>
+        </Carousel>
       </div>
     </section>
   );
