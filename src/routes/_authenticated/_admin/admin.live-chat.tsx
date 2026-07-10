@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { ensureMyKeypair, encryptFor, decryptChatBody } from "@/lib/e2ee";
 import { EncryptedBody } from "@/components/encrypted-body";
 import { notifyIncomingMessage } from "@/lib/chat-notify";
+import { MessageStatus } from "@/components/message-status";
 
 export const Route = createFileRoute("/_authenticated/_admin/admin/live-chat")({
   head: () => ({
@@ -278,6 +279,11 @@ function AdminLiveChat() {
                               minute: "2-digit",
                             })}
                           </p>
+                          <MessageStatus
+                            mine={staff}
+                            delivered={!!m.body}
+                            counterpartyLabel="العميل"
+                          />
                         </div>
                       </div>
                     );
