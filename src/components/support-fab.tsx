@@ -143,11 +143,16 @@ export function SupportFab() {
       return;
     }
     setSending(true);
-    // Always encrypt a copy to self so the sender can read it back. Encrypt a
-    // second copy for the super admin when we know their public key; otherwise
-    // leave body_admin null and admin can decrypt once they publish a key.
+    // Refresh the super-admin's public key at send-time so a message
+    // never lands with body_admin=null just because the key hadn't
+    // been fetched yet on chat open.
+    let apk = adminPk;
+    if (!apk) {
+      apk = await getSuperAdminPublicKey();
+      if (apk) setAdminPk(apk);
+    }
     const bodyForMe = encryptFor(myPk, body);
-    const bodyForAdmin = adminPk ? encryptFor(adminPk, body) : null;
+    const bodyForAdmin = apk ? encryptFor(apk, body) : null;
     const { error } = await supabase
       .from("ticket_messages")
       .insert({ ticket_id: ticketId, sender_id: uid, body: bodyForMe, body_admin: bodyForAdmin, is_staff: false });
@@ -161,6 +166,28 @@ export function SupportFab() {
     if (error) return toast.error(error.message);
     setDraft("");
   }
+
+  // Back-fill body_admin on the user's own past messages once the admin
+  // public key is known. Without this, any message sent before the admin
+  // ever published a key stays unreadable to the super admin forever.
+  useEffect(() => {
+    if (!ticketId || !uid || !mySk || !adminPk) return;
+    const pending = messages.filter(
+      (m) => !m.is_staff && m.sender_id === uid && !m.body_admin && m.body,
+    );
+    if (pending.length === 0) return;
+    void (async () => {
+      for (const m of pending) {
+        const res = decryptChatBody(m.body, null, mySk);
+        if (res.status !== "ok") continue;
+        const cipher = encryptFor(adminPk, res.text);
+        await supabase
+          .from("ticket_messages")
+          .update({ body_admin: cipher })
+          .eq("id", m.id);
+      }
+    })();
+  }, [ticketId, uid, mySk, adminPk, messages]);
 
   return (
     <>
