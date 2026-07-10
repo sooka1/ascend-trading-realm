@@ -171,45 +171,6 @@ function InvestorPortal() {
           <StatCard icon={<ShieldCheck className="h-5 w-5" />} label="حالة الحساب" value={uid ? "موثّق" : "—"} sub="KYC" />
         </div>
 
-        <div className="mt-8 glass rounded-3xl p-6">
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2">
-              {unreadCount > 0 ? <BellDot className="h-5 w-5 text-gold" /> : <Bell className="h-5 w-5 text-gold" />}
-              <h2 className="font-display text-lg font-semibold">مركز الإشعارات</h2>
-              {unreadCount > 0 && (
-                <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] text-amber-300">{unreadCount} جديد</span>
-              )}
-            </div>
-            {unreadCount > 0 && (
-              <Button size="sm" variant="ghost" onClick={markAllRead} className="text-xs">تعليم الكل كمقروء</Button>
-            )}
-          </div>
-          {notifs.length === 0 ? (
-            <p className="mt-4 text-sm text-muted-foreground">لا توجد إشعارات بعد.</p>
-          ) : (
-            <ul className="mt-4 divide-y divide-white/5">
-              {notifs.slice(0, 10).map((n) => {
-                const unread = !n.read_at;
-                return (
-                  <li key={n.id} className={`flex items-start justify-between gap-3 py-3 ${unread ? "" : "opacity-70"}`}>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        {unread && <span className="h-2 w-2 rounded-full bg-gold" aria-hidden />}
-                        <p className="text-sm font-medium">{n.title}</p>
-                      </div>
-                      {n.body && <p className="mt-1 text-xs text-muted-foreground">{n.body}</p>}
-                      <p className="mt-1 text-[11px] text-muted-foreground">{new Date(n.created_at).toLocaleString()}</p>
-                    </div>
-                    {unread && (
-                      <Button size="sm" variant="ghost" onClick={() => markRead(n.id)} className="text-xs">تعليم كمقروء</Button>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </div>
-
         <div className="mt-8 grid gap-6 lg:grid-cols-2">
           <div className="glass rounded-3xl p-6">
             <div className="flex items-center gap-2">
