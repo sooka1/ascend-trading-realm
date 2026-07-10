@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { MessageCircle, Send } from "lucide-react";
 import { toast } from "sonner";
+import { ensureMyKeypair, encryptForBoth, tryDecrypt } from "@/lib/e2ee";
 
 export const Route = createFileRoute("/_authenticated/_admin/admin/live-chat")({
   head: () => ({
@@ -30,10 +31,11 @@ type Msg = {
   ticket_id: string;
   sender_id: string;
   body: string;
+  body_admin: string | null;
   is_staff: boolean;
   created_at: string;
 };
-type Profile = { id: string; display_name: string | null; email: string | null };
+type Profile = { id: string; display_name: string | null; email: string | null; public_key: string | null };
 
 function AdminLiveChat() {
   const [uid, setUid] = useState<string | null>(null);
@@ -43,12 +45,20 @@ function AdminLiveChat() {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
+  const [mySk, setMySk] = useState<string | null>(null);
+  const [myPk, setMyPk] = useState<string | null>(null);
   const listRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     void (async () => {
       const { data: u } = await supabase.auth.getUser();
-      setUid(u.user?.id ?? null);
+      const id = u.user?.id ?? null;
+      setUid(id);
+      if (id) {
+        const kp = await ensureMyKeypair(id);
+        setMySk(kp.secretKey);
+        setMyPk(kp.publicKey);
+      }
       await loadTickets();
     })();
   }, []);
@@ -65,7 +75,7 @@ function AdminLiveChat() {
     if (uids.length) {
       const { data: p } = await supabase
         .from("profiles")
-        .select("id,display_name,email")
+        .select("id,display_name,email,public_key")
         .in("id", uids);
       const map: Record<string, Profile> = {};
       (p ?? []).forEach((x) => (map[x.id] = x as Profile));
@@ -134,11 +144,15 @@ function AdminLiveChat() {
 
   async function reply() {
     if (!selected || !uid || !draft.trim() || sending) return;
+    if (!mySk || !myPk) return toast.error("جارٍ تجهيز التشفير");
+    const ownerPk = profiles[selected.user_id]?.public_key;
+    if (!ownerPk) return toast.error("العميل لم يفعّل التشفير بعد — لا يمكن الرد المشفّر");
     setSending(true);
     const body = draft.trim();
+    const payload = encryptForBoth(ownerPk, myPk, body);
     const { error } = await supabase
       .from("ticket_messages")
-      .insert({ ticket_id: selected.id, sender_id: uid, body, is_staff: true });
+      .insert({ ticket_id: selected.id, sender_id: uid, body: payload.body, body_admin: payload.body_admin, is_staff: true });
     if (!error) {
       await supabase
         .from("support_tickets")
