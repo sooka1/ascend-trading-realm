@@ -166,77 +166,77 @@ function Hero({ c }: { c: LandingContent }) {
         </div>
 
         <div className="relative">
-          {/* Ambient gold glow behind card */}
-          <div className="pointer-events-none absolute -inset-1 -z-10 rounded-sm bg-[radial-gradient(ellipse_at_top_left,rgba(201,168,76,0.20),transparent_60%)] blur-2xl" aria-hidden />
+          <div className="pointer-events-none absolute -inset-4 -z-10 rounded-2xl bg-[radial-gradient(ellipse_at_top,rgba(30,107,255,0.22),transparent_65%)] blur-3xl" aria-hidden />
 
-          {/* Editorial corner brackets */}
-          <span className="pointer-events-none absolute -top-3 -right-3 h-10 w-10 border-t border-r border-gold/50" aria-hidden />
-          <span className="pointer-events-none absolute -bottom-3 -left-3 h-10 w-10 border-b border-l border-gold/50" aria-hidden />
-
-          <div className="relative overflow-hidden rounded-sm border border-gold/20 bg-card/60 shadow-elegant backdrop-blur-2xl">
-            {/* Frosted saturation layer */}
-            <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.035),transparent_40%)]" aria-hidden />
-
-            {/* Terminal header */}
-            <div className="relative flex items-center justify-between border-b border-gold/15 bg-white/[0.02] px-5 py-3 backdrop-blur-xl">
-              <div className="flex items-center gap-2.5">
-                <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+          <div className="grid grid-cols-6 gap-3">
+            {/* Big performance tile */}
+            <div className="col-span-6 rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/20 via-primary/5 to-transparent p-6 shadow-elegant backdrop-blur-xl sm:col-span-4">
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-[10px] uppercase tracking-[0.28em] text-primary/90">{c.hero.cardTitle}</span>
+                <span className="flex items-center gap-1.5 rounded-full bg-primary/15 px-2.5 py-1 text-[10px] font-medium text-primary">
+                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary" /> LIVE
                 </span>
-                <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-foreground/80">HK · Model Portfolio</span>
               </div>
-              <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-gold/70">Live Terminal</span>
+              <div className="mt-6 flex items-baseline gap-3">
+                <span className="font-display text-6xl font-extrabold tracking-tight text-foreground tabular-nums">+18.4%</span>
+                <span className="font-mono text-sm font-semibold text-emerald-400">▲ 2.45%</span>
+              </div>
+              <p className="mt-1 text-xs text-muted-foreground">{c.hero.ytd}</p>
             </div>
 
-            {/* Headline stat */}
-            <div className="relative px-6 pt-6">
-              <p className="font-mono text-[10px] font-medium uppercase tracking-[0.28em] text-gold/85">{c.hero.cardTitle}</p>
-              <div className="mt-3 flex items-baseline gap-3">
-                <span className="font-display text-5xl font-normal tracking-tight text-foreground tabular-nums">+18.4%</span>
-                <span className="font-mono text-sm text-emerald-400">+2.45%</span>
-                <span className="ml-auto font-mono text-[10px] uppercase tracking-widest text-muted-foreground">{c.hero.ytd}</span>
+            {/* AUM tile */}
+            <div className="col-span-3 rounded-2xl border border-white/10 bg-card/60 p-5 backdrop-blur-xl sm:col-span-2">
+              <Wallet className="h-5 w-5 text-primary" />
+              <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.24em] text-muted-foreground">AUM</p>
+              <p className="mt-1 font-display text-2xl font-bold text-foreground tabular-nums">$1.2B+</p>
+            </div>
+
+            {/* Allocation bars tile */}
+            <div className="col-span-6 rounded-2xl border border-white/10 bg-card/60 p-5 backdrop-blur-xl sm:col-span-4">
+              <div className="flex items-center justify-between">
+                <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-muted-foreground">Allocation</p>
+                <BarChart3 className="h-4 w-4 text-primary/70" />
+              </div>
+              <div className="mt-4 space-y-2.5">
+                {[
+                  { k: "Equities", v: 42, c: "bg-primary" },
+                  { k: "Forex", v: 26, c: "bg-primary/70" },
+                  { k: "Gold", v: 18, c: "bg-primary/50" },
+                  { k: "Indices", v: 14, c: "bg-primary/30" },
+                ].map((r) => (
+                  <div key={r.k} className="flex items-center gap-3">
+                    <span className="w-16 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">{r.k}</span>
+                    <div className="relative h-1.5 flex-1 overflow-hidden rounded-full bg-white/5">
+                      <div className={`absolute inset-y-0 left-0 rounded-full ${r.c}`} style={{ width: `${r.v}%` }} />
+                    </div>
+                    <span className="w-10 text-right font-mono text-[11px] text-foreground tabular-nums">{r.v}%</span>
+                  </div>
+                ))}
               </div>
             </div>
 
-            {/* Chart */}
-            <div className="relative px-4 pb-2 pt-2">
-              <AnimatedChart />
+            {/* Sharpe tile */}
+            <div className="col-span-3 rounded-2xl border border-white/10 bg-card/60 p-5 backdrop-blur-xl sm:col-span-2">
+              <TrendingUp className="h-5 w-5 text-primary" />
+              <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.24em] text-muted-foreground">Sharpe</p>
+              <p className="mt-1 font-display text-2xl font-bold text-foreground tabular-nums">1.87</p>
             </div>
 
             {/* Timeframe rail */}
-            <div className="relative grid grid-cols-3 border-t border-gold/15 bg-white/[0.015]">
+            <div className="col-span-6 grid grid-cols-3 divide-x divide-white/10 rounded-2xl border border-white/10 bg-card/40 backdrop-blur-xl">
               {[
                 { k: "1M", v: "+2.1%" },
                 { k: "6M", v: "+9.7%" },
                 { k: "1Y", v: "+22.3%" },
-              ].map((r, i) => (
-                <div
-                  key={r.k}
-                  className={`px-4 py-3 ${i > 0 ? "border-l border-gold/15" : ""}`}
-                >
-                  <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-gold/70">{r.k}</p>
-                  <p className="mt-1 font-mono text-sm text-foreground tabular-nums">{r.v}</p>
+              ].map((r) => (
+                <div key={r.k} className="px-4 py-4 text-center">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-primary/80">{r.k}</p>
+                  <p className="mt-1.5 font-display text-lg font-bold text-foreground tabular-nums">{r.v}</p>
                 </div>
               ))}
             </div>
-
-            {/* Bid / Ask footer */}
-            <div className="relative grid grid-cols-2 border-t border-gold/15 bg-background/40 backdrop-blur-xl">
-              <div className="border-l border-gold/15 px-5 py-3">
-                <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-gold/70">Bid</p>
-                <p className="mt-0.5 font-mono text-sm text-foreground tabular-nums">1,284.10</p>
-              </div>
-              <div className="px-5 py-3">
-                <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-gold/70">Ask</p>
-                <p className="mt-0.5 font-mono text-sm text-foreground tabular-nums">1,284.50</p>
-              </div>
-            </div>
-
-            {/* Hairline gold accent */}
-            <div className="h-px w-full bg-gradient-to-l from-transparent via-gold/40 to-transparent" aria-hidden />
           </div>
-          <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground/80">{c.hero.disclaimer}</p>
+          <p className="mt-5 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground/70">{c.hero.disclaimer}</p>
         </div>
       </div>
     </section>
