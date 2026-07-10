@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { MessageCircle, Send } from "lucide-react";
 import { toast } from "sonner";
-import { ensureMyKeypair, encryptForBoth, decryptChatBody } from "@/lib/e2ee";
+import { ensureMyKeypair, encryptFor, decryptChatBody } from "@/lib/e2ee";
 import { EncryptedBody } from "@/components/encrypted-body";
 
 export const Route = createFileRoute("/_authenticated/_admin/admin/live-chat")({
@@ -146,14 +146,16 @@ function AdminLiveChat() {
   async function reply() {
     if (!selected || !uid || !draft.trim() || sending) return;
     if (!mySk || !myPk) return toast.error("جارٍ تجهيز التشفير");
-    const ownerPk = profiles[selected.user_id]?.public_key;
-    if (!ownerPk) return toast.error("العميل لم يفعّل التشفير بعد — لا يمكن الرد المشفّر");
     setSending(true);
     const body = draft.trim();
-    const payload = encryptForBoth(ownerPk, myPk, body);
+    const ownerPk = profiles[selected.user_id]?.public_key ?? null;
+    // Encrypt a copy to the client when we know their public key; always
+    // encrypt a copy to self so admin can read the reply back.
+    const bodyForOwner = ownerPk ? encryptFor(ownerPk, body) : null;
+    const bodyForAdmin = encryptFor(myPk, body);
     const { error } = await supabase
       .from("ticket_messages")
-      .insert({ ticket_id: selected.id, sender_id: uid, body: payload.body, body_admin: payload.body_admin, is_staff: true });
+      .insert({ ticket_id: selected.id, sender_id: uid, body: bodyForOwner, body_admin: bodyForAdmin, is_staff: true });
     if (!error) {
       await supabase
         .from("support_tickets")
