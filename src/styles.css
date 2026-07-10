@@ -73,13 +73,13 @@
 :root {
   /* HK Investment Management — Emerald Prestige institutional palette */
   --radius: 0.5rem;
-  --background: oklch(0.16 0.028 165);         /* deep emerald near-black */
+  --background: oklch(0.17 0.045 165);         /* deep emerald */
   --foreground: oklch(0.97 0.012 90);          /* warm cream */
-  --surface: oklch(0.22 0.035 165);            /* elevated emerald card */
-  --surface-2: oklch(0.28 0.045 165);          /* raised panel */
-  --card: oklch(0.22 0.035 165);
+  --surface: oklch(0.23 0.055 165);            /* elevated emerald card */
+  --surface-2: oklch(0.29 0.065 165);          /* raised panel */
+  --card: oklch(0.23 0.055 165);
   --card-foreground: oklch(0.97 0.012 90);
-  --popover: oklch(0.22 0.035 165);
+  --popover: oklch(0.23 0.055 165);
   --popover-foreground: oklch(0.97 0.012 90);
   --primary: oklch(0.76 0.13 85);              /* refined gold #c9a84c */
   --primary-foreground: oklch(0.18 0.028 165);
