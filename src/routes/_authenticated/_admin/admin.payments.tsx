@@ -11,8 +11,8 @@ import {
   fmtInt,
   fmtMoney,
 } from "@/components/admin-shell";
-import { listPaymentsAdmin, decidePaymentAdmin } from "@/lib/admin.functions";
-import { ArrowUpRight, ArrowDownRight, Wallet, AlertCircle, Check, X } from "lucide-react";
+import { listPaymentsAdmin, decidePaymentAdmin, getReceiptSignedUrlAdmin } from "@/lib/admin.functions";
+import { ArrowUpRight, ArrowDownRight, Wallet, AlertCircle, Check, X, Image as ImageIcon } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/_admin/admin/payments")({
   head: () => ({
@@ -27,9 +27,12 @@ export const Route = createFileRoute("/_authenticated/_admin/admin/payments")({
 function AdminPayments() {
   const fetchList = useServerFn(listPaymentsAdmin);
   const decide = useServerFn(decidePaymentAdmin);
+  const getReceipt = useServerFn(getReceiptSignedUrlAdmin);
   const qc = useQueryClient();
   const [busyId, setBusyId] = useState<string | null>(null);
   const [status, setStatus] = useState<"all" | "pending" | "approved" | "rejected">("all");
+  const [receiptUrl, setReceiptUrl] = useState<string | null>(null);
+  const [receiptLoading, setReceiptLoading] = useState(false);
   const { data, isLoading, error } = useQuery({
     queryKey: ["admin", "payments", status],
     queryFn: () => fetchList({ data: { status } }),
@@ -52,6 +55,18 @@ function AdminPayments() {
       toast.error((e as Error).message);
     } finally {
       setBusyId(null);
+    }
+  }
+
+  async function onViewReceipt(path: string) {
+    setReceiptLoading(true);
+    try {
+      const res = await getReceipt({ data: { path } });
+      setReceiptUrl(res.url);
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setReceiptLoading(false);
     }
   }
 
@@ -160,6 +175,16 @@ function AdminPayments() {
                     <td className="px-2 py-2.5 text-end">
                       {r.status === "pending" ? (
                         <div className="flex justify-end gap-1">
+                          {r.receipt_path ? (
+                            <button
+                              disabled={receiptLoading}
+                              onClick={() => onViewReceipt(r.receipt_path)}
+                              title="عرض صورة التحويل"
+                              className="rounded border border-gold/30 bg-gold/[0.08] p-1.5 text-gold hover:border-gold/60 disabled:opacity-50"
+                            >
+                              <ImageIcon className="h-3.5 w-3.5" />
+                            </button>
+                          ) : null}
                           <button
                             disabled={busyId === `${r.kind}-${r.id}`}
                             onClick={() => onDecide(r.kind, r.id, "approved")}
@@ -178,7 +203,18 @@ function AdminPayments() {
                           </button>
                         </div>
                       ) : (
-                        <span className="text-[10px] text-muted-foreground">—</span>
+                        r.receipt_path ? (
+                          <button
+                            disabled={receiptLoading}
+                            onClick={() => onViewReceipt(r.receipt_path)}
+                            title="عرض صورة التحويل"
+                            className="rounded border border-gold/30 bg-gold/[0.08] p-1.5 text-gold hover:border-gold/60 disabled:opacity-50"
+                          >
+                            <ImageIcon className="h-3.5 w-3.5" />
+                          </button>
+                        ) : (
+                          <span className="text-[10px] text-muted-foreground">—</span>
+                        )
                       )}
                     </td>
                   </tr>
@@ -188,6 +224,31 @@ function AdminPayments() {
           </table>
         </div>
       </AdminCard>
+
+      {receiptUrl ? (
+        <div
+          onClick={() => setReceiptUrl(null)}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
+        >
+          <div className="relative max-h-full max-w-3xl" onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={() => setReceiptUrl(null)}
+              className="absolute -top-10 end-0 rounded border border-white/20 bg-white/10 px-3 py-1 text-xs text-white hover:bg-white/20"
+            >
+              إغلاق ✕
+            </button>
+            <img src={receiptUrl} alt="صورة التحويل" className="max-h-[85vh] max-w-full rounded-lg border border-white/10" />
+            <a
+              href={receiptUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-3 block text-center font-mono text-[10px] uppercase tracking-wider text-gold hover:underline"
+            >
+              فتح في نافذة جديدة
+            </a>
+          </div>
+        </div>
+      ) : null}
     </AdminShell>
   );
 }
