@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { ArrowDownToLine, ArrowRight, ArrowUpFromLine, CheckCircle2, Clock, Package as PackageIcon, ShieldCheck, Wallet, XCircle } from "lucide-react";
+import { ArrowDownToLine, ArrowRight, ArrowUpFromLine, CheckCircle2, Clock, Copy, Package as PackageIcon, ShieldCheck, Wallet, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import trc20QrAsset from "@/assets/trc20-qr.png.asset.json";
 
@@ -432,7 +432,26 @@ function InvestorPortal() {
                     </div>
                   ) : (
                     <>
-                      <div className="break-all font-mono text-[11px] text-foreground">{PLATFORM_WALLETS[depositMethod]}</div>
+                      <div className="flex items-center gap-2">
+                        <div className="flex-1 break-all font-mono text-[11px] text-foreground">{PLATFORM_WALLETS[depositMethod]}</div>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          className="h-7 shrink-0 px-2"
+                          onClick={async () => {
+                            try {
+                              await navigator.clipboard.writeText(PLATFORM_WALLETS[depositMethod]);
+                              toast.success("تم نسخ العنوان");
+                            } catch {
+                              toast.error("تعذّر النسخ");
+                            }
+                          }}
+                        >
+                          <Copy className="h-3 w-3" />
+                          <span className="ms-1 text-[11px]">نسخ</span>
+                        </Button>
+                      </div>
                       {depositMethod === "usdt_trc20" && (
                         <div className="mt-2 flex justify-center">
                           <img src={trc20QrAsset.url} alt="TRC20 wallet QR code" width={140} height={140} className="rounded-md bg-white p-1" />
