@@ -24,6 +24,7 @@ const NAV = [
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const t = useT();
   const { user } = useAuth();
   const [isAdmin, setIsAdmin] = useState(false);
@@ -32,12 +33,41 @@ export function SiteHeader() {
     supabase.rpc("has_role", { _user_id: user.id, _role: "admin" }).then(({ data }) => setIsAdmin(Boolean(data)));
   }, [user]);
 
+  // Hide on scroll down, reveal on scroll up.
+  useEffect(() => {
+    let lastY = window.scrollY;
+    let raf = 0;
+    const onScroll = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        const y = window.scrollY;
+        const delta = y - lastY;
+        if (y < 80) setHidden(false);
+        else if (delta > 6) setHidden(true);
+        else if (delta < -6) setHidden(false);
+        lastY = y;
+      });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
+
   async function handleSignOut() {
     await supabase.auth.signOut();
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/5 bg-background/70 backdrop-blur-xl">
+    <header
+      className={cn(
+        "sticky top-0 z-50 border-b border-white/10 bg-[#5a0d10]/95 text-white backdrop-blur-xl",
+        "transition-transform duration-300 will-change-transform",
+        hidden ? "-translate-y-full" : "translate-y-0",
+      )}
+    >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 px-4 sm:px-6 lg:px-8">
         <Link to="/" className="shrink-0" aria-label="HK Global Trading home">
           <HKLogo />
