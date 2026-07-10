@@ -255,6 +255,11 @@ export const getExecutiveDashboard = createServerFn({ method: "GET" })
     ]);
 
     const sum = (rows: any[] | null) => (rows ?? []).reduce((a, r) => a + Number(r.amount || 0), 0);
+    // Only negative-valued withdrawals count toward the "إجمالي السحوبات" tile
+    const negativeWithdrawals = (withdrawalsAllApproved.data ?? []).filter(
+      (r: any) => Number(r.amount) < 0,
+    );
+    const negativeWithdrawalsTotal = sum(negativeWithdrawals);
     // Company capital = all approved deposits minus all approved withdrawals
     const aum = sum(depositsAllApproved.data) - sum(withdrawalsAllApproved.data);
 
@@ -274,6 +279,7 @@ export const getExecutiveDashboard = createServerFn({ method: "GET" })
         newCapital30d: sum(subscriptions30.data as any[]),
         withdrawalsApprovedTotal: sum(withdrawalsAllApproved.data),
         depositsApprovedTotal: sum(depositsAllApproved.data),
+        negativeWithdrawalsTotal,
       },
       series: {
         deposits: bucketByDay(deposits30.data ?? [], 30),
