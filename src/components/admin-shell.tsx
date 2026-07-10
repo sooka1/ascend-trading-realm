@@ -89,7 +89,6 @@ export function AdminShell({
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const router = useRouter();
   useMfaEnforcement();
-  const showBack = true;
   const groups = Array.from(new Set(NAV.map((n) => n.group)));
   const queryClient = useQueryClient();
   async function handleSignOut() {
