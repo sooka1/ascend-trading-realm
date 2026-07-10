@@ -92,26 +92,8 @@ function PortalPage() {
         </>
       }
     >
-      {/* KPI trio */}
-      <div className="grid gap-4 md:grid-cols-3">
-        {[
-          { k: "إجمالي المحفظة", v: balanceLoading ? "…" : `$${totalPortfolio.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, d: "Total Capital", tone: (totalPortfolio > 0 ? "up" : "muted") as "up" | "muted" },
-          { k: "الرصيد المتاح", v: balanceLoading ? "…" : `$${available.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, d: "READY", tone: "muted" as "up" | "muted" },
-          { k: "عوائد الاستثمار", v: `$${profitsTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, d: "Cumulative", tone: (profitsTotal > 0 ? "up" : "muted") as "up" | "muted" },
-        ].map((s) => (
-          <div key={s.k} className="relative overflow-hidden rounded-xl border border-white/10 bg-card/50 p-5 backdrop-blur-xl">
-            <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-gold/80">{s.k}</p>
-            <p className="mt-2 font-mono text-3xl font-medium tracking-tight tabular-nums">{s.v}</p>
-            <p className={`mt-1 font-mono text-[10px] tracking-wide ${s.tone === "up" ? "text-emerald-400" : "text-muted-foreground"}`}>
-              {s.tone === "up" ? "↑ " : ""}{s.d}
-            </p>
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent" aria-hidden />
-          </div>
-        ))}
-      </div>
-
       {/* Quick actions */}
-      <div className="mt-6 grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
         <QuickAction to="/portal/portfolio" icon={Wallet} label="عرض المحفظة" hint="Allocation" />
         <QuickAction to="/portal/transactions" icon={Receipt} label="سجل العمليات" hint="Ledger" />
         <QuickAction to="/portal/performance" icon={LineChart} label="تقارير الأداء" hint="Reports" />
