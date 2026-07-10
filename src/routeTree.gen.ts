@@ -27,6 +27,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as MarketsSymbolRouteImport } from './routes/markets.$symbol'
 import { Route as AuthenticatedSecurityRouteImport } from './routes/_authenticated/security'
 import { Route as AuthenticatedInvestorRouteImport } from './routes/_authenticated/investor'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
@@ -160,6 +161,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const MarketsSymbolRoute = MarketsSymbolRouteImport.update({
+  id: '/$symbol',
+  path: '/$symbol',
+  getParentRoute: () => MarketsRoute,
 } as any)
 const AuthenticatedSecurityRoute = AuthenticatedSecurityRouteImport.update({
   id: '/security',
@@ -428,7 +434,7 @@ export interface FileRoutesByFullPath {
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/legal': typeof LegalRoute
-  '/markets': typeof MarketsRoute
+  '/markets': typeof MarketsRouteWithChildren
   '/performance': typeof PerformanceRoute
   '/portfolios': typeof PortfoliosRoute
   '/privacy': typeof PrivacyRoute
@@ -440,6 +446,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/investor': typeof AuthenticatedInvestorRoute
   '/security': typeof AuthenticatedSecurityRoute
+  '/markets/$symbol': typeof MarketsSymbolRoute
   '/app/activity': typeof AuthenticatedAppActivityRoute
   '/app/portfolio': typeof AuthenticatedAppPortfolioRoute
   '/app/profile': typeof AuthenticatedAppProfileRoute
@@ -490,7 +497,7 @@ export interface FileRoutesByTo {
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/legal': typeof LegalRoute
-  '/markets': typeof MarketsRoute
+  '/markets': typeof MarketsRouteWithChildren
   '/performance': typeof PerformanceRoute
   '/portfolios': typeof PortfoliosRoute
   '/privacy': typeof PrivacyRoute
@@ -502,6 +509,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/investor': typeof AuthenticatedInvestorRoute
   '/security': typeof AuthenticatedSecurityRoute
+  '/markets/$symbol': typeof MarketsSymbolRoute
   '/app/activity': typeof AuthenticatedAppActivityRoute
   '/app/portfolio': typeof AuthenticatedAppPortfolioRoute
   '/app/profile': typeof AuthenticatedAppProfileRoute
@@ -554,7 +562,7 @@ export interface FileRoutesById {
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/legal': typeof LegalRoute
-  '/markets': typeof MarketsRoute
+  '/markets': typeof MarketsRouteWithChildren
   '/performance': typeof PerformanceRoute
   '/portfolios': typeof PortfoliosRoute
   '/privacy': typeof PrivacyRoute
@@ -567,6 +575,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/investor': typeof AuthenticatedInvestorRoute
   '/_authenticated/security': typeof AuthenticatedSecurityRoute
+  '/markets/$symbol': typeof MarketsSymbolRoute
   '/_authenticated/app/activity': typeof AuthenticatedAppActivityRoute
   '/_authenticated/app/portfolio': typeof AuthenticatedAppPortfolioRoute
   '/_authenticated/app/profile': typeof AuthenticatedAppProfileRoute
@@ -631,6 +640,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/investor'
     | '/security'
+    | '/markets/$symbol'
     | '/app/activity'
     | '/app/portfolio'
     | '/app/profile'
@@ -693,6 +703,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/investor'
     | '/security'
+    | '/markets/$symbol'
     | '/app/activity'
     | '/app/portfolio'
     | '/app/profile'
@@ -757,6 +768,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/investor'
     | '/_authenticated/security'
+    | '/markets/$symbol'
     | '/_authenticated/app/activity'
     | '/_authenticated/app/portfolio'
     | '/_authenticated/app/profile'
@@ -809,7 +821,7 @@ export interface RootRouteChildren {
   FaqRoute: typeof FaqRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   LegalRoute: typeof LegalRoute
-  MarketsRoute: typeof MarketsRoute
+  MarketsRoute: typeof MarketsRouteWithChildren
   PerformanceRoute: typeof PerformanceRoute
   PortfoliosRoute: typeof PortfoliosRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -946,6 +958,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/markets/$symbol': {
+      id: '/markets/$symbol'
+      path: '/$symbol'
+      fullPath: '/markets/$symbol'
+      preLoaderRoute: typeof MarketsSymbolRouteImport
+      parentRoute: typeof MarketsRoute
     }
     '/_authenticated/security': {
       id: '/_authenticated/security'
@@ -1384,6 +1403,17 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface MarketsRouteChildren {
+  MarketsSymbolRoute: typeof MarketsSymbolRoute
+}
+
+const MarketsRouteChildren: MarketsRouteChildren = {
+  MarketsSymbolRoute: MarketsSymbolRoute,
+}
+
+const MarketsRouteWithChildren =
+  MarketsRoute._addFileChildren(MarketsRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
@@ -1395,7 +1425,7 @@ const rootRouteChildren: RootRouteChildren = {
   FaqRoute: FaqRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   LegalRoute: LegalRoute,
-  MarketsRoute: MarketsRoute,
+  MarketsRoute: MarketsRouteWithChildren,
   PerformanceRoute: PerformanceRoute,
   PortfoliosRoute: PortfoliosRoute,
   PrivacyRoute: PrivacyRoute,

@@ -183,7 +183,7 @@ function AssetPage() {
           <div className="glass rounded-2xl p-6">
             <h2 className="font-display text-xl font-semibold">Why trade {a.name}?</h2>
             <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-              {a.why.map((w) => (
+              {a.why.map((w: string) => (
                 <li key={w} className="flex items-start gap-2">
                   <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-gold" />
                   {w}
@@ -194,7 +194,7 @@ function AssetPage() {
           <div className="glass rounded-2xl p-6">
             <h2 className="font-display text-xl font-semibold">Trading highlights</h2>
             <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-              {a.highlights.map((h) => (
+              {a.highlights.map((h: string) => (
                 <li key={h} className="flex items-start gap-2">
                   <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-gold" />
                   {h}
