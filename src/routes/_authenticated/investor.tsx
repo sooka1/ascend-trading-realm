@@ -241,6 +241,17 @@ function InvestorPortal() {
           <h1 className="mt-1 font-display text-3xl font-semibold md:text-4xl">حسابك الاستثماري</h1>
           <p className="mt-2 text-sm text-muted-foreground">الرصيد، الإيداعات، السحوبات، والباقات — كل شيء في مكان واحد.</p>
           </div>
+        </div>
+
+        <div className="mt-4 flex flex-wrap gap-2">
+          <a href="#deposit" className="inline-flex items-center gap-2 rounded-full bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700">
+            <ArrowDownToLine className="h-4 w-4" /> إيداع
+          </a>
+          <a href="#withdraw" className="inline-flex items-center gap-2 rounded-full border border-red-500/40 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-300 hover:bg-red-500/20">
+            <ArrowUpFromLine className="h-4 w-4" /> سحب
+          </a>
+        </div>
+        <div className="hidden">
           <Link
             to="/portal"
             className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-muted-foreground transition hover:border-gold/40 hover:text-foreground"
