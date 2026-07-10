@@ -92,6 +92,8 @@ function InvestorPortal() {
   const [editSub, setEditSub] = useState<{ id: string; value: string; reason: string } | null>(null);
   type AmountChange = { id: string; subscription_id: string; amount_before: number; amount_after: number; amount_delta: number; currency: string; reason: string | null; created_at: string };
   const [amountChanges, setAmountChanges] = useState<AmountChange[]>([]);
+  type Payout = { id: string; subscription_id: string; amount: number; currency: string; period_start: string; period_end: string; created_at: string };
+  const [payouts, setPayouts] = useState<Payout[]>([]);
   const [now, setNow] = useState<number>(() => Date.now());
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 60_000);
@@ -103,13 +105,14 @@ function InvestorPortal() {
     const id = userRes.user?.id ?? null;
     setUid(id);
     if (!id) return setLoading(false);
-    const [{ data: pk }, { data: sb }, { data: dp }, { data: wd }, { data: al }, { data: sac }] = await Promise.all([
+    const [{ data: pk }, { data: sb }, { data: dp }, { data: wd }, { data: al }, { data: sac }, { data: pdist }] = await Promise.all([
       supabase.from("packages").select("*").eq("active", true).order("sort_order"),
       supabase.from("subscriptions").select("*").eq("user_id", id).order("created_at", { ascending: false }),
       supabase.from("deposits").select("*").eq("user_id", id).order("created_at", { ascending: false }),
       supabase.from("withdrawals").select("*").eq("user_id", id).order("created_at", { ascending: false }),
       supabase.from("withdrawal_audit_log").select("*").eq("user_id", id).order("created_at", { ascending: false }),
       supabase.from("subscription_amount_changes").select("*").eq("user_id", id).order("created_at", { ascending: false }),
+      supabase.from("profit_distributions").select("*").eq("user_id", id).order("created_at", { ascending: false }),
     ]);
     setPackages((pk ?? []) as Pkg[]);
     setSubs((sb ?? []) as Sub[]);
@@ -117,6 +120,7 @@ function InvestorPortal() {
     setWds((wd ?? []) as Wd[]);
     setAudit((al ?? []) as AuditRow[]);
     setAmountChanges((sac ?? []) as AmountChange[]);
+    setPayouts((pdist ?? []) as Payout[]);
     setLoading(false);
   }
 
@@ -859,6 +863,35 @@ function InvestorPortal() {
                       {c.reason && <p className="mt-0.5 text-xs text-muted-foreground">السبب: {c.reason}</p>}
                     </div>
                     <p className="text-xs text-muted-foreground">{new Date(c.created_at).toLocaleString()}</p>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </div>
+
+        <div className="mt-6 glass rounded-3xl p-6">
+          <h3 className="font-display text-lg font-semibold">سجل التوزيعات اليومية</h3>
+          <p className="mt-1 text-xs text-muted-foreground">النسبة المُطلقة بعد مرور 24 ساعة من كل اشتراك مع وقت الإصدار.</p>
+          {payouts.length === 0 ? (
+            <p className="mt-3 text-sm text-muted-foreground">لا توجد توزيعات بعد.</p>
+          ) : (
+            <ul className="mt-4 divide-y divide-white/10 text-sm">
+              {payouts.map((p) => {
+                const sub = subs.find((s) => s.id === p.subscription_id);
+                const pkgName = packages.find((pk) => pk.id === sub?.package_id)?.name ?? p.subscription_id.slice(0, 8);
+                const base = Number(sub?.amount ?? 0);
+                const pct = base > 0 ? (Number(p.amount) / base) * 100 : 0;
+                return (
+                  <li key={p.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
+                    <div className="min-w-0">
+                      <p className="font-semibold">{pkgName}</p>
+                      <p className="mt-0.5 font-mono text-xs text-muted-foreground">
+                        +{fmt(Number(p.amount))} {p.currency}
+                        <span className="ms-2 text-emerald-400">({pct.toFixed(2)}%)</span>
+                      </p>
+                    </div>
+                    <p className="text-xs text-muted-foreground">{new Date(p.created_at).toLocaleString()}</p>
                   </li>
                 );
               })}
