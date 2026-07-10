@@ -236,7 +236,7 @@ function ReviewsSection() {
             dragThreshold: 8,
           }}
           plugins={[autoplay.current]}
-          className="mt-10"
+          className="mt-10 touch-pan-y"
         >
           <CarouselContent className="-ml-5">
             {r.items.map((it) => (
