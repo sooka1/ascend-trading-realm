@@ -202,6 +202,15 @@ function InvestorPortal() {
       toast.error("لا يمكن إلغاء اشتراك بهذه الحالة");
       return;
     }
+    // Enforce 24-hour lock after start
+    const startTs = sub.started_at ? new Date(sub.started_at).getTime() : new Date(sub.created_at).getTime();
+    const ageMs = Date.now() - startTs;
+    const DAY_MS = 24 * 60 * 60 * 1000;
+    if (Number.isFinite(startTs) && ageMs < DAY_MS) {
+      const hoursLeft = Math.ceil((DAY_MS - ageMs) / (60 * 60 * 1000));
+      toast.error(`لا يمكن إلغاء الاشتراك قبل مرور 24 ساعة — تبقّى ${hoursLeft} ساعة`);
+      return;
+    }
     // Investors can withdraw their capital at any time — no lockup enforcement.
     if (!window.confirm("تأكيد إلغاء الاشتراك وسحب رأس المال؟")) return;
     setBusySub(sub.id);
