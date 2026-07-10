@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { MessageCircle, Send, Paperclip, X } from "lucide-react";
 import { toast } from "sonner";
-import { ensureMyKeypair, encryptFor, decryptChatBody } from "@/lib/e2ee";
+import { ensureMyKeypair, encryptFor, decryptChatBody, verifyAdminDecryption } from "@/lib/e2ee";
 import { EncryptedBody } from "@/components/encrypted-body";
 import {
   notifyIncomingMessage,
@@ -94,6 +94,23 @@ function AdminLiveChat() {
         const kp = await ensureMyKeypair(id);
         setMySk(kp.secretKey);
         setMyPk(kp.publicKey);
+        // Self-test: confirm past messages decrypt on this browser.
+        const check = await verifyAdminDecryption(kp.secretKey || null);
+        if (check.status === "ok") {
+          toast.success("تم التحقق من فك تشفير كل الرسائل السابقة بنجاح", {
+            description: `تم فحص ${check.total} رسالة`,
+          });
+        } else if (check.status === "partial") {
+          toast.warning("بعض الرسائل السابقة لم يتم فك تشفيرها", {
+            description: `${check.ok} من ${check.total} — سجّل الدخول من المتصفح الأصلي لمزامنة المفتاح`,
+          });
+        } else if (check.status === "failed") {
+          toast.error("تعذّر فك تشفير الرسائل السابقة على هذا المتصفح", {
+            description: "سجّل الدخول مرة على جهازك الأصلي لمزامنة المفتاح",
+          });
+        } else if (check.status === "no-key") {
+          toast.message("بانتظار مزامنة مفتاح التشفير من جهازك الأصلي");
+        }
       }
       await loadTickets();
     })();

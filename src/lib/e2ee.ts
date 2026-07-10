@@ -215,7 +215,7 @@ export type DecryptCheck =
 export async function verifyDecryption(
   userId: string,
   secretKeyB64: string | null,
-  limit = 10,
+  limit = 200,
 ): Promise<DecryptCheck> {
   const { data: tickets } = await supabase
     .from("support_tickets")
@@ -227,6 +227,32 @@ export async function verifyDecryption(
     .from("ticket_messages")
     .select("body, body_admin")
     .in("ticket_id", ids)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  const rows = (msgs ?? []).filter((m) => m.body || m.body_admin);
+  if (rows.length === 0) return { status: "no-messages" };
+  if (!secretKeyB64) return { status: "no-key" };
+  let ok = 0;
+  for (const m of rows) {
+    const r = decryptChatBody(m.body, m.body_admin, secretKeyB64);
+    if (r.status === "ok") ok++;
+  }
+  if (ok === rows.length) return { status: "ok", total: rows.length };
+  if (ok === 0) return { status: "failed", total: rows.length };
+  return { status: "partial", ok, total: rows.length };
+}
+
+// Admin variant: verify decryption across ALL ticket messages visible to
+// the admin (RLS allows super_admin to read every ticket_messages row).
+// For each message we try body first, then body_admin — one of them must
+// open with the admin's secret key.
+export async function verifyAdminDecryption(
+  secretKeyB64: string | null,
+  limit = 200,
+): Promise<DecryptCheck> {
+  const { data: msgs } = await supabase
+    .from("ticket_messages")
+    .select("body, body_admin")
     .order("created_at", { ascending: false })
     .limit(limit);
   const rows = (msgs ?? []).filter((m) => m.body || m.body_admin);
