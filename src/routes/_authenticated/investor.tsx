@@ -436,8 +436,16 @@ function InvestorPortal() {
                   <div className="mb-1 font-semibold text-amber-300">
                     {depositMethod === "binance_pay" ? "Binance Pay ID للمنصة" : depositMethod === "usdt_trc20" ? "عنوان USDT-TRC20" : "عنوان USDT-BEP20"}
                   </div>
-                  <div className="break-all font-mono text-[11px] text-foreground">{PLATFORM_WALLETS[depositMethod]}</div>
-                  <p className="mt-2 text-muted-foreground">أرسل المبلغ إلى العنوان أعلاه ثم ألصق hash المعاملة (TxID) في حقل المرجع. سيُضاف الرصيد بعد تأكيد الاستلام من الإدارة.</p>
+                  {depositMethod === "binance_pay" && !IS_BINANCE_PAY_ID_VALID ? (
+                    <div className="rounded-md border border-red-500/40 bg-red-500/10 p-2 text-[11px] text-red-200">
+                      Binance Pay ID الخاص بالمنصة غير صالح حاليًا — يرجى استخدام طريقة إيداع أخرى أو التواصل مع الإدارة.
+                    </div>
+                  ) : (
+                    <>
+                      <div className="break-all font-mono text-[11px] text-foreground">{PLATFORM_WALLETS[depositMethod]}</div>
+                      <p className="mt-2 text-muted-foreground">أرسل المبلغ إلى العنوان أعلاه ثم ألصق hash المعاملة (TxID) في حقل المرجع. سيُضاف الرصيد بعد تأكيد الاستلام من الإدارة.</p>
+                    </>
+                  )}
                 </div>
               )}
               <Field label="مرجع التحويل / TxID"><Input name="reference" maxLength={120} placeholder={depositMethod === "bank_transfer" || depositMethod === "card" ? "" : "TxID / Hash المعاملة"} /></Field>
