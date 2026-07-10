@@ -34,9 +34,9 @@ export type LandingContent = {
     target: string;
     risk: string;
     min: string;
-    allocation: string;
+    withdraw: string;
     open: string;
-    tiers: { name: string; risk: string; allocation: string }[];
+    tiers: { name: string; risk: string }[];
   };
   perf: { aum: string; accounts: string; tenure: string; sat: string };
   riskf: {
