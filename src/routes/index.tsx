@@ -943,11 +943,14 @@ function Testimonials() {
             watchDrag: true,
             dragFree: false,
             dragThreshold: 8,
+            duration: 22,
+            skipSnaps: false,
+            containScroll: "trimSnaps",
           }}
           plugins={[autoplay.current]}
           className="mt-12 touch-pan-y"
         >
-          <CarouselContent className="-ml-4">
+          <CarouselContent className="-ml-4 transform-gpu will-change-transform [backface-visibility:hidden]">
             {t.items.map((it) => (
               <CarouselItem
                 key={it.seed}

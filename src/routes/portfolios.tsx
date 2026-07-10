@@ -234,11 +234,14 @@ function ReviewsSection() {
             watchDrag: true,
             dragFree: false,
             dragThreshold: 8,
+            duration: 22,
+            skipSnaps: false,
+            containScroll: "trimSnaps",
           }}
           plugins={[autoplay.current]}
           className="mt-10 touch-pan-y"
         >
-          <CarouselContent className="-ml-5">
+          <CarouselContent className="-ml-5 transform-gpu will-change-transform [backface-visibility:hidden]">
             {r.items.map((it) => (
               <CarouselItem
                 key={it.name}
