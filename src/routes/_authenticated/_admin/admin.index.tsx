@@ -142,9 +142,9 @@ function AdminIndex() {
         <KpiLink to="/admin/analytics">
           <AdminKpi
             icon={ArrowDownToLine}
-            label="إجمالي السحوبات (سالبة فقط)"
-            value={isLoading ? "—" : (t?.negativeWithdrawalsTotal ?? 0) < 0 ? fmtMoney(t?.negativeWithdrawalsTotal) : fmtMoney(0)}
-            hint="Negative-valued withdrawals only"
+            label="إجمالي السحوبات"
+            value={isLoading ? "—" : `- ${fmtMoney(t?.withdrawalsApprovedTotal)}`}
+            hint="مخصوم من رأس مال الإدارة"
             tone="critical"
           />
         </KpiLink>
