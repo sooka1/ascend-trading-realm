@@ -89,6 +89,7 @@ function InvestorPortal() {
   const [withdrawMethod, setWithdrawMethod] = useState<"binance_pay" | "usdt_trc20">("binance_pay");
   const [pkgAmounts, setPkgAmounts] = useState<Record<string, string>>({});
   const [confirmSub, setConfirmSub] = useState<{ pkg: Pkg; amount: number } | null>(null);
+  const [editSub, setEditSub] = useState<{ id: string; value: string } | null>(null);
 
   async function load() {
     const { data: userRes } = await supabase.auth.getUser();
@@ -227,6 +228,57 @@ function InvestorPortal() {
         body: `${fmt(Number(sub.amount))} ${sub.currency}`,
       });
       toast.success("تم إلغاء الاشتراك — يمكنك الاشتراك في باقة أخرى الآن");
+      await load();
+      void router.invalidate();
+    } finally {
+      setBusySub(null);
+    }
+  }
+
+  async function updateSubscriptionAmount(sub: Sub, newAmount: number) {
+    if (!uid) return;
+    if (busySub) return;
+    const pkg = packages.find((p) => p.id === sub.package_id);
+    if (!pkg) {
+      toast.error("تعذّر إيجاد بيانات الباقة");
+      return;
+    }
+    const min = Number(pkg.min_amount);
+    const oldAmount = Number(sub.amount);
+    if (!Number.isFinite(newAmount) || newAmount <= 0) {
+      toast.error("المبلغ غير صالح");
+      return;
+    }
+    if (newAmount < min) {
+      toast.error(`لا يمكن أن يقل مبلغ الاشتراك عن الحد الأدنى ${fmt(min)} ${pkg.currency}`);
+      return;
+    }
+    const maxAllowed = available + oldAmount;
+    if (newAmount > maxAllowed) {
+      toast.error(`المبلغ يتجاوز الرصيد المتاح — الحد الأقصى ${fmt(maxAllowed)} ${pkg.currency}`);
+      return;
+    }
+    if (newAmount === oldAmount) {
+      setEditSub(null);
+      return;
+    }
+    setBusySub(`edit:${sub.id}`);
+    try {
+      const { error } = await supabase
+        .from("subscriptions")
+        .update({ amount: newAmount })
+        .eq("id", sub.id)
+        .eq("user_id", uid)
+        .in("status", ["active", "pending"]);
+      if (error) return toast.error(error.message);
+      const delta = newAmount - oldAmount;
+      await supabase.from("notifications").insert({
+        user_id: uid,
+        title: delta > 0 ? "تمت زيادة مبلغ الاشتراك" : "تم تخفيض مبلغ الاشتراك",
+        body: `${pkg.name} — ${fmt(oldAmount)} → ${fmt(newAmount)} ${pkg.currency}`,
+      });
+      toast.success("تم تحديث مبلغ الاشتراك");
+      setEditSub(null);
       await load();
       void router.invalidate();
     } finally {
@@ -501,17 +553,82 @@ function InvestorPortal() {
               <ul className="mt-4 divide-y divide-white/10">
                 {activeSubs.map((s) => {
                   const meta = packages.find((p) => p.id === s.package_id);
+                  const min = meta ? Number(meta.min_amount) : 0;
+                  const oldAmount = Number(s.amount);
+                  const maxAllowed = available + oldAmount;
+                  const isEditing = editSub?.id === s.id;
+                  const parsedEdit = isEditing ? Number(editSub!.value) : NaN;
+                  const editValid =
+                    isEditing &&
+                    editSub!.value !== "" &&
+                    Number.isFinite(parsedEdit) &&
+                    parsedEdit >= min &&
+                    parsedEdit <= maxAllowed;
                   return (
                     <li key={s.id} className="flex flex-wrap items-center justify-between gap-4 py-5 text-base">
-                      <div>
+                      <div className="min-w-0 flex-1">
                         <p className="text-xl font-semibold">{meta?.name ?? s.package_id.slice(0, 8)}</p>
                         <p className="mt-1 text-sm text-muted-foreground">
-                          {fmt(Number(s.amount))} {s.currency}
+                          {fmt(oldAmount)} {s.currency}
                           {s.ends_at ? ` · حتى ${new Date(s.ends_at).toLocaleDateString()}` : ""}
                         </p>
+                        {isEditing && (
+                          <div className="mt-3 grid max-w-md gap-1">
+                            <Label className="text-[11px] text-muted-foreground">
+                              مبلغ جديد (الحد الأدنى {fmt(min)} {s.currency}، الحد الأقصى {fmt(maxAllowed)} {s.currency})
+                            </Label>
+                            <div className="flex items-center gap-2">
+                              <Input
+                                type="number"
+                                inputMode="decimal"
+                                min={min}
+                                max={maxAllowed}
+                                step="0.01"
+                                value={editSub!.value}
+                                onChange={(e) => setEditSub({ id: s.id, value: e.target.value })}
+                                className="h-9"
+                              />
+                              <Button
+                                size="sm"
+                                disabled={!editValid || busySub === `edit:${s.id}` || !!busySub}
+                                onClick={() => updateSubscriptionAmount(s, parsedEdit)}
+                                className="h-9 bg-red-600 text-white hover:bg-red-700"
+                              >
+                                {busySub === `edit:${s.id}` ? "..." : "حفظ"}
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => setEditSub(null)}
+                                disabled={busySub === `edit:${s.id}`}
+                                className="h-9 border-white/15"
+                              >
+                                إلغاء
+                              </Button>
+                            </div>
+                            {editSub!.value !== "" && !editValid && (
+                              <p className="text-[11px] text-red-400">
+                                {parsedEdit < min
+                                  ? `المبلغ أقل من الحد الأدنى ${fmt(min)} ${s.currency}`
+                                  : `المبلغ يتجاوز الحد الأقصى ${fmt(maxAllowed)} ${s.currency}`}
+                              </p>
+                            )}
+                          </div>
+                        )}
                       </div>
                       <div className="flex items-center gap-3">
                         <StatusPill status={s.status} />
+                        {!isEditing && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            disabled={!!busySub}
+                            onClick={() => setEditSub({ id: s.id, value: String(oldAmount) })}
+                            className="h-9 border-white/15 text-sm"
+                          >
+                            تعديل المبلغ
+                          </Button>
+                        )}
                         <Button
                           size="sm"
                           variant="outline"
