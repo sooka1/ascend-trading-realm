@@ -157,7 +157,7 @@ function Hero({ c }: { c: LandingContent }) {
               <div key={s.k} className="space-y-1">
                 <dt className="font-mono text-[10px] font-medium uppercase tracking-[0.24em] text-gold/85">{s.k}</dt>
                 <dd className="font-display text-3xl font-normal text-foreground tabular-nums">{s.v}</dd>
-                <p className={`font-mono text-[10px] tracking-wide ${s.tone === "up" ? "text-emerald-400" : "text-muted-foreground"}`}>
+                <p className={`font-mono text-[10px] tracking-wide ${s.tone === "up" ? "text-bull" : "text-muted-foreground"}`}>
                   {s.tone === "up" ? "↑ " : ""}{s.d}
                 </p>
               </div>
@@ -179,7 +179,7 @@ function Hero({ c }: { c: LandingContent }) {
               </div>
               <div className="mt-6 flex items-baseline gap-3">
                 <span className="font-display text-6xl font-extrabold tracking-tight text-foreground tabular-nums">+18.4%</span>
-                <span className="font-mono text-sm font-semibold text-emerald-400">▲ 2.45%</span>
+                <span className="font-mono text-sm font-semibold text-bull">▲ 2.45%</span>
               </div>
               <p className="mt-1 text-xs text-muted-foreground">{c.hero.ytd}</p>
             </div>
