@@ -215,3 +215,39 @@
   background-size: 200% 100%;
   animation: shimmer 2.5s linear infinite;
 }
+
+@keyframes nav-ripple {
+  0% { transform: scale(0.6); opacity: 0.55; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+
+@utility nav-item {
+  transition:
+    background-color 300ms ease,
+    color 300ms ease,
+    border-color 300ms ease,
+    box-shadow 300ms ease,
+    transform 300ms ease;
+  will-change: background-color, color, box-shadow;
+}
+
+@utility nav-item-active {
+  position: relative;
+  overflow: hidden;
+}
+@utility nav-item-active {
+  &::after {
+    content: "";
+    position: absolute;
+    inset-inline-start: 0;
+    top: 50%;
+    width: 6px;
+    height: 6px;
+    border-radius: 9999px;
+    background: var(--color-gold, oklch(0.82 0.14 82));
+    transform: translate(-50%, -50%) scale(0.6);
+    opacity: 0;
+    animation: nav-ripple 520ms ease-out;
+    pointer-events: none;
+  }
+}
