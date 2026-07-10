@@ -12,6 +12,7 @@ import {
   setUserBanned,
   sendPasswordReset,
   deleteUserAccount,
+  impersonateUser,
 } from "@/lib/admin.functions";
 import type { AppRole } from "@/lib/rbac.functions";
 import { toast } from "sonner";
@@ -25,7 +26,10 @@ import {
   Ban,
   CheckCircle2,
   Trash2,
+  LogIn,
 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "@tanstack/react-router";
 import {
   Dialog,
   DialogContent,
@@ -64,6 +68,8 @@ function AdminUsers() {
   const banFn = useServerFn(setUserBanned);
   const resetFn = useServerFn(sendPasswordReset);
   const delFn = useServerFn(deleteUserAccount);
+  const imperFn = useServerFn(impersonateUser);
+  const navigate = useNavigate();
   const qc = useQueryClient();
   const [search, setSearch] = useState("");
   const [query, setQuery] = useState("");
@@ -114,6 +120,28 @@ function AdminUsers() {
       await delFn({ data: { userId } });
       toast.success("تم حذف المستخدم");
       invalidate();
+    } catch (e) {
+      toast.error((e as Error).message);
+    }
+  }
+
+  async function handleImpersonate(userId: string, userLabel: string) {
+    if (!confirm(`الدخول كـ ${userLabel}؟ ستتمكن من العودة لحسابك من الشريط العلوي.`)) return;
+    try {
+      const { data: sess } = await supabase.auth.getSession();
+      if (!sess.session) throw new Error("لا توجد جلسة نشطة");
+      const adminSnapshot = {
+        access_token: sess.session.access_token,
+        refresh_token: sess.session.refresh_token,
+        email: sess.session.user.email ?? "admin",
+      };
+      const { email, token_hash } = await imperFn({ data: { userId } });
+      const { error } = await supabase.auth.verifyOtp({ token_hash, type: "magiclink" });
+      if (error) throw error;
+      localStorage.setItem("hk_impersonation_original", JSON.stringify(adminSnapshot));
+      toast.success(`دخلت كـ ${email}`);
+      qc.clear();
+      await navigate({ to: "/portal" });
     } catch (e) {
       toast.error((e as Error).message);
     }
@@ -340,6 +368,16 @@ function AdminUsers() {
                                 title="حذف"
                               >
                                 <Trash2 className="h-3.5 w-3.5 text-red-400" />
+                              </Button>
+                            ) : null}
+                            {data?.isSuper && u.id !== data?.currentUserId ? (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleImpersonate(u.id, u.email ?? u.display_name ?? u.id.slice(0, 8))}
+                                title="الدخول كهذا المستخدم"
+                              >
+                                <LogIn className="h-3.5 w-3.5 text-sky-400" />
                               </Button>
                             ) : null}
                           </div>
