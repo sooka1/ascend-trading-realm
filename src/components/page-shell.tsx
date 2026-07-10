@@ -33,7 +33,7 @@ export function PageShell({ children, bare = false }: { children: ReactNode; bar
   return (
     <div className="flex min-h-screen flex-col">
       {!bare && <SiteHeader />}
-      {!bare && <BackButton />}
+      <BackButton />
       <main className="flex-1">{children}</main>
       {!bare && <SiteFooter />}
       {!bare && <SupportFab />}
