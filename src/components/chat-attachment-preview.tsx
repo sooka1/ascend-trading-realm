@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { X, FileText, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import {
   isImageMime,
@@ -35,6 +35,35 @@ export function ChatAttachmentPreview({
   const mime = file.type;
   const pct = Math.max(0, Math.min(100, Math.round(progress * 100)));
 
+  // Track upload speed (bytes/sec) by sampling progress deltas over time.
+  const sampleRef = useRef<{ t: number; loaded: number } | null>(null);
+  const [speed, setSpeed] = useState<number>(0);
+  useEffect(() => {
+    if (status !== "uploading") {
+      sampleRef.current = null;
+      setSpeed(0);
+      return;
+    }
+    const loaded = progress * file.size;
+    const now = performance.now();
+    const prev = sampleRef.current;
+    if (prev && now - prev.t > 150) {
+      const dt = (now - prev.t) / 1000;
+      const db = Math.max(0, loaded - prev.loaded);
+      const inst = db / dt;
+      // Smooth with EMA to avoid jitter.
+      setSpeed((s) => (s === 0 ? inst : s * 0.6 + inst * 0.4));
+      sampleRef.current = { t: now, loaded };
+    } else if (!prev) {
+      sampleRef.current = { t: now, loaded };
+    }
+  }, [progress, status, file.size]);
+
+  const remaining =
+    status === "uploading" && speed > 0
+      ? Math.max(0, Math.round(((1 - progress) * file.size) / speed))
+      : 0;
+
   return (
     <div className="mb-1 flex items-start gap-2 rounded-md border border-white/10 bg-white/[0.04] p-2 text-[11px]">
       <div className="flex-1 min-w-0">
@@ -68,7 +97,16 @@ export function ChatAttachmentPreview({
               {status === "uploading" && (
                 <>
                   <Loader2 className="h-3 w-3 animate-spin text-gold" />
-                  <span>جارٍ الرفع… {pct}%</span>
+                  <span>
+                    جارٍ الرفع… {pct}%
+                    {speed > 0 && (
+                      <span className="opacity-70">
+                        {" "}
+                        · {formatBytes(speed)}/ث
+                        {remaining > 0 ? ` · ${remaining}ث متبقية` : ""}
+                      </span>
+                    )}
+                  </span>
                 </>
               )}
               {status === "done" && (
