@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { PortalShell, PortalCard } from "@/components/portal-shell";
-import { ArrowDownToLine, ArrowUpFromLine, FileEdit, History } from "lucide-react";
+import { ArrowDownToLine, ArrowUpFromLine, FileEdit, History, TrendingUp } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/portal/activity")({
   head: () => ({
@@ -28,12 +28,14 @@ const KIND_ICON: Record<string, typeof History> = {
   deposit: ArrowDownToLine,
   withdrawal: ArrowUpFromLine,
   investment_request: FileEdit,
+  profit: TrendingUp,
 };
 
 const KIND_LABEL: Record<string, string> = {
   deposit: "إيداع",
   withdrawal: "سحب",
   investment_request: "طلب استثمار",
+  profit: "عائد يومي",
 };
 
 function ActivityPage() {
@@ -43,13 +45,33 @@ function ActivityPage() {
     void (async () => {
       const { data: u } = await supabase.auth.getUser();
       if (!u.user) return;
-      const { data } = await supabase
-        .from("finance_audit_log")
-        .select("id,request_kind,action,from_status,to_status,reason,created_at")
-        .eq("target_user_id", u.user.id)
-        .order("created_at", { ascending: false })
-        .limit(200);
-      setRows((data ?? []) as Event[]);
+      const [{ data: audit }, { data: profits }] = await Promise.all([
+        supabase
+          .from("finance_audit_log")
+          .select("id,request_kind,action,from_status,to_status,reason,created_at")
+          .eq("target_user_id", u.user.id)
+          .order("created_at", { ascending: false })
+          .limit(200),
+        supabase
+          .from("profit_distributions")
+          .select("id,amount,currency,period_start,created_at")
+          .eq("user_id", u.user.id)
+          .order("created_at", { ascending: false })
+          .limit(200),
+      ]);
+      const profitRows: Event[] = ((profits ?? []) as { id: string; amount: number | string; currency: string; created_at: string }[]).map((p) => ({
+        id: `pd-${p.id}`,
+        request_kind: "profit",
+        action: "credit",
+        from_status: null,
+        to_status: null,
+        reason: `+$${Number(p.amount).toFixed(2)} ${p.currency}`,
+        created_at: p.created_at,
+      }));
+      const merged = [...((audit ?? []) as Event[]), ...profitRows].sort(
+        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+      );
+      setRows(merged);
     })();
   }, []);
 
