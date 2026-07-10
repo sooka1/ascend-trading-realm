@@ -23,7 +23,7 @@ import {
   Menu,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { useState, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { useMfaEnforcement } from "@/hooks/use-mfa-enforcement";
@@ -70,7 +70,15 @@ export function PortalShell({
   actions?: ReactNode;
   children: ReactNode;
 }) {
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const routerPathname = useRouterState({ select: (s) => s.location.pathname });
+  // On first paint (before router hydration), fall back to window.location so
+  // the active section shows the correct page immediately after a hard refresh.
+  const pathname =
+    routerPathname && routerPathname !== "/"
+      ? routerPathname
+      : typeof window !== "undefined"
+        ? window.location.pathname
+        : routerPathname;
   const router = useRouter();
   useMfaEnforcement();
   const queryClient = useQueryClient();
@@ -97,12 +105,18 @@ export function PortalShell({
     router.navigate({ to: "/auth", replace: true });
   }
 
-  const groups = Array.from(new Set(NAV.map((n) => n.group ?? "misc")));
+  const groups = useMemo(
+    () => Array.from(new Set(NAV.map((n) => n.group ?? "misc"))),
+    [],
+  );
 
-  const activeNav =
-    [...NAV]
-      .sort((a, b) => b.to.length - a.to.length)
-      .find((n) => (n.to === "/portal" ? pathname === "/portal" : pathname.startsWith(n.to))) ?? NAV[0];
+  const activeNav = useMemo(
+    () =>
+      [...NAV]
+        .sort((a, b) => b.to.length - a.to.length)
+        .find((n) => (n.to === "/portal" ? pathname === "/portal" : pathname.startsWith(n.to))) ?? NAV[0],
+    [pathname],
+  );
   const ActiveIcon = activeNav.icon;
 
   const NavList = ({ onNavigate }: { onNavigate?: () => void }) => (

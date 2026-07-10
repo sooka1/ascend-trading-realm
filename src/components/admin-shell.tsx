@@ -24,7 +24,7 @@ import {
   Menu,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { useState, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMfaEnforcement } from "@/hooks/use-mfa-enforcement";
@@ -87,16 +87,25 @@ export function AdminShell({
   actions?: ReactNode;
   children: ReactNode;
 }) {
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const routerPathname = useRouterState({ select: (s) => s.location.pathname });
+  const pathname =
+    routerPathname && routerPathname !== "/"
+      ? routerPathname
+      : typeof window !== "undefined"
+        ? window.location.pathname
+        : routerPathname;
   const router = useRouter();
   useMfaEnforcement();
-  const groups = Array.from(new Set(NAV.map((n) => n.group)));
+  const groups = useMemo(() => Array.from(new Set(NAV.map((n) => n.group))), []);
   const queryClient = useQueryClient();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const activeNav =
-    [...NAV]
-      .sort((a, b) => b.to.length - a.to.length)
-      .find((n) => (n.to === "/admin" ? pathname === "/admin" : pathname.startsWith(n.to))) ?? NAV[0];
+  const activeNav = useMemo(
+    () =>
+      [...NAV]
+        .sort((a, b) => b.to.length - a.to.length)
+        .find((n) => (n.to === "/admin" ? pathname === "/admin" : pathname.startsWith(n.to))) ?? NAV[0],
+    [pathname],
+  );
   const ActiveIcon = activeNav.icon;
   async function handleSignOut() {
     await queryClient.cancelQueries();
