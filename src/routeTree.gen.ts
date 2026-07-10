@@ -66,6 +66,7 @@ import { Route as AuthenticatedAdminAdminOrganizationsRouteImport } from './rout
 import { Route as AuthenticatedAdminAdminNotificationsRouteImport } from './routes/_authenticated/_admin/admin.notifications'
 import { Route as AuthenticatedAdminAdminMonitoringRouteImport } from './routes/_authenticated/_admin/admin.monitoring'
 import { Route as AuthenticatedAdminAdminMarketingRouteImport } from './routes/_authenticated/_admin/admin.marketing'
+import { Route as AuthenticatedAdminAdminLiveChatRouteImport } from './routes/_authenticated/_admin/admin.live-chat'
 import { Route as AuthenticatedAdminAdminInvoicesRouteImport } from './routes/_authenticated/_admin/admin.invoices'
 import { Route as AuthenticatedAdminAdminFinanceRouteImport } from './routes/_authenticated/_admin/admin.finance'
 import { Route as AuthenticatedAdminAdminBackupsRouteImport } from './routes/_authenticated/_admin/admin.backups'
@@ -387,6 +388,12 @@ const AuthenticatedAdminAdminMarketingRoute =
     path: '/admin/marketing',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
+const AuthenticatedAdminAdminLiveChatRoute =
+  AuthenticatedAdminAdminLiveChatRouteImport.update({
+    id: '/admin/live-chat',
+    path: '/admin/live-chat',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 const AuthenticatedAdminAdminInvoicesRoute =
   AuthenticatedAdminAdminInvoicesRouteImport.update({
     id: '/admin/invoices',
@@ -472,6 +479,7 @@ export interface FileRoutesByFullPath {
   '/admin/backups': typeof AuthenticatedAdminAdminBackupsRoute
   '/admin/finance': typeof AuthenticatedAdminAdminFinanceRoute
   '/admin/invoices': typeof AuthenticatedAdminAdminInvoicesRoute
+  '/admin/live-chat': typeof AuthenticatedAdminAdminLiveChatRoute
   '/admin/marketing': typeof AuthenticatedAdminAdminMarketingRoute
   '/admin/monitoring': typeof AuthenticatedAdminAdminMonitoringRoute
   '/admin/notifications': typeof AuthenticatedAdminAdminNotificationsRoute
@@ -535,6 +543,7 @@ export interface FileRoutesByTo {
   '/admin/backups': typeof AuthenticatedAdminAdminBackupsRoute
   '/admin/finance': typeof AuthenticatedAdminAdminFinanceRoute
   '/admin/invoices': typeof AuthenticatedAdminAdminInvoicesRoute
+  '/admin/live-chat': typeof AuthenticatedAdminAdminLiveChatRoute
   '/admin/marketing': typeof AuthenticatedAdminAdminMarketingRoute
   '/admin/monitoring': typeof AuthenticatedAdminAdminMonitoringRoute
   '/admin/notifications': typeof AuthenticatedAdminAdminNotificationsRoute
@@ -601,6 +610,7 @@ export interface FileRoutesById {
   '/_authenticated/_admin/admin/backups': typeof AuthenticatedAdminAdminBackupsRoute
   '/_authenticated/_admin/admin/finance': typeof AuthenticatedAdminAdminFinanceRoute
   '/_authenticated/_admin/admin/invoices': typeof AuthenticatedAdminAdminInvoicesRoute
+  '/_authenticated/_admin/admin/live-chat': typeof AuthenticatedAdminAdminLiveChatRoute
   '/_authenticated/_admin/admin/marketing': typeof AuthenticatedAdminAdminMarketingRoute
   '/_authenticated/_admin/admin/monitoring': typeof AuthenticatedAdminAdminMonitoringRoute
   '/_authenticated/_admin/admin/notifications': typeof AuthenticatedAdminAdminNotificationsRoute
@@ -666,6 +676,7 @@ export interface FileRouteTypes {
     | '/admin/backups'
     | '/admin/finance'
     | '/admin/invoices'
+    | '/admin/live-chat'
     | '/admin/marketing'
     | '/admin/monitoring'
     | '/admin/notifications'
@@ -729,6 +740,7 @@ export interface FileRouteTypes {
     | '/admin/backups'
     | '/admin/finance'
     | '/admin/invoices'
+    | '/admin/live-chat'
     | '/admin/marketing'
     | '/admin/monitoring'
     | '/admin/notifications'
@@ -794,6 +806,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_admin/admin/backups'
     | '/_authenticated/_admin/admin/finance'
     | '/_authenticated/_admin/admin/invoices'
+    | '/_authenticated/_admin/admin/live-chat'
     | '/_authenticated/_admin/admin/marketing'
     | '/_authenticated/_admin/admin/monitoring'
     | '/_authenticated/_admin/admin/notifications'
@@ -1232,6 +1245,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminAdminMarketingRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/_admin/admin/live-chat': {
+      id: '/_authenticated/_admin/admin/live-chat'
+      path: '/admin/live-chat'
+      fullPath: '/admin/live-chat'
+      preLoaderRoute: typeof AuthenticatedAdminAdminLiveChatRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/_admin/admin/invoices': {
       id: '/_authenticated/_admin/admin/invoices'
       path: '/admin/invoices'
@@ -1284,6 +1304,7 @@ interface AuthenticatedAdminRouteRouteChildren {
   AuthenticatedAdminAdminBackupsRoute: typeof AuthenticatedAdminAdminBackupsRoute
   AuthenticatedAdminAdminFinanceRoute: typeof AuthenticatedAdminAdminFinanceRoute
   AuthenticatedAdminAdminInvoicesRoute: typeof AuthenticatedAdminAdminInvoicesRoute
+  AuthenticatedAdminAdminLiveChatRoute: typeof AuthenticatedAdminAdminLiveChatRoute
   AuthenticatedAdminAdminMarketingRoute: typeof AuthenticatedAdminAdminMarketingRoute
   AuthenticatedAdminAdminMonitoringRoute: typeof AuthenticatedAdminAdminMonitoringRoute
   AuthenticatedAdminAdminNotificationsRoute: typeof AuthenticatedAdminAdminNotificationsRoute
@@ -1310,6 +1331,7 @@ const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren
     AuthenticatedAdminAdminBackupsRoute: AuthenticatedAdminAdminBackupsRoute,
     AuthenticatedAdminAdminFinanceRoute: AuthenticatedAdminAdminFinanceRoute,
     AuthenticatedAdminAdminInvoicesRoute: AuthenticatedAdminAdminInvoicesRoute,
+    AuthenticatedAdminAdminLiveChatRoute: AuthenticatedAdminAdminLiveChatRoute,
     AuthenticatedAdminAdminMarketingRoute:
       AuthenticatedAdminAdminMarketingRoute,
     AuthenticatedAdminAdminMonitoringRoute:
