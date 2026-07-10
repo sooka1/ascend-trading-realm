@@ -109,7 +109,9 @@ function InvestorPortal() {
 
   const balance = useMemo(() => {
     const inSum = deps.filter((d) => d.status === "approved").reduce((s, d) => s + Number(d.amount), 0);
-    const outSum = wds.filter((w) => w.status === "approved").reduce((s, w) => s + Number(w.amount), 0);
+    const outSum = wds
+      .filter((w) => w.status === "pending" || w.status === "approved" || w.status === "completed")
+      .reduce((s, w) => s + Number(w.amount), 0);
     return inSum - outSum;
   }, [deps, wds]);
 
@@ -158,7 +160,9 @@ function InvestorPortal() {
         .filter((s) => s.status === "active" || s.status === "pending")
         .reduce((a, s) => a + Number(s.amount), 0);
       const inSum = deps.filter((d) => d.status === "approved").reduce((a, d) => a + Number(d.amount), 0);
-      const outSum = wds.filter((w) => w.status === "approved").reduce((a, w) => a + Number(w.amount), 0);
+      const outSum = wds
+        .filter((w) => w.status === "pending" || w.status === "approved" || w.status === "completed")
+        .reduce((a, w) => a + Number(w.amount), 0);
       const availNow = Math.max(0, inSum - outSum - committedNow);
       if (amount > availNow) {
         toast.error("الرصيد المتاح تغيّر — أعد المحاولة");
@@ -229,7 +233,8 @@ function InvestorPortal() {
   async function submitDeposit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!uid) return;
-    const fd = new FormData(e.currentTarget);
+    const form = e.currentTarget;
+    const fd = new FormData(form);
     const parsed = depositSchema.safeParse(Object.fromEntries(fd));
     if (!parsed.success) return toast.error(parsed.error.issues[0].message);
     // Guard: refuse to create a Binance Pay request when the platform ID is invalid
@@ -276,7 +281,7 @@ function InvestorPortal() {
       body: `${fmt(parsed.data.amount)} — قيد المراجعة`,
     });
     toast.success("تم إرسال طلب الإيداع بنجاح");
-    (e.currentTarget as HTMLFormElement).reset();
+    form.reset();
     await load();
     void router.invalidate();
   }
@@ -284,7 +289,8 @@ function InvestorPortal() {
   async function submitWithdraw(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!uid) return;
-    const fd = new FormData(e.currentTarget);
+    const form = e.currentTarget;
+    const fd = new FormData(form);
     const parsed = withdrawSchema.safeParse(Object.fromEntries(fd));
     if (!parsed.success) return toast.error(parsed.error.issues[0].message);
     if (parsed.data.amount > balance) return toast.error("المبلغ يتجاوز الرصيد المتاح");
@@ -311,11 +317,13 @@ function InvestorPortal() {
     if (error) return toast.error(error.message);
     // The AFTER INSERT trigger `trg_withdrawals_apply_capital` deducts capital
     // atomically. Read the post-trigger state to surface a clear status.
-    const { data: after } = await supabase
-      .from("subscriptions")
-      .select("id,amount,status")
-      .eq("user_id", uid)
-      .in("id", before.map((b) => b.id));
+    const { data: after } = before.length > 0
+      ? await supabase
+          .from("subscriptions")
+          .select("id,amount,status")
+          .eq("user_id", uid)
+          .in("id", before.map((b) => b.id))
+      : { data: [] };
     const afterMap = new Map((after ?? []).map((s) => [s.id as string, s]));
     let deducted = 0;
     let cancelled = 0;
@@ -347,7 +355,7 @@ function InvestorPortal() {
     if (returned > 0) {
       toast.success(`تم تحويل ${fmt(returned)} إلى المحفظة العامة`);
     }
-    (e.currentTarget as HTMLFormElement).reset();
+    form.reset();
     await load();
     void router.invalidate();
   }
