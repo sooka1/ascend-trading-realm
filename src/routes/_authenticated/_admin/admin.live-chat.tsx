@@ -9,7 +9,11 @@ import { MessageCircle, Send } from "lucide-react";
 import { toast } from "sonner";
 import { ensureMyKeypair, encryptFor, decryptChatBody } from "@/lib/e2ee";
 import { EncryptedBody } from "@/components/encrypted-body";
-import { notifyIncomingMessage } from "@/lib/chat-notify";
+import {
+  notifyIncomingMessage,
+  registerChatNotificationSW,
+  ensureChatNotificationPermission,
+} from "@/lib/chat-notify";
 import { MessageStatus } from "@/components/message-status";
 
 export const Route = createFileRoute("/_authenticated/_admin/admin/live-chat")({
@@ -73,6 +77,8 @@ function AdminLiveChat() {
       }
       await loadTickets();
     })();
+    void registerChatNotificationSW();
+    void ensureChatNotificationPermission();
   }, []);
 
   async function loadTickets() {
@@ -129,7 +135,11 @@ function AdminLiveChat() {
           void loadTickets();
           // Alert on incoming client messages, not our own staff replies.
           if (!m.is_staff && m.sender_id !== uid) {
-            notifyIncomingMessage("رسالة عميل جديدة", nameFor(m.sender_id));
+            notifyIncomingMessage(
+              "رسالة عميل جديدة",
+              nameFor(m.sender_id),
+              "/admin/live-chat",
+            );
             if (selected?.id !== m.ticket_id) {
               setUnreadByTicket((prev) => ({
                 ...prev,
