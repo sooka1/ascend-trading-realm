@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { PageShell } from "@/components/page-shell";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { MessageCircle, Send, Mail, Phone, User } from "lucide-react";
+import { MessageCircle, Send, Mail, Phone, User, Trash2, CheckCheck, Circle } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/_admin/admin/support")({
@@ -27,6 +27,7 @@ type Inquiry = {
   status: "open" | "pending" | "resolved" | "closed";
   admin_reply: string | null;
   replied_at: string | null;
+  is_read: boolean;
   created_at: string;
 };
 
@@ -58,6 +59,23 @@ function AdminSupport() {
   function pick(i: Inquiry) {
     setSelected(i);
     setReply(i.admin_reply ?? "");
+    if (!i.is_read) void markRead(i, true);
+  }
+
+  async function markRead(i: Inquiry, value: boolean) {
+    const { error } = await supabase.from("guest_inquiries").update({ is_read: value }).eq("id", i.id);
+    if (error) return toast.error(error.message);
+    setItems((prev) => prev.map((x) => (x.id === i.id ? { ...x, is_read: value } : x)));
+    if (selected?.id === i.id) setSelected({ ...i, is_read: value });
+  }
+
+  async function remove(i: Inquiry) {
+    if (!confirm("هل تريد حذف هذه الرسالة نهائياً؟")) return;
+    const { error } = await supabase.from("guest_inquiries").delete().eq("id", i.id);
+    if (error) return toast.error(error.message);
+    toast.success("تم حذف الرسالة");
+    if (selected?.id === i.id) setSelected(null);
+    setItems((prev) => prev.filter((x) => x.id !== i.id));
   }
 
   async function saveReply() {
@@ -96,6 +114,15 @@ function AdminSupport() {
           استفسارات الزوار الواردة عبر شات الاستفسارات — يمكنك عرضها والرد عليها.
         </p>
 
+        {(() => {
+          const unread = items.filter((i) => !i.is_read).length;
+          return (
+            <p className="mt-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+              غير مقروءة: {unread} · الإجمالي: {items.length}
+            </p>
+          );
+        })()}
+
         <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,340px)_1fr]">
           <div className="glass rounded-2xl p-4">
             <p className="mb-3 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
@@ -118,7 +145,10 @@ function AdminSupport() {
                       }`}
                     >
                       <div className="flex items-center justify-between gap-2">
-                        <span className="truncate font-medium">{i.subject}</span>
+                        <span className={`truncate ${i.is_read ? "font-medium" : "font-bold text-gold"}`}>
+                          {!i.is_read && <span className="me-1 inline-block h-2 w-2 rounded-full bg-gold align-middle" />}
+                          {i.subject}
+                        </span>
                         <StatusPill status={i.status} />
                       </div>
                       <p className="mt-1 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
@@ -157,6 +187,23 @@ function AdminSupport() {
                       <option value="resolved">محلولة</option>
                       <option value="closed">مغلقة</option>
                     </select>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => markRead(selected, !selected.is_read)}
+                      title={selected.is_read ? "وضع كغير مقروءة" : "وضع كمقروءة"}
+                    >
+                      {selected.is_read ? <Circle className="h-3.5 w-3.5" /> : <CheckCheck className="h-3.5 w-3.5" />}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => remove(selected)}
+                      className="border-red-500/30 text-red-300 hover:bg-red-500/10"
+                      title="حذف"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
                   </div>
                 </div>
 
