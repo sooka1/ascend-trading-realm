@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ArrowDownToLine, ArrowUpFromLine, Bell, Download, FileText, LineChart, MessageSquare, Receipt, Send, Wallet } from "lucide-react";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/_authenticated/portal")({
+export const Route = createFileRoute("/_authenticated/portal/")({
   head: () => ({
     meta: [
       { title: "بوابة العميل — HK Investment Management" },
