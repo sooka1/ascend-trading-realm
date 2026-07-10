@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { User, MapPin, Bell, Globe2, ShieldCheck, BadgeCheck, Upload, Clock, XCircle } from "lucide-react";
 import { toast } from "sonner";
+import { LANGUAGES, getAllTimezones } from "@/lib/locales";
 
 export const Route = createFileRoute("/_authenticated/portal/profile")({
   head: () => ({
@@ -177,16 +178,30 @@ function ProfilePage() {
         <PortalCard title="اللغة والمنطقة الزمنية" icon={Globe2}>
           <div className="grid gap-4 md:grid-cols-2">
             <Field label="اللغة">
-              <select value={language} onChange={(e) => setLanguage(e.target.value)} className="w-full rounded-md border border-white/10 bg-white/[0.03] px-3 py-2 text-sm outline-none focus:border-gold/60">
-                <option value="ar">العربية</option>
-                <option value="en">English</option>
-                <option value="fr">Français</option>
-                <option value="es">Español</option>
-                <option value="tr">Türkçe</option>
+              <select
+                value={language}
+                onChange={(e) => setLanguage(e.target.value)}
+                className="w-full rounded-md border border-white/10 bg-white/[0.03] px-3 py-2 text-sm outline-none focus:border-gold/60"
+              >
+                {LANGUAGES.map((l) => (
+                  <option key={l.code} value={l.code}>
+                    {l.label}
+                  </option>
+                ))}
               </select>
             </Field>
             <Field label="المنطقة الزمنية">
-              <Input value={tz} onChange={(e) => setTz(e.target.value)} className="bg-white/[0.03]" />
+              <select
+                value={tz}
+                onChange={(e) => setTz(e.target.value)}
+                className="w-full rounded-md border border-white/10 bg-white/[0.03] px-3 py-2 text-sm outline-none focus:border-gold/60"
+              >
+                {getAllTimezones().map((z) => (
+                  <option key={z} value={z}>
+                    {z}
+                  </option>
+                ))}
+              </select>
             </Field>
           </div>
         </PortalCard>
