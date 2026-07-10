@@ -18,7 +18,7 @@ function bufToB64(buf: ArrayBuffer | null): string {
   return btoa(bin);
 }
 
-function canUsePush(): boolean {
+export function canUsePush(): boolean {
   if (typeof window === "undefined") return false;
   if (!("serviceWorker" in navigator)) return false;
   if (!("PushManager" in window)) return false;
