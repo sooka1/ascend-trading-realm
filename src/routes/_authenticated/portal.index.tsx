@@ -31,6 +31,20 @@ function PortalPage() {
   const [draft, setDraft] = useState("");
   const [uid, setUid] = useState<string | null>(null);
   const { available, loading: balanceLoading } = useAvailableBalance();
+  const [profitsTotal, setProfitsTotal] = useState(0);
+
+  useEffect(() => {
+    void (async () => {
+      const { data: userRes } = await supabase.auth.getUser();
+      const id = userRes.user?.id;
+      if (!id) return;
+      const { data } = await supabase
+        .from("profit_distributions")
+        .select("amount")
+        .eq("user_id", id);
+      setProfitsTotal(((data ?? []) as { amount: number | string }[]).reduce((s, r) => s + Number(r.amount), 0));
+    })();
+  }, []);
 
   async function load() {
     const { data: userRes } = await supabase.auth.getUser();
@@ -82,7 +96,7 @@ function PortalPage() {
         {[
           { k: "إجمالي المحفظة", v: "$0.00", d: "0.0% YTD", tone: "muted" as "up" | "muted" },
           { k: "الرصيد المتاح", v: balanceLoading ? "…" : `$${available.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, d: "READY", tone: "muted" as "up" | "muted" },
-          { k: "عوائد الشهر", v: "$0.00", d: "0.0%", tone: "muted" as "up" | "muted" },
+          { k: "عوائد الاستثمار", v: `$${profitsTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, d: "Cumulative", tone: (profitsTotal > 0 ? "up" : "muted") as "up" | "muted" },
         ].map((s) => (
           <div key={s.k} className="relative overflow-hidden rounded-xl border border-white/10 bg-card/50 p-5 backdrop-blur-xl">
             <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-gold/80">{s.k}</p>
