@@ -21,6 +21,7 @@ import {
   Newspaper,
   LogOut,
   Menu,
+  Users as UsersIcon,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useMemo, useState, type ReactNode } from "react";
@@ -46,6 +47,7 @@ const NAV: NavItem[] = [
   { to: "/portal/updates", icon: Newspaper, label: "التحديثات", group: "engagement" },
   { to: "/portal/activity", icon: History, label: "سجل النشاط", group: "engagement" },
   { to: "/portal/favorites", icon: Star, label: "المفضلة", group: "engagement" },
+  { to: "/portal/referrals", icon: UsersIcon, label: "الإحالة", group: "engagement" },
   { to: "/portal/profile", icon: User, label: "الملف الشخصي", group: "account" },
   { to: "/portal/mfa", icon: ShieldCheck, label: "الأمان والمصادقة", group: "account" },
   { to: "/portal/settings", icon: Settings, label: "الإعدادات", group: "account" },
