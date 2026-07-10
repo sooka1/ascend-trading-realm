@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { PortalShell, PortalCard } from "@/components/portal-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Download, Printer, Receipt, Search } from "lucide-react";
+import { ArrowUpFromLine, Download, Printer, Receipt, Search } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/portal/transactions")({
   head: () => ({
@@ -17,9 +17,20 @@ export const Route = createFileRoute("/_authenticated/portal/transactions")({
 });
 
 type Tx = { id: string; occurred_at: string; symbol: string; side: string; quantity: number; price: number; pnl: number };
+type Wd = { id: string; amount: number; currency: string; destination: string; status: string; created_at: string; updated_at: string | null };
+
+const WD_STATUS_AR: Record<string, { label: string; cls: string }> = {
+  pending:   { label: "قيد المعالجة", cls: "border-amber-400/40 text-amber-300 bg-amber-400/10" },
+  approved:  { label: "تم الخصم",      cls: "border-emerald-400/40 text-emerald-300 bg-emerald-400/10" },
+  completed: { label: "مكتمل",         cls: "border-emerald-400/40 text-emerald-300 bg-emerald-400/10" },
+  rejected:  { label: "مرفوض",         cls: "border-red-400/40 text-red-300 bg-red-400/10" },
+  cancelled: { label: "ملغى",          cls: "border-white/15 text-muted-foreground bg-white/[0.03]" },
+  canceled:  { label: "ملغى",          cls: "border-white/15 text-muted-foreground bg-white/[0.03]" },
+};
 
 function TransactionsPage() {
   const [rows, setRows] = useState<Tx[]>([]);
+  const [wds, setWds] = useState<Wd[]>([]);
   const [q, setQ] = useState("");
   const [side, setSide] = useState<"all" | "buy" | "sell">("all");
   const [from, setFrom] = useState("");
@@ -28,8 +39,16 @@ function TransactionsPage() {
 
   useEffect(() => {
     void (async () => {
-      const { data } = await supabase.from("transactions").select("*").order("occurred_at", { ascending: false }).limit(500);
+      const [{ data }, { data: w }] = await Promise.all([
+        supabase.from("transactions").select("*").order("occurred_at", { ascending: false }).limit(500),
+        supabase
+          .from("withdrawals")
+          .select("id,amount,currency,destination,status,created_at,updated_at")
+          .order("created_at", { ascending: false })
+          .limit(200),
+      ]);
       setRows((data ?? []) as Tx[]);
+      setWds((w ?? []) as Wd[]);
     })();
   }, []);
 
@@ -147,6 +166,46 @@ function TransactionsPage() {
           </table>
         </div>
       </PortalCard>
+
+      <div className="mt-6">
+        <PortalCard title="طلبات السحب" icon={ArrowUpFromLine}>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[640px] text-sm">
+              <thead className="font-mono text-[10px] uppercase tracking-[0.16em] text-gold/80">
+                <tr>
+                  <th className="py-2 text-start">التاريخ</th>
+                  <th className="py-2 text-start">الوجهة</th>
+                  <th className="py-2 text-end">المبلغ</th>
+                  <th className="py-2 text-start">آخر تحديث</th>
+                  <th className="py-2 text-end">الحالة</th>
+                </tr>
+              </thead>
+              <tbody>
+                {wds.length === 0 ? (
+                  <tr><td colSpan={5} className="py-10 text-center text-muted-foreground">لا توجد طلبات سحب.</td></tr>
+                ) : wds.map((w) => {
+                  const st = WD_STATUS_AR[w.status] ?? { label: w.status, cls: "border-white/15 text-muted-foreground bg-white/[0.03]" };
+                  return (
+                    <tr key={w.id} className="border-t border-white/5 transition hover:bg-white/[0.015]">
+                      <td className="py-3 font-mono text-xs text-muted-foreground">{new Date(w.created_at).toLocaleDateString()}</td>
+                      <td className="py-3 font-mono text-xs">{w.destination}</td>
+                      <td className="py-3 text-end font-mono tabular-nums">{Number(w.amount).toFixed(2)} {w.currency}</td>
+                      <td className="py-3 font-mono text-xs text-muted-foreground">
+                        {w.updated_at ? new Date(w.updated_at).toLocaleString() : "—"}
+                      </td>
+                      <td className="py-3 text-end">
+                        <span className={`inline-block rounded-full border px-2 py-0.5 font-mono text-[10px] tracking-wider ${st.cls}`}>
+                          {st.label}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </PortalCard>
+      </div>
     </PortalShell>
   );
 }
