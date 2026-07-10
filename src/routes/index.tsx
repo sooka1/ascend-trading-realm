@@ -1060,7 +1060,7 @@ function CertCard({
         <DialogFooter className="flex-col gap-2 sm:flex-row sm:justify-end">
           <Button
             asChild
-            className="bg-[var(--gradient-gold)] font-semibold text-background hover:opacity-95"
+            className="rounded-sm border border-[#a0430a] bg-[#c2410c] font-semibold text-white shadow-[0_4px_14px_rgba(194,65,12,0.35)] transition-all duration-200 hover:border-[#ea580c] hover:bg-[#ea580c] hover:shadow-[0_6px_20px_rgba(234,88,12,0.5)] active:border-[#7c2d0a] active:bg-[#9a3412] active:scale-[0.98]"
           >
             <a href={meta.verifyUrl} target="_blank" rel="noopener noreferrer">
               <ExternalLink className="me-2 h-4 w-4" /> {labels.verify}
