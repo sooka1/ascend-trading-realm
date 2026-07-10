@@ -1,11 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageShell } from "@/components/page-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { ShieldCheck, Trash2, KeyRound, Smartphone } from "lucide-react";
+import { ShieldCheck, Trash2, KeyRound, Smartphone, ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/portal/mfa")({
   head: () => ({
@@ -86,7 +86,14 @@ function MfaPage() {
   return (
     <PageShell bare>
       <section className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
-        <p className="text-xs uppercase tracking-widest text-gold">Security</p>
+        <Link
+          to="/portal"
+          className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-muted-foreground transition hover:border-gold/40 hover:text-foreground"
+        >
+          <ArrowRight className="h-3.5 w-3.5" />
+          <span>رجوع</span>
+        </Link>
+        <p className="mt-4 text-xs uppercase tracking-widest text-gold">Security</p>
         <h1 className="mt-1 flex items-center gap-2 font-display text-3xl font-semibold md:text-4xl">
           <ShieldCheck className="h-7 w-7 text-gold" /> المصادقة الثنائية (MFA)
         </h1>
