@@ -1,9 +1,11 @@
 {
   "version": 1,
-  "asset_id": "22e9764a-77b4-4564-920a-56552d3ea0da",
+  "asset_id": "18ba7024-827a-4b2a-8abf-0dcd65258c7c",
   "project_id": "5d06956d-0893-4e53-8e16-f9255052df0e",
-  "url": "/__l5e/assets-v1/22e9764a-77b4-4564-920a-56552d3ea0da/hero-bg.mp4",
+  "url": "/__l5e/assets-v1/18ba7024-827a-4b2a-8abf-0dcd65258c7c/hero-bg.mp4",
+  "r2_key": "a/v1/5d06956d-0893-4e53-8e16-f9255052df0e/18ba7024-827a-4b2a-8abf-0dcd65258c7c/hero-bg.mp4",
   "original_filename": "hero-bg.mp4",
-  "size": 23247124,
-  "created_at": "2026-07-09T18:22:26Z"
+  "size": 4587468,
+  "content_type": "video/mp4",
+  "created_at": "2026-07-10T14:40:17Z"
 }
