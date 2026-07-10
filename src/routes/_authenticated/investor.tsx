@@ -26,7 +26,7 @@ type Dep = { id: string; amount: number; currency: string; method: string; refer
 type Wd = { id: string; amount: number; currency: string; destination: string; iban: string | null; status: string; created_at: string };
 const depositSchema = z.object({
   amount: z.coerce.number().positive().max(10_000_000),
-  method: z.enum(["bank_transfer", "card"]),
+  method: z.enum(["bank_transfer", "card", "binance_pay", "usdt_trc20", "usdt_bep20"]),
   reference: z.string().trim().max(120).optional(),
   notes: z.string().trim().max(500).optional(),
 });
@@ -37,6 +37,13 @@ const withdrawSchema = z.object({
   swift: z.string().trim().max(32).optional(),
   notes: z.string().trim().max(500).optional(),
 });
+
+// Platform deposit destinations — super admin can update these values in code.
+const PLATFORM_WALLETS = {
+  binance_pay: "HK-BINANCE-PAY-ID-000000",
+  usdt_trc20: "TXxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  usdt_bep20: "0xHKxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+} as const;
 
 function InvestorPortal() {
   const router = useRouter();
