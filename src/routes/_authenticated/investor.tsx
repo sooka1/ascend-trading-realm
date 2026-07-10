@@ -607,7 +607,20 @@ function InvestorPortal() {
 
         <div className="mt-10 grid gap-6 lg:grid-cols-2">
           <HistoryList title="سجل الإيداعات" empty="لا توجد إيداعات." rows={deps.map((d) => ({ id: d.id, primary: `${fmt(Number(d.amount))} ${d.currency}`, secondary: `${d.method} · ${new Date(d.created_at).toLocaleDateString()}`, status: d.status }))} />
-          <HistoryList title="سجل السحوبات" empty="لا توجد سحوبات." rows={wds.map((w) => ({ id: w.id, primary: `${fmt(Number(w.amount))} ${w.currency}`, secondary: `${w.destination} · ${new Date(w.created_at).toLocaleDateString()}`, status: w.status }))} />
+          <WithdrawList
+            wds={wds}
+            busy={busySub}
+            onCancel={async (w) => {
+              if (!window.confirm(`إلغاء طلب سحب ${fmt(Number(w.amount))} ${w.currency}؟ سيتم استرجاع رأس المال.`)) return;
+              setBusySub(`cancel:${w.id}`);
+              const { error } = await supabase.from("withdrawals").delete().eq("id", w.id);
+              setBusySub(null);
+              if (error) return toast.error(error.message);
+              toast.success("تم إلغاء طلب السحب");
+              await load();
+              void router.invalidate();
+            }}
+          />
         </div>
 
         <div className="mt-6">
