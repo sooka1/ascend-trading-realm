@@ -238,13 +238,16 @@ function Hero({ c }: { c: LandingContent }) {
               <Link to="/solutions">{c.hero.ctaLearn}</Link>
             </Button>
           </div>
-          <dl className="mt-14 grid max-w-lg grid-cols-3 gap-6 border-t border-gold/15 pt-8 text-sm">
+          <dl className="mt-14 grid max-w-lg grid-cols-3 gap-3 text-sm">
             {[
               { k: c.hero.statAum, v: "$1.2B+", d: "+12.4%", tone: "up" },
               { k: c.hero.statClients, v: "18,400+", d: "OPTIMIZED", tone: "muted" },
               { k: c.hero.statCountries, v: "62", d: "GLOBAL", tone: "muted" },
             ].map((s) => (
-              <div key={s.k} className="space-y-1">
+              <div
+                key={s.k}
+                className="relative space-y-1 rounded-lg border border-gold/25 bg-white/[0.03] px-4 py-3 backdrop-blur-sm before:absolute before:inset-x-3 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-gold/60 before:to-transparent"
+              >
                 <dt className="font-mono text-[10px] font-medium uppercase tracking-[0.24em] text-gold/85">{s.k}</dt>
                 <dd className="font-display text-3xl font-normal text-foreground tabular-nums">{s.v}</dd>
                 <p className={`font-mono text-[10px] tracking-wide ${s.tone === "up" ? "text-bull" : "text-muted-foreground"}`}>
@@ -342,10 +345,16 @@ function TrustStrip({ c }: { c: LandingContent }) {
   ];
   return (
     <section className="border-b border-white/5 bg-white/[0.02]">
-      <div className="mx-auto grid max-w-7xl grid-cols-2 gap-6 px-4 py-6 text-sm text-muted-foreground sm:px-6 md:grid-cols-4 lg:px-8">
+      <div className="mx-auto grid max-w-7xl grid-cols-2 gap-3 px-4 py-6 text-sm text-muted-foreground sm:px-6 md:grid-cols-4 lg:px-8">
         {items.map((it) => (
-          <div key={it.label} className="flex items-center gap-2">
-            <it.icon className="h-4 w-4 text-gold" /> {it.label}
+          <div
+            key={it.label}
+            className="flex items-center gap-2.5 rounded-lg border border-gold/25 bg-white/[0.03] px-4 py-3 backdrop-blur-sm transition hover:border-gold/50 hover:bg-white/[0.05]"
+          >
+            <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-gold/30 bg-gold/[0.08]">
+              <it.icon className="h-4 w-4 text-gold" />
+            </span>
+            <span className="text-foreground/90">{it.label}</span>
           </div>
         ))}
       </div>
