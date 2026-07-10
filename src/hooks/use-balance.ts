@@ -20,10 +20,11 @@ export function useAvailableBalance() {
       setLoading(false);
       return;
     }
-    const [{ data: dp }, { data: wd }, { data: sb }] = await Promise.all([
+    const [{ data: dp }, { data: wd }, { data: sb }, { data: pr }] = await Promise.all([
       supabase.from("deposits").select("amount,status").eq("user_id", uid),
       supabase.from("withdrawals").select("amount,status").eq("user_id", uid),
       supabase.from("subscriptions").select("amount,status").eq("user_id", uid),
+      supabase.from("profit_distributions").select("amount").eq("user_id", uid),
     ]);
     const inSum = ((dp ?? []) as Row[])
       .filter((r) => r.status === "approved")
@@ -34,7 +35,9 @@ export function useAvailableBalance() {
     const com = ((sb ?? []) as Row[])
       .filter((r) => r.status === "active" || r.status === "pending")
       .reduce((s, r) => s + Number(r.amount), 0);
-    setBalance(inSum - outSum);
+    const profitSum = ((pr ?? []) as { amount: number | string }[])
+      .reduce((s, r) => s + Number(r.amount), 0);
+    setBalance(inSum + profitSum - outSum);
     setCommitted(com);
     setLoading(false);
   }
