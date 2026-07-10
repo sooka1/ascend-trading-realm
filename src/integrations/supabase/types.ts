@@ -415,6 +415,7 @@ export type Database = {
           email: string | null
           id: string
           public_key: string | null
+          secret_key: string | null
           updated_at: string
         }
         Insert: {
@@ -425,6 +426,7 @@ export type Database = {
           email?: string | null
           id: string
           public_key?: string | null
+          secret_key?: string | null
           updated_at?: string
         }
         Update: {
@@ -435,6 +437,7 @@ export type Database = {
           email?: string | null
           id?: string
           public_key?: string | null
+          secret_key?: string | null
           updated_at?: string
         }
         Relationships: []
