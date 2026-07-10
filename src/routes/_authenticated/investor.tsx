@@ -146,6 +146,17 @@ function InvestorPortal() {
       toast.error("المبلغ يتجاوز الرصيد المتاح");
       return;
     }
+    const weekly = amount * (Number(pkg.target_return_pct) || 0) / 100;
+    const daily = weekly / 5;
+    const remaining = Math.max(0, available - amount);
+    const summary =
+      `تأكيد الاشتراك في باقة ${pkg.name}:\n\n` +
+      `• مبلغ الاستثمار: ${fmt(amount)} ${pkg.currency}\n` +
+      `• الربح الأسبوعي المتوقع: +${fmt(weekly)} ${pkg.currency}\n` +
+      `• الربح اليومي (5 أيام): +${fmt(daily)} ${pkg.currency}\n` +
+      `• المتبقي في المحفظة: ${fmt(remaining)} ${pkg.currency}\n\n` +
+      `هل تريد المتابعة؟`;
+    if (!window.confirm(summary)) return;
     setBusySub(`new:${pkg.id}`);
     const startedAt = new Date();
     const endsAt = new Date(startedAt);
