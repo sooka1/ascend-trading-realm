@@ -15,6 +15,7 @@ import { I18nProvider } from "../lib/i18n";
 import { Toaster } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { installTimezonePatch, loadUserTimezoneFromProfile, setUserTimezone, setUserLocale } from "@/lib/user-timezone";
+import { PublicPackagesAside } from "@/components/public-packages-aside";
 
 function NotFoundComponent() {
   return (
@@ -186,6 +187,7 @@ function RootComponent() {
         </a>
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
+        <PublicPackagesAside />
         <Toaster theme="dark" position="top-right" richColors />
       </I18nProvider>
     </QueryClientProvider>
