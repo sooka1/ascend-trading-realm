@@ -302,6 +302,14 @@ function Auth() {
   return (
     <PageShell>
       <section className="relative mx-auto grid min-h-[calc(100vh-4rem)] max-w-7xl gap-10 px-4 py-6 sm:px-6 sm:py-16 lg:grid-cols-2 lg:px-8">
+        <Link
+          to="/"
+          className="absolute top-2 z-10 inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-muted-foreground backdrop-blur transition hover:border-gold/40 hover:text-foreground"
+          style={{ insetInlineStart: "0.5rem" }}
+        >
+          <ArrowLeft className="h-3.5 w-3.5 rtl:rotate-180" />
+          <span>الرجوع للرئيسية</span>
+        </Link>
         <div className="hidden flex-col justify-between lg:flex">
           <Link to="/"><HKLogo size="lg" /></Link>
           <div>
