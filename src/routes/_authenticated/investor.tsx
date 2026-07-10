@@ -425,6 +425,10 @@ function InvestorPortal() {
                 </div>
               )}
               <Field label="مرجع التحويل / TxID"><Input name="reference" maxLength={120} placeholder={depositMethod === "bank_transfer" || depositMethod === "card" ? "" : "TxID / Hash المعاملة"} /></Field>
+              <Field label="صورة إثبات التحويل (اختياري)">
+                <Input name="receipt" type="file" accept="image/png,image/jpeg,image/webp" className="file:mr-2 file:rounded file:border-0 file:bg-white/10 file:px-2 file:py-1 file:text-xs file:text-foreground" />
+              </Field>
+              <p className="text-[11px] text-muted-foreground">ارفع لقطة شاشة أو إيصال التحويل (PNG/JPG/WEBP — بحد أقصى 5MB). سيراجعها الفريق قبل اعتماد الإيداع.</p>
               <Field label="ملاحظات"><Textarea name="notes" maxLength={500} rows={2} /></Field>
               <Button type="submit" className="bg-red-600 font-semibold text-white hover:bg-red-700">إرسال طلب الإيداع</Button>
               <p className="text-[11px] text-muted-foreground">جميع الإيداعات (بنكي / Binance / كريبتو) يعتمدها الفريق يدويًا بعد التأكد من استلام الأموال.</p>
