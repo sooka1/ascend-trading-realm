@@ -189,6 +189,28 @@ function PortfolioPage() {
         </PortalCard>
       </div>
 
+      <div className="mt-6">
+        <PortalCard title="طلبات السحب" icon={Clock}>
+          {wds.length === 0 ? (
+            <p className="py-6 text-center text-sm text-muted-foreground">لا توجد طلبات سحب بعد.</p>
+          ) : (
+            <ul className="space-y-2.5">
+              {wds.map((w) => (
+                <li key={w.id} className="flex items-center justify-between gap-3 rounded-md border border-white/10 bg-white/[0.02] p-3">
+                  <div className="min-w-0">
+                    <p className="truncate font-mono text-sm tabular-nums">{fmt(Number(w.amount))} {w.currency}</p>
+                    <p className="truncate font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                      {w.destination} · {new Date(w.created_at).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <StatusBadge status={w.status} />
+                </li>
+              ))}
+            </ul>
+          )}
+        </PortalCard>
+      </div>
+
       {snaps.length === 0 && !latest && (
         <div className="mt-6 flex items-center gap-3 rounded-md border border-white/10 bg-card/40 p-4 text-sm text-muted-foreground">
           <Wallet className="h-4 w-4 text-gold" />
