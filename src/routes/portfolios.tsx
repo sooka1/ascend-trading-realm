@@ -18,7 +18,7 @@ export const Route = createFileRoute("/portfolios")({
 });
 
 const TARGETS = ["6 – 10%", "10 – 16%", "16 – 24%"];
-const MINS = ["$100", "$100", "$100"];
+const MINS = ["$100", "$1,000", "$100"];
 const WITHDRAW = "$10";
 const HIGHLIGHT = [false, true, false];
 

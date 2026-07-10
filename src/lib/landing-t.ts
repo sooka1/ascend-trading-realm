@@ -116,7 +116,7 @@ const en: LandingContent = {
     open: "Open account",
     tiers: [
       { name: "Conservative", risk: "Low" },
-      { name: "Balanced", risk: "Moderate" },
+      { name: "Balanced", risk: "Low" },
       { name: "Growth", risk: "Higher" },
     ],
   },
@@ -231,7 +231,7 @@ const ar: LandingContent = {
     open: "افتح حساب",
     tiers: [
       { name: "محافظة", risk: "منخفض" },
-      { name: "متوازنة", risk: "متوسط" },
+      { name: "متوازنة", risk: "منخفض" },
       { name: "نمو", risk: "أعلى" },
     ],
   },
@@ -347,7 +347,7 @@ const fr: LandingContent = {
     open: "Ouvrir un compte",
     tiers: [
       { name: "Prudent", risk: "Faible" },
-      { name: "Équilibré", risk: "Modéré" },
+      { name: "Équilibré", risk: "Faible" },
       { name: "Croissance", risk: "Élevé" },
     ],
   },
@@ -462,7 +462,7 @@ const es: LandingContent = {
     open: "Abrir cuenta",
     tiers: [
       { name: "Conservadora", risk: "Bajo" },
-      { name: "Equilibrada", risk: "Moderado" },
+      { name: "Equilibrada", risk: "Bajo" },
       { name: "Crecimiento", risk: "Alto" },
     ],
   },
@@ -577,7 +577,7 @@ const tr: LandingContent = {
     open: "Hesap aç",
     tiers: [
       { name: "Muhafazakâr", risk: "Düşük" },
-      { name: "Dengeli", risk: "Orta" },
+      { name: "Dengeli", risk: "Düşük" },
       { name: "Büyüme", risk: "Yüksek" },
     ],
   },

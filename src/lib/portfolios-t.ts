@@ -41,7 +41,7 @@ export const PORTFOLIOS: Record<Lang, PortfoliosContent> = {
       },
       {
         name: "Balanced",
-        risk: "Moderate",
+        risk: "Low",
         features: [
           "Multi-asset diversification",
           "Active currency & gold overlay",
@@ -87,7 +87,7 @@ export const PORTFOLIOS: Record<Lang, PortfoliosContent> = {
       },
       {
         name: "المتوازنة",
-        risk: "متوسط",
+        risk: "منخفض",
         features: [
           "تنويع متعدد الأصول",
           "تغطية نشطة للعملات والذهب",
@@ -133,7 +133,7 @@ export const PORTFOLIOS: Record<Lang, PortfoliosContent> = {
       },
       {
         name: "Équilibré",
-        risk: "Modéré",
+        risk: "Faible",
         features: [
           "Diversification multi-actifs",
           "Couverture active devises & or",
@@ -179,7 +179,7 @@ export const PORTFOLIOS: Record<Lang, PortfoliosContent> = {
       },
       {
         name: "Equilibrada",
-        risk: "Moderado",
+        risk: "Bajo",
         features: [
           "Diversificación multiactivo",
           "Cobertura activa en divisas y oro",
@@ -225,7 +225,7 @@ export const PORTFOLIOS: Record<Lang, PortfoliosContent> = {
       },
       {
         name: "Dengeli",
-        risk: "Orta",
+        risk: "Düşük",
         features: [
           "Çoklu varlık çeşitlendirmesi",
           "Aktif döviz ve altın koruması",

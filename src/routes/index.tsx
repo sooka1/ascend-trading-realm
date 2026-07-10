@@ -378,7 +378,7 @@ function Features({ c }: { c: LandingContent }) {
 
 function SolutionsPreview({ c }: { c: LandingContent }) {
   const targets = ["6 – 10%", "10 – 16%", "16 – 24%"];
-  const mins = ["$100", "$100", "$100"];
+  const mins = ["$100", "$1,000", "$100"];
   return (
     <section className="border-y border-white/5 bg-white/[0.02] py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
