@@ -178,8 +178,15 @@ function InvestorPortal() {
         ends_at: endsAt.toISOString(),
       });
       if (error) return toast.error(error.message);
+      // Fire-and-forget notification so it also appears in the bell listener.
+      await supabase.from("notifications").insert({
+        user_id: uid,
+        title: "تم بدء الاشتراك في باقة",
+        body: `${pkg.name} — ${fmt(amount)} ${pkg.currency}`,
+      });
       toast.success("تم الاشتراك في الباقة");
       await load();
+      void router.invalidate();
     } finally {
       setBusySub(null);
     }
@@ -211,8 +218,14 @@ function InvestorPortal() {
         .eq("user_id", uid)
         .in("status", ["active", "pending"]);
       if (error) return toast.error(error.message);
+      await supabase.from("notifications").insert({
+        user_id: uid,
+        title: "تم إلغاء الاشتراك",
+        body: `${fmt(Number(sub.amount))} ${sub.currency}`,
+      });
       toast.success("تم إلغاء الاشتراك — يمكنك الاشتراك في باقة أخرى الآن");
       await load();
+      void router.invalidate();
     } finally {
       setBusySub(null);
     }
