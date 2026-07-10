@@ -131,11 +131,6 @@ function InvestorPortal() {
   async function subscribeToPackage(pkg: Pkg, requestedAmount: number) {
     if (!uid) return;
     if (busySub) return;
-    // Prevent duplicate active/pending subscription in the same package
-    if (subs.some((s) => s.package_id === pkg.id && (s.status === "active" || s.status === "pending"))) {
-      toast.error("لديك اشتراك نشط أو قيد المراجعة في هذه الباقة بالفعل");
-      return;
-    }
     if (available < Number(pkg.min_amount)) {
       toast.error(`الرصيد المتاح غير كافٍ. الحد الأدنى ${fmt(Number(pkg.min_amount))} ${pkg.currency}`);
       return;
@@ -174,10 +169,6 @@ function InvestorPortal() {
       const availNow = Math.max(0, inSum - outSum - committedNow);
       if (amount > availNow) {
         toast.error("الرصيد المتاح تغيّر — أعد المحاولة");
-        return;
-      }
-      if ((fresh ?? []).some((s) => s.package_id === pkg.id && (s.status === "active" || s.status === "pending"))) {
-        toast.error("لديك اشتراك نشط أو قيد المراجعة في هذه الباقة بالفعل");
         return;
       }
       const { error } = await supabase.from("subscriptions").insert({
