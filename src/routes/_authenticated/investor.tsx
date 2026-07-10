@@ -869,6 +869,35 @@ function InvestorPortal() {
             </ul>
           )}
         </div>
+
+        <div className="mt-6 glass rounded-3xl p-6">
+          <h3 className="font-display text-lg font-semibold">سجل التوزيعات اليومية</h3>
+          <p className="mt-1 text-xs text-muted-foreground">النسبة المُطلقة بعد مرور 24 ساعة من كل اشتراك مع وقت الإصدار.</p>
+          {payouts.length === 0 ? (
+            <p className="mt-3 text-sm text-muted-foreground">لا توجد توزيعات بعد.</p>
+          ) : (
+            <ul className="mt-4 divide-y divide-white/10 text-sm">
+              {payouts.map((p) => {
+                const sub = subs.find((s) => s.id === p.subscription_id);
+                const pkgName = packages.find((pk) => pk.id === sub?.package_id)?.name ?? p.subscription_id.slice(0, 8);
+                const base = Number(sub?.amount ?? 0);
+                const pct = base > 0 ? (Number(p.amount) / base) * 100 : 0;
+                return (
+                  <li key={p.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
+                    <div className="min-w-0">
+                      <p className="font-semibold">{pkgName}</p>
+                      <p className="mt-0.5 font-mono text-xs text-muted-foreground">
+                        +{fmt(Number(p.amount))} {p.currency}
+                        <span className="ms-2 text-emerald-400">({pct.toFixed(2)}%)</span>
+                      </p>
+                    </div>
+                    <p className="text-xs text-muted-foreground">{new Date(p.created_at).toLocaleString()}</p>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </div>
       </section>
 
       <AlertDialog open={!!confirmSub} onOpenChange={(o) => { if (!o) setConfirmSub(null); }}>
