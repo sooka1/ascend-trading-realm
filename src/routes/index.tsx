@@ -6,6 +6,7 @@ import {
   BarChart3,
   Briefcase,
   ChartLine,
+  CheckCircle2,
   FileText,
   Globe2,
   Headphones,
