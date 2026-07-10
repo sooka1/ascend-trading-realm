@@ -1,5 +1,6 @@
 import { useRouter, useRouterState } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
+import { decideBackAction } from "@/lib/back-button-logic";
 
 // Floating "back" button rendered globally from the root layout so it
 // appears on every page (existing, new, and future) except the home page.
@@ -8,38 +9,25 @@ export function GlobalBackButton() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   if (pathname === "/") return null;
 
-  // On auth / recovery pages, history.back() often lands on a protected
-  // route that redirects right back here (loop), or on the previous auth
-  // step the user just left. Always go to a safe public destination.
-  const isAuthRoute =
-    pathname === "/auth" ||
-    pathname === "/forgot-password" ||
-    pathname === "/reset-password";
-
   const goBack = () => {
-    if (isAuthRoute) {
-      void router.navigate({ to: "/" });
-      return;
-    }
-    // Smart back: if there's real in-app history, go back. Otherwise navigate
-    // to a sensible fallback — the parent path when nested, else the home page.
-    const hasInAppHistory =
-      typeof window !== "undefined" &&
-      window.history.length > 1 &&
-      (!document.referrer || new URL(document.referrer).origin === window.location.origin);
-
-    if (hasInAppHistory) {
+    if (typeof window === "undefined") return;
+    const action = decideBackAction({
+      pathname,
+      historyLength: window.history.length,
+      referrer: document.referrer,
+      currentOrigin: window.location.origin,
+    });
+    if (action.kind === "history-back") {
       router.history.back();
-      // If back() didn't change the location shortly, fall back.
       const before = window.location.pathname;
       window.setTimeout(() => {
         if (window.location.pathname === before) {
-          void router.navigate({ to: fallbackPath(before) });
+          void router.navigate({ to: "/" });
         }
       }, 120);
       return;
     }
-    void router.navigate({ to: fallbackPath(pathname) });
+    void router.navigate({ to: action.to });
   };
 
   return (
@@ -53,10 +41,4 @@ export function GlobalBackButton() {
       <span>رجوع</span>
     </button>
   );
-}
-
-function fallbackPath(current: string): string {
-  const trimmed = current.replace(/\/+$/, "");
-  const parent = trimmed.slice(0, trimmed.lastIndexOf("/"));
-  return parent && parent !== "" ? parent : "/";
 }
