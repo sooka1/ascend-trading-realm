@@ -1,0 +1,100 @@
+import nacl from "tweetnacl";
+import naclUtil from "tweetnacl-util";
+import { supabase } from "@/integrations/supabase/client";
+
+// End-to-end encryption for chat messages between a client and the super admin.
+// - Each user has an X25519 keypair. Public key lives in profiles.public_key;
+//   the secret key never leaves the browser (localStorage per user id).
+// - Every message is stored as TWO ciphertexts (one per recipient) so both
+//   sides can decrypt their own copy. The server only sees ciphertext.
+
+const LS_KEY = (uid: string) => `hk_e2ee_sk_${uid}`;
+
+export type KeyPair = { publicKey: string; secretKey: string };
+
+export async function ensureMyKeypair(userId: string): Promise<KeyPair> {
+  let secretKey = localStorage.getItem(LS_KEY(userId));
+  let publicKey: string;
+  if (secretKey) {
+    publicKey = naclUtil.encodeBase64(
+      nacl.box.keyPair.fromSecretKey(naclUtil.decodeBase64(secretKey)).publicKey,
+    );
+  } else {
+    const raw = nacl.box.keyPair();
+    secretKey = naclUtil.encodeBase64(raw.secretKey);
+    publicKey = naclUtil.encodeBase64(raw.publicKey);
+    localStorage.setItem(LS_KEY(userId), secretKey);
+  }
+  // Publish public key so the other party can encrypt to us.
+  const { data } = await supabase
+    .from("profiles")
+    .select("public_key")
+    .eq("id", userId)
+    .maybeSingle();
+  if (!data?.public_key || data.public_key !== publicKey) {
+    await supabase.from("profiles").update({ public_key: publicKey }).eq("id", userId);
+  }
+  return { publicKey, secretKey };
+}
+
+export function encryptFor(recipientPubB64: string, plaintext: string): string {
+  const eph = nacl.box.keyPair();
+  const nonce = nacl.randomBytes(nacl.box.nonceLength);
+  const cipher = nacl.box(
+    naclUtil.decodeUTF8(plaintext),
+    nonce,
+    naclUtil.decodeBase64(recipientPubB64),
+    eph.secretKey,
+  );
+  return JSON.stringify({
+    e: naclUtil.encodeBase64(eph.publicKey),
+    n: naclUtil.encodeBase64(nonce),
+    c: naclUtil.encodeBase64(cipher),
+  });
+}
+
+export function tryDecrypt(cipherStr: string | null | undefined, secretKeyB64: string): string | null {
+  if (!cipherStr) return null;
+  try {
+    const p = JSON.parse(cipherStr) as { e: string; n: string; c: string };
+    if (!p.e || !p.n || !p.c) return null;
+    const opened = nacl.box.open(
+      naclUtil.decodeBase64(p.c),
+      naclUtil.decodeBase64(p.n),
+      naclUtil.decodeBase64(p.e),
+      naclUtil.decodeBase64(secretKeyB64),
+    );
+    return opened ? naclUtil.encodeUTF8(opened) : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function getSuperAdminPublicKey(): Promise<string | null> {
+  const { data, error } = await supabase.rpc("get_super_admin_public_key");
+  if (error) return null;
+  return (data as string | null) ?? null;
+}
+
+export async function getTicketOwnerPublicKey(ticketId: string): Promise<string | null> {
+  const { data, error } = await supabase.rpc("get_ticket_owner_public_key", {
+    _ticket_id: ticketId,
+  });
+  if (error) return null;
+  return (data as string | null) ?? null;
+}
+
+// Convenience: prepare the two ciphertext copies for a chat message.
+// - mine    → stored in body       (the sender/owner reads this back)
+// - theirs  → stored in body_admin (the counterparty reads this)
+// The caller picks which key goes where based on the ticket owner.
+export function encryptForBoth(
+  ownerPubB64: string,
+  adminPubB64: string,
+  plaintext: string,
+): { body: string; body_admin: string } {
+  return {
+    body: encryptFor(ownerPubB64, plaintext),
+    body_admin: encryptFor(adminPubB64, plaintext),
+  };
+}
