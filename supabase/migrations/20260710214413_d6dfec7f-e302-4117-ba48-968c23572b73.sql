@@ -1,0 +1,1 @@
+CREATE POLICY "documents_users_upload_own" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'documents' AND (storage.foldername(name))[1] = (auth.uid())::text);
