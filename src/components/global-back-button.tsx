@@ -66,18 +66,17 @@ export function GlobalBackButton() {
       onPointerLeave={() => setPressed(false)}
       aria-label="رجوع"
       style={{
-        top: "max(1rem, env(safe-area-inset-top))",
-        right: "max(1rem, env(safe-area-inset-right))",
+        bottom: "max(1rem, env(safe-area-inset-bottom))",
+        left: "max(1rem, env(safe-area-inset-left))",
         touchAction: "manipulation",
         WebkitTapHighlightColor: "transparent",
       }}
-      className={`fixed z-[60] inline-flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-full border border-white/10 bg-card/80 px-3 py-2 text-xs font-medium text-foreground shadow-lg backdrop-blur-md transition select-none hover:bg-card hover:border-gold/40 active:scale-95 ${
+      className={`fixed z-[60] inline-flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-full border border-gold/30 bg-card/85 px-3.5 py-2 text-xs font-medium text-foreground shadow-lg backdrop-blur-md transition select-none hover:bg-card hover:border-gold/50 active:scale-95 ${
         pressed ? "scale-95 border-gold/40" : ""
       }`}
     >
-      <ArrowRight className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
-      <span className="hidden sm:inline">رجوع</span>
-      <span className="sr-only sm:hidden">رجوع</span>
+      <ArrowRight className="h-4 w-4" />
+      <span>رجوع</span>
     </button>
   );
 }
