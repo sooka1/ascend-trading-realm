@@ -38,6 +38,8 @@ const STATUS_LABEL: Record<string, string> = {
   paused: "متوقف",
   closed: "مغلق",
   archived: "مؤرشف",
+  cancelled: "غير نشطة",
+  canceled: "غير نشطة",
 };
 
 function AccountsPage() {
