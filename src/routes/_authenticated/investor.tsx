@@ -199,16 +199,8 @@ function InvestorPortal() {
       toast.error("لا يمكن إلغاء اشتراك بهذه الحالة");
       return;
     }
-    // Enforce lockup: block cancel before ends_at when a lockup was set
-    if (sub.status === "active" && sub.ends_at) {
-      const endsAt = new Date(sub.ends_at).getTime();
-      if (Number.isFinite(endsAt) && endsAt > Date.now()) {
-        const daysLeft = Math.ceil((endsAt - Date.now()) / 86_400_000);
-        toast.error(`الباقة ضمن فترة القفل — متبقٍ ${daysLeft} يوم حتى ${new Date(endsAt).toLocaleDateString()}`);
-        return;
-      }
-    }
-    if (!window.confirm("تأكيد إلغاء الاشتراك في هذه الباقة؟")) return;
+    // Investors can withdraw their capital at any time — no lockup enforcement.
+    if (!window.confirm("تأكيد إلغاء الاشتراك وسحب رأس المال؟")) return;
     setBusySub(sub.id);
     try {
       const { error } = await supabase
