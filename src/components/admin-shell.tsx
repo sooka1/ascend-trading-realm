@@ -46,6 +46,7 @@ const NAV: NavItem[] = [
 
   { to: "/admin/users", icon: Users, label: "المستخدمون", group: "identity", enabled: true },
   { to: "/admin/roles", icon: ShieldCheck, label: "الأدوار والصلاحيات", group: "identity", enabled: true },
+  { to: "/admin/user-roles", icon: ShieldCheck, label: "تعيين أدوار المستخدمين", group: "identity", enabled: true },
   { to: "/admin/organizations", icon: Building2, label: "المؤسسات", group: "identity", enabled: false },
 
   { to: "/admin/audit", icon: History, label: "سجل التدقيق", group: "governance", enabled: true },

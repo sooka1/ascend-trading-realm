@@ -53,6 +53,7 @@ import { Route as AuthenticatedAppPortfolioRouteImport } from './routes/_authent
 import { Route as AuthenticatedAppActivityRouteImport } from './routes/_authenticated/app.activity'
 import { Route as AuthenticatedAdminAdminIndexRouteImport } from './routes/_authenticated/_admin/admin.index'
 import { Route as AuthenticatedAdminAdminUsersRouteImport } from './routes/_authenticated/_admin/admin.users'
+import { Route as AuthenticatedAdminAdminUserRolesRouteImport } from './routes/_authenticated/_admin/admin.user-roles'
 import { Route as AuthenticatedAdminAdminSupportRouteImport } from './routes/_authenticated/_admin/admin.support'
 import { Route as AuthenticatedAdminAdminSubscriptionsRouteImport } from './routes/_authenticated/_admin/admin.subscriptions'
 import { Route as AuthenticatedAdminAdminRolesRouteImport } from './routes/_authenticated/_admin/admin.roles'
@@ -300,6 +301,12 @@ const AuthenticatedAdminAdminUsersRoute =
     path: '/admin/users',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
+const AuthenticatedAdminAdminUserRolesRoute =
+  AuthenticatedAdminAdminUserRolesRouteImport.update({
+    id: '/admin/user-roles',
+    path: '/admin/user-roles',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 const AuthenticatedAdminAdminSupportRoute =
   AuthenticatedAdminAdminSupportRouteImport.update({
     id: '/admin/support',
@@ -412,6 +419,7 @@ export interface FileRoutesByFullPath {
   '/admin/roles': typeof AuthenticatedAdminAdminRolesRoute
   '/admin/subscriptions': typeof AuthenticatedAdminAdminSubscriptionsRoute
   '/admin/support': typeof AuthenticatedAdminAdminSupportRoute
+  '/admin/user-roles': typeof AuthenticatedAdminAdminUserRolesRoute
   '/admin/users': typeof AuthenticatedAdminAdminUsersRoute
   '/admin/': typeof AuthenticatedAdminAdminIndexRoute
 }
@@ -466,6 +474,7 @@ export interface FileRoutesByTo {
   '/admin/roles': typeof AuthenticatedAdminAdminRolesRoute
   '/admin/subscriptions': typeof AuthenticatedAdminAdminSubscriptionsRoute
   '/admin/support': typeof AuthenticatedAdminAdminSupportRoute
+  '/admin/user-roles': typeof AuthenticatedAdminAdminUserRolesRoute
   '/admin/users': typeof AuthenticatedAdminAdminUsersRoute
   '/admin': typeof AuthenticatedAdminAdminIndexRoute
 }
@@ -523,6 +532,7 @@ export interface FileRoutesById {
   '/_authenticated/_admin/admin/roles': typeof AuthenticatedAdminAdminRolesRoute
   '/_authenticated/_admin/admin/subscriptions': typeof AuthenticatedAdminAdminSubscriptionsRoute
   '/_authenticated/_admin/admin/support': typeof AuthenticatedAdminAdminSupportRoute
+  '/_authenticated/_admin/admin/user-roles': typeof AuthenticatedAdminAdminUserRolesRoute
   '/_authenticated/_admin/admin/users': typeof AuthenticatedAdminAdminUsersRoute
   '/_authenticated/_admin/admin/': typeof AuthenticatedAdminAdminIndexRoute
 }
@@ -579,6 +589,7 @@ export interface FileRouteTypes {
     | '/admin/roles'
     | '/admin/subscriptions'
     | '/admin/support'
+    | '/admin/user-roles'
     | '/admin/users'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
@@ -633,6 +644,7 @@ export interface FileRouteTypes {
     | '/admin/roles'
     | '/admin/subscriptions'
     | '/admin/support'
+    | '/admin/user-roles'
     | '/admin/users'
     | '/admin'
   id:
@@ -689,6 +701,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_admin/admin/roles'
     | '/_authenticated/_admin/admin/subscriptions'
     | '/_authenticated/_admin/admin/support'
+    | '/_authenticated/_admin/admin/user-roles'
     | '/_authenticated/_admin/admin/users'
     | '/_authenticated/_admin/admin/'
   fileRoutesById: FileRoutesById
@@ -1024,6 +1037,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminAdminUsersRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/_admin/admin/user-roles': {
+      id: '/_authenticated/_admin/admin/user-roles'
+      path: '/admin/user-roles'
+      fullPath: '/admin/user-roles'
+      preLoaderRoute: typeof AuthenticatedAdminAdminUserRolesRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/_admin/admin/support': {
       id: '/_authenticated/_admin/admin/support'
       path: '/admin/support'
@@ -1108,6 +1128,7 @@ interface AuthenticatedAdminRouteRouteChildren {
   AuthenticatedAdminAdminRolesRoute: typeof AuthenticatedAdminAdminRolesRoute
   AuthenticatedAdminAdminSubscriptionsRoute: typeof AuthenticatedAdminAdminSubscriptionsRoute
   AuthenticatedAdminAdminSupportRoute: typeof AuthenticatedAdminAdminSupportRoute
+  AuthenticatedAdminAdminUserRolesRoute: typeof AuthenticatedAdminAdminUserRolesRoute
   AuthenticatedAdminAdminUsersRoute: typeof AuthenticatedAdminAdminUsersRoute
   AuthenticatedAdminAdminIndexRoute: typeof AuthenticatedAdminAdminIndexRoute
 }
@@ -1128,6 +1149,8 @@ const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren
     AuthenticatedAdminAdminSubscriptionsRoute:
       AuthenticatedAdminAdminSubscriptionsRoute,
     AuthenticatedAdminAdminSupportRoute: AuthenticatedAdminAdminSupportRoute,
+    AuthenticatedAdminAdminUserRolesRoute:
+      AuthenticatedAdminAdminUserRolesRoute,
     AuthenticatedAdminAdminUsersRoute: AuthenticatedAdminAdminUsersRoute,
     AuthenticatedAdminAdminIndexRoute: AuthenticatedAdminAdminIndexRoute,
   }
