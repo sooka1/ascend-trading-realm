@@ -49,24 +49,69 @@ function ResetPassword() {
   const [done, setDone] = useState(false);
 
   useEffect(() => {
-    // Supabase redirects here with a recovery session in the URL hash.
+    // Supabase can send the recovery credentials in three shapes:
+    // 1) PKCE:      ?code=...
+    // 2) OTP link:  ?token_hash=...&type=recovery
+    // 3) Legacy:    #access_token=...&refresh_token=...&type=recovery
+    let cancelled = false;
+
     const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+      if (cancelled) return;
       if (event === "PASSWORD_RECOVERY" || (event === "SIGNED_IN" && session)) {
         setReady("ok");
       }
     });
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) setReady("ok");
-      else {
-        // give the hash a moment to be parsed
-        setTimeout(() => {
-          supabase.auth.getSession().then(({ data: d2 }) => {
-            setReady(d2.session ? "ok" : "invalid");
+
+    (async () => {
+      try {
+        const url = new URL(window.location.href);
+        const code = url.searchParams.get("code");
+        const tokenHash = url.searchParams.get("token_hash");
+        const type = url.searchParams.get("type");
+        const errorDescription =
+          url.searchParams.get("error_description") ||
+          new URLSearchParams(window.location.hash.slice(1)).get("error_description");
+
+        if (errorDescription) {
+          if (!cancelled) setReady("invalid");
+          return;
+        }
+
+        if (code) {
+          const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+          if (!cancelled) setReady(!error && data.session ? "ok" : "invalid");
+          return;
+        }
+
+        if (tokenHash) {
+          const { data, error } = await supabase.auth.verifyOtp({
+            type: (type as "recovery") || "recovery",
+            token_hash: tokenHash,
           });
+          if (!cancelled) setReady(!error && data.session ? "ok" : "invalid");
+          return;
+        }
+
+        // Legacy hash flow — supabase-js parses it automatically.
+        const { data } = await supabase.auth.getSession();
+        if (data.session) {
+          if (!cancelled) setReady("ok");
+          return;
+        }
+        setTimeout(async () => {
+          if (cancelled) return;
+          const { data: d2 } = await supabase.auth.getSession();
+          setReady(d2.session ? "ok" : "invalid");
         }, 800);
+      } catch {
+        if (!cancelled) setReady("invalid");
       }
-    });
-    return () => sub.subscription.unsubscribe();
+    })();
+
+    return () => {
+      cancelled = true;
+      sub.subscription.unsubscribe();
+    };
   }, []);
 
   async function handleSubmit(e: React.FormEvent) {
