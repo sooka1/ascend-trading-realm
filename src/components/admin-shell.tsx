@@ -186,12 +186,12 @@ export function AdminShell({
                     <Link
                       to={n.to}
                       onClick={onNavigate}
-                      className={`group flex items-center gap-2.5 rounded-md px-2 py-2 text-sm transition ${cls}`}
+                      className={`group flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition ${cls}`}
                     >
                       {content}
                     </Link>
                   ) : (
-                    <span className={`flex items-center gap-2.5 rounded-md px-2 py-2 text-sm ${cls}`} aria-disabled="true">
+                    <span className={`flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm ${cls}`} aria-disabled="true">
                       {content}
                     </span>
                   )}
@@ -221,17 +221,17 @@ export function AdminShell({
             <header className="mb-6 border-b border-white/5 pb-6">
               <div className="mb-4 flex items-center justify-between gap-2 lg:hidden">
                 <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
-                  <SheetTrigger className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-white/10 bg-white/[0.03] text-muted-foreground transition hover:border-gold/40 hover:text-gold">
-                    <Menu className="h-4 w-4" />
+                  <SheetTrigger className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03] text-muted-foreground transition hover:border-gold/40 hover:text-gold">
+                    <Menu className="h-5 w-5" />
                     <span className="sr-only">القائمة</span>
                   </SheetTrigger>
-                  <SheetContent side="right" className="w-[85vw] max-w-sm overflow-y-auto border-white/10 bg-card/95 backdrop-blur-xl">
+                  <SheetContent side="right" className="w-[88vw] max-w-sm overflow-y-auto border-white/10 bg-card/95 p-5 backdrop-blur-xl">
                     <SheetHeader>
                       <SheetTitle className="text-right font-mono text-[10px] uppercase tracking-[0.22em] text-gold/80">
                         Super Admin
                       </SheetTitle>
                     </SheetHeader>
-                    <div className="mt-4">
+                    <div className="mt-6 space-y-1">
                       {renderSidebarNav(() => setMobileNavOpen(false))}
                     </div>
                   </SheetContent>
@@ -239,10 +239,10 @@ export function AdminShell({
                 <button
                   type="button"
                   onClick={handleSignOut}
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-white/10 bg-white/[0.03] text-muted-foreground transition hover:border-red-400/40 hover:text-red-200"
+                  className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03] text-muted-foreground transition hover:border-red-400/40 hover:text-red-200"
                   aria-label="تسجيل الخروج"
                 >
-                  <LogOut className="h-4 w-4" />
+                  <LogOut className="h-5 w-5" />
                 </button>
               </div>
               <div className="flex flex-wrap items-end justify-between gap-4">
