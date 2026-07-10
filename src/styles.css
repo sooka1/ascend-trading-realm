@@ -25,8 +25,8 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
-  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Libre Baskerville", "Playfair Display", ui-serif, Georgia, serif;
+  --font-sans: "Fira Sans", "IBM Plex Sans Arabic", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Noto Serif Arabic", "DM Serif Display", "Libre Baskerville", ui-serif, Georgia, serif;
   --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -71,54 +71,55 @@
 }
 
 :root {
-  /* HK Investment Management — Noir & Gold institutional palette */
-  --radius: 0.75rem;
-  --background: oklch(0.14 0 0);               /* deep noir #0d0d0d */
-  --foreground: oklch(0.98 0.005 90);
-  --surface: oklch(0.20 0.003 90);             /* elevated card #1a1a1a */
-  --surface-2: oklch(0.26 0.004 90);           /* raised panel */
-  --card: oklch(0.20 0.003 90);
-  --card-foreground: oklch(0.98 0.005 90);
-  --popover: oklch(0.20 0.003 90);
-  --popover-foreground: oklch(0.98 0.005 90);
-  --primary: oklch(0.78 0.13 85);              /* rich gold #c9a84c */
-  --primary-foreground: oklch(0.14 0 0);
-  --brand-blue: oklch(0.60 0.15 260);          /* accent info */
-  --gold: oklch(0.78 0.13 85);
-  --gold-soft: oklch(0.88 0.11 90);            /* pale gold #f0d78c */
-  --secondary: oklch(0.24 0.003 90);
-  --secondary-foreground: oklch(0.98 0.005 90);
-  --muted: oklch(0.24 0.003 90);
-  --muted-foreground: oklch(0.72 0.005 90);
-  --accent: oklch(0.78 0.13 85);
-  --accent-foreground: oklch(0.14 0 0);
+  /* HK Investment Management — Emerald Prestige institutional palette */
+  --radius: 0.5rem;
+  --background: oklch(0.17 0.045 165);         /* deep emerald */
+  --foreground: oklch(0.97 0.012 90);          /* warm cream */
+  --surface: oklch(0.23 0.055 165);            /* elevated emerald card */
+  --surface-2: oklch(0.29 0.065 165);          /* raised panel */
+  --card: oklch(0.23 0.055 165);
+  --card-foreground: oklch(0.97 0.012 90);
+  --popover: oklch(0.23 0.055 165);
+  --popover-foreground: oklch(0.97 0.012 90);
+  --primary: oklch(0.76 0.13 85);              /* refined gold #c9a84c */
+  --primary-foreground: oklch(0.18 0.028 165);
+  --brand-blue: oklch(0.62 0.10 195);          /* teal accent */
+  --gold: oklch(0.76 0.13 85);
+  --gold-soft: oklch(0.90 0.09 92);            /* pale cream-gold #f5f0e0 */
+  --secondary: oklch(0.26 0.04 165);
+  --secondary-foreground: oklch(0.97 0.012 90);
+  --muted: oklch(0.26 0.04 165);
+  --muted-foreground: oklch(0.75 0.02 95);
+  --accent: oklch(0.76 0.13 85);
+  --accent-foreground: oklch(0.16 0.028 165);
   --destructive: oklch(0.65 0.22 27);
   --destructive-foreground: oklch(0.99 0 0);
-  --border: oklch(0.78 0.13 85 / 14%);
-  --input: oklch(1 0 0 / 10%);
-  --ring: oklch(0.78 0.13 85);
-  --chart-1: oklch(0.78 0.13 85);
-  --chart-2: oklch(0.88 0.11 90);
-  --chart-3: oklch(0.72 0.17 152);
+  --border: oklch(0.76 0.13 85 / 12%);
+  --input: oklch(0.97 0.012 90 / 10%);
+  --ring: oklch(0.76 0.13 85);
+  --chart-1: oklch(0.76 0.13 85);
+  --chart-2: oklch(0.90 0.09 92);
+  --chart-3: oklch(0.68 0.14 165);
   --chart-4: oklch(0.65 0.22 27);
-  --chart-5: oklch(0.60 0.15 260);
-  --sidebar: oklch(0.17 0.003 90);
-  --sidebar-foreground: oklch(0.98 0.005 90);
-  --sidebar-primary: oklch(0.78 0.13 85);
-  --sidebar-primary-foreground: oklch(0.14 0 0);
-  --sidebar-accent: oklch(0.24 0.003 90);
-  --sidebar-accent-foreground: oklch(0.98 0.005 90);
-  --sidebar-border: oklch(0.78 0.13 85 / 14%);
-  --sidebar-ring: oklch(0.78 0.13 85);
+  --chart-5: oklch(0.62 0.10 195);
+  --sidebar: oklch(0.19 0.03 165);
+  --sidebar-foreground: oklch(0.97 0.012 90);
+  --sidebar-primary: oklch(0.76 0.13 85);
+  --sidebar-primary-foreground: oklch(0.16 0.028 165);
+  --sidebar-accent: oklch(0.26 0.04 165);
+  --sidebar-accent-foreground: oklch(0.97 0.012 90);
+  --sidebar-border: oklch(0.76 0.13 85 / 12%);
+  --sidebar-ring: oklch(0.76 0.13 85);
 
-  /* Institutional gradients — noir depth with gold light */
-  --gradient-brand: linear-gradient(135deg, oklch(0.88 0.11 90), oklch(0.68 0.14 80));
-  --gradient-brand-soft: linear-gradient(135deg, oklch(0.78 0.13 85 / 0.18), oklch(0.88 0.11 90 / 0.10));
-  --gradient-gold: linear-gradient(135deg, oklch(0.90 0.10 92), oklch(0.72 0.14 80));
-  --gradient-radial: radial-gradient(60% 60% at 50% 0%, oklch(0.78 0.13 85 / 0.18), transparent 70%);
-  --shadow-elegant: 0 24px 60px -24px oklch(0 0 0 / 0.6), 0 2px 6px -2px oklch(0 0 0 / 0.4);
-  --shadow-glow: 0 20px 60px -20px oklch(0.78 0.13 85 / 0.35);
-  --shadow-gold: 0 20px 60px -20px oklch(0.78 0.13 85 / 0.45);
+  /* Institutional gradients — emerald depth with gold light */
+  --gradient-brand: linear-gradient(135deg, oklch(0.90 0.09 92), oklch(0.68 0.14 82));
+  --gradient-brand-soft: linear-gradient(135deg, oklch(0.76 0.13 85 / 0.18), oklch(0.90 0.09 92 / 0.10));
+  --gradient-gold: linear-gradient(135deg, oklch(0.92 0.08 92), oklch(0.70 0.14 82));
+  --gradient-emerald: linear-gradient(180deg, oklch(0.24 0.05 165), oklch(0.14 0.025 165));
+  --gradient-radial: radial-gradient(60% 60% at 50% 0%, oklch(0.76 0.13 85 / 0.16), transparent 70%);
+  --shadow-elegant: 0 24px 60px -24px oklch(0.10 0.02 165 / 0.7), 0 2px 6px -2px oklch(0.05 0 0 / 0.4);
+  --shadow-glow: 0 20px 60px -20px oklch(0.76 0.13 85 / 0.30);
+  --shadow-gold: 0 20px 60px -20px oklch(0.76 0.13 85 / 0.45);
 }
 
 @layer base {
@@ -135,15 +136,15 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     background-image:
-      radial-gradient(1200px 600px at 10% -10%, oklch(0.78 0.13 85 / 0.10), transparent 60%),
-      radial-gradient(900px 500px at 100% 10%, oklch(0.88 0.11 90 / 0.06), transparent 60%);
+      radial-gradient(1200px 600px at 10% -10%, oklch(0.76 0.13 85 / 0.09), transparent 60%),
+      radial-gradient(900px 500px at 100% 10%, oklch(0.60 0.10 165 / 0.10), transparent 60%);
     background-attachment: fixed;
     font-feature-settings: "ss01", "cv11", "tnum";
   }
 
   h1, h2, h3, h4, .font-display {
     font-family: var(--font-display);
-    letter-spacing: -0.015em;
+    letter-spacing: -0.01em;
     font-weight: 700;
   }
 
