@@ -461,3 +461,9 @@ function StatusPill({ status }: { status: string }) {
 function fmt(n: number) {
   return n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
+
+function returnRange(min: number) {
+  if (min >= 1000) return "16% – 24%";
+  if (min >= 500) return "10% – 16%";
+  return "6% – 10%";
+}
