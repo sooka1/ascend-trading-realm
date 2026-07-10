@@ -20,7 +20,6 @@ import {
   Search,
   Zap,
   MessageCircle,
-  ArrowRight,
   LogOut,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -89,7 +88,6 @@ export function AdminShell({
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const router = useRouter();
   useMfaEnforcement();
-  const showBack = true;
   const groups = Array.from(new Set(NAV.map((n) => n.group)));
   const queryClient = useQueryClient();
   async function handleSignOut() {
@@ -184,16 +182,6 @@ export function AdminShell({
 
             <header className="mb-6 flex flex-wrap items-end justify-between gap-4 border-b border-white/5 pb-6">
               <div>
-                {showBack && (
-                  <button
-                    type="button"
-                    onClick={() => router.history.back()}
-                    className="mb-3 inline-flex items-center gap-1.5 rounded-md border border-white/10 bg-white/[0.03] px-2.5 py-1 text-xs text-muted-foreground transition hover:border-gold/40 hover:text-foreground"
-                  >
-                    <ArrowRight className="h-3.5 w-3.5" />
-                    رجوع
-                  </button>
-                )}
                 <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-gold/80">
                   {eyebrow}
                 </p>

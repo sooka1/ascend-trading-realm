@@ -1,11 +1,11 @@
-import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageShell } from "@/components/page-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { ShieldCheck, Trash2, KeyRound, Smartphone, ArrowRight } from "lucide-react";
+import { ShieldCheck, Trash2, KeyRound, Smartphone } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/portal/mfa")({
   head: () => ({
@@ -21,7 +21,6 @@ export const Route = createFileRoute("/_authenticated/portal/mfa")({
 type Factor = { id: string; friendly_name: string | null; status: string; factor_type: string };
 
 function MfaPage() {
-  const router = useRouter();
   const [factors, setFactors] = useState<Factor[]>([]);
   const [loading, setLoading] = useState(true);
   const [enroll, setEnroll] = useState<{ factorId: string; qr: string; secret: string } | null>(null);
@@ -87,20 +86,6 @@ function MfaPage() {
   return (
     <PageShell bare>
       <section className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
-        <button
-          type="button"
-          onClick={() => {
-            if (typeof window !== "undefined" && window.history.length > 1) {
-              router.history.back();
-            } else {
-              router.navigate({ to: "/portal" });
-            }
-          }}
-          className="mb-4 inline-flex items-center gap-1.5 rounded-md border border-white/10 bg-white/[0.03] px-2.5 py-1 text-xs text-muted-foreground transition hover:border-gold/40 hover:text-foreground"
-        >
-          <ArrowRight className="h-3.5 w-3.5" />
-          رجوع
-        </button>
         <p className="text-xs uppercase tracking-widest text-gold">Security</p>
         <h1 className="mt-1 flex items-center gap-2 font-display text-3xl font-semibold md:text-4xl">
           <ShieldCheck className="h-7 w-7 text-gold" /> المصادقة الثنائية (MFA)
