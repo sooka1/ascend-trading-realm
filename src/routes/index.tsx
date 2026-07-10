@@ -378,7 +378,7 @@ function Features({ c }: { c: LandingContent }) {
 
 function SolutionsPreview({ c }: { c: LandingContent }) {
   const targets = ["6 – 10%", "10 – 16%", "16 – 24%"];
-  const mins = ["$25,000", "$100,000", "$250,000"];
+  const mins = ["$100", "$100", "$100"];
   return (
     <section className="border-y border-white/5 bg-white/[0.02] py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -411,7 +411,7 @@ function SolutionsPreview({ c }: { c: LandingContent }) {
               <dl className="mt-6 space-y-3 text-sm">
                 <Row k={c.solutions.risk} v={p.risk} />
                 <Row k={c.solutions.min} v={mins[i]} />
-                <Row k={c.solutions.allocation} v={p.allocation} />
+                <Row k={c.solutions.withdraw} v="$10" />
               </dl>
               <Button asChild className="mt-6 w-full rounded-sm border border-[#a0430a] bg-[#c2410c] font-semibold text-white shadow-[0_4px_14px_rgba(194,65,12,0.35)] transition-all duration-200 hover:border-[#ea580c] hover:bg-[#ea580c] hover:shadow-[0_6px_20px_rgba(234,88,12,0.5)] active:border-[#7c2d0a] active:bg-[#9a3412] active:scale-[0.98]">
                 <Link to="/auth">{c.solutions.open}</Link>
