@@ -239,6 +239,10 @@ function InvestorPortal() {
       if (!ref) return toast.error("يرجى إدخال TxID / مرجع المعاملة");
       if (!rule.regex.test(ref)) return toast.error(rule.label);
     }
+    // Guard: refuse to create a Binance Pay request when the platform ID is invalid
+    if (parsed.data.method === "binance_pay") {
+      try { getPlatformBinancePayId(); } catch (err) { return toast.error((err as Error).message); }
+    }
     // Optional receipt image upload
     const receipt = (fd.get("receipt") as File | null) ?? null;
     let receiptNote = "";
