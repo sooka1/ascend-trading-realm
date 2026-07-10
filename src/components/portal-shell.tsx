@@ -116,7 +116,7 @@ export function PortalShell({
                     to={n.to}
                     onClick={onNavigate}
                     aria-current={active ? "page" : undefined}
-                    className={`group relative flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition ${
+                    className={`group relative flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
                       active
                         ? "border border-gold/40 bg-gold/[0.12] text-foreground shadow-[inset_2px_0_0_theme(colors.amber.400)] font-medium"
                         : "text-muted-foreground hover:bg-white/[0.03] hover:text-foreground"
@@ -158,7 +158,7 @@ export function PortalShell({
             <header className="mb-6 border-b border-white/5 pb-6">
               <div className="mb-4 flex items-center justify-between gap-2 lg:hidden">
                 <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
-                  <SheetTrigger className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03] text-muted-foreground transition hover:border-gold/40 hover:text-gold">
+                  <SheetTrigger className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03] text-muted-foreground transition hover:border-gold/40 hover:text-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background">
                     <Menu className="h-5 w-5" />
                     <span className="sr-only">القائمة</span>
                   </SheetTrigger>
@@ -177,7 +177,7 @@ export function PortalShell({
                   <Link
                     to="/portal/notifications"
                     aria-label="الإشعارات"
-                    className="relative inline-flex h-11 w-11 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03] text-muted-foreground transition hover:border-gold/40 hover:text-gold"
+                    className="relative inline-flex h-11 w-11 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03] text-muted-foreground transition hover:border-gold/40 hover:text-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                   >
                     <Bell className="h-5 w-5" />
                     {unreadCount > 0 && (
@@ -189,7 +189,7 @@ export function PortalShell({
                   <button
                     type="button"
                     onClick={handleSignOut}
-                    className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03] text-muted-foreground transition hover:border-red-400/40 hover:text-red-200"
+                    className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03] text-muted-foreground transition hover:border-red-400/40 hover:text-red-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                     aria-label="تسجيل الخروج"
                   >
                     <LogOut className="h-5 w-5" />
@@ -207,7 +207,7 @@ export function PortalShell({
                   <Link
                 to="/portal/notifications"
                 aria-label="الإشعارات"
-                className="relative inline-flex h-9 w-9 items-center justify-center rounded-md border border-white/10 bg-white/[0.03] text-muted-foreground transition hover:border-gold/40 hover:text-gold"
+                className="relative inline-flex h-9 w-9 items-center justify-center rounded-md border border-white/10 bg-white/[0.03] text-muted-foreground transition hover:border-gold/40 hover:text-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
                 <Bell className="h-4 w-4" />
                 {unreadCount > 0 && (
@@ -219,7 +219,7 @@ export function PortalShell({
                   <button
                     type="button"
                     onClick={handleSignOut}
-                    className="inline-flex items-center gap-1.5 rounded-md border border-white/10 bg-white/[0.03] px-2.5 py-1 text-xs text-muted-foreground transition hover:border-red-400/40 hover:text-red-200"
+                    className="inline-flex items-center gap-1.5 rounded-md border border-white/10 bg-white/[0.03] px-2.5 py-1 text-xs text-muted-foreground transition hover:border-red-400/40 hover:text-red-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                   >
                     <LogOut className="h-3.5 w-3.5" />
                     تسجيل الخروج
@@ -250,7 +250,7 @@ export function QuickAction({
   return (
     <Link
       to={to}
-      className="group relative flex items-center gap-3 overflow-hidden rounded-xl border border-white/10 bg-card/50 p-4 backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-gold/40"
+      className="group relative flex items-center gap-3 overflow-hidden rounded-xl border border-white/10 bg-card/50 p-4 backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-gold/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background"
     >
       <span className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-gold/20 bg-gold/[0.06]">
         <Icon className="h-5 w-5 text-gold" />
