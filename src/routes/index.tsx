@@ -432,7 +432,7 @@ function SolutionsPreview({ c }: { c: LandingContent }) {
                   </li>
                 ))}
               </ul>
-              <Button asChild className="mt-8 w-full bg-[var(--gradient-gold)] font-semibold text-background">
+              <Button asChild className="mt-8 w-full rounded-sm border border-[#a0430a] bg-[#c2410c] font-semibold text-white shadow-[0_4px_14px_rgba(194,65,12,0.35)] transition-all duration-200 hover:border-[#ea580c] hover:bg-[#ea580c] hover:shadow-[0_6px_20px_rgba(234,88,12,0.5)] active:border-[#7c2d0a] active:bg-[#9a3412] active:scale-[0.98]">
                 <Link to="/auth">{p.cta}</Link>
               </Button>
             </div>
