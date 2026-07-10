@@ -607,7 +607,23 @@ function InvestorPortal() {
 
         <div className="mt-10 grid gap-6 lg:grid-cols-2">
           <HistoryList title="سجل الإيداعات" empty="لا توجد إيداعات." rows={deps.map((d) => ({ id: d.id, primary: `${fmt(Number(d.amount))} ${d.currency}`, secondary: `${d.method} · ${new Date(d.created_at).toLocaleDateString()}`, status: d.status }))} />
-          <HistoryList title="سجل السحوبات" empty="لا توجد سحوبات." rows={wds.map((w) => ({ id: w.id, primary: `${fmt(Number(w.amount))} ${w.currency}`, secondary: `${w.destination} · ${new Date(w.created_at).toLocaleDateString()}`, status: w.status }))} />
+          <WithdrawList
+            wds={wds}
+            busy={busySub}
+            onCancel={async (w) => {
+              if (!window.confirm(`إلغاء طلب سحب ${fmt(Number(w.amount))} ${w.currency}؟ سيتم استرجاع رأس المال.`)) return;
+              setBusySub(`cancel:${w.id}`);
+              const { error } = await supabase.from("withdrawals").delete().eq("id", w.id);
+              setBusySub(null);
+              if (error) {
+                toast.error(error.message);
+                return;
+              }
+              toast.success("تم إلغاء طلب السحب");
+              await load();
+              void router.invalidate();
+            }}
+          />
         </div>
 
         <div className="mt-6">
@@ -728,6 +744,43 @@ function StatCard({ icon, label, value, sub }: { icon: React.ReactNode; label: s
       </div>
       <p className="mt-2 font-display text-2xl font-semibold">{value}</p>
       {sub && <p className="text-[11px] text-muted-foreground">{sub}</p>}
+    </div>
+  );
+}
+
+function WithdrawList({ wds, busy, onCancel }: { wds: Wd[]; busy: string | null; onCancel: (w: Wd) => void | Promise<void> }) {
+  return (
+    <div className="glass rounded-3xl p-6">
+      <h2 className="font-display text-lg font-semibold">سجل السحوبات</h2>
+      {wds.length === 0 ? (
+        <p className="mt-3 text-sm text-muted-foreground">لا توجد سحوبات.</p>
+      ) : (
+        <ul className="mt-4 divide-y divide-white/5">
+          {wds.map((w) => (
+            <li key={w.id} className="flex items-center justify-between gap-2 py-3 text-sm">
+              <div className="min-w-0">
+                <p className="font-medium">{fmt(Number(w.amount))} {w.currency}</p>
+                <p className="text-xs text-muted-foreground">{w.destination} · {new Date(w.created_at).toLocaleDateString()}</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <StatusPill status={w.status} />
+                {w.status === "pending" && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={busy === `cancel:${w.id}` || !!busy}
+                    onClick={() => void onCancel(w)}
+                    className="h-8 border-red-500/40 text-red-300 hover:bg-red-500/10"
+                  >
+                    {busy === `cancel:${w.id}` ? "..." : "إلغاء"}
+                  </Button>
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
