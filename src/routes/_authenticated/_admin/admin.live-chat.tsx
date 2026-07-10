@@ -99,6 +99,7 @@ function AdminLiveChat() {
     })();
     void registerChatNotificationSW();
     void ensureChatNotificationPermission();
+    primeChatAudio();
   }, []);
 
   async function loadTickets() {
