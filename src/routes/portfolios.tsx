@@ -18,7 +18,8 @@ export const Route = createFileRoute("/portfolios")({
 });
 
 const TARGETS = ["6 – 10%", "10 – 16%", "16 – 24%"];
-const MINS = ["$25,000", "$100,000", "$250,000"];
+const MINS = ["$100", "$100", "$100"];
+const WITHDRAW = "$10";
 const HIGHLIGHT = [false, true, false];
 
 function PortfoliosPage() {
@@ -54,6 +55,10 @@ function PortfoliosPage() {
                 <div>
                   <dt className="text-muted-foreground">{c.risk}</dt>
                   <dd className="font-medium">{p.risk}</dd>
+                </div>
+                <div>
+                  <dt className="text-muted-foreground">{c.withdraw}</dt>
+                  <dd className="font-medium">{WITHDRAW}</dd>
                 </div>
               </dl>
               <ul className="mt-6 space-y-2 text-sm">
