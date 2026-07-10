@@ -239,9 +239,9 @@ function ReviewsSection() {
             containScroll: "trimSnaps",
           }}
           plugins={[autoplay.current]}
-          className="mt-10 touch-pan-y [&_[data-slot=carousel-content]]:transform-gpu [&_[data-slot=carousel-content]]:will-change-transform [&_[data-slot=carousel-content]]:[backface-visibility:hidden]"
+          className="mt-10 touch-pan-y"
         >
-          <CarouselContent className="-ml-5">
+          <CarouselContent className="-ml-5 transform-gpu will-change-transform [backface-visibility:hidden]">
             {r.items.map((it) => (
               <CarouselItem
                 key={it.name}
