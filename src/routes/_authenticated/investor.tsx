@@ -235,7 +235,7 @@ function InvestorPortal() {
     const receipt = (fd.get("receipt") as File | null) ?? null;
     let receiptNote = "";
     if (receipt && receipt.size > 0) {
-      if (receipt.size > 5 * 1024 * 1024) return toast.error("حجم صورة التحويل يجب ألا يتجاوز 5MB");
+      if (receipt.size > 20 * 1024 * 1024) return toast.error("حجم صورة التحويل يجب ألا يتجاوز 20MB");
       if (!/^image\/(png|jpe?g|webp)$/.test(receipt.type)) return toast.error("صيغة الصورة غير مدعومة (PNG/JPG/WEBP فقط)");
       const ext = receipt.name.split(".").pop() ?? "png";
       const path = `${uid}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
