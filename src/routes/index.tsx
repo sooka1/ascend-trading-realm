@@ -61,10 +61,10 @@ export const Route = createFileRoute("/")({
         content:
           "Professionally managed investment portfolios across Forex, Gold, Commodities, Indices and Stocks. Disciplined risk management, transparent reporting, secure client portal.",
       },
-      { property: "og:title", content: "HK Investment Management" },
+      { property: "og:title", content: "HK Investment Management — Professional Portfolio Management" },
       {
         property: "og:description",
-        content: "Professional Investment Management with disciplined risk controls and transparent reporting.",
+        content: "Professionally managed investment portfolios across Forex, Gold, Commodities, Indices and Stocks. Disciplined risk management, transparent reporting, secure client portal.",
       },
     ],
   }),
