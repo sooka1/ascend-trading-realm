@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { PortalShell, PortalCard } from "@/components/portal-shell";
-import { Wallet, PieChart, TrendingUp, Layers, ArrowDownToLine, ArrowUpFromLine } from "lucide-react";
+import { Wallet, PieChart, TrendingUp, Layers, ArrowDownToLine, ArrowUpFromLine, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/portal/portfolio")({
@@ -32,20 +32,32 @@ type Subscription = {
   packages: { name: string; risk_level: string | null; target_return_pct: number | null } | null;
 };
 
+type Withdrawal = {
+  id: string;
+  amount: number;
+  currency: string;
+  destination: string;
+  status: string;
+  created_at: string;
+};
+
 const fmt = (n: number) => new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 }).format(n);
 
 function PortfolioPage() {
   const [snaps, setSnaps] = useState<Snapshot[]>([]);
   const [subs, setSubs] = useState<Subscription[]>([]);
+  const [wds, setWds] = useState<Withdrawal[]>([]);
 
   useEffect(() => {
     void (async () => {
-      const [{ data: s }, { data: p }] = await Promise.all([
+      const [{ data: s }, { data: p }, { data: w }] = await Promise.all([
         supabase.from("portfolio_snapshots").select("*").order("as_of_date", { ascending: false }).limit(90),
         supabase.from("subscriptions").select("*, packages(name,risk_level,target_return_pct)").order("started_at", { ascending: false }),
+        supabase.from("withdrawals").select("id,amount,currency,destination,status,created_at").order("created_at", { ascending: false }).limit(10),
       ]);
       setSnaps((s ?? []) as Snapshot[]);
       setSubs((p ?? []) as unknown as Subscription[]);
+      setWds((w ?? []) as Withdrawal[]);
     })();
   }, []);
 
