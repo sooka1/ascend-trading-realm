@@ -169,7 +169,7 @@ export function AdminShell({
               const active = n.to === "/admin" ? pathname === "/admin" : pathname.startsWith(n.to);
               const enabled = n.enabled !== false;
               const cls = active
-                ? "bg-gold/[0.08] text-foreground"
+                ? "border border-gold/40 bg-gold/[0.12] text-foreground font-medium shadow-[inset_2px_0_0_theme(colors.amber.400)]"
                 : enabled
                   ? "text-muted-foreground hover:bg-white/[0.03] hover:text-foreground"
                   : "text-muted-foreground/40 cursor-not-allowed";
@@ -177,7 +177,7 @@ export function AdminShell({
                 <>
                   <n.icon className={`h-4 w-4 shrink-0 ${active ? "text-gold" : "text-muted-foreground"}`} />
                   <span className="truncate">{n.label}</span>
-                  {active && <span className="ms-auto h-1.5 w-1.5 rounded-full bg-gold" aria-hidden />}
+                  {active && <span className="ms-auto h-2 w-2 rounded-full bg-gold shadow-[0_0_8px_theme(colors.amber.400)]" aria-hidden />}
                 </>
               );
               return (
@@ -186,6 +186,7 @@ export function AdminShell({
                     <Link
                       to={n.to}
                       onClick={onNavigate}
+                      aria-current={active ? "page" : undefined}
                       className={`group flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition ${cls}`}
                     >
                       {content}

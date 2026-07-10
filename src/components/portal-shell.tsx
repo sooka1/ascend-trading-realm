@@ -115,9 +115,10 @@ export function PortalShell({
                   <Link
                     to={n.to}
                     onClick={onNavigate}
-                    className={`group flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition ${
+                    aria-current={active ? "page" : undefined}
+                    className={`group relative flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition ${
                       active
-                        ? "bg-gold/[0.08] text-foreground"
+                        ? "border border-gold/40 bg-gold/[0.12] text-foreground shadow-[inset_2px_0_0_theme(colors.amber.400)] font-medium"
                         : "text-muted-foreground hover:bg-white/[0.03] hover:text-foreground"
                     }`}
                   >
@@ -126,7 +127,7 @@ export function PortalShell({
                     />
                     <span className="truncate">{n.label}</span>
                     {active && (
-                      <span className="ms-auto h-1.5 w-1.5 rounded-full bg-gold" aria-hidden />
+                      <span className="ms-auto h-2 w-2 rounded-full bg-gold shadow-[0_0_8px_theme(colors.amber.400)]" aria-hidden />
                     )}
                   </Link>
                 </li>
