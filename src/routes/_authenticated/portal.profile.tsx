@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { User, MapPin, Bell, Globe2, ShieldCheck, BadgeCheck, Upload, Clock, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { LANGUAGES, getAllTimezones } from "@/lib/locales";
+import { setUserTimezone, setUserLocale } from "@/lib/user-timezone";
 
 export const Route = createFileRoute("/_authenticated/portal/profile")({
   head: () => ({
@@ -72,7 +73,11 @@ function ProfilePage() {
         .update({ display_name: displayName, language, timezone: tz })
         .eq("id", u.user.id);
       if (error) toast.error(error.message);
-      else toast.success("تم حفظ التغييرات");
+      else {
+        setUserTimezone(tz);
+        setUserLocale(language);
+        toast.success("تم حفظ التغييرات");
+      }
     }
     setSaving(false);
   }

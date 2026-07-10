@@ -14,6 +14,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { I18nProvider } from "../lib/i18n";
 import { Toaster } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { installTimezonePatch, loadUserTimezoneFromProfile, setUserTimezone, setUserLocale } from "@/lib/user-timezone";
 
 function NotFoundComponent() {
   return (
@@ -158,10 +159,18 @@ function RootComponent() {
   const router = useRouter();
 
   useEffect(() => {
+    installTimezonePatch();
+    void loadUserTimezoneFromProfile();
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {
       if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
       router.invalidate();
-      if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
+      if (event !== "SIGNED_OUT") {
+        queryClient.invalidateQueries();
+        void loadUserTimezoneFromProfile();
+      } else {
+        setUserTimezone(null);
+        setUserLocale(null);
+      }
     });
     return () => sub.subscription.unsubscribe();
   }, [router, queryClient]);
