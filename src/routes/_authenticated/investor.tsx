@@ -95,6 +95,9 @@ function InvestorPortal() {
   const [amountChanges, setAmountChanges] = useState<AmountChange[]>([]);
   type Payout = { id: string; subscription_id: string; amount: number; currency: string; period_start: string; period_end: string; created_at: string };
   const [payouts, setPayouts] = useState<Payout[]>([]);
+  const [payoutFrom, setPayoutFrom] = useState<string>("");
+  const [payoutTo, setPayoutTo] = useState<string>("");
+  const [payoutQuery, setPayoutQuery] = useState<string>("");
   const [now, setNow] = useState<number>(() => Date.now());
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 60_000);
@@ -876,8 +879,45 @@ function InvestorPortal() {
         <div className="mt-6 glass rounded-3xl p-6">
           <h3 className="font-display text-lg font-semibold">سجل التوزيعات اليومية</h3>
           <p className="mt-1 text-xs text-muted-foreground">النسبة المُطلقة بعد مرور 24 ساعة من كل اشتراك مع وقت الإصدار.</p>
-          {payouts.length > 0 && (() => {
-            const chartData = [...payouts]
+          <div className="mt-4 grid gap-2 sm:grid-cols-4">
+            <div>
+              <Label className="text-xs">من تاريخ</Label>
+              <Input type="date" value={payoutFrom} onChange={(e) => setPayoutFrom(e.target.value)} className="h-9" />
+            </div>
+            <div>
+              <Label className="text-xs">إلى تاريخ</Label>
+              <Input type="date" value={payoutTo} onChange={(e) => setPayoutTo(e.target.value)} className="h-9" />
+            </div>
+            <div className="sm:col-span-2">
+              <Label className="text-xs">بحث باسم الباقة</Label>
+              <Input value={payoutQuery} onChange={(e) => setPayoutQuery(e.target.value)} placeholder="اكتب اسم الباقة…" className="h-9" />
+            </div>
+            {(payoutFrom || payoutTo || payoutQuery) && (
+              <div className="sm:col-span-4">
+                <Button size="sm" variant="outline" className="h-8 border-white/15" onClick={() => { setPayoutFrom(""); setPayoutTo(""); setPayoutQuery(""); }}>
+                  إعادة ضبط الفلاتر
+                </Button>
+              </div>
+            )}
+          </div>
+          {(() => {
+            const fromTs = payoutFrom ? new Date(payoutFrom + "T00:00:00").getTime() : -Infinity;
+            const toTs = payoutTo ? new Date(payoutTo + "T23:59:59").getTime() : Infinity;
+            const q = payoutQuery.trim().toLowerCase();
+            const filteredPayouts = payouts.filter((p) => {
+              const t = new Date(p.created_at).getTime();
+              if (t < fromTs || t > toTs) return false;
+              if (q) {
+                const sub = subs.find((s) => s.id === p.subscription_id);
+                const name = (packages.find((pk) => pk.id === sub?.package_id)?.name ?? "").toLowerCase();
+                if (!name.includes(q)) return false;
+              }
+              return true;
+            });
+            if (filteredPayouts.length === 0) {
+              return <p className="mt-4 text-sm text-muted-foreground">لا توجد توزيعات مطابقة للفلاتر.</p>;
+            }
+            const chartData = [...filteredPayouts]
               .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
               .map((p) => {
                 const sub = subs.find((s) => s.id === p.subscription_id);
@@ -891,6 +931,7 @@ function InvestorPortal() {
                 };
               });
             return (
+              <>
               <div className="mt-4 h-56 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={chartData} margin={{ top: 8, right: 12, bottom: 0, left: -10 }}>
@@ -905,13 +946,8 @@ function InvestorPortal() {
                   </LineChart>
                 </ResponsiveContainer>
               </div>
-            );
-          })()}
-          {payouts.length === 0 ? (
-            <p className="mt-3 text-sm text-muted-foreground">لا توجد توزيعات بعد.</p>
-          ) : (
-            <ul className="mt-4 divide-y divide-white/10 text-sm">
-              {payouts.map((p) => {
+              <ul className="mt-4 divide-y divide-white/10 text-sm">
+              {filteredPayouts.map((p) => {
                 const sub = subs.find((s) => s.id === p.subscription_id);
                 const pkgName = packages.find((pk) => pk.id === sub?.package_id)?.name ?? p.subscription_id.slice(0, 8);
                 const base = Number(sub?.amount ?? 0);
@@ -929,8 +965,10 @@ function InvestorPortal() {
                   </li>
                 );
               })}
-            </ul>
-          )}
+              </ul>
+              </>
+            );
+          })()}
         </div>
       </section>
 
