@@ -20,7 +20,6 @@ import {
   Quote,
   Star,
   ScrollText,
-  Download,
   ExternalLink,
   CalendarCheck,
   Trophy,
@@ -1006,19 +1005,6 @@ function Testimonials() {
   );
 }
 
-function downloadCertStub(cert: { name: string; body: string; id: string; updated: string }) {
-  const text = `HK Investment Management\n\nCertificate: ${cert.name}\nCertificate ID: ${cert.id}\nLast updated: ${cert.updated}\n\n${cert.body}\n\nThis document is a placeholder pending upload of the official signed certificate.\n`;
-  const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `${cert.id}.txt`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-}
-
 function CertCard({
   cert,
   labels,
@@ -1072,20 +1058,6 @@ function CertCard({
         </div>
 
         <DialogFooter className="flex-col gap-2 sm:flex-row sm:justify-end">
-          <Button
-            variant="outline"
-            className="border-white/15"
-            onClick={() =>
-              downloadCertStub({
-                name: cert.name,
-                body: cert.body,
-                id: meta.verifyId,
-                updated: meta.updated,
-              })
-            }
-          >
-            <Download className="me-2 h-4 w-4" /> {labels.download}
-          </Button>
           <Button
             asChild
             className="bg-[var(--gradient-gold)] font-semibold text-background hover:opacity-95"
