@@ -47,18 +47,18 @@ function PortfoliosPage() {
               <h3 className="font-display text-2xl font-semibold">{p.name}</h3>
               <p className="mt-2 text-sm text-muted-foreground">{c.target}</p>
               <p className="font-display text-5xl font-semibold text-gradient">{TARGETS[i]}</p>
-              <dl className="mt-6 grid grid-cols-2 gap-3 text-sm">
+              <dl className="mt-6 grid grid-cols-2 gap-x-4 gap-y-5">
                 <div>
-                  <dt className="text-muted-foreground">{c.minimum}</dt>
-                  <dd className="font-medium">{MINS[i]}</dd>
+                  <dt className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">{c.minimum}</dt>
+                  <dd className="mt-1 font-display text-2xl font-semibold tabular-nums text-foreground">{MINS[i]}</dd>
                 </div>
                 <div>
-                  <dt className="text-muted-foreground">{c.risk}</dt>
-                  <dd className="font-medium">{p.risk}</dd>
+                  <dt className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">{c.risk}</dt>
+                  <dd className="mt-1 font-display text-2xl font-semibold text-foreground">{p.risk}</dd>
                 </div>
                 <div>
-                  <dt className="text-muted-foreground">{c.withdraw}</dt>
-                  <dd className="font-medium">{WITHDRAW}</dd>
+                  <dt className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">{c.withdraw}</dt>
+                  <dd className="mt-1 font-display text-2xl font-semibold tabular-nums text-foreground">{WITHDRAW}</dd>
                 </div>
               </dl>
               <ul className="mt-6 space-y-2 text-sm">
