@@ -356,14 +356,40 @@ function CustodyBanks() {
     lang === "ar"
       ? "أموالك محفوظة لدى مؤسسات من الدرجة الأولى"
       : "Your funds are held with tier-one institutions";
-  const banks = [
-    "J.P. Morgan",
-    "UBS",
-    "Citi",
-    "J. Safra Sarasin",
-    "Deutsche Bank",
-    "Coutts",
-    "Pictet",
+  const banks: {
+    name: string;
+    className: string;
+    style?: React.CSSProperties;
+  }[] = [
+    {
+      name: "J.P.Morgan",
+      className: "font-serif italic text-[#7a5a2b]",
+    },
+    {
+      name: "UBS",
+      className: "font-display font-extrabold tracking-tight text-[#e60028]",
+    },
+    {
+      name: "citi",
+      className: "font-display font-semibold lowercase text-[#003b70]",
+    },
+    {
+      name: "J. SAFRA SARASIN",
+      className: "font-serif tracking-[0.08em] text-[#0b2545]",
+    },
+    {
+      name: "Deutsche Bank",
+      className: "font-display font-medium text-[#0018a8]",
+    },
+    {
+      name: "Coutts",
+      className: "italic text-foreground",
+      style: { fontFamily: "'Snell Roundhand', 'Great Vibes', cursive" },
+    },
+    {
+      name: "PICTET",
+      className: "font-serif tracking-[0.14em] text-[#6b6b6b]",
+    },
   ];
   return (
     <section className="border-b border-white/5 bg-white/[0.02]">
@@ -371,13 +397,14 @@ function CustodyBanks() {
         <h2 className="text-center font-display text-2xl font-semibold md:text-3xl">
           {heading}
         </h2>
-        <div className="mt-10 flex flex-wrap items-center justify-center gap-x-10 gap-y-6">
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-x-10 gap-y-8 rounded-2xl border border-white/10 bg-white/95 px-6 py-10 shadow-sm">
           {banks.map((b) => (
             <span
-              key={b}
-              className="font-display text-lg font-semibold tracking-tight text-muted-foreground/80 transition hover:text-foreground md:text-xl"
+              key={b.name}
+              className={`text-xl md:text-2xl ${b.className}`}
+              style={b.style}
             >
-              {b}
+              {b.name}
             </span>
           ))}
         </div>
