@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -111,59 +111,75 @@ function AdminIndex() {
         </span>
       </div>
 
-      {/* KPI grid */}
+      {/* KPI grid — each tile links to its detail page */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <AdminKpi
-          icon={Users}
-          label="إجمالي المستخدمين"
-          value={isLoading ? "—" : fmtInt(t?.users)}
-          hint={t ? `+${fmtInt(t.newUsers30d)} خلال 30 يوماً` : undefined}
-        />
-        <AdminKpi
-          icon={CreditCard}
-          label="اشتراكات نشطة"
-          value={isLoading ? "—" : fmtInt(t?.activeSubscriptions)}
-          hint={t ? `${fmtInt(t.totalSubscriptions)} إجمالي` : undefined}
-          tone="positive"
-        />
-        <AdminKpi
-          icon={Landmark}
-          label="رأس مال تحت الإدارة"
-          value={isLoading ? "—" : fmtMoney(t?.aum)}
-          hint="Assets Under Management"
-          tone="positive"
-        />
-        <AdminKpi
-          icon={TrendingUp}
-          label="رأس مال جديد (30ي)"
-          value={isLoading ? "—" : fmtMoney(t?.newCapital30d)}
-          hint="Inflows via subscriptions"
-          tone="positive"
-        />
-        <AdminKpi
-          icon={Wallet}
-          label="إيداعات معلّقة"
-          value={isLoading ? "—" : fmtInt(t?.pendingDeposits)}
-          tone={t && t.pendingDeposits > 0 ? "warning" : "neutral"}
-        />
-        <AdminKpi
-          icon={ArrowDownToLine}
-          label="سحوبات معلّقة"
-          value={isLoading ? "—" : fmtInt(t?.pendingWithdrawals)}
-          tone={t && t.pendingWithdrawals > 0 ? "warning" : "neutral"}
-        />
-        <AdminKpi
-          icon={LifeBuoy}
-          label="تذاكر دعم مفتوحة"
-          value={isLoading ? "—" : fmtInt(t?.openTickets)}
-          tone={t && t.openTickets > 5 ? "warning" : "neutral"}
-        />
-        <AdminKpi
-          icon={ArrowLeftRight}
-          label="حركة معتمدة (30ي)"
-          value={isLoading ? "—" : fmtMoney((t?.depositsApproved30d ?? 0) + (t?.withdrawalsApproved30d ?? 0))}
-          hint={t ? `${fmtMoney(t.depositsApproved30d)} إيداع · ${fmtMoney(t.withdrawalsApproved30d)} سحب` : undefined}
-        />
+        <KpiLink to="/admin/users">
+          <AdminKpi
+            icon={Users}
+            label="إجمالي المستخدمين"
+            value={isLoading ? "—" : fmtInt(t?.users)}
+            hint={t ? `+${fmtInt(t.newUsers30d)} خلال 30 يوماً` : undefined}
+          />
+        </KpiLink>
+        <KpiLink to="/admin/subscriptions">
+          <AdminKpi
+            icon={CreditCard}
+            label="اشتراكات نشطة"
+            value={isLoading ? "—" : fmtInt(t?.activeSubscriptions)}
+            hint={t ? `${fmtInt(t.totalSubscriptions)} إجمالي` : undefined}
+            tone="positive"
+          />
+        </KpiLink>
+        <KpiLink to="/admin/accounting">
+          <AdminKpi
+            icon={Landmark}
+            label="رأس مال تحت الإدارة"
+            value={isLoading ? "—" : fmtMoney(t?.aum)}
+            hint="Assets Under Management"
+            tone="positive"
+          />
+        </KpiLink>
+        <KpiLink to="/admin/analytics">
+          <AdminKpi
+            icon={TrendingUp}
+            label="رأس مال جديد (30ي)"
+            value={isLoading ? "—" : fmtMoney(t?.newCapital30d)}
+            hint="Inflows via subscriptions"
+            tone="positive"
+          />
+        </KpiLink>
+        <KpiLink to="/admin/payments">
+          <AdminKpi
+            icon={Wallet}
+            label="إيداعات معلّقة"
+            value={isLoading ? "—" : fmtInt(t?.pendingDeposits)}
+            tone={t && t.pendingDeposits > 0 ? "warning" : "neutral"}
+          />
+        </KpiLink>
+        <KpiLink to="/admin/payments">
+          <AdminKpi
+            icon={ArrowDownToLine}
+            label="سحوبات معلّقة"
+            value={isLoading ? "—" : fmtInt(t?.pendingWithdrawals)}
+            tone={t && t.pendingWithdrawals > 0 ? "warning" : "neutral"}
+          />
+        </KpiLink>
+        <KpiLink to="/admin/support">
+          <AdminKpi
+            icon={LifeBuoy}
+            label="تذاكر دعم مفتوحة"
+            value={isLoading ? "—" : fmtInt(t?.openTickets)}
+            tone={t && t.openTickets > 5 ? "warning" : "neutral"}
+          />
+        </KpiLink>
+        <KpiLink to="/admin/finance">
+          <AdminKpi
+            icon={ArrowLeftRight}
+            label="حركة معتمدة (30ي)"
+            value={isLoading ? "—" : fmtMoney((t?.depositsApproved30d ?? 0) + (t?.withdrawalsApproved30d ?? 0))}
+            hint={t ? `${fmtMoney(t.depositsApproved30d)} إيداع · ${fmtMoney(t.withdrawalsApproved30d)} سحب` : undefined}
+          />
+        </KpiLink>
       </div>
 
       {/* Trend charts */}
@@ -305,5 +321,16 @@ function EmptyLine({ text }: { text: string }) {
     <p className="rounded-md border border-dashed border-white/10 px-4 py-6 text-center text-sm text-muted-foreground">
       {text}
     </p>
+  );
+}
+
+function KpiLink({ to, children }: { to: string; children: React.ReactNode }) {
+  return (
+    <Link
+      to={to}
+      className="block rounded-xl transition hover:brightness-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/60"
+    >
+      {children}
+    </Link>
   );
 }
