@@ -26,7 +26,7 @@ type Dep = { id: string; amount: number; currency: string; method: string; refer
 type Wd = { id: string; amount: number; currency: string; destination: string; iban: string | null; status: string; created_at: string };
 const depositSchema = z.object({
   amount: z.coerce.number().positive().max(10_000_000),
-  method: z.enum(["bank_transfer", "card"]),
+  method: z.enum(["bank_transfer", "card", "binance_pay", "usdt_trc20", "usdt_bep20"]),
   reference: z.string().trim().max(120).optional(),
   notes: z.string().trim().max(500).optional(),
 });
@@ -38,6 +38,13 @@ const withdrawSchema = z.object({
   notes: z.string().trim().max(500).optional(),
 });
 
+// Platform deposit destinations — super admin can update these values in code.
+const PLATFORM_WALLETS = {
+  binance_pay: "HK-BINANCE-PAY-ID-000000",
+  usdt_trc20: "TXxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  usdt_bep20: "0xHKxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+} as const;
+
 function InvestorPortal() {
   const router = useRouter();
   const [uid, setUid] = useState<string | null>(null);
@@ -47,6 +54,8 @@ function InvestorPortal() {
   const [wds, setWds] = useState<Wd[]>([]);
   const [loading, setLoading] = useState(true);
   const [busySub, setBusySub] = useState<string | null>(null);
+  const [depositMethod, setDepositMethod] = useState<"bank_transfer" | "card" | "binance_pay" | "usdt_trc20" | "usdt_bep20">("bank_transfer");
+  const [withdrawMethod, setWithdrawMethod] = useState<"bank" | "binance_pay" | "usdt_trc20" | "usdt_bep20">("bank");
 
   async function load() {
     const { data: userRes } = await supabase.auth.getUser();
@@ -241,6 +250,15 @@ function InvestorPortal() {
           </Link>
         </div>
 
+        <div className="mt-4 flex flex-wrap gap-2">
+          <a href="#deposit" className="inline-flex items-center gap-2 rounded-full bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700">
+            <ArrowDownToLine className="h-4 w-4" /> إيداع
+          </a>
+          <a href="#withdraw" className="inline-flex items-center gap-2 rounded-full border border-red-500/40 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-300 hover:bg-red-500/20">
+            <ArrowUpFromLine className="h-4 w-4" /> سحب
+          </a>
+        </div>
+
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard icon={<Wallet className="h-5 w-5" />} label="الرصيد المتاح" value={fmt(balance)} sub="USD" />
           <StatCard icon={<Clock className="h-5 w-5" />} label="إيداعات قيد المراجعة" value={fmt(pendingDeposits)} sub="USD" />
@@ -330,7 +348,7 @@ function InvestorPortal() {
         </div>
 
         <div className="mt-8 grid gap-6 lg:grid-cols-2">
-          <div className="glass rounded-3xl p-6">
+          <div id="deposit" className="glass rounded-3xl p-6 scroll-mt-24">
             <div className="flex items-center gap-2">
               <ArrowDownToLine className="h-5 w-5 text-gold" />
               <h2 className="font-display text-lg font-semibold">إيداع جديد</h2>
@@ -338,28 +356,71 @@ function InvestorPortal() {
             <form onSubmit={submitDeposit} className="mt-4 grid gap-3">
               <Field label="المبلغ (USD)"><Input name="amount" type="number" min="1" step="0.01" required /></Field>
               <Field label="طريقة الدفع">
-                <select name="method" className="h-9 w-full rounded-md border border-white/10 bg-white/[0.03] px-3 text-sm" defaultValue="bank_transfer">
+                <select
+                  name="method"
+                  value={depositMethod}
+                  onChange={(e) => setDepositMethod(e.target.value as typeof depositMethod)}
+                  className="h-9 w-full rounded-md border border-white/10 bg-white/[0.03] px-3 text-sm"
+                >
                   <option value="bank_transfer">تحويل بنكي</option>
+                  <option value="binance_pay">محفظة Binance Pay</option>
+                  <option value="usdt_trc20">USDT — شبكة TRC20</option>
+                  <option value="usdt_bep20">USDT — شبكة BEP20 (BSC)</option>
                   <option value="card">بطاقة ائتمان (قريبًا)</option>
                 </select>
               </Field>
-              <Field label="مرجع التحويل (اختياري)"><Input name="reference" maxLength={120} /></Field>
+              {(depositMethod === "binance_pay" || depositMethod === "usdt_trc20" || depositMethod === "usdt_bep20") && (
+                <div className="rounded-xl border border-amber-400/30 bg-amber-400/[0.05] p-3 text-xs">
+                  <div className="mb-1 font-semibold text-amber-300">
+                    {depositMethod === "binance_pay" ? "Binance Pay ID للمنصة" : depositMethod === "usdt_trc20" ? "عنوان USDT-TRC20" : "عنوان USDT-BEP20"}
+                  </div>
+                  <div className="break-all font-mono text-[11px] text-foreground">{PLATFORM_WALLETS[depositMethod]}</div>
+                  <p className="mt-2 text-muted-foreground">أرسل المبلغ إلى العنوان أعلاه ثم ألصق hash المعاملة (TxID) في حقل المرجع. سيُضاف الرصيد بعد تأكيد الاستلام من الإدارة.</p>
+                </div>
+              )}
+              <Field label="مرجع التحويل / TxID"><Input name="reference" maxLength={120} placeholder={depositMethod === "bank_transfer" || depositMethod === "card" ? "" : "TxID / Hash المعاملة"} /></Field>
               <Field label="ملاحظات"><Textarea name="notes" maxLength={500} rows={2} /></Field>
               <Button type="submit" className="bg-red-600 font-semibold text-white hover:bg-red-700">إرسال طلب الإيداع</Button>
-              <p className="text-[11px] text-muted-foreground">التحويل البنكي: يعتمده الفريق يدويًا بعد التأكد من الاستلام. سيتم إضافة الدفع بالبطاقة عبر بوابة آمنة قريبًا.</p>
+              <p className="text-[11px] text-muted-foreground">جميع الإيداعات (بنكي / Binance / كريبتو) يعتمدها الفريق يدويًا بعد التأكد من استلام الأموال.</p>
             </form>
           </div>
 
-          <div className="glass rounded-3xl p-6">
+          <div id="withdraw" className="glass rounded-3xl p-6 scroll-mt-24">
             <div className="flex items-center gap-2">
               <ArrowUpFromLine className="h-5 w-5 text-gold" />
               <h2 className="font-display text-lg font-semibold">طلب سحب</h2>
             </div>
             <form onSubmit={submitWithdraw} className="mt-4 grid gap-3">
               <Field label="المبلغ (USD)"><Input name="amount" type="number" min="1" step="0.01" required /></Field>
-              <Field label="اسم المستفيد / الوجهة"><Input name="destination" required maxLength={120} /></Field>
-              <Field label="IBAN"><Input name="iban" maxLength={64} /></Field>
-              <Field label="SWIFT"><Input name="swift" maxLength={32} /></Field>
+              <Field label="طريقة السحب">
+                <select
+                  value={withdrawMethod}
+                  onChange={(e) => setWithdrawMethod(e.target.value as typeof withdrawMethod)}
+                  className="h-9 w-full rounded-md border border-white/10 bg-white/[0.03] px-3 text-sm"
+                >
+                  <option value="bank">تحويل بنكي</option>
+                  <option value="binance_pay">Binance Pay ID</option>
+                  <option value="usdt_trc20">USDT — شبكة TRC20</option>
+                  <option value="usdt_bep20">USDT — شبكة BEP20 (BSC)</option>
+                </select>
+              </Field>
+              {withdrawMethod === "bank" ? (
+                <>
+                  <Field label="اسم المستفيد / الوجهة"><Input name="destination" required maxLength={120} /></Field>
+                  <Field label="IBAN"><Input name="iban" maxLength={64} /></Field>
+                  <Field label="SWIFT"><Input name="swift" maxLength={32} /></Field>
+                </>
+              ) : (
+                <>
+                  <Field label={withdrawMethod === "binance_pay" ? "Binance Pay ID الخاص بك" : "عنوان محفظتك"}>
+                    <Input name="destination" required maxLength={120} placeholder={withdrawMethod === "binance_pay" ? "123456789" : withdrawMethod === "usdt_trc20" ? "T..." : "0x..."} />
+                  </Field>
+                  <Field label="الشبكة">
+                    <Input name="iban" readOnly value={withdrawMethod === "binance_pay" ? "Binance Pay" : withdrawMethod === "usdt_trc20" ? "TRC20 (Tron)" : "BEP20 (BSC)"} />
+                  </Field>
+                  <p className="text-[11px] text-amber-300/80">تأكد من صحة العنوان والشبكة — التحويلات على شبكة خاطئة لا يمكن استرجاعها.</p>
+                </>
+              )}
               <Field label="ملاحظات"><Textarea name="notes" maxLength={500} rows={2} /></Field>
               <Button type="submit" className="bg-red-600 font-semibold text-white hover:bg-red-700">إرسال طلب السحب</Button>
             </form>
