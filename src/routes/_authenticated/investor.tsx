@@ -227,13 +227,6 @@ function InvestorPortal() {
     const fd = new FormData(e.currentTarget);
     const parsed = depositSchema.safeParse(Object.fromEntries(fd));
     if (!parsed.success) return toast.error(parsed.error.issues[0].message);
-    // Network-specific validation for crypto / Binance Pay deposits
-    if (parsed.data.method in TXID_RULES) {
-      const rule = TXID_RULES[parsed.data.method as keyof typeof TXID_RULES];
-      const ref = parsed.data.reference ?? "";
-      if (!ref) return toast.error("يرجى إدخال TxID / مرجع المعاملة");
-      if (!rule.regex.test(ref)) return toast.error(rule.label);
-    }
     // Guard: refuse to create a Binance Pay request when the platform ID is invalid
     if (parsed.data.method === "binance_pay") {
       try { getPlatformBinancePayId(); } catch (err) { return toast.error((err as Error).message); }
@@ -462,7 +455,6 @@ function InvestorPortal() {
                   )}
                 </div>
               )}
-              <Field label="مرجع التحويل / TxID (اختياري)"><Input name="reference" maxLength={120} placeholder="TxID / Hash المعاملة" /></Field>
               <Field label="صورة إثبات التحويل (اختياري)">
                 <Input name="receipt" type="file" accept="image/png,image/jpeg,image/webp" className="file:mr-2 file:rounded file:border-0 file:bg-white/10 file:px-2 file:py-1 file:text-xs file:text-foreground" />
               </Field>
