@@ -92,6 +92,8 @@ function InvestorPortal() {
   const [editSub, setEditSub] = useState<{ id: string; value: string; reason: string } | null>(null);
   type AmountChange = { id: string; subscription_id: string; amount_before: number; amount_after: number; amount_delta: number; currency: string; reason: string | null; created_at: string };
   const [amountChanges, setAmountChanges] = useState<AmountChange[]>([]);
+  type Payout = { id: string; subscription_id: string; amount: number; currency: string; period_start: string; period_end: string; created_at: string };
+  const [payouts, setPayouts] = useState<Payout[]>([]);
   const [now, setNow] = useState<number>(() => Date.now());
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 60_000);
