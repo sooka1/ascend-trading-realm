@@ -196,6 +196,36 @@
   background-size: 48px 48px;
 }
 
+/* Light theme scope — used on the landing page. Overrides the global dark
+   tokens for anything rendered inside .landing-light. */
+.landing-light {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.18 0.03 220);
+  --surface: oklch(0.98 0.005 220);
+  --surface-2: oklch(0.96 0.008 220);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.18 0.03 220);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.18 0.03 220);
+  --secondary: oklch(0.96 0.008 220);
+  --secondary-foreground: oklch(0.18 0.03 220);
+  --muted: oklch(0.96 0.008 220);
+  --muted-foreground: oklch(0.45 0.02 220);
+  --border: oklch(0.18 0.03 220 / 12%);
+  --input: oklch(0.18 0.03 220 / 8%);
+  color-scheme: light;
+  background-color: var(--background);
+  color: var(--foreground);
+  background-image:
+    radial-gradient(1200px 600px at 10% -10%, oklch(0.68 0.14 200 / 0.06), transparent 60%),
+    radial-gradient(900px 500px at 100% 10%, oklch(0.80 0.14 85 / 0.05), transparent 60%);
+}
+
+.landing-light ::selection {
+  background: oklch(0.68 0.14 200 / 0.25);
+  color: oklch(0.18 0.03 220);
+}
+
 @keyframes float-slow {
   0%, 100% { transform: translateY(0) rotate(0deg); }
   50% { transform: translateY(-20px) rotate(3deg); }

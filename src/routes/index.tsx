@@ -83,21 +83,23 @@ function useContent(): LandingContent {
 function Home() {
   const c = useContent();
   return (
-    <PageShell>
-      <Hero c={c} />
-      <MarketTicker />
-      <TrustStrip c={c} />
-      <CustodyBanks />
-      <Features c={c} />
-      <SolutionsPreview c={c} />
-      <PerformanceBand c={c} />
-      <RiskFramework c={c} />
-      <SecurityBlock c={c} />
-      <Testimonials />
-      <Credentials />
-      <PortalPreview c={c} />
-      <FinalCTA c={c} />
-    </PageShell>
+    <div className="landing-light">
+      <PageShell>
+        <Hero c={c} />
+        <MarketTicker />
+        <TrustStrip c={c} />
+        <CustodyBanks />
+        <Features c={c} />
+        <SolutionsPreview c={c} />
+        <PerformanceBand c={c} />
+        <RiskFramework c={c} />
+        <SecurityBlock c={c} />
+        <Testimonials />
+        <Credentials />
+        <PortalPreview c={c} />
+        <FinalCTA c={c} />
+      </PageShell>
+    </div>
   );
 }
 
