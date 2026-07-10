@@ -229,7 +229,7 @@ function Hero({ c }: { c: LandingContent }) {
             {c.hero.subtitle}
           </p>
           <div className="mt-10 flex flex-wrap items-center gap-3">
-            <Button asChild size="lg" className="rounded-sm bg-gold font-semibold text-background shadow-[0_0_28px_rgba(201,168,76,0.22)] transition hover:bg-[oklch(0.88_0.11_90)] active:scale-[0.98]">
+            <Button asChild size="lg" className="rounded-sm border border-[#a0430a] bg-[#c2410c] font-semibold text-white shadow-[0_4px_14px_rgba(194,65,12,0.35)] transition-all duration-200 hover:border-[#ea580c] hover:bg-[#ea580c] hover:shadow-[0_6px_20px_rgba(234,88,12,0.5)] active:border-[#7c2d0a] active:bg-[#9a3412] active:scale-[0.98]">
               <Link to="/auth">{c.hero.ctaOpen} <ArrowRight className="ml-2 h-4 w-4" /></Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="rounded-sm border-gold/30 bg-transparent text-foreground transition hover:border-gold/70 hover:bg-gold/[0.06]">
@@ -401,7 +401,7 @@ function SolutionsPreview({ c }: { c: LandingContent }) {
                 <Row k={c.solutions.min} v={mins[i]} />
                 <Row k={c.solutions.allocation} v={p.allocation} />
               </dl>
-              <Button asChild className="mt-6 w-full rounded-sm bg-gold font-semibold text-background transition hover:bg-[oklch(0.88_0.11_90)]">
+              <Button asChild className="mt-6 w-full rounded-sm border border-[#a0430a] bg-[#c2410c] font-semibold text-white shadow-[0_4px_14px_rgba(194,65,12,0.35)] transition-all duration-200 hover:border-[#ea580c] hover:bg-[#ea580c] hover:shadow-[0_6px_20px_rgba(234,88,12,0.5)] active:border-[#7c2d0a] active:bg-[#9a3412] active:scale-[0.98]">
                 <Link to="/auth">{c.solutions.open}</Link>
               </Button>
               <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent" aria-hidden />
@@ -537,7 +537,7 @@ function FinalCTA({ c }: { c: LandingContent }) {
       </h2>
       <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">{c.final.note}</p>
       <div className="mt-8 flex flex-wrap justify-center gap-3">
-        <Button asChild size="lg" className="bg-[var(--gradient-gold)] font-semibold text-background hover:opacity-95">
+        <Button asChild size="lg" className="border border-[#a0430a] bg-gradient-to-br from-[#ea580c] to-[#9a3412] font-semibold text-white shadow-[0_4px_14px_rgba(194,65,12,0.35)] transition-all duration-200 hover:from-[#f97316] hover:to-[#c2410c] hover:shadow-[0_6px_20px_rgba(234,88,12,0.5)] active:from-[#9a3412] active:to-[#7c2d0a] active:scale-[0.98]">
           <Link to="/auth">{c.final.cta}</Link>
         </Button>
         <Button asChild size="lg" variant="outline" className="border-white/15">
