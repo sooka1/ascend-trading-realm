@@ -41,6 +41,25 @@ function Auth() {
   });
   const navigate = useNavigate();
 
+  // Capture ?ref=CODE from the URL (persists across register/login toggle)
+  const [refCode, setRefCode] = useState<string>("");
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const p = new URLSearchParams(window.location.search);
+    const r = p.get("ref");
+    if (r) {
+      const clean = r.trim().toUpperCase().slice(0, 16);
+      setRefCode(clean);
+      try { sessionStorage.setItem("hk.refCode", clean); } catch { /* ignore */ }
+      setMode("register");
+    } else {
+      try {
+        const saved = sessionStorage.getItem("hk.refCode");
+        if (saved) setRefCode(saved);
+      } catch { /* ignore */ }
+    }
+  }, []);
+
   // Route super_admin → /admin, everyone else → /dashboard.
   async function goPostLogin(userId: string) {
     try {
@@ -199,7 +218,7 @@ function Auth() {
           password,
           options: {
             emailRedirectTo: `${window.location.origin}/dashboard`,
-            data: { display_name: fullName },
+            data: { display_name: fullName, ref_code: refCode || undefined },
           },
         });
         if (error) throw error;
