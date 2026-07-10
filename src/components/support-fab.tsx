@@ -6,8 +6,22 @@ import { Link } from "@tanstack/react-router";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  ensureMyKeypair,
+  encryptForBoth,
+  tryDecrypt,
+  getSuperAdminPublicKey,
+} from "@/lib/e2ee";
 
-type ChatMsg = { id: string; ticket_id: string; sender_id: string; body: string; is_staff: boolean; created_at: string };
+type ChatMsg = {
+  id: string;
+  ticket_id: string;
+  sender_id: string;
+  body: string;
+  body_admin: string | null;
+  is_staff: boolean;
+  created_at: string;
+};
 
 export function SupportFab() {
   const [open, setOpen] = useState(false);
@@ -19,6 +33,9 @@ export function SupportFab() {
   const [messages, setMessages] = useState<ChatMsg[]>([]);
   const [draft, setDraft] = useState("");
   const [loading, setLoading] = useState(false);
+  const [mySk, setMySk] = useState<string | null>(null);
+  const [myPk, setMyPk] = useState<string | null>(null);
+  const [adminPk, setAdminPk] = useState<string | null>(null);
   const listRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -34,6 +51,18 @@ export function SupportFab() {
     });
     return () => sub.subscription.unsubscribe();
   }, []);
+
+  // Generate/load the user's E2EE keypair once signed in, and fetch the admin's public key.
+  useEffect(() => {
+    if (!uid) return;
+    void (async () => {
+      const kp = await ensureMyKeypair(uid);
+      setMySk(kp.secretKey);
+      setMyPk(kp.publicKey);
+      const apk = await getSuperAdminPublicKey();
+      setAdminPk(apk);
+    })();
+  }, [uid]);
 
   // Find or create the user's active support ticket + load message history.
   useEffect(() => {
@@ -109,10 +138,19 @@ export function SupportFab() {
     }
     const body = draft.trim();
     if (body.length < 1) return;
+    if (!mySk || !myPk) {
+      toast.error("جارٍ تجهيز التشفير، حاول بعد لحظة");
+      return;
+    }
+    if (!adminPk) {
+      toast.error("لم يفعّل السوبر ادمن التشفير بعد. لا يمكن إرسال رسالة مشفّرة.");
+      return;
+    }
     setSending(true);
+    const payload = encryptForBoth(myPk, adminPk, body);
     const { error } = await supabase
       .from("ticket_messages")
-      .insert({ ticket_id: ticketId, sender_id: uid, body, is_staff: false });
+      .insert({ ticket_id: ticketId, sender_id: uid, body: payload.body, body_admin: payload.body_admin, is_staff: false });
     if (!error) {
       await supabase
         .from("support_tickets")
@@ -173,6 +211,9 @@ export function SupportFab() {
               ) : (
                 messages.map((m) => {
                   const mine = m.sender_id === uid && !m.is_staff;
+                  const plain = mySk
+                    ? tryDecrypt(m.body, mySk) ?? tryDecrypt(m.body_admin, mySk)
+                    : null;
                   return (
                     <div key={m.id} className={`flex ${mine ? "justify-start" : "justify-end"}`}>
                       <div
@@ -185,7 +226,9 @@ export function SupportFab() {
                         {m.is_staff && (
                           <p className="mb-0.5 font-mono text-[9px] uppercase tracking-widest text-gold">HK Support</p>
                         )}
-                        <p className="whitespace-pre-wrap break-words">{m.body}</p>
+                        <p className="whitespace-pre-wrap break-words">
+                          {plain ?? <span className="italic opacity-60">🔒 رسالة مشفّرة</span>}
+                        </p>
                         <p className="mt-1 text-[9px] opacity-60">
                           {new Date(m.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                         </p>

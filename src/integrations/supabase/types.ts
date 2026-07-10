@@ -414,6 +414,7 @@ export type Database = {
           display_name: string | null
           email: string | null
           id: string
+          public_key: string | null
           updated_at: string
         }
         Insert: {
@@ -423,6 +424,7 @@ export type Database = {
           display_name?: string | null
           email?: string | null
           id: string
+          public_key?: string | null
           updated_at?: string
         }
         Update: {
@@ -432,6 +434,7 @@ export type Database = {
           display_name?: string | null
           email?: string | null
           id?: string
+          public_key?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -576,6 +579,7 @@ export type Database = {
       ticket_messages: {
         Row: {
           body: string
+          body_admin: string | null
           created_at: string
           id: string
           is_staff: boolean
@@ -584,6 +588,7 @@ export type Database = {
         }
         Insert: {
           body: string
+          body_admin?: string | null
           created_at?: string
           id?: string
           is_staff?: boolean
@@ -592,6 +597,7 @@ export type Database = {
         }
         Update: {
           body?: string
+          body_admin?: string | null
           created_at?: string
           id?: string
           is_staff?: boolean
@@ -735,6 +741,11 @@ export type Database = {
       email_has_role: {
         Args: { _email: string; _role: Database["public"]["Enums"]["app_role"] }
         Returns: boolean
+      }
+      get_super_admin_public_key: { Args: never; Returns: string }
+      get_ticket_owner_public_key: {
+        Args: { _ticket_id: string }
+        Returns: string
       }
       has_any_role: {
         Args: {

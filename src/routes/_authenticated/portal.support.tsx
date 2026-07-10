@@ -8,6 +8,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { LifeBuoy, Plus, Send } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
+import {
+  ensureMyKeypair,
+  encryptForBoth,
+  tryDecrypt,
+  getSuperAdminPublicKey,
+} from "@/lib/e2ee";
 
 export const Route = createFileRoute("/_authenticated/portal/support")({
   head: () => ({
@@ -34,6 +40,7 @@ type TicketMessage = {
   ticket_id: string;
   sender_id: string;
   body: string;
+  body_admin: string | null;
   is_staff: boolean;
   created_at: string;
 };
@@ -52,11 +59,21 @@ function SupportPage() {
   const [draft, setDraft] = useState("");
   const [creating, setCreating] = useState(false);
   const [form, setForm] = useState({ subject: "", category: "", body: "" });
+  const [mySk, setMySk] = useState<string | null>(null);
+  const [myPk, setMyPk] = useState<string | null>(null);
+  const [adminPk, setAdminPk] = useState<string | null>(null);
 
   useEffect(() => {
     void (async () => {
       const { data: u } = await supabase.auth.getUser();
-      setUid(u.user?.id ?? null);
+      const id = u.user?.id ?? null;
+      setUid(id);
+      if (id) {
+        const kp = await ensureMyKeypair(id);
+        setMySk(kp.secretKey);
+        setMyPk(kp.publicKey);
+        setAdminPk(await getSuperAdminPublicKey());
+      }
       await loadTickets();
     })();
   }, []);
@@ -85,15 +102,18 @@ function SupportPage() {
     const parsed = newTicketSchema.safeParse(form);
     if (!parsed.success) return toast.error(parsed.error.issues[0]?.message ?? "بيانات غير صالحة");
     if (!uid) return;
+    if (!mySk || !myPk || !adminPk)
+      return toast.error("جارٍ تجهيز التشفير أو لم يفعّل السوبر ادمن التشفير بعد");
     const { data: t, error } = await supabase
       .from("support_tickets")
       .insert({ user_id: uid, subject: parsed.data.subject, category: parsed.data.category || null })
       .select()
       .single();
     if (error || !t) return toast.error(error?.message ?? "تعذّر الإنشاء");
+    const payload = encryptForBoth(myPk, adminPk, parsed.data.body);
     const { error: mErr } = await supabase
       .from("ticket_messages")
-      .insert({ ticket_id: t.id, sender_id: uid, body: parsed.data.body, is_staff: false });
+      .insert({ ticket_id: t.id, sender_id: uid, body: payload.body, body_admin: payload.body_admin, is_staff: false });
     if (mErr) return toast.error(mErr.message);
     toast.success("تم فتح التذكرة");
     setForm({ subject: "", category: "", body: "" });
@@ -104,9 +124,12 @@ function SupportPage() {
 
   async function reply() {
     if (!selected || !uid || !draft.trim()) return;
+    if (!mySk || !myPk || !adminPk)
+      return toast.error("جارٍ تجهيز التشفير أو لم يفعّل السوبر ادمن التشفير بعد");
+    const payload = encryptForBoth(myPk, adminPk, draft.trim());
     const { error } = await supabase
       .from("ticket_messages")
-      .insert({ ticket_id: selected.id, sender_id: uid, body: draft.trim(), is_staff: false });
+      .insert({ ticket_id: selected.id, sender_id: uid, body: payload.body, body_admin: payload.body_admin, is_staff: false });
     if (error) return toast.error(error.message);
     await supabase
       .from("support_tickets")
@@ -201,7 +224,11 @@ function SupportPage() {
                 <StatusPill status={selected.status} />
               </div>
               <div className="mt-4 flex-1 space-y-3 overflow-y-auto pe-1">
-                {messages.map((m) => (
+                {messages.map((m) => {
+                  const plain = mySk
+                    ? tryDecrypt(m.body, mySk) ?? tryDecrypt(m.body_admin, mySk)
+                    : null;
+                  return (
                   <div
                     key={m.id}
                     className={`max-w-[85%] rounded-md border px-3 py-2 text-sm ${
@@ -210,12 +237,15 @@ function SupportPage() {
                         : "ms-auto border-gold/20 bg-gold/[0.08]"
                     }`}
                   >
-                    <p className="whitespace-pre-wrap">{m.body}</p>
+                    <p className="whitespace-pre-wrap">
+                      {plain ?? <span className="italic opacity-60">🔒 رسالة مشفّرة</span>}
+                    </p>
                     <p className="mt-1 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
                       {m.is_staff ? "فريق الدعم" : "أنت"} · {new Date(m.created_at).toLocaleString()}
                     </p>
                   </div>
-                ))}
+                  );
+                })}
               </div>
               {selected.status !== "closed" && (
                 <div className="mt-4 flex items-end gap-2 border-t border-white/5 pt-4">
