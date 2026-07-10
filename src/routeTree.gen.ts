@@ -39,6 +39,7 @@ import { Route as AuthenticatedPortalTransactionsRouteImport } from './routes/_a
 import { Route as AuthenticatedPortalSupportRouteImport } from './routes/_authenticated/portal.support'
 import { Route as AuthenticatedPortalStatementsRouteImport } from './routes/_authenticated/portal.statements'
 import { Route as AuthenticatedPortalSettingsRouteImport } from './routes/_authenticated/portal.settings'
+import { Route as AuthenticatedPortalReferralsRouteImport } from './routes/_authenticated/portal.referrals'
 import { Route as AuthenticatedPortalProfileRouteImport } from './routes/_authenticated/portal.profile'
 import { Route as AuthenticatedPortalPortfolioRouteImport } from './routes/_authenticated/portal.portfolio'
 import { Route as AuthenticatedPortalPerformanceRouteImport } from './routes/_authenticated/portal.performance'
@@ -227,6 +228,12 @@ const AuthenticatedPortalSettingsRoute =
   AuthenticatedPortalSettingsRouteImport.update({
     id: '/portal/settings',
     path: '/portal/settings',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPortalReferralsRoute =
+  AuthenticatedPortalReferralsRouteImport.update({
+    id: '/portal/referrals',
+    path: '/portal/referrals',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedPortalProfileRoute =
@@ -474,6 +481,7 @@ export interface FileRoutesByFullPath {
   '/portal/performance': typeof AuthenticatedPortalPerformanceRoute
   '/portal/portfolio': typeof AuthenticatedPortalPortfolioRoute
   '/portal/profile': typeof AuthenticatedPortalProfileRoute
+  '/portal/referrals': typeof AuthenticatedPortalReferralsRoute
   '/portal/settings': typeof AuthenticatedPortalSettingsRoute
   '/portal/statements': typeof AuthenticatedPortalStatementsRoute
   '/portal/support': typeof AuthenticatedPortalSupportRoute
@@ -539,6 +547,7 @@ export interface FileRoutesByTo {
   '/portal/performance': typeof AuthenticatedPortalPerformanceRoute
   '/portal/portfolio': typeof AuthenticatedPortalPortfolioRoute
   '/portal/profile': typeof AuthenticatedPortalProfileRoute
+  '/portal/referrals': typeof AuthenticatedPortalReferralsRoute
   '/portal/settings': typeof AuthenticatedPortalSettingsRoute
   '/portal/statements': typeof AuthenticatedPortalStatementsRoute
   '/portal/support': typeof AuthenticatedPortalSupportRoute
@@ -607,6 +616,7 @@ export interface FileRoutesById {
   '/_authenticated/portal/performance': typeof AuthenticatedPortalPerformanceRoute
   '/_authenticated/portal/portfolio': typeof AuthenticatedPortalPortfolioRoute
   '/_authenticated/portal/profile': typeof AuthenticatedPortalProfileRoute
+  '/_authenticated/portal/referrals': typeof AuthenticatedPortalReferralsRoute
   '/_authenticated/portal/settings': typeof AuthenticatedPortalSettingsRoute
   '/_authenticated/portal/statements': typeof AuthenticatedPortalStatementsRoute
   '/_authenticated/portal/support': typeof AuthenticatedPortalSupportRoute
@@ -674,6 +684,7 @@ export interface FileRouteTypes {
     | '/portal/performance'
     | '/portal/portfolio'
     | '/portal/profile'
+    | '/portal/referrals'
     | '/portal/settings'
     | '/portal/statements'
     | '/portal/support'
@@ -739,6 +750,7 @@ export interface FileRouteTypes {
     | '/portal/performance'
     | '/portal/portfolio'
     | '/portal/profile'
+    | '/portal/referrals'
     | '/portal/settings'
     | '/portal/statements'
     | '/portal/support'
@@ -806,6 +818,7 @@ export interface FileRouteTypes {
     | '/_authenticated/portal/performance'
     | '/_authenticated/portal/portfolio'
     | '/_authenticated/portal/profile'
+    | '/_authenticated/portal/referrals'
     | '/_authenticated/portal/settings'
     | '/_authenticated/portal/statements'
     | '/_authenticated/portal/support'
@@ -1067,6 +1080,13 @@ declare module '@tanstack/react-router' {
       path: '/portal/settings'
       fullPath: '/portal/settings'
       preLoaderRoute: typeof AuthenticatedPortalSettingsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/portal/referrals': {
+      id: '/_authenticated/portal/referrals'
+      path: '/portal/referrals'
+      fullPath: '/portal/referrals'
+      preLoaderRoute: typeof AuthenticatedPortalReferralsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/portal/profile': {
@@ -1412,6 +1432,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPortalPerformanceRoute: typeof AuthenticatedPortalPerformanceRoute
   AuthenticatedPortalPortfolioRoute: typeof AuthenticatedPortalPortfolioRoute
   AuthenticatedPortalProfileRoute: typeof AuthenticatedPortalProfileRoute
+  AuthenticatedPortalReferralsRoute: typeof AuthenticatedPortalReferralsRoute
   AuthenticatedPortalSettingsRoute: typeof AuthenticatedPortalSettingsRoute
   AuthenticatedPortalStatementsRoute: typeof AuthenticatedPortalStatementsRoute
   AuthenticatedPortalSupportRoute: typeof AuthenticatedPortalSupportRoute
@@ -1436,6 +1457,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPortalPerformanceRoute: AuthenticatedPortalPerformanceRoute,
   AuthenticatedPortalPortfolioRoute: AuthenticatedPortalPortfolioRoute,
   AuthenticatedPortalProfileRoute: AuthenticatedPortalProfileRoute,
+  AuthenticatedPortalReferralsRoute: AuthenticatedPortalReferralsRoute,
   AuthenticatedPortalSettingsRoute: AuthenticatedPortalSettingsRoute,
   AuthenticatedPortalStatementsRoute: AuthenticatedPortalStatementsRoute,
   AuthenticatedPortalSupportRoute: AuthenticatedPortalSupportRoute,
