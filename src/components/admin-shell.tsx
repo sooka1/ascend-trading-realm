@@ -1,4 +1,4 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useRouter, useRouterState } from "@tanstack/react-router";
 import { PageShell } from "@/components/page-shell";
 import {
   LayoutDashboard,
@@ -20,6 +20,7 @@ import {
   Search,
   Zap,
   MessageCircle,
+  ArrowRight,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
@@ -81,6 +82,8 @@ export function AdminShell({
   children: ReactNode;
 }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const router = useRouter();
+  const showBack = pathname !== "/admin";
   const groups = Array.from(new Set(NAV.map((n) => n.group)));
 
   const renderItem = (n: NavItem, mobile = false) => {
@@ -168,6 +171,16 @@ export function AdminShell({
 
             <header className="mb-6 flex flex-wrap items-end justify-between gap-4 border-b border-white/5 pb-6">
               <div>
+                {showBack && (
+                  <button
+                    type="button"
+                    onClick={() => router.history.back()}
+                    className="mb-3 inline-flex items-center gap-1.5 rounded-md border border-white/10 bg-white/[0.03] px-2.5 py-1 text-xs text-muted-foreground transition hover:border-gold/40 hover:text-foreground"
+                  >
+                    <ArrowRight className="h-3.5 w-3.5" />
+                    رجوع
+                  </button>
+                )}
                 <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-gold/80">
                   {eyebrow}
                 </p>
