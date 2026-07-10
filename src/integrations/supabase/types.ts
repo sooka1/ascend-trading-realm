@@ -470,10 +470,12 @@ export type Database = {
           id: string
           id_back_url: string | null
           id_front_url: string | null
+          language: string | null
           public_key: string | null
           referral_code: string | null
           referred_by: string | null
           selfie_url: string | null
+          timezone: string | null
           updated_at: string
           verification_notes: string | null
           verification_status: Database["public"]["Enums"]["verification_status"]
@@ -488,10 +490,12 @@ export type Database = {
           id: string
           id_back_url?: string | null
           id_front_url?: string | null
+          language?: string | null
           public_key?: string | null
           referral_code?: string | null
           referred_by?: string | null
           selfie_url?: string | null
+          timezone?: string | null
           updated_at?: string
           verification_notes?: string | null
           verification_status?: Database["public"]["Enums"]["verification_status"]
@@ -506,10 +510,12 @@ export type Database = {
           id?: string
           id_back_url?: string | null
           id_front_url?: string | null
+          language?: string | null
           public_key?: string | null
           referral_code?: string | null
           referred_by?: string | null
           selfie_url?: string | null
+          timezone?: string | null
           updated_at?: string
           verification_notes?: string | null
           verification_status?: Database["public"]["Enums"]["verification_status"]
