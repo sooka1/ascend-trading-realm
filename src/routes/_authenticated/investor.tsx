@@ -327,7 +327,7 @@ function InvestorPortal() {
         </div>
 
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <StatCard icon={<Wallet className="h-5 w-5" />} label="الرصيد المتاح" value={fmt(balance)} sub="USD" />
+          <StatCard icon={<Wallet className="h-5 w-5" />} label="الرصيد المتاح" value={fmt(available)} sub="USD" />
           <StatCard icon={<Clock className="h-5 w-5" />} label="إيداعات قيد المراجعة" value={fmt(pendingDeposits)} sub="USD" />
           <StatCard
             icon={<PackageIcon className="h-5 w-5" />}
