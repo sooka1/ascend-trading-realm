@@ -29,6 +29,7 @@ import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { useMfaEnforcement } from "@/hooks/use-mfa-enforcement";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { UserBadge } from "@/components/user-badge";
+import { NotificationsPopover } from "@/components/notifications-popover";
 
 type NavItem = { to: string; icon: LucideIcon; label: string; group?: string };
 
@@ -212,18 +213,7 @@ export function PortalShell({
                 </Sheet>
                 <div className="flex items-center gap-2.5">
                   <UserBadge />
-                  <Link
-                    to="/portal/notifications"
-                    aria-label="الإشعارات"
-                    className="relative inline-flex h-11 w-11 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03] text-muted-foreground transition hover:border-gold/40 hover:text-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                  >
-                    <Bell className="h-5 w-5" />
-                    {unreadCount > 0 && (
-                      <span className="absolute -top-1 -end-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-gold px-1 font-mono text-[10px] font-semibold text-background">
-                        {unreadCount > 99 ? "99+" : unreadCount}
-                      </span>
-                    )}
-                  </Link>
+                  <NotificationsPopover size="md" />
                   <button
                     type="button"
                     onClick={handleSignOut}
@@ -243,18 +233,7 @@ export function PortalShell({
                 {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
                 <div className="hidden items-center gap-2 lg:flex">
                   <UserBadge />
-                  <Link
-                to="/portal/notifications"
-                aria-label="الإشعارات"
-                className="relative inline-flex h-9 w-9 items-center justify-center rounded-md border border-white/10 bg-white/[0.03] text-muted-foreground transition hover:border-gold/40 hover:text-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-              >
-                <Bell className="h-4 w-4" />
-                {unreadCount > 0 && (
-                  <span className="absolute -top-1 -end-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-gold px-1 font-mono text-[10px] font-semibold text-background">
-                    {unreadCount > 99 ? "99+" : unreadCount}
-                  </span>
-                )}
-              </Link>
+                  <NotificationsPopover size="sm" />
                   <button
                     type="button"
                     onClick={handleSignOut}
