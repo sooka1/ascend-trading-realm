@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import {
   AdminShell,
   AdminCard,
@@ -10,8 +11,8 @@ import {
   fmtInt,
   fmtMoney,
 } from "@/components/admin-shell";
-import { listPaymentsAdmin } from "@/lib/admin.functions";
-import { ArrowUpRight, ArrowDownRight, Wallet, AlertCircle } from "lucide-react";
+import { listPaymentsAdmin, decidePaymentAdmin } from "@/lib/admin.functions";
+import { ArrowUpRight, ArrowDownRight, Wallet, AlertCircle, Check, X } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/_admin/admin/payments")({
   head: () => ({
@@ -25,12 +26,34 @@ export const Route = createFileRoute("/_authenticated/_admin/admin/payments")({
 
 function AdminPayments() {
   const fetchList = useServerFn(listPaymentsAdmin);
+  const decide = useServerFn(decidePaymentAdmin);
+  const qc = useQueryClient();
+  const [busyId, setBusyId] = useState<string | null>(null);
   const [status, setStatus] = useState<"all" | "pending" | "approved" | "rejected">("all");
   const { data, isLoading, error } = useQuery({
     queryKey: ["admin", "payments", status],
     queryFn: () => fetchList({ data: { status } }),
     staleTime: 30_000,
   });
+
+  async function onDecide(kind: "deposit" | "withdrawal", id: string, decision: "approved" | "rejected") {
+    let note: string | undefined;
+    if (decision === "rejected") {
+      note = window.prompt("سبب الرفض (اختياري):") ?? undefined;
+    } else if (!window.confirm("تأكيد اعتماد هذه العملية؟")) {
+      return;
+    }
+    setBusyId(`${kind}-${id}`);
+    try {
+      await decide({ data: { kind, id, decision, note } });
+      toast.success(decision === "approved" ? "تم الاعتماد" : "تم الرفض");
+      await qc.invalidateQueries({ queryKey: ["admin", "payments"] });
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setBusyId(null);
+    }
+  }
 
   const t = data?.totals;
   return (
@@ -80,20 +103,21 @@ function AdminPayments() {
                 <th className="px-2 py-2 text-start">الطريقة/الوجهة</th>
                 <th className="px-2 py-2 text-start">المرجع</th>
                 <th className="px-2 py-2 text-end">الحالة</th>
+                <th className="px-2 py-2 text-end">إجراء</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/[0.06]">
               {isLoading ? (
                 Array.from({ length: 6 }).map((_, i) => (
                   <tr key={i}>
-                    <td colSpan={7} className="px-2 py-3">
+                    <td colSpan={8} className="px-2 py-3">
                       <div className="h-6 animate-pulse rounded bg-white/[0.03]" />
                     </td>
                   </tr>
                 ))
               ) : (data?.rows ?? []).length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-2 py-8 text-center text-muted-foreground">
+                  <td colSpan={8} className="px-2 py-8 text-center text-muted-foreground">
                     لا توجد مدفوعات.
                   </td>
                 </tr>
@@ -132,6 +156,30 @@ function AdminPayments() {
                       >
                         {r.status}
                       </StatusPill>
+                    </td>
+                    <td className="px-2 py-2.5 text-end">
+                      {r.status === "pending" ? (
+                        <div className="flex justify-end gap-1">
+                          <button
+                            disabled={busyId === `${r.kind}-${r.id}`}
+                            onClick={() => onDecide(r.kind, r.id, "approved")}
+                            title="اعتماد"
+                            className="rounded border border-emerald-400/30 bg-emerald-400/[0.08] p-1.5 text-emerald-300 hover:border-emerald-400/60 disabled:opacity-50"
+                          >
+                            <Check className="h-3.5 w-3.5" />
+                          </button>
+                          <button
+                            disabled={busyId === `${r.kind}-${r.id}`}
+                            onClick={() => onDecide(r.kind, r.id, "rejected")}
+                            title="رفض"
+                            className="rounded border border-red-400/30 bg-red-400/[0.08] p-1.5 text-red-300 hover:border-red-400/60 disabled:opacity-50"
+                          >
+                            <X className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      ) : (
+                        <span className="text-[10px] text-muted-foreground">—</span>
+                      )}
                     </td>
                   </tr>
                 ))
