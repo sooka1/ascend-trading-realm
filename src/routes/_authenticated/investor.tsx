@@ -257,8 +257,5 @@ function fmt(n: number) {
   return n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-function riskClass(r: string) {
-  if (r === "low") return "bg-emerald-500/10 text-emerald-400";
-  if (r === "high") return "bg-red-500/10 text-red-400";
   return "bg-amber-500/10 text-amber-400";
 }
