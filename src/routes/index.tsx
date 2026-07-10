@@ -367,7 +367,7 @@ function CustodyBanks() {
         <img
           src={custodyBanksImg.url}
           alt="أموالك محفوظة لدى مؤسسات من الدرجة الأولى — J.P. Morgan, UBS, Citi, J. Safra Sarasin, Deutsche Bank, Coutts, Pictet"
-          className="mx-auto h-auto w-full max-w-4xl"
+          className="mx-auto h-auto w-full max-w-4xl [filter:invert(1)_hue-rotate(180deg)_brightness(1.05)]"
           loading="lazy"
         />
       </div>
