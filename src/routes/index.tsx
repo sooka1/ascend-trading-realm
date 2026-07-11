@@ -85,6 +85,21 @@ function useContent(): LandingContent {
 
 function Home() {
   const c = useContent();
+  // Landing page is always dark, regardless of the user's theme preference.
+  React.useEffect(() => {
+    const root = document.documentElement;
+    const hadLight = root.classList.contains("light");
+    const hadDark = root.classList.contains("dark");
+    const prevScheme = root.style.colorScheme;
+    root.classList.remove("light");
+    root.classList.add("dark");
+    root.style.colorScheme = "dark";
+    return () => {
+      if (hadLight) root.classList.add("light");
+      if (!hadDark) root.classList.remove("dark");
+      root.style.colorScheme = prevScheme;
+    };
+  }, []);
   return (
     <PageShell>
         <Hero c={c} />
