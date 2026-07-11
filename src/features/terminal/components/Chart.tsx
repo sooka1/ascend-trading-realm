@@ -3,8 +3,9 @@ import { CandlestickSeries, LineSeries, AreaSeries, BarSeries, createChart } fro
 import type { IChartApi, ISeriesApi, Time } from "lightweight-charts";
 import { getMarketDataProvider } from "../adapters/market-data";
 import type { Candle, Timeframe } from "../adapters/market-data/types";
-import { Minus, Slash, Square, TrendingUp, Trash2, MousePointer2 } from "lucide-react";
+import { Minus, Slash, Square, TrendingUp, Trash2, MousePointer2, Activity, LineChart as LineIcon, Waves, BarChart3 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ema, bollinger, rsi as rsiCalc, macd as macdCalc } from "../lib/indicators";
 
 type DrawTool = "none" | "trend" | "hline" | "rect" | "fib";
 type Anchor = { time: number; price: number };
@@ -18,6 +19,8 @@ const FIB_LEVELS = [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1];
 const FIB_COLORS = ["#94a3b8", "#f59e0b", "#f97316", "#eab308", "#22c55e", "#06b6d4", "#94a3b8"];
 
 type ChartType = "candles" | "line" | "area" | "bars";
+type Indicators = { ema9: boolean; ema21: boolean; ema50: boolean; bb: boolean; rsi: boolean; macd: boolean };
+const DEFAULT_INDICATORS: Indicators = { ema9: false, ema21: false, ema50: false, bb: false, rsi: false, macd: false };
 
 function heikinAshi(src: Candle[]): Candle[] {
   const out: Candle[] = [];
@@ -43,6 +46,9 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
   const [drawings, setDrawings] = useState<Drawing[]>([]);
   const [pending, setPending] = useState<Anchor | null>(null);
   const [hover, setHover] = useState<Anchor | null>(null);
+  const [indicators, setIndicators] = useState<Indicators>(DEFAULT_INDICATORS);
+  const indicatorSeriesRef = useRef<Record<string, ISeriesApi<"Line"> | ISeriesApi<"Area"> | null>>({});
+  const candlesRef = useRef<Candle[]>([]);
 
   useEffect(() => {
     if (!ref.current) return;
@@ -78,12 +84,14 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
       const raw = await provider.getCandles(symbol, timeframe, 400);
       if (disposed) return;
       candles = raw;
+      candlesRef.current = raw;
       const view = chartType === "line" || chartType === "area"
         ? raw.map((c) => ({ time: c.time as Time, value: c.close }))
         : raw.map((c) => ({ time: c.time as Time, open: c.open, high: c.high, low: c.low, close: c.close }));
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (series as any).setData(view);
       chart.timeScale().fitContent();
+      recomputeIndicators();
     })();
 
     const unsub = provider.onCandle(symbol, timeframe, (c) => {
@@ -104,10 +112,66 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
           ? { time: bar.time as Time, value: bar.close }
           : { time: bar.time as Time, open: bar.open, high: bar.high, low: bar.low, close: bar.close }
       );
+      candlesRef.current = candles;
+      recomputeIndicators();
     });
 
     return () => { disposed = true; unsub(); };
-  }, [symbol, timeframe, chartType, precision]);
+  }, [symbol, timeframe, chartType, precision, indicators]);
+
+  // Add / remove and refresh indicator series based on toggles.
+  const recomputeIndicators = useCallback(() => {
+    const chart = chartRef.current;
+    if (!chart) return;
+    const bars = candlesRef.current;
+    if (!bars.length) return;
+    const closes = bars.map((b) => b.close);
+    const store = indicatorSeriesRef.current;
+
+    const ensure = (key: string, factory: () => ISeriesApi<"Line">) => {
+      if (!store[key]) store[key] = factory();
+      return store[key]!;
+    };
+    const drop = (key: string) => {
+      const s = store[key];
+      if (s) { try { chart.removeSeries(s); } catch { /* ignore */ } store[key] = null; }
+    };
+    const applyLine = (key: string, values: (number | null)[], color: string, pane = 0) => {
+      const s = ensure(key, () => chart.addSeries(LineSeries, { color, lineWidth: 1, priceLineVisible: false, lastValueVisible: false }, pane));
+      const data = bars.map((b, i) => (values[i] == null ? null : { time: b.time as Time, value: values[i] as number })).filter(Boolean) as { time: Time; value: number }[];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (s as any).setData(data);
+    };
+
+    // Main pane overlays
+    indicators.ema9 ? applyLine("ema9", ema(closes, 9), "#f59e0b") : drop("ema9");
+    indicators.ema21 ? applyLine("ema21", ema(closes, 21), "#38bdf8") : drop("ema21");
+    indicators.ema50 ? applyLine("ema50", ema(closes, 50), "#a78bfa") : drop("ema50");
+    if (indicators.bb) {
+      const bb = bollinger(closes, 20, 2);
+      applyLine("bbUpper", bb.upper, "rgba(245,197,66,0.55)");
+      applyLine("bbMid", bb.mid, "rgba(245,197,66,0.35)");
+      applyLine("bbLower", bb.lower, "rgba(245,197,66,0.55)");
+    } else { drop("bbUpper"); drop("bbMid"); drop("bbLower"); }
+
+    // Sub-pane: RSI (pane 1)
+    if (indicators.rsi) {
+      applyLine("rsi", rsiCalc(closes, 14), "#22d3ee", 1);
+      applyLine("rsi70", closes.map(() => 70), "rgba(239,68,68,0.4)", 1);
+      applyLine("rsi30", closes.map(() => 30), "rgba(34,197,94,0.4)", 1);
+    } else { drop("rsi"); drop("rsi70"); drop("rsi30"); }
+
+    // Sub-pane: MACD (pane 2)
+    if (indicators.macd) {
+      const m = macdCalc(closes);
+      const paneIdx = indicators.rsi ? 2 : 1;
+      applyLine("macdLine", m.line, "#60a5fa", paneIdx);
+      applyLine("macdSignal", m.signal, "#f97316", paneIdx);
+      applyLine("macdHist", m.hist, "rgba(148,163,184,0.6)", paneIdx);
+    } else { drop("macdLine"); drop("macdSignal"); drop("macdHist"); }
+  }, [indicators]);
+
+  useEffect(() => { recomputeIndicators(); }, [recomputeIndicators]);
 
   // heikin-ashi placeholder (kept for future use)
   void heikinAshi;
@@ -174,6 +238,15 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
     { id: "hline", icon: Minus, label: "خط أفقي" },
     { id: "rect", icon: Square, label: "مستطيل" },
     { id: "fib", icon: TrendingUp, label: "فيبوناتشي" },
+  ];
+
+  const indicatorToggles: { key: keyof Indicators; label: string; icon: typeof Activity; color: string }[] = [
+    { key: "ema9", label: "EMA 9", icon: LineIcon, color: "#f59e0b" },
+    { key: "ema21", label: "EMA 21", icon: LineIcon, color: "#38bdf8" },
+    { key: "ema50", label: "EMA 50", icon: LineIcon, color: "#a78bfa" },
+    { key: "bb", label: "Bollinger", icon: Waves, color: "#F5C542" },
+    { key: "rsi", label: "RSI 14", icon: Activity, color: "#22d3ee" },
+    { key: "macd", label: "MACD", icon: BarChart3, color: "#60a5fa" },
   ];
 
   return (
@@ -269,6 +342,27 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
             <Trash2 className="h-3.5 w-3.5" />
           </button>
         )}
+      </div>
+      <div className="absolute right-2 top-2 z-10 flex flex-wrap gap-1 rounded-md border border-white/10 bg-black/60 p-1 backdrop-blur">
+        {indicatorToggles.map((it) => {
+          const active = indicators[it.key];
+          const Icon = it.icon;
+          return (
+            <button
+              key={it.key}
+              type="button"
+              onClick={() => setIndicators((v) => ({ ...v, [it.key]: !v[it.key] }))}
+              className={cn(
+                "flex items-center gap-1 rounded px-2 py-0.5 text-[10px] font-medium transition",
+                active ? "bg-white/10 text-white ring-1" : "text-white/50 hover:bg-white/5",
+              )}
+              style={active ? { borderColor: it.color, boxShadow: `inset 0 0 0 1px ${it.color}55` } : undefined}
+            >
+              <Icon className="h-3 w-3" style={{ color: active ? it.color : undefined }} />
+              {it.label}
+            </button>
+          );
+        })}
       </div>
     </div>
   );
