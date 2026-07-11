@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { PageShell, PageHero } from "@/components/page-shell";
 import { Trophy, Timer, Users, Wallet, Target, Medal, CheckCircle2, Sparkles } from "lucide-react";
@@ -247,9 +247,16 @@ function CompetitionCard({ comp, pending, onJoin }: { comp: Comp; pending: boole
         )}
       </div>
 
-      <Button className="mt-4 w-full" disabled={comp.status === "ended" || pending} onClick={onJoin}>
-        {comp.status === "ended" ? "انتهت المسابقة" : comp.status === "live" ? "انضم الآن" : "احجز مقعدك"}
-      </Button>
+      <div className="mt-4 grid gap-2">
+        <Button className="w-full" disabled={comp.status === "ended" || pending} onClick={onJoin}>
+          {comp.status === "ended" ? "انتهت المسابقة" : comp.status === "live" ? "انضم الآن" : "احجز مقعدك"}
+        </Button>
+        {comp.status !== "ended" && (
+          <Button asChild variant="outline" className="w-full border-gold/40 text-gold hover:bg-gold/10">
+            <Link to="/competitions/$id/trade" params={{ id: comp.id }}>ابدأ التداول التجريبي</Link>
+          </Button>
+        )}
+      </div>
     </article>
   );
 }
