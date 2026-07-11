@@ -23,6 +23,7 @@ import {
   LogOut,
   Menu,
   Copy,
+  Landmark,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useMemo, useState, type ReactNode } from "react";
