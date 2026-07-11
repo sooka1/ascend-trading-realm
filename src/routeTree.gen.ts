@@ -79,6 +79,7 @@ import { Route as AuthenticatedAdminAdminLiveChatRouteImport } from './routes/_a
 import { Route as AuthenticatedAdminAdminKycRouteImport } from './routes/_authenticated/_admin/admin.kyc'
 import { Route as AuthenticatedAdminAdminInvoicesRouteImport } from './routes/_authenticated/_admin/admin.invoices'
 import { Route as AuthenticatedAdminAdminFinanceRouteImport } from './routes/_authenticated/_admin/admin.finance'
+import { Route as AuthenticatedAdminAdminCopyTradingRouteImport } from './routes/_authenticated/_admin/admin.copy-trading'
 import { Route as AuthenticatedAdminAdminBackupsRouteImport } from './routes/_authenticated/_admin/admin.backups'
 import { Route as AuthenticatedAdminAdminAuditRouteImport } from './routes/_authenticated/_admin/admin.audit'
 import { Route as AuthenticatedAdminAdminAnalyticsRouteImport } from './routes/_authenticated/_admin/admin.analytics'
@@ -474,6 +475,12 @@ const AuthenticatedAdminAdminFinanceRoute =
     path: '/admin/finance',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
+const AuthenticatedAdminAdminCopyTradingRoute =
+  AuthenticatedAdminAdminCopyTradingRouteImport.update({
+    id: '/admin/copy-trading',
+    path: '/admin/copy-trading',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 const AuthenticatedAdminAdminBackupsRoute =
   AuthenticatedAdminAdminBackupsRouteImport.update({
     id: '/admin/backups',
@@ -549,6 +556,7 @@ export interface FileRoutesByFullPath {
   '/admin/analytics': typeof AuthenticatedAdminAdminAnalyticsRoute
   '/admin/audit': typeof AuthenticatedAdminAdminAuditRoute
   '/admin/backups': typeof AuthenticatedAdminAdminBackupsRoute
+  '/admin/copy-trading': typeof AuthenticatedAdminAdminCopyTradingRoute
   '/admin/finance': typeof AuthenticatedAdminAdminFinanceRoute
   '/admin/invoices': typeof AuthenticatedAdminAdminInvoicesRoute
   '/admin/kyc': typeof AuthenticatedAdminAdminKycRoute
@@ -623,6 +631,7 @@ export interface FileRoutesByTo {
   '/admin/analytics': typeof AuthenticatedAdminAdminAnalyticsRoute
   '/admin/audit': typeof AuthenticatedAdminAdminAuditRoute
   '/admin/backups': typeof AuthenticatedAdminAdminBackupsRoute
+  '/admin/copy-trading': typeof AuthenticatedAdminAdminCopyTradingRoute
   '/admin/finance': typeof AuthenticatedAdminAdminFinanceRoute
   '/admin/invoices': typeof AuthenticatedAdminAdminInvoicesRoute
   '/admin/kyc': typeof AuthenticatedAdminAdminKycRoute
@@ -700,6 +709,7 @@ export interface FileRoutesById {
   '/_authenticated/_admin/admin/analytics': typeof AuthenticatedAdminAdminAnalyticsRoute
   '/_authenticated/_admin/admin/audit': typeof AuthenticatedAdminAdminAuditRoute
   '/_authenticated/_admin/admin/backups': typeof AuthenticatedAdminAdminBackupsRoute
+  '/_authenticated/_admin/admin/copy-trading': typeof AuthenticatedAdminAdminCopyTradingRoute
   '/_authenticated/_admin/admin/finance': typeof AuthenticatedAdminAdminFinanceRoute
   '/_authenticated/_admin/admin/invoices': typeof AuthenticatedAdminAdminInvoicesRoute
   '/_authenticated/_admin/admin/kyc': typeof AuthenticatedAdminAdminKycRoute
@@ -776,6 +786,7 @@ export interface FileRouteTypes {
     | '/admin/analytics'
     | '/admin/audit'
     | '/admin/backups'
+    | '/admin/copy-trading'
     | '/admin/finance'
     | '/admin/invoices'
     | '/admin/kyc'
@@ -850,6 +861,7 @@ export interface FileRouteTypes {
     | '/admin/analytics'
     | '/admin/audit'
     | '/admin/backups'
+    | '/admin/copy-trading'
     | '/admin/finance'
     | '/admin/invoices'
     | '/admin/kyc'
@@ -926,6 +938,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_admin/admin/analytics'
     | '/_authenticated/_admin/admin/audit'
     | '/_authenticated/_admin/admin/backups'
+    | '/_authenticated/_admin/admin/copy-trading'
     | '/_authenticated/_admin/admin/finance'
     | '/_authenticated/_admin/admin/invoices'
     | '/_authenticated/_admin/admin/kyc'
@@ -1468,6 +1481,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminAdminFinanceRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/_admin/admin/copy-trading': {
+      id: '/_authenticated/_admin/admin/copy-trading'
+      path: '/admin/copy-trading'
+      fullPath: '/admin/copy-trading'
+      preLoaderRoute: typeof AuthenticatedAdminAdminCopyTradingRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/_admin/admin/backups': {
       id: '/_authenticated/_admin/admin/backups'
       path: '/admin/backups'
@@ -1504,6 +1524,7 @@ interface AuthenticatedAdminRouteRouteChildren {
   AuthenticatedAdminAdminAnalyticsRoute: typeof AuthenticatedAdminAdminAnalyticsRoute
   AuthenticatedAdminAdminAuditRoute: typeof AuthenticatedAdminAdminAuditRoute
   AuthenticatedAdminAdminBackupsRoute: typeof AuthenticatedAdminAdminBackupsRoute
+  AuthenticatedAdminAdminCopyTradingRoute: typeof AuthenticatedAdminAdminCopyTradingRoute
   AuthenticatedAdminAdminFinanceRoute: typeof AuthenticatedAdminAdminFinanceRoute
   AuthenticatedAdminAdminInvoicesRoute: typeof AuthenticatedAdminAdminInvoicesRoute
   AuthenticatedAdminAdminKycRoute: typeof AuthenticatedAdminAdminKycRoute
@@ -1532,6 +1553,8 @@ const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren
       AuthenticatedAdminAdminAnalyticsRoute,
     AuthenticatedAdminAdminAuditRoute: AuthenticatedAdminAdminAuditRoute,
     AuthenticatedAdminAdminBackupsRoute: AuthenticatedAdminAdminBackupsRoute,
+    AuthenticatedAdminAdminCopyTradingRoute:
+      AuthenticatedAdminAdminCopyTradingRoute,
     AuthenticatedAdminAdminFinanceRoute: AuthenticatedAdminAdminFinanceRoute,
     AuthenticatedAdminAdminInvoicesRoute: AuthenticatedAdminAdminInvoicesRoute,
     AuthenticatedAdminAdminKycRoute: AuthenticatedAdminAdminKycRoute,
