@@ -10,11 +10,22 @@ import { supabase } from "@/integrations/supabase/client";
 
 type DrawTool = "none" | "trend" | "hline" | "rect" | "fib";
 type Anchor = { time: number; price: number };
+type DrawStyle = { color?: string; width?: number; opacity?: number };
 type Drawing =
-  | { id: string; type: "trend"; a: Anchor; b: Anchor }
-  | { id: string; type: "rect"; a: Anchor; b: Anchor }
-  | { id: string; type: "fib"; a: Anchor; b: Anchor }
-  | { id: string; type: "hline"; price: number };
+  | { id: string; type: "trend"; a: Anchor; b: Anchor; style?: DrawStyle }
+  | { id: string; type: "rect"; a: Anchor; b: Anchor; style?: DrawStyle }
+  | { id: string; type: "fib"; a: Anchor; b: Anchor; style?: DrawStyle }
+  | { id: string; type: "hline"; price: number; style?: DrawStyle };
+
+const DEFAULT_COLORS: Record<Exclude<DrawTool, "none">, string> = {
+  trend: "#60a5fa", hline: "#F5C542", rect: "#60a5fa", fib: "#94a3b8",
+};
+const PALETTE = ["#F5C542", "#60a5fa", "#22c55e", "#ef4444", "#a78bfa", "#f97316", "#e2e8f0"];
+const resolveStyle = (d: Drawing): { color: string; width: number; opacity: number } => ({
+  color: d.style?.color ?? DEFAULT_COLORS[d.type],
+  width: d.style?.width ?? (d.type === "hline" ? 1.25 : 1.5),
+  opacity: d.style?.opacity ?? 1,
+});
 
 const FIB_LEVELS = [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1];
 const FIB_COLORS = ["#94a3b8", "#f59e0b", "#f97316", "#eab308", "#22c55e", "#06b6d4", "#94a3b8"];
