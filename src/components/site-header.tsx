@@ -14,7 +14,7 @@ const NAV = [
   { key: "nav.about", to: "/about" },
   { key: "nav.solutions", to: "/solutions" },
   { key: "nav.portfolios", to: "/portfolios" },
-  { key: "nav.performance", to: "/performance" },
+  { key: "nav.copytrading", to: "/copy-trading" },
   { key: "nav.risk", to: "/risk" },
   { key: "nav.markets", to: "/markets" },
   { key: "nav.education", to: "/education" },
