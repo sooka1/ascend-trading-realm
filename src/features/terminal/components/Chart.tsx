@@ -93,6 +93,20 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
   const [hitLog, setHitLog] = useState<HitLog[]>(() => loadAlertLog());
   const [selectedHit, setSelectedHit] = useState<HitLog | null>(null);
   const [logOpen, setLogOpen] = useState(false);
+  const [logKind, setLogKind] = useState<"all" | "TP" | "SL">("all");
+  const [logSide, setLogSide] = useState<"all" | "buy" | "sell">("all");
+  const [logQuery, setLogQuery] = useState("");
+  const filteredHitLog = hitLog.filter((h) => {
+    if (logKind !== "all" && h.kind !== logKind) return false;
+    if (logSide !== "all" && h.side !== logSide) return false;
+    const q = logQuery.trim().toLowerCase();
+    if (!q) return true;
+    return (
+      h.symbol.toLowerCase().includes(q) ||
+      String(h.price).includes(q) ||
+      String(h.entry).includes(q)
+    );
+  });
   const [showRiskLines, setShowRiskLines] = useState<boolean>(() => {
     try {
       if (typeof window === "undefined") return true;
@@ -718,14 +732,14 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
               <span>سجل تنبيهات TP / SL ({hitLog.length})</span>
               <div className="flex items-center gap-2">
                 <button
-                  disabled={hitLog.length === 0}
+                  disabled={filteredHitLog.length === 0}
                   onClick={() => {
                     const header = ["at_iso","symbol","kind","side","entry","price","volume","result","pos_id"];
                     const esc = (v: unknown) => {
                       const s = String(v ?? "");
                       return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
                     };
-                    const rows = hitLog.map((h) => [
+                    const rows = filteredHitLog.map((h) => [
                       new Date(h.at).toISOString(), h.symbol, h.kind, h.side,
                       h.entry, h.price, h.volume, h.result, h.posId,
                     ].map(esc).join(","));
@@ -745,9 +759,27 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
                 <button onClick={() => setLogOpen(false)} className="rounded px-1.5 py-0.5 text-[10px] text-white/60 hover:bg-white/10 hover:text-white">إغلاق</button>
               </div>
             </div>
+            <div className="flex flex-wrap items-center gap-2 border-b border-white/10 bg-slate-950/70 px-3 py-2 text-[10px]">
+              <select value={logKind} onChange={(e) => setLogKind(e.target.value as "all" | "TP" | "SL")}
+                className="rounded border border-white/10 bg-slate-900 px-1.5 py-1 text-white/80">
+                <option value="all">النوع: الكل</option>
+                <option value="TP">TP</option>
+                <option value="SL">SL</option>
+              </select>
+              <select value={logSide} onChange={(e) => setLogSide(e.target.value as "all" | "buy" | "sell")}
+                className="rounded border border-white/10 bg-slate-900 px-1.5 py-1 text-white/80">
+                <option value="all">النتيجة: الكل</option>
+                <option value="buy">شراء</option>
+                <option value="sell">بيع</option>
+              </select>
+              <input value={logQuery} onChange={(e) => setLogQuery(e.target.value)}
+                placeholder="بحث بالأداة أو السعر…"
+                className="flex-1 min-w-[120px] rounded border border-white/10 bg-slate-900 px-2 py-1 text-white/80 placeholder:text-white/30" />
+              <span className="text-white/40">{filteredHitLog.length}/{hitLog.length}</span>
+            </div>
             <div className="max-h-[60vh] overflow-auto">
-              {hitLog.length === 0 ? (
-                <div className="py-8 text-center text-[11px] text-white/40">لا يوجد تنبيهات بعد</div>
+              {filteredHitLog.length === 0 ? (
+                <div className="py-8 text-center text-[11px] text-white/40">{hitLog.length === 0 ? "لا يوجد تنبيهات بعد" : "لا توجد نتائج مطابقة"}</div>
               ) : (
                 <table className="w-full text-[11px]">
                   <thead className="sticky top-0 bg-slate-950/95 text-white/50 text-right">
@@ -761,7 +793,7 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
                     </tr>
                   </thead>
                   <tbody>
-                    {hitLog.map((h) => (
+                    {filteredHitLog.map((h) => (
                       <tr key={h.key + ":" + h.at} className="border-t border-white/[0.04]">
                         <td className="px-2 py-2 font-mono text-white/70">{new Date(h.at).toLocaleString("en-GB")}</td>
                         <td className="px-2 py-2">{h.symbol}</td>
