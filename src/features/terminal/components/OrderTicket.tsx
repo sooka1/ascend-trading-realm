@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { ArrowDown, ArrowUp } from "lucide-react";
 import { toast } from "sonner";
 import { getBroker } from "../adapters/broker";
 import { estimateMargin, estimatedPnl, riskReward, validateOrder } from "../services/risk-engine";
@@ -121,14 +122,40 @@ export function OrderTicket({ instrument, bid, ask, balance, leverage }: {
       </div>
 
       <div className="grid grid-cols-2 gap-2">
-        <Button onClick={() => submit("sell")} disabled={busy} className="flex h-10 min-w-0 items-center justify-center gap-1.5 overflow-hidden whitespace-nowrap bg-red-500 px-2 text-white hover:bg-red-600">
-          <span className="shrink-0 text-xs font-semibold leading-none">بيع</span>
-          <span dir="ltr" className="truncate font-mono text-xs font-semibold leading-none tabular-nums opacity-95">{formatAssetPrice(instrument.symbol, bid, instrument.price_precision)}</span>
-        </Button>
-        <Button onClick={() => submit("buy")} disabled={busy} className="flex h-10 min-w-0 items-center justify-center gap-1.5 overflow-hidden whitespace-nowrap bg-emerald-500 px-2 text-white hover:bg-emerald-600">
-          <span className="shrink-0 text-xs font-semibold leading-none">شراء</span>
-          <span dir="ltr" className="truncate font-mono text-xs font-semibold leading-none tabular-nums opacity-95">{formatAssetPrice(instrument.symbol, ask, instrument.price_precision)}</span>
-        </Button>
+        <button
+          type="button"
+          onClick={() => submit("sell")}
+          disabled={busy}
+          className="group relative flex h-14 min-w-0 flex-col items-stretch justify-center overflow-hidden rounded-md border border-red-400/40 bg-gradient-to-b from-red-500/95 to-red-600 px-3 text-white shadow-[0_1px_0_0_rgba(255,255,255,0.12)_inset,0_6px_16px_-8px_rgba(239,68,68,0.55)] ring-1 ring-inset ring-white/5 transition-all hover:from-red-500 hover:to-red-700 active:translate-y-px disabled:opacity-60"
+        >
+          <div className="flex items-center justify-between gap-1.5">
+            <span className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider">
+              <ArrowDown className="h-3 w-3" strokeWidth={2.5} />
+              SELL
+            </span>
+            <span className="text-[10px] font-medium uppercase tracking-wider text-white/70">بيع</span>
+          </div>
+          <div dir="ltr" className="mt-0.5 truncate text-start font-mono text-sm font-bold leading-none tabular-nums">
+            {formatAssetPrice(instrument.symbol, bid, instrument.price_precision)}
+          </div>
+        </button>
+        <button
+          type="button"
+          onClick={() => submit("buy")}
+          disabled={busy}
+          className="group relative flex h-14 min-w-0 flex-col items-stretch justify-center overflow-hidden rounded-md border border-emerald-400/40 bg-gradient-to-b from-emerald-500/95 to-emerald-600 px-3 text-white shadow-[0_1px_0_0_rgba(255,255,255,0.12)_inset,0_6px_16px_-8px_rgba(16,185,129,0.55)] ring-1 ring-inset ring-white/5 transition-all hover:from-emerald-500 hover:to-emerald-700 active:translate-y-px disabled:opacity-60"
+        >
+          <div className="flex items-center justify-between gap-1.5">
+            <span className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider">
+              <ArrowUp className="h-3 w-3" strokeWidth={2.5} />
+              BUY
+            </span>
+            <span className="text-[10px] font-medium uppercase tracking-wider text-white/70">شراء</span>
+          </div>
+          <div dir="ltr" className="mt-0.5 truncate text-start font-mono text-sm font-bold leading-none tabular-nums">
+            {formatAssetPrice(instrument.symbol, ask, instrument.price_precision)}
+          </div>
+        </button>
       </div>
     </div>
   );
