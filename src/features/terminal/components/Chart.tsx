@@ -203,7 +203,7 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
         (isBuy ? (mp as number) >= tp : (mp as number) <= tp);
       if (tpHit && !hitDedupeRef.current.has(tpKey)) {
         hitDedupeRef.current.add(tpKey);
-        setHitLog((L) => [{ key: tpKey + ":" + Date.now(), posId: p.id, kind: "TP", side: p.side, price: tp, at: Date.now() }, ...L].slice(0, 8));
+        setHitLog((L) => [{ key: tpKey + ":" + Date.now(), posId: p.id, kind: "TP" as const, side: p.side, price: tp, at: Date.now() }, ...L].slice(0, 8));
       }
       if (Number.isFinite(tp)) {
         try {
@@ -220,7 +220,7 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
         (isBuy ? (mp as number) <= sl : (mp as number) >= sl);
       if (slHit && !hitDedupeRef.current.has(slKey)) {
         hitDedupeRef.current.add(slKey);
-        setHitLog((L) => [{ key: slKey + ":" + Date.now(), posId: p.id, kind: "SL", side: p.side, price: sl, at: Date.now() }, ...L].slice(0, 8));
+        setHitLog((L) => [{ key: slKey + ":" + Date.now(), posId: p.id, kind: "SL" as const, side: p.side, price: sl, at: Date.now() }, ...L].slice(0, 8));
       }
       if (Number.isFinite(sl)) {
         try {
