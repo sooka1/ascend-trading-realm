@@ -474,7 +474,7 @@ function InvestorPortal() {
       .select("verification_status")
       .eq("id", uid)
       .maybeSingle();
-    if (prof?.verification_status !== "verified") {
+    if (prof?.verification_status !== "approved") {
       toast.error("يجب توثيق الحساب (KYC) قبل تنفيذ عمليات السحب");
       router.navigate({ to: "/portal/profile" });
       return;
