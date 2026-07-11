@@ -45,8 +45,8 @@ function Education() {
             </div>
           ))}
         </div>
+        <ForeignCoursesSection />
       </section>
-      <ForeignCoursesSection />
     </PageShell>
   );
 }
