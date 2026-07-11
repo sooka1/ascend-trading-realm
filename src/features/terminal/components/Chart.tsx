@@ -122,6 +122,17 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
     return () => window.clearTimeout(t);
   }, [rehydrateHighlight]);
   const focusedRowRef = useRef<HTMLTableRowElement | null>(null);
+  const LOG_SCROLL_KEY = "hk.tpsl.logScroll.v1";
+  const logScrollRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (!logOpen) return;
+    const el = logScrollRef.current;
+    if (!el) return;
+    try {
+      const v = Number(window.localStorage.getItem(LOG_SCROLL_KEY) ?? 0);
+      if (Number.isFinite(v)) requestAnimationFrame(() => { el.scrollTop = v; });
+    } catch { /* noop */ }
+  }, [logOpen]);
   const [logOpen, setLogOpen] = useState(false);
   const LOG_FILTERS_KEY = "hk.tpsl.logFilters.v1";
   const [logKind, setLogKind] = useState<"all" | "TP" | "SL">(() => {
