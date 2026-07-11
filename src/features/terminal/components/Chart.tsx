@@ -6,6 +6,7 @@ import type { Candle, Timeframe } from "../adapters/market-data/types";
 import { Minus, Slash, Square, TrendingUp, Trash2, MousePointer2, Activity, LineChart as LineIcon, Waves, BarChart3, Undo2, Redo2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ema, bollinger, rsi as rsiCalc, macd as macdCalc } from "../lib/indicators";
+import { supabase } from "@/integrations/supabase/client";
 
 type DrawTool = "none" | "trend" | "hline" | "rect" | "fib";
 type Anchor = { time: number; price: number };
@@ -53,6 +54,7 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
   const indicatorSeriesRef = useRef<Record<string, ISeriesApi<"Line"> | ISeriesApi<"Area"> | null>>({});
   const candlesRef = useRef<Candle[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const loadedForSymbolRef = useRef<string | null>(null);
   const dragRef = useRef<null | {
     id: string;
     handle: "a" | "b" | "move" | "price";
