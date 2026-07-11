@@ -3,7 +3,7 @@ import { CandlestickSeries, LineSeries, AreaSeries, BarSeries, createChart } fro
 import type { IChartApi, ISeriesApi, Time } from "lightweight-charts";
 import { getMarketDataProvider } from "../adapters/market-data";
 import type { Candle, Timeframe } from "../adapters/market-data/types";
-import { Minus, Slash, Square, TrendingUp, Trash2, MousePointer2, Activity, LineChart as LineIcon, Waves, BarChart3 } from "lucide-react";
+import { Minus, Slash, Square, TrendingUp, Trash2, MousePointer2, Activity, LineChart as LineIcon, Waves, BarChart3, Undo2, Redo2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ema, bollinger, rsi as rsiCalc, macd as macdCalc } from "../lib/indicators";
 
@@ -46,6 +46,9 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
   const [drawings, setDrawings] = useState<Drawing[]>([]);
   const [pending, setPending] = useState<Anchor | null>(null);
   const [hover, setHover] = useState<Anchor | null>(null);
+  const [past, setPast] = useState<Drawing[][]>([]);
+  const [future, setFuture] = useState<Drawing[][]>([]);
+  const drawingsRef = useRef<Drawing[]>([]);
   const [indicators, setIndicators] = useState<Indicators>(DEFAULT_INDICATORS);
   const indicatorSeriesRef = useRef<Record<string, ISeriesApi<"Line"> | ISeriesApi<"Area"> | null>>({});
   const candlesRef = useRef<Candle[]>([]);
