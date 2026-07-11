@@ -995,12 +995,17 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
                   </thead>
                   <tbody>
                     {filteredHitLog.map((h) => (
+                      (() => {
+                        const isFocused = !!focusedHit && focusedHit.key === h.key && focusedHit.at === h.at;
+                        return (
                       <tr
                         key={h.key + ":" + h.at}
+                        ref={isFocused ? focusedRowRef : undefined}
                         onClick={() => { setFocusedHit(h); setSelectedHit(h); setLogOpen(false); }}
                         className={cn(
                           "cursor-pointer border-t border-white/[0.04] hover:bg-white/5",
-                          focusedHit && focusedHit.key === h.key && focusedHit.at === h.at && "bg-white/10",
+                          isFocused && "bg-white/10",
+                          isFocused && rehydrateHighlight && "animate-pulse ring-2 ring-amber-400/70",
                         )}
                       >
                         <td className="px-2 py-2 font-mono text-white/70">{new Date(h.at).toLocaleString("en-GB")}</td>
@@ -1010,6 +1015,8 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
                         <td className="px-2 py-2 font-mono">{h.price.toFixed(precision)}</td>
                         <td className="px-2 py-2 text-white/70">{h.result}</td>
                       </tr>
+                        );
+                      })()
                     ))}
                   </tbody>
                 </table>
