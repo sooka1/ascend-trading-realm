@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Mail, MapPin, Phone } from "lucide-react";
+import { Mail, MapPin } from "lucide-react";
 import { PageShell, PageHero } from "@/components/page-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -100,7 +100,6 @@ function Contact() {
           {[
             { icon: MapPin, title: p.hqT, body: p.hqB },
             { icon: Mail, title: p.emailT, body: "info@hkexinvest.com" },
-            { icon: Phone, title: p.phoneT, body: "+44 20 4525 0000" },
           ].map((c) => (
             <div key={c.title} className="glass rounded-2xl p-6">
               <c.icon className="h-5 w-5 text-gold" />
