@@ -335,7 +335,7 @@ function CopyCalculator() {
   const fmt = (n: number) => new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 }).format(n);
 
   return (
-    <section className="mx-auto max-w-4xl px-4 pb-16 sm:px-6 lg:px-8">
+    <section id="copy-calculator" className="mx-auto max-w-4xl px-4 pb-16 sm:px-6 lg:px-8">
       <div className="glass-strong rounded-3xl p-6 md:p-8">
         <div className="flex items-center gap-2 text-gold">
           <Calculator className="h-5 w-5" />
