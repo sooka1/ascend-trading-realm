@@ -18,20 +18,63 @@ import { installTimezonePatch, loadUserTimezoneFromProfile, setUserTimezone, set
 import { ImpersonationBanner } from "@/components/impersonation-banner";
 
 function NotFoundComponent() {
+  const suggestions: Array<{ to: string; label: string; hint: string }> = [
+    { to: "/", label: "الرئيسية", hint: "الصفحة الرئيسية للمنصة" },
+    { to: "/portal", label: "بوابة المستثمر", hint: "لوحة القيادة والمحفظة" },
+    { to: "/copy-trading", label: "نسخ الصفقات", hint: "استكشاف المتداولين" },
+    { to: "/competitions", label: "المسابقات", hint: "التسجيل والمشاركة" },
+    { to: "/education", label: "الأكاديمية", hint: "الدورات والمواد" },
+    { to: "/contact", label: "الدعم", hint: "تواصل مع الفريق" },
+  ];
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          The page you're looking for doesn't exist or has been moved.
+    <div
+      dir="rtl"
+      className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-4 py-16"
+    >
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,theme(colors.amber.500/0.12),transparent_60%)]"
+      />
+      <div className="relative z-10 mx-auto w-full max-w-2xl rounded-2xl border border-white/10 bg-card/60 p-8 text-center backdrop-blur-xl sm:p-12">
+        <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-gold/80">
+          Error 404
         </p>
-        <div className="mt-6">
+        <h1 className="mt-3 bg-gradient-to-b from-gold to-amber-200 bg-clip-text font-display text-6xl font-bold text-transparent sm:text-7xl">
+          404
+        </h1>
+        <h2 className="mt-4 font-display text-2xl font-semibold text-foreground sm:text-3xl">
+          الصفحة غير موجودة
+        </h2>
+        <p className="mt-3 text-sm text-muted-foreground">
+          الرابط الذي وصلت إليه غير صحيح أو تم نقل الصفحة. يمكنك المتابعة من أحد الروابط أدناه.
+        </p>
+        <div className="mt-8 grid gap-2 text-right sm:grid-cols-2">
+          {suggestions.map((s) => (
+            <Link
+              key={s.to}
+              to={s.to}
+              className="group flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/[0.03] px-4 py-3 transition hover:-translate-y-0.5 hover:border-gold/40 hover:bg-gold/[0.06]"
+            >
+              <span className="min-w-0">
+                <span className="block truncate text-sm font-medium text-foreground">
+                  {s.label}
+                </span>
+                <span className="block truncate text-[11px] text-muted-foreground">
+                  {s.hint}
+                </span>
+              </span>
+              <span className="font-mono text-xs text-gold/70 transition group-hover:text-gold">
+                ←
+              </span>
+            </Link>
+          ))}
+        </div>
+        <div className="mt-8">
           <Link
             to="/"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            className="inline-flex items-center justify-center rounded-md border border-gold/40 bg-gold/[0.10] px-5 py-2.5 text-sm font-medium text-gold transition hover:border-gold/60 hover:bg-gold/[0.16]"
           >
-            Go home
+            العودة إلى الصفحة الرئيسية
           </Link>
         </div>
       </div>
