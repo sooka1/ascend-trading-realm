@@ -9,6 +9,9 @@ import { TerminalChart } from "@/features/terminal/components/Chart";
 import { OrderTicket } from "@/features/terminal/components/OrderTicket";
 import { Watchlist } from "@/features/terminal/components/Watchlist";
 import { PositionsTable } from "@/features/terminal/components/PositionsTable";
+import { PriceAlerts } from "@/features/terminal/components/PriceAlerts";
+import { EconomicCalendar } from "@/features/terminal/components/EconomicCalendar";
+import { PerformancePanel } from "@/features/terminal/components/PerformancePanel";
 import { useAccount, useHistory, useInstruments, usePendingOrders, usePositions, useQuotes, useWatchlist } from "@/features/terminal/hooks/use-terminal-data";
 import type { Timeframe } from "@/features/terminal/adapters/market-data/types";
 
@@ -133,6 +136,9 @@ function TradingTerminal() {
                     <TabsTrigger value="positions" className="text-xs">الصفقات ({positions.length})</TabsTrigger>
                     <TabsTrigger value="pending" className="text-xs">المعلّقة ({pending.length})</TabsTrigger>
                     <TabsTrigger value="history" className="text-xs">السجل</TabsTrigger>
+                    <TabsTrigger value="alerts" className="text-xs">التنبيهات</TabsTrigger>
+                    <TabsTrigger value="calendar" className="text-xs">الأجندة</TabsTrigger>
+                    <TabsTrigger value="performance" className="text-xs">الأداء</TabsTrigger>
                   </TabsList>
                   <TabsContent value="positions" className="flex-1 mt-0 overflow-hidden">
                     <PositionsTable positions={positions} quotes={quotes} contractSizes={contractSizes} />
@@ -179,6 +185,15 @@ function TradingTerminal() {
                         </tbody>
                       </table>
                     }
+                  </TabsContent>
+                  <TabsContent value="alerts" className="flex-1 mt-0 overflow-hidden">
+                    <PriceAlerts selectedSymbol={selected} quotes={quotes} />
+                  </TabsContent>
+                  <TabsContent value="calendar" className="flex-1 mt-0 overflow-hidden">
+                    <EconomicCalendar />
+                  </TabsContent>
+                  <TabsContent value="performance" className="flex-1 mt-0 overflow-hidden">
+                    <PerformancePanel history={history} />
                   </TabsContent>
                 </Tabs>
               </Panel>
