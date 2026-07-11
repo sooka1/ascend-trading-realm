@@ -75,6 +75,11 @@ function TradingTerminal() {
   const equity = balance + floating;
   const freeMargin = equity - usedMargin;
   const marginLevel = usedMargin > 0 ? (equity / usedMargin) * 100 : 0;
+  const realized = useMemo(
+    () => history.reduce((s, h) => s + Number(h.profit ?? 0), 0),
+    [history],
+  );
+  const totalPnl = realized + floating;
 
   return (
     <PortalShell fullscreen eyebrow="بوابة المتداول" title="منصة التداول" subtitle="بيانات حيّة وتنفيذ فوري">
@@ -94,6 +99,8 @@ function TradingTerminal() {
                     <Row label="الهامش الحر" v={`$${freeMargin.toFixed(2)}`} />
                     <Row label="مستوى الهامش" v={`${marginLevel.toFixed(1)}%`} />
                     <Row label="الربح العائم" v={`$${floating.toFixed(2)}`} vClass={floating >= 0 ? "text-emerald-400" : "text-red-400"} />
+                    <Row label="ربح محقق" v={`$${realized.toFixed(2)}`} vClass={realized >= 0 ? "text-emerald-400" : "text-red-400"} />
+                    <Row label="الإجمالي (محقق + عائم)" v={`$${totalPnl.toFixed(2)}`} vClass={totalPnl >= 0 ? "text-emerald-400" : "text-red-400"} />
                     <Row label="الرافعة" v={`1:${leverage}`} />
                   </div>
                 </div>
