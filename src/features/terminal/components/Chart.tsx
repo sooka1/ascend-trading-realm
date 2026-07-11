@@ -10,7 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
   loadAlertLog, saveAlertLog, loadSeen, saveSeen,
-  loadAlertSettings, saveAlertSettings, playAlertSound,
+  loadAlertSettings, saveAlertSettings, playAlertSound, DEFAULT_ALERT_SETTINGS,
   type AlertEntry, type AlertSettings,
 } from "../lib/tp-sl-alerts";
 
