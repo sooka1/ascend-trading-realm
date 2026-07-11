@@ -104,7 +104,7 @@ async function fetchOne(sym: string): Promise<Quote> {
     }
     console.error(`[quotes] all providers failed for ${sym}`);
     if (cached) return { ...cached, source: "cache" as const };
-    return { symbol: sym, price: 0, change: 0, source: "fallback", updatedAt: Date.now() };
+    return { symbol: sym, price: 0, change: 0, source: "fallback" as const, updatedAt: Date.now() };
   })().finally(() => inflight.delete(sym));
 
   inflight.set(sym, p);
