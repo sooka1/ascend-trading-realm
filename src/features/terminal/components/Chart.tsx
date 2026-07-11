@@ -683,7 +683,7 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
           $
         </button>
       </div>
-      <div className="absolute right-2 top-2 z-10 flex flex-wrap gap-1 rounded-md border border-white/10 bg-black/60 p-1 backdrop-blur">
+      <div className="absolute right-2 top-2 z-10 flex flex-wrap items-center gap-1 rounded-md border border-white/10 bg-black/60 p-1 backdrop-blur">
         {indicatorToggles.map((it) => {
           const active = indicators[it.key];
           const Icon = it.icon;
@@ -703,7 +703,60 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
             </button>
           );
         })}
+        <button
+          type="button"
+          title="إعدادات المؤشرات"
+          onClick={() => setSettingsOpen((v) => !v)}
+          className={cn(
+            "flex h-5 w-5 items-center justify-center rounded text-white/60 transition hover:bg-white/10 hover:text-white",
+            settingsOpen && "bg-white/10 text-white",
+          )}
+        >
+          <Settings2 className="h-3 w-3" />
+        </button>
       </div>
+      {settingsOpen && (
+        <div className="absolute right-2 top-11 z-20 w-64 rounded-md border border-white/10 bg-black/85 p-3 shadow-xl backdrop-blur">
+          <div className="mb-2 flex items-center justify-between text-[11px] font-semibold text-white/80">
+            <span>إعدادات المؤشرات</span>
+            <button
+              type="button"
+              onClick={() => setIndSettings(DEFAULT_INDICATOR_SETTINGS)}
+              className="text-[10px] font-normal text-white/50 hover:text-white"
+            >
+              استعادة الافتراضي
+            </button>
+          </div>
+          {([
+            ["ema9", "EMA سريع", 1, 500, 1],
+            ["ema21", "EMA متوسط", 1, 500, 1],
+            ["ema50", "EMA طويل", 1, 500, 1],
+            ["bbPeriod", "BB Period", 2, 200, 1],
+            ["bbStd", "BB StdDev", 0.5, 5, 0.1],
+            ["rsi", "RSI Period", 2, 100, 1],
+            ["macdFast", "MACD Fast", 1, 100, 1],
+            ["macdSlow", "MACD Slow", 1, 200, 1],
+            ["macdSignal", "MACD Signal", 1, 100, 1],
+          ] as [keyof IndicatorSettings, string, number, number, number][]).map(([k, label, min, max, step]) => (
+            <label key={k} className="mb-1.5 flex items-center justify-between gap-2 text-[10px] text-white/60">
+              <span>{label}</span>
+              <input
+                type="number"
+                min={min}
+                max={max}
+                step={step}
+                value={indSettings[k]}
+                onChange={(e) => {
+                  const v = Number(e.target.value);
+                  if (!Number.isFinite(v)) return;
+                  setIndSettings((s) => ({ ...s, [k]: Math.min(max, Math.max(min, v)) }));
+                }}
+                className="h-6 w-16 rounded border border-white/10 bg-white/5 px-1.5 text-right text-white outline-none focus:border-gold/50"
+              />
+            </label>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
