@@ -108,6 +108,26 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
   useEffect(() => {
     try { window.localStorage.setItem(LOG_FILTERS_KEY, JSON.stringify({ kind: logKind, side: logSide, q: logQuery })); } catch { /* noop */ }
   }, [logKind, logSide, logQuery]);
+  const exportHitLogCsv = useCallback((rowsSrc: HitLog[]) => {
+    if (!rowsSrc.length) return;
+    const header = ["at_iso","symbol","kind","side","entry","price","volume","result","pos_id"];
+    const esc = (v: unknown) => {
+      const s = String(v ?? "");
+      return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+    };
+    const rows = rowsSrc.map((h) => [
+      new Date(h.at).toISOString(), h.symbol, h.kind, h.side,
+      h.entry, h.price, h.volume, h.result, h.posId,
+    ].map(esc).join(","));
+    const csv = "\uFEFF" + [header.join(","), ...rows].join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `tp-sl-alerts-${new Date().toISOString().slice(0,10)}.csv`;
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  }, []);
   const filteredHitLog = hitLog.filter((h) => {
     if (logKind !== "all" && h.kind !== logKind) return false;
     if (logSide !== "all" && h.side !== logSide) return false;
