@@ -398,6 +398,11 @@ function InvestorPortal() {
     const fd = new FormData(form);
     const parsed = depositSchema.safeParse(Object.fromEntries(fd));
     if (!parsed.success) return toast.error(parsed.error.issues[0].message);
+    // TxID format guard per method
+    {
+      const rule = TXID_RULES[parsed.data.method];
+      if (!rule.regex.test(parsed.data.reference)) return toast.error(rule.label);
+    }
     // Guard: refuse to create a Binance Pay request when the platform ID is invalid
     if (parsed.data.method === "binance_pay") {
       try { getPlatformBinancePayId(); } catch (err) { return toast.error((err as Error).message); }
