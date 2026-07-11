@@ -45,6 +45,7 @@ const NAV: NavItem[] = [
   { to: "/portal/accounts", icon: Landmark, label: "الاشتراكات", group: "overview" },
   { to: "/portal/trading", icon: CandlestickChart, label: "منصة التداول", group: "trading" },
   { to: "/competitions", icon: Trophy, label: "المسابقات", group: "trading" },
+  { to: "/portal/competitions", icon: Trophy, label: "سجل اشتراكات المسابقات", group: "reports" },
   { to: "/copy-trading", icon: Copy, label: "نسخ الصفقات", group: "trading" },
   { to: "/investor", icon: PackageIcon, label: "الباقات والعروض", group: "trading" },
   { to: "/education", icon: GraduationCap, label: "الأكاديمية", group: "trading" },
