@@ -393,6 +393,28 @@ function Row({ label, value }: { label: string; value: string }) {
   );
 }
 
+function WatchlistToggle({ symbol }: { symbol: string }) {
+  const { has, toggle } = useWatchlist();
+  const active = has(symbol);
+  return (
+    <button
+      type="button"
+      onClick={() => toggle(symbol)}
+      className={cn(
+        "inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] transition",
+        active
+          ? "border-gold/60 bg-gold/10 text-gold"
+          : "border-white/10 text-muted-foreground hover:text-foreground",
+      )}
+      aria-pressed={active}
+      aria-label={active ? "إزالة من المفضلة" : "إضافة إلى المفضلة"}
+    >
+      <Star className={cn("h-3 w-3", active && "fill-current")} />
+      {active ? "في المفضلة" : "إضافة للمفضلة"}
+    </button>
+  );
+}
+
 function DepthSide({ title, tone, levels, maxQty }: { title: string; tone: "bull" | "bear"; levels: Level[]; maxQty: number }) {
   const barBg = tone === "bull" ? "bg-bull/15" : "bg-bear/15";
   const priceColor = tone === "bull" ? "text-bull" : "text-bear";
