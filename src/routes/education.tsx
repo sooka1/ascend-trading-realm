@@ -157,6 +157,12 @@ function ForeignCoursesSection() {
             href={c.url}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={(e) => {
+              // Preview iframes often block target=_blank; ensure the link opens.
+              e.preventDefault();
+              window.open(c.url, "_blank", "noopener,noreferrer") ||
+                (window.top ? (window.top.location.href = c.url) : (window.location.href = c.url));
+            }}
             className="glass group flex flex-col rounded-2xl p-5 transition hover:border-gold/40"
           >
             <div className="flex items-center justify-between gap-2">
