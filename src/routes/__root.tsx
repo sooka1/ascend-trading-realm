@@ -16,6 +16,7 @@ import { Toaster } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { installTimezonePatch, loadUserTimezoneFromProfile, setUserTimezone, setUserLocale } from "@/lib/user-timezone";
 import { ImpersonationBanner } from "@/components/impersonation-banner";
+import { ThemeProvider } from "@/hooks/use-theme";
 
 function NotFoundComponent() {
   const suggestions: Array<{ to: string; label: string; hint: string }> = [
@@ -193,6 +194,13 @@ function RootShell({ children }: { children: ReactNode }) {
     <html lang="en">
       <head>
         <HeadContent />
+        <script
+          // Set the theme class before hydration so light mode doesn't flash.
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){try{var t=localStorage.getItem('hkex-theme');if(t==='light'){document.documentElement.classList.add('light');document.documentElement.style.colorScheme='light';}else{document.documentElement.classList.add('dark');}}catch(e){}})();",
+          }}
+        />
       </head>
       <body>
         {children}
@@ -232,7 +240,8 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <I18nProvider>
+      <ThemeProvider>
+        <I18nProvider>
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[9999] focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground focus:outline-none"
@@ -243,7 +252,8 @@ function RootComponent() {
         <Outlet />
         <Toaster theme="dark" position="top-right" richColors />
         <ImpersonationBanner />
-      </I18nProvider>
+        </I18nProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

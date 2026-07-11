@@ -34,6 +34,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { useMfaEnforcement } from "@/hooks/use-mfa-enforcement";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { UserBadge } from "@/components/user-badge";
 import { NotificationsPopover } from "@/components/notifications-popover";
 
@@ -253,6 +254,7 @@ export function PortalShell({
                 <div className="flex items-center gap-2.5">
                   <UserBadge />
                   <NotificationsPopover size="md" />
+                  <ThemeToggle size="md" />
                   <button
                     type="button"
                     onClick={handleSignOut}
@@ -291,6 +293,7 @@ export function PortalShell({
                 <div className="hidden items-center gap-2 lg:flex">
                   <UserBadge />
                   <NotificationsPopover size="sm" />
+                  <ThemeToggle size="sm" />
                   <button
                     type="button"
                     onClick={handleSignOut}
