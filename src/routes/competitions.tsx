@@ -216,7 +216,7 @@ function Row({ label, value, highlight }: { label: string; value: string; highli
   );
 }
 
-function CompetitionCard({ comp }: { comp: Comp }) {
+function CompetitionCard({ comp, pending, onJoin }: { comp: Comp; pending: boolean; onJoin: () => void }) {
   const s = STATUS_STYLE[comp.status];
   const countdown = useCountdown(comp.status === "live" ? comp.end : comp.start);
   return (
@@ -247,7 +247,7 @@ function CompetitionCard({ comp }: { comp: Comp }) {
         )}
       </div>
 
-      <Button className="mt-4 w-full" disabled={comp.status === "ended"}>
+      <Button className="mt-4 w-full" disabled={comp.status === "ended" || pending} onClick={onJoin}>
         {comp.status === "ended" ? "انتهت المسابقة" : comp.status === "live" ? "انضم الآن" : "احجز مقعدك"}
       </Button>
     </article>
