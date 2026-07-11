@@ -57,7 +57,7 @@ const en: PageContent = {
     hero: { eyebrow: "Contact", titleA: "Let's", titleB: "talk", subtitle: "Sales, partnerships, or press — we typically reply within one business hour." },
     formTitle: "Send us a message",
     fullName: "Full name", email: "Email", subject: "Subject", message: "Message", send: "Send message", sent: "Thanks — we'll be in touch shortly.",
-    hqT: "Global HQ", hqB: "One Canada Square, Level 41, London E14 5AB, United Kingdom", emailT: "Email", phoneT: "Phone", officesT: "Offices",
+    hqT: "Registered Office — Hong Kong", hqB: "8/F, Two Exchange Square\n8 Connaught Place, Central\nHong Kong", emailT: "Email", phoneT: "Phone", officesT: "Offices",
   },
   economic: {
     meta: { title: "Economic Calendar — Live macro events | HK Global Trading", desc: "Live economic calendar.", ogTitle: "HK Economic Calendar", ogDesc: "The macro events that move markets." },
