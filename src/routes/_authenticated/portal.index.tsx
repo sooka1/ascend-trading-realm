@@ -143,35 +143,6 @@ function PortalPage() {
           )}
         </PortalCard>
 
-        <PortalCard
-          title="الباقات والعروض"
-          icon={PackageIcon}
-          className="lg:col-span-2"
-          action={
-            <Link
-              to="/investor"
-              className="font-mono text-[10px] uppercase tracking-widest text-gold hover:text-[oklch(0.88_0.11_90)]"
-            >
-              استعراض الباقات →
-            </Link>
-          }
-        >
-          <div className="grid gap-3 sm:grid-cols-2">
-            <Link
-              to="/investor"
-              className="group flex items-start gap-3 rounded-md border border-white/5 bg-white/[0.02] p-3 transition hover:border-gold/40"
-            >
-              <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-gold/20 bg-gold/[0.06]">
-                <PackageIcon className="h-4 w-4 text-gold" />
-              </span>
-              <div className="min-w-0 text-sm">
-                <p className="font-medium">اشترك في باقة استثمار</p>
-                <p className="mt-1 text-xs text-muted-foreground">Starter · Growth · Premier · Private</p>
-              </div>
-            </Link>
-          </div>
-        </PortalCard>
-
         <PortalCard title="الإشعارات" icon={Bell}
           action={<Link to="/portal/notifications" className="font-mono text-[10px] uppercase tracking-widest text-gold hover:text-[oklch(0.88_0.11_90)]">الكل →</Link>}
         >
