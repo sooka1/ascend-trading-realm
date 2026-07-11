@@ -49,6 +49,13 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
   const [indicators, setIndicators] = useState<Indicators>(DEFAULT_INDICATORS);
   const indicatorSeriesRef = useRef<Record<string, ISeriesApi<"Line"> | ISeriesApi<"Area"> | null>>({});
   const candlesRef = useRef<Candle[]>([]);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const dragRef = useRef<null | {
+    id: string;
+    handle: "a" | "b" | "move" | "price";
+    origin: Anchor;
+    snapshot: Drawing;
+  }>(null);
 
   useEffect(() => {
     if (!ref.current) return;
@@ -198,8 +205,69 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
     return { time: Number(time), price: Number(price) };
   }, []);
 
+  // Convert a native PointerEvent (from window listeners) to a data-space anchor.
+  const posFromNative = useCallback((e: PointerEvent): Anchor | null => {
+    const chart = chartRef.current, series = seriesRef.current, host = ref.current;
+    if (!chart || !series || !host) return null;
+    const rect = host.getBoundingClientRect();
+    const time = chart.timeScale().coordinateToTime(e.clientX - rect.left);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const price = (series as any).coordinateToPrice(e.clientY - rect.top);
+    if (time == null || price == null) return null;
+    return { time: Number(time), price: Number(price) };
+  }, []);
+
+  // Global drag handling for selected drawing.
+  useEffect(() => {
+    const onMove = (e: PointerEvent) => {
+      const drag = dragRef.current; if (!drag) return;
+      const cur = posFromNative(e); if (!cur) return;
+      setDrawings((prev) => prev.map((d) => {
+        if (d.id !== drag.id) return d;
+        const snap = drag.snapshot;
+        if (snap.type === "hline") {
+          return { ...snap, price: cur.price };
+        }
+        if (drag.handle === "a") return { ...snap, a: cur };
+        if (drag.handle === "b") return { ...snap, b: cur };
+        // move: shift by delta in data-space.
+        const dt = cur.time - drag.origin.time;
+        const dp = cur.price - drag.origin.price;
+        return { ...snap, a: { time: snap.a.time + dt, price: snap.a.price + dp }, b: { time: snap.b.time + dt, price: snap.b.price + dp } };
+      }));
+    };
+    const onUp = () => { dragRef.current = null; };
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+    return () => { window.removeEventListener("pointermove", onMove); window.removeEventListener("pointerup", onUp); };
+  }, [posFromNative]);
+
+  // Delete selected with Delete/Backspace.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (!selectedId) return;
+      if (e.key === "Delete" || e.key === "Backspace") {
+        setDrawings((prev) => prev.filter((d) => d.id !== selectedId));
+        setSelectedId(null);
+      } else if (e.key === "Escape") {
+        setSelectedId(null);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [selectedId]);
+
+  const startDrag = (e: React.PointerEvent, drawing: Drawing, handle: "a" | "b" | "move" | "price") => {
+    e.stopPropagation();
+    if (tool !== "none") return;
+    const origin = posFromEvent(e);
+    if (!origin) return;
+    setSelectedId(drawing.id);
+    dragRef.current = { id: drawing.id, handle, origin, snapshot: drawing };
+  };
+
   const onOverlayClick = (e: React.MouseEvent) => {
-    if (tool === "none") return;
+    if (tool === "none") { setSelectedId(null); return; }
     const p = posFromEvent(e);
     if (!p) return;
     const id = Math.random().toString(36).slice(2);
@@ -254,46 +322,74 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
       <div ref={ref} className="h-full w-full" />
       <svg
         ref={svgRef}
-        className={cn("pointer-events-none absolute inset-0", tool !== "none" && "pointer-events-auto cursor-crosshair")}
+        className={cn("absolute inset-0", tool !== "none" ? "pointer-events-auto cursor-crosshair" : "pointer-events-none")}
         onClick={onOverlayClick}
         onMouseMove={(e) => tool !== "none" && setHover(posFromEvent(e))}
         onMouseLeave={() => setHover(null)}
       >
         {drawings.map((d) => {
+          const isSel = selectedId === d.id;
+          const selectable: React.SVGAttributes<SVGElement> = {
+            style: { pointerEvents: tool === "none" ? "all" : "none", cursor: tool === "none" ? "move" : undefined },
+          };
           if (d.type === "hline") {
             const y = priceY(d.price);
             if (y == null) return null;
             return (
-              <g key={d.id}>
-                <line x1={0} x2={width} y1={y} y2={y} stroke="#F5C542" strokeWidth={1.25} strokeDasharray="4 3" />
+              <g key={d.id} onPointerDown={(e) => startDrag(e, d, "price")}>
+                <line x1={0} x2={width} y1={y - 6} y2={y - 6 + 12} stroke="transparent" strokeWidth={12} {...selectable} />
+                <line x1={0} x2={width} y1={y} y2={y} stroke="#F5C542" strokeWidth={isSel ? 2 : 1.25} strokeDasharray="4 3" />
                 <text x={6} y={y - 4} fill="#F5C542" fontSize={11}>{d.price.toFixed(precision)}</text>
+                {isSel && <circle cx={width / 2} cy={y} r={5} fill="#0f172a" stroke="#F5C542" strokeWidth={2} style={{ pointerEvents: "all", cursor: "ns-resize" }} />}
               </g>
             );
           }
           const pa = project(d.a); const pb = project(d.b);
           if (!pa || !pb) return null;
-          if (d.type === "trend") return <line key={d.id} x1={pa.x} y1={pa.y} x2={pb.x} y2={pb.y} stroke="#60a5fa" strokeWidth={1.5} />;
+          const handles = isSel && (
+            <>
+              <circle cx={pa.x} cy={pa.y} r={5} fill="#0f172a" stroke="#F5C542" strokeWidth={2}
+                style={{ pointerEvents: "all", cursor: "grab" }}
+                onPointerDown={(e) => startDrag(e, d, "a")} />
+              <circle cx={pb.x} cy={pb.y} r={5} fill="#0f172a" stroke="#F5C542" strokeWidth={2}
+                style={{ pointerEvents: "all", cursor: "grab" }}
+                onPointerDown={(e) => startDrag(e, d, "b")} />
+            </>
+          );
+          if (d.type === "trend") return (
+            <g key={d.id} onPointerDown={(e) => startDrag(e, d, "move")}>
+              <line x1={pa.x} y1={pa.y} x2={pb.x} y2={pb.y} stroke="transparent" strokeWidth={12} {...selectable} />
+              <line x1={pa.x} y1={pa.y} x2={pb.x} y2={pb.y} stroke={isSel ? "#F5C542" : "#60a5fa"} strokeWidth={isSel ? 2 : 1.5} />
+              {handles}
+            </g>
+          );
           if (d.type === "rect") {
             const x = Math.min(pa.x, pb.x), y = Math.min(pa.y, pb.y);
             const w = Math.abs(pb.x - pa.x), h = Math.abs(pb.y - pa.y);
-            return <rect key={d.id} x={x} y={y} width={w} height={h} fill="rgba(96,165,250,0.12)" stroke="#60a5fa" strokeWidth={1} />;
+            return (
+              <g key={d.id} onPointerDown={(e) => startDrag(e, d, "move")}>
+                <rect x={x} y={y} width={w} height={h} fill="rgba(96,165,250,0.12)" stroke={isSel ? "#F5C542" : "#60a5fa"} strokeWidth={isSel ? 2 : 1} {...selectable} />
+                {handles}
+              </g>
+            );
           }
           // fib
           const x1 = Math.min(pa.x, pb.x), x2 = Math.max(pa.x, pb.x);
           return (
-            <g key={d.id}>
+            <g key={d.id} onPointerDown={(e) => startDrag(e, d, "move")}>
               {FIB_LEVELS.map((lvl, i) => {
                 const price = d.a.price + (d.b.price - d.a.price) * (1 - lvl);
                 const y = priceY(price);
                 if (y == null) return null;
                 return (
                   <g key={lvl}>
-                    <line x1={x1} x2={width} y1={y} y2={y} stroke={FIB_COLORS[i]} strokeWidth={1} strokeOpacity={0.8} strokeDasharray="3 3" />
+                    <line x1={x1} x2={width} y1={y} y2={y} stroke={FIB_COLORS[i]} strokeWidth={isSel ? 1.5 : 1} strokeOpacity={0.8} strokeDasharray="3 3" {...selectable} />
                     <text x={x2 + 4} y={y - 2} fill={FIB_COLORS[i]} fontSize={10}>{lvl.toFixed(3)} · {price.toFixed(precision)}</text>
                   </g>
                 );
               })}
-              <line x1={pa.x} y1={pa.y} x2={pb.x} y2={pb.y} stroke="#94a3b8" strokeWidth={1} strokeDasharray="2 2" />
+              <line x1={pa.x} y1={pa.y} x2={pb.x} y2={pb.y} stroke={isSel ? "#F5C542" : "#94a3b8"} strokeWidth={1} strokeDasharray="2 2" {...selectable} />
+              {handles}
             </g>
           );
         })}
