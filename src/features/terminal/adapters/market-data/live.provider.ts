@@ -278,6 +278,7 @@ export function createLiveProvider(): MarketDataProvider {
         anchorPrice.set(symbol, last.close);
         syntheticPrice.set(symbol, last.close);
         lastPrice.set(symbol, last.close);
+        liveCandle.set(`${symbol}|${tf}`, { ...last });
       }
       return candles;
     },
