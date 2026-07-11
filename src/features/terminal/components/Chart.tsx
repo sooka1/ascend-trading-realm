@@ -93,7 +93,25 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
   type HitLog = AlertEntry;
   const [hitLog, setHitLog] = useState<HitLog[]>(() => loadAlertLog());
   const [selectedHit, setSelectedHit] = useState<HitLog | null>(null);
-  const [focusedHit, setFocusedHit] = useState<HitLog | null>(null);
+  const FOCUSED_HIT_KEY = "hk.tpsl.focusedHit.v1";
+  const [focusedHit, setFocusedHit] = useState<HitLog | null>(() => {
+    try {
+      const raw = window.localStorage.getItem(FOCUSED_HIT_KEY);
+      if (!raw) return null;
+      const { key, at } = JSON.parse(raw) as { key: string; at: number };
+      const log = loadAlertLog();
+      return log.find((h) => h.key === key && h.at === at) ?? null;
+    } catch { return null; }
+  });
+  useEffect(() => {
+    try {
+      if (focusedHit) {
+        window.localStorage.setItem(FOCUSED_HIT_KEY, JSON.stringify({ key: focusedHit.key, at: focusedHit.at }));
+      } else {
+        window.localStorage.removeItem(FOCUSED_HIT_KEY);
+      }
+    } catch { /* noop */ }
+  }, [focusedHit]);
   const [logOpen, setLogOpen] = useState(false);
   const LOG_FILTERS_KEY = "hk.tpsl.logFilters.v1";
   const [logKind, setLogKind] = useState<"all" | "TP" | "SL">(() => {
