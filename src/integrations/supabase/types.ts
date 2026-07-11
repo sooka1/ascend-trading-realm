@@ -1576,6 +1576,10 @@ export type Database = {
         Args: { _email: string; _role: Database["public"]["Enums"]["app_role"] }
         Returns: boolean
       }
+      enter_competition: {
+        Args: { _competition_id: string; _tier_fee: number }
+        Returns: string
+      }
       generate_referral_code: { Args: never; Returns: string }
       get_super_admin_public_key: { Args: never; Returns: string }
       get_ticket_owner_public_key: {
