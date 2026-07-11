@@ -36,6 +36,7 @@ import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authentic
 import { Route as AuthenticatedPortalIndexRouteImport } from './routes/_authenticated/portal.index'
 import { Route as AuthenticatedPortalUpdatesRouteImport } from './routes/_authenticated/portal.updates'
 import { Route as AuthenticatedPortalTransactionsRouteImport } from './routes/_authenticated/portal.transactions'
+import { Route as AuthenticatedPortalTradingRouteImport } from './routes/_authenticated/portal.trading'
 import { Route as AuthenticatedPortalSupportRouteImport } from './routes/_authenticated/portal.support'
 import { Route as AuthenticatedPortalStatementsRouteImport } from './routes/_authenticated/portal.statements'
 import { Route as AuthenticatedPortalSettingsRouteImport } from './routes/_authenticated/portal.settings'
@@ -212,6 +213,12 @@ const AuthenticatedPortalTransactionsRoute =
   AuthenticatedPortalTransactionsRouteImport.update({
     id: '/portal/transactions',
     path: '/portal/transactions',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPortalTradingRoute =
+  AuthenticatedPortalTradingRouteImport.update({
+    id: '/portal/trading',
+    path: '/portal/trading',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedPortalSupportRoute =
@@ -499,6 +506,7 @@ export interface FileRoutesByFullPath {
   '/portal/settings': typeof AuthenticatedPortalSettingsRoute
   '/portal/statements': typeof AuthenticatedPortalStatementsRoute
   '/portal/support': typeof AuthenticatedPortalSupportRoute
+  '/portal/trading': typeof AuthenticatedPortalTradingRoute
   '/portal/transactions': typeof AuthenticatedPortalTransactionsRoute
   '/portal/updates': typeof AuthenticatedPortalUpdatesRoute
   '/portal/': typeof AuthenticatedPortalIndexRoute
@@ -567,6 +575,7 @@ export interface FileRoutesByTo {
   '/portal/settings': typeof AuthenticatedPortalSettingsRoute
   '/portal/statements': typeof AuthenticatedPortalStatementsRoute
   '/portal/support': typeof AuthenticatedPortalSupportRoute
+  '/portal/trading': typeof AuthenticatedPortalTradingRoute
   '/portal/transactions': typeof AuthenticatedPortalTransactionsRoute
   '/portal/updates': typeof AuthenticatedPortalUpdatesRoute
   '/portal': typeof AuthenticatedPortalIndexRoute
@@ -638,6 +647,7 @@ export interface FileRoutesById {
   '/_authenticated/portal/settings': typeof AuthenticatedPortalSettingsRoute
   '/_authenticated/portal/statements': typeof AuthenticatedPortalStatementsRoute
   '/_authenticated/portal/support': typeof AuthenticatedPortalSupportRoute
+  '/_authenticated/portal/trading': typeof AuthenticatedPortalTradingRoute
   '/_authenticated/portal/transactions': typeof AuthenticatedPortalTransactionsRoute
   '/_authenticated/portal/updates': typeof AuthenticatedPortalUpdatesRoute
   '/_authenticated/portal/': typeof AuthenticatedPortalIndexRoute
@@ -708,6 +718,7 @@ export interface FileRouteTypes {
     | '/portal/settings'
     | '/portal/statements'
     | '/portal/support'
+    | '/portal/trading'
     | '/portal/transactions'
     | '/portal/updates'
     | '/portal/'
@@ -776,6 +787,7 @@ export interface FileRouteTypes {
     | '/portal/settings'
     | '/portal/statements'
     | '/portal/support'
+    | '/portal/trading'
     | '/portal/transactions'
     | '/portal/updates'
     | '/portal'
@@ -846,6 +858,7 @@ export interface FileRouteTypes {
     | '/_authenticated/portal/settings'
     | '/_authenticated/portal/statements'
     | '/_authenticated/portal/support'
+    | '/_authenticated/portal/trading'
     | '/_authenticated/portal/transactions'
     | '/_authenticated/portal/updates'
     | '/_authenticated/portal/'
@@ -1086,6 +1099,13 @@ declare module '@tanstack/react-router' {
       path: '/portal/transactions'
       fullPath: '/portal/transactions'
       preLoaderRoute: typeof AuthenticatedPortalTransactionsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/portal/trading': {
+      id: '/_authenticated/portal/trading'
+      path: '/portal/trading'
+      fullPath: '/portal/trading'
+      preLoaderRoute: typeof AuthenticatedPortalTradingRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/portal/support': {
@@ -1477,6 +1497,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPortalSettingsRoute: typeof AuthenticatedPortalSettingsRoute
   AuthenticatedPortalStatementsRoute: typeof AuthenticatedPortalStatementsRoute
   AuthenticatedPortalSupportRoute: typeof AuthenticatedPortalSupportRoute
+  AuthenticatedPortalTradingRoute: typeof AuthenticatedPortalTradingRoute
   AuthenticatedPortalTransactionsRoute: typeof AuthenticatedPortalTransactionsRoute
   AuthenticatedPortalUpdatesRoute: typeof AuthenticatedPortalUpdatesRoute
   AuthenticatedPortalIndexRoute: typeof AuthenticatedPortalIndexRoute
@@ -1503,6 +1524,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPortalSettingsRoute: AuthenticatedPortalSettingsRoute,
   AuthenticatedPortalStatementsRoute: AuthenticatedPortalStatementsRoute,
   AuthenticatedPortalSupportRoute: AuthenticatedPortalSupportRoute,
+  AuthenticatedPortalTradingRoute: AuthenticatedPortalTradingRoute,
   AuthenticatedPortalTransactionsRoute: AuthenticatedPortalTransactionsRoute,
   AuthenticatedPortalUpdatesRoute: AuthenticatedPortalUpdatesRoute,
   AuthenticatedPortalIndexRoute: AuthenticatedPortalIndexRoute,
