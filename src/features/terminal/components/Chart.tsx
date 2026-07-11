@@ -475,12 +475,31 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
           <button
             type="button"
             title="مسح الكل"
-            onClick={() => { setDrawings([]); setPending(null); }}
+            onClick={() => { commit(); setDrawings([]); setPending(null); setSelectedId(null); }}
             className="flex h-7 w-7 items-center justify-center rounded text-red-300/80 hover:bg-red-500/15 hover:text-red-200"
           >
             <Trash2 className="h-3.5 w-3.5" />
           </button>
         )}
+        <div className="my-0.5 h-px w-full bg-white/10" />
+        <button
+          type="button"
+          title="تراجع (Ctrl+Z)"
+          disabled={past.length === 0}
+          onClick={undo}
+          className="flex h-7 w-7 items-center justify-center rounded text-white/70 transition hover:bg-white/10 hover:text-white disabled:opacity-30 disabled:hover:bg-transparent"
+        >
+          <Undo2 className="h-3.5 w-3.5" />
+        </button>
+        <button
+          type="button"
+          title="إعادة (Ctrl+Shift+Z)"
+          disabled={future.length === 0}
+          onClick={redo}
+          className="flex h-7 w-7 items-center justify-center rounded text-white/70 transition hover:bg-white/10 hover:text-white disabled:opacity-30 disabled:hover:bg-transparent"
+        >
+          <Redo2 className="h-3.5 w-3.5" />
+        </button>
       </div>
       <div className="absolute right-2 top-2 z-10 flex flex-wrap gap-1 rounded-md border border-white/10 bg-black/60 p-1 backdrop-blur">
         {indicatorToggles.map((it) => {
