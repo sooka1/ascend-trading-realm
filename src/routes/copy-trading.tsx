@@ -240,13 +240,19 @@ function CopyTradingPage() {
       }),
     });
 
-  const monthLabel = new Date().toLocaleDateString("ar", { month: "long", year: "numeric" });
+  // Export month range (from/to as YYYY-MM). Defaults: last 12 months.
+  const months = useMemo(() => availableMonths(), []);
+  const [fromYM, setFromYM] = useState<string>(months[12]);
+  const [toYM, setToYM] = useState<string>(months[months.length - 1]);
+  const rangeFrom = fromYM <= toYM ? fromYM : toYM;
+  const rangeTo = fromYM <= toYM ? toYM : fromYM;
+  const rangeLabel = `${formatMonthAr(rangeFrom)} → ${formatMonthAr(rangeTo)}`;
 
   const exportCsv = () => {
-    const headers = ["الاسم", "الدولة", "الأصل", "المخاطر", "عائد آخر شهر %", "حد أدنى للإيداع", "حصة المتداول %", "نسبة النجاح %", "المتابعون"];
+    const headers = ["الاسم", "الدولة", "الأصل", "المخاطر", `عائد الفترة % (${rangeFrom}→${rangeTo})`, "حد أدنى للإيداع", "حصة المتداول %", "نسبة النجاح %", "المتابعون"];
     const rows = filtered.map((t) => [
       t.name, t.country, ASSET_LABEL[t.asset], RISK_LABEL[t.risk],
-      lastMonthReturn(t).toFixed(2), t.minDeposit, t.profitShare, t.winRate, t.followers,
+      rangeReturn(t, rangeFrom, rangeTo).toFixed(2), t.minDeposit, t.profitShare, t.winRate, t.followers,
     ]);
     const escape = (v: string | number) => {
       const s = String(v);
@@ -257,14 +263,14 @@ function CopyTradingPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `copy-trading-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.download = `copy-trading-${rangeFrom}_${rangeTo}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   };
 
   const exportPdf = () => {
     const rowsHtml = filtered.map((t) => {
-      const ret = lastMonthReturn(t);
+      const ret = rangeReturn(t, rangeFrom, rangeTo);
       const tone = ret >= 0 ? "#059669" : "#dc2626";
       return `<tr>
         <td>${t.flag} ${t.name}</td>
@@ -278,7 +284,7 @@ function CopyTradingPage() {
         <td>${fmtMoney(t.followers)}</td>
       </tr>`;
     }).join("");
-    const html = `<!doctype html><html dir="rtl" lang="ar"><head><meta charset="utf-8"><title>تقرير نسخ الصفقات — ${monthLabel}</title>
+    const html = `<!doctype html><html dir="rtl" lang="ar"><head><meta charset="utf-8"><title>تقرير نسخ الصفقات — ${rangeLabel}</title>
       <style>
         *{box-sizing:border-box}
         body{font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial;padding:24px;color:#111}
@@ -290,11 +296,11 @@ function CopyTradingPage() {
         tr:nth-child(even) td{background:#fafafa}
         .foot{margin-top:16px;font-size:10px;color:#888}
       </style></head><body>
-      <h1>تقرير نسخ الصفقات الشهري</h1>
-      <div class="sub">الفترة: ${monthLabel} · عدد المتداولين: ${filtered.length}</div>
+      <h1>تقرير نسخ الصفقات</h1>
+      <div class="sub">الفترة: ${rangeLabel} · عدد المتداولين: ${filtered.length}</div>
       <table><thead><tr>
         <th>المتداول</th><th>الدولة</th><th>الأصل</th><th>المخاطر</th>
-        <th>عائد آخر شهر</th><th>حد أدنى</th><th>حصة المتداول</th><th>نسبة النجاح</th><th>المتابعون</th>
+        <th>عائد الفترة</th><th>حد أدنى</th><th>حصة المتداول</th><th>نسبة النجاح</th><th>المتابعون</th>
       </tr></thead><tbody>${rowsHtml}</tbody></table>
       <div class="foot">تقرير آلي — الأداء الماضي لا يشكّل ضماناً لأي نتائج مستقبلية.</div>
       <script>window.onload=()=>{window.focus();window.print();}<\/script>
