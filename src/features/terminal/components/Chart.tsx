@@ -93,6 +93,20 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
   const [hitLog, setHitLog] = useState<HitLog[]>(() => loadAlertLog());
   const [selectedHit, setSelectedHit] = useState<HitLog | null>(null);
   const [logOpen, setLogOpen] = useState(false);
+  const [logKind, setLogKind] = useState<"all" | "TP" | "SL">("all");
+  const [logSide, setLogSide] = useState<"all" | "buy" | "sell">("all");
+  const [logQuery, setLogQuery] = useState("");
+  const filteredHitLog = hitLog.filter((h) => {
+    if (logKind !== "all" && h.kind !== logKind) return false;
+    if (logSide !== "all" && h.side !== logSide) return false;
+    const q = logQuery.trim().toLowerCase();
+    if (!q) return true;
+    return (
+      h.symbol.toLowerCase().includes(q) ||
+      String(h.price).includes(q) ||
+      String(h.entry).includes(q)
+    );
+  });
   const [showRiskLines, setShowRiskLines] = useState<boolean>(() => {
     try {
       if (typeof window === "undefined") return true;
