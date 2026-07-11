@@ -542,6 +542,28 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
   return (
     <div ref={wrapRef} className="relative h-full w-full">
       <div ref={ref} className="h-full w-full" />
+      {hitLog.length > 0 && (
+        <div className="pointer-events-none absolute top-2 left-2 z-10 flex max-w-[240px] flex-col gap-1 text-[10px]" dir="ltr">
+          {hitLog.slice(0, 4).map((h) => (
+            <div key={h.key}
+              className={cn(
+                "pointer-events-auto rounded-md border px-2 py-1 backdrop-blur-md shadow-lg",
+                h.kind === "TP"
+                  ? "border-emerald-400/40 bg-emerald-500/10 text-emerald-200"
+                  : "border-rose-400/40 bg-rose-500/10 text-rose-200"
+              )}
+            >
+              <span className="font-semibold">⚡ {h.kind} HIT</span>
+              <span className="mx-1 opacity-60">·</span>
+              <span className="uppercase">{h.side}</span>
+              <span className="mx-1 opacity-60">@</span>
+              <span className="font-mono">{h.price.toFixed(precision)}</span>
+              <span className="mx-1 opacity-60">·</span>
+              <span className="opacity-70">{new Date(h.at).toLocaleTimeString("en-GB")}</span>
+            </div>
+          ))}
+        </div>
+      )}
       <svg
         ref={svgRef}
         className={cn("absolute inset-0", tool !== "none" ? "pointer-events-auto cursor-crosshair" : "pointer-events-none")}
