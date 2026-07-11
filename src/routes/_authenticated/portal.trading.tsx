@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Group as PanelGroup, Panel, Separator as PanelResizeHandle } from "react-resizable-panels";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -45,8 +45,20 @@ function TradingTerminal() {
   const [selected, setSelected] = useState("XAUUSD");
   const [tf, setTf] = useState<Timeframe>("15m");
   const [chartType, setChartType] = useState<ChartType>("candles");
-  const [histSide, setHistSide] = useState<"all" | "buy" | "sell">("all");
-  const [histResult, setHistResult] = useState<"all" | "win" | "loss">("all");
+  const [histSide, setHistSide] = useState<"all" | "buy" | "sell">(() => {
+    try {
+      const v = typeof window !== "undefined" ? window.localStorage.getItem("hk.hist.side") : null;
+      return v === "buy" || v === "sell" || v === "all" ? v : "all";
+    } catch { return "all"; }
+  });
+  const [histResult, setHistResult] = useState<"all" | "win" | "loss">(() => {
+    try {
+      const v = typeof window !== "undefined" ? window.localStorage.getItem("hk.hist.result") : null;
+      return v === "win" || v === "loss" || v === "all" ? v : "all";
+    } catch { return "all"; }
+  });
+  useEffect(() => { try { window.localStorage.setItem("hk.hist.side", histSide); } catch { /* noop */ } }, [histSide]);
+  useEffect(() => { try { window.localStorage.setItem("hk.hist.result", histResult); } catch { /* noop */ } }, [histResult]);
   const [focusedHistoryId, setFocusedHistoryId] = useState<string | null>(null);
 
   const allSymbols = useMemo(() => Array.from(new Set([...watchSymbols, selected, ...positions.map(p => p.symbol)])), [watchSymbols, selected, positions]);
