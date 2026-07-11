@@ -14,6 +14,57 @@ export type Database = {
   }
   public: {
     Tables: {
+      competition_trades: {
+        Row: {
+          closed_at: string | null
+          code: string
+          competition_id: string
+          created_at: string
+          entry: number
+          exit: number | null
+          id: string
+          lots: number
+          opened_at: string
+          pnl: number | null
+          side: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          closed_at?: string | null
+          code: string
+          competition_id: string
+          created_at?: string
+          entry: number
+          exit?: number | null
+          id?: string
+          lots: number
+          opened_at?: string
+          pnl?: number | null
+          side: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          closed_at?: string | null
+          code?: string
+          competition_id?: string
+          created_at?: string
+          entry?: number
+          exit?: number | null
+          id?: string
+          lots?: number
+          opened_at?: string
+          pnl?: number | null
+          side?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       deposits: {
         Row: {
           amount: number
