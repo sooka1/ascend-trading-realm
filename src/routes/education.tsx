@@ -56,6 +56,7 @@ function Education() {
       <VideoLibrarySection />
       <BooksLibrarySection />
       <WebinarsSection />
+      <CalculatorsSection />
     </PageShell>
   );
 }
