@@ -31,7 +31,7 @@ type AuditRow = { id: string; withdrawal_id: string; subscription_id: string | n
 const depositSchema = z.object({
   amount: z.coerce.number().positive().max(10_000_000),
   method: z.enum(["binance_pay", "usdt_trc20"]),
-  reference: z.string().trim().max(120).optional(),
+  reference: z.string().trim().min(1, "حقل Transaction Hash (TxID) مطلوب").max(120),
   notes: z.string().trim().max(500).optional(),
 });
 const withdrawSchema = z.object({
@@ -398,6 +398,11 @@ function InvestorPortal() {
     const fd = new FormData(form);
     const parsed = depositSchema.safeParse(Object.fromEntries(fd));
     if (!parsed.success) return toast.error(parsed.error.issues[0].message);
+    // TxID format guard per method
+    {
+      const rule = TXID_RULES[parsed.data.method];
+      if (!rule.regex.test(parsed.data.reference)) return toast.error(rule.label);
+    }
     // Guard: refuse to create a Binance Pay request when the platform ID is invalid
     if (parsed.data.method === "binance_pay") {
       try { getPlatformBinancePayId(); } catch (err) { return toast.error((err as Error).message); }
@@ -819,6 +824,17 @@ function InvestorPortal() {
                   )}
                 </div>
               )}
+              <Field label="Transaction Hash (TxID) — مطلوب">
+                <Input
+                  name="reference"
+                  required
+                  maxLength={120}
+                  placeholder={depositMethod === "usdt_trc20" ? "hash المعاملة (64 خانة hex)" : "رقم مرجع Binance Pay"}
+                  dir="ltr"
+                  className="font-mono text-xs"
+                />
+              </Field>
+              <p className="text-[11px] text-muted-foreground">ألصق TxID الخاص بتحويلك — لن يُقبل الإيداع بدونه، وسيُستخدم للتحقق من المعاملة على الشبكة.</p>
               <Field label="صورة إثبات التحويل (مطلوب)">
                 <Input name="receipt" type="file" required accept="image/png,image/jpeg,image/webp" className="file:mr-2 file:rounded file:border-0 file:bg-white/10 file:px-2 file:py-1 file:text-xs file:text-foreground" />
               </Field>
