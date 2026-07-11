@@ -3,8 +3,17 @@ import { fetchLiveCandles, fetchLiveQuotes } from "@/lib/market-data.functions";
 
 // Symbols routed to Binance WebSocket (free, no key, real-time).
 const BINANCE_MAP: Record<string, string> = {
-  BTCUSD: "btcusdt",
-  ETHUSD: "ethusdt",
+  BTCUSD: "btcusdt", ETHUSD: "ethusdt", BNBUSD: "bnbusdt", SOLUSD: "solusdt",
+  XRPUSD: "xrpusdt", ADAUSD: "adausdt", DOGEUSD: "dogeusdt", TRXUSD: "trxusdt",
+  AVAXUSD: "avaxusdt", DOTUSD: "dotusdt", LINKUSD: "linkusdt", MATICUSD: "maticusdt",
+  LTCUSD: "ltcusdt", BCHUSD: "bchusdt", ATOMUSD: "atomusdt", NEARUSD: "nearusdt",
+  APTUSD: "aptusdt", SUIUSD: "suiusdt", ARBUSD: "arbusdt", OPUSD: "opusdt",
+  INJUSD: "injusdt", TIAUSD: "tiausdt", SEIUSD: "seiusdt", IMXUSD: "imxusdt",
+  FILUSD: "filusdt", ICPUSD: "icpusdt", AAVEUSD: "aaveusdt", MKRUSD: "mkrusdt",
+  LDOUSD: "ldousdt", RUNEUSD: "runeusdt", ETCUSD: "etcusdt", XMRUSD: "xmrusdt",
+  XLMUSD: "xlmusdt", ALGOUSD: "algousdt", HBARUSD: "hbarusdt", VETUSD: "vetusdt",
+  EGLDUSD: "egldusdt", ORDIUSD: "ordiusdt", PEPEUSD: "pepeusdt", SHIBUSD: "shibusdt",
+  FLOKIUSD: "flokiusdt", BONKUSD: "bonkusdt",
 };
 const BINANCE_INTERVAL: Record<Timeframe, string> = {
   "1m": "1m", "5m": "5m", "15m": "15m", "30m": "30m",
