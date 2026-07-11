@@ -7,6 +7,7 @@ import { Minus, Slash, Square, TrendingUp, Trash2, MousePointer2, Activity, Line
 import { cn } from "@/lib/utils";
 import { ema, bollinger, rsi as rsiCalc, macd as macdCalc } from "../lib/indicators";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 type DrawTool = "none" | "trend" | "hline" | "rect" | "fib";
 type Anchor = { time: number; price: number };
@@ -206,6 +207,9 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
       if (tpHit && !hitDedupeRef.current.has(tpKey)) {
         hitDedupeRef.current.add(tpKey);
         setHitLog((L) => [{ key: tpKey + ":" + Date.now(), posId: p.id, kind: "TP" as const, side: p.side, price: tp, at: Date.now() }, ...L].slice(0, 8));
+        toast.success(`⚡ ${symbol} — تم بلوغ جني الأرباح`, {
+          description: `${p.side.toUpperCase()} · TP @ ${tp.toFixed(precision)}`,
+        });
       }
       if (Number.isFinite(tp)) {
         try {
@@ -223,6 +227,9 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
       if (slHit && !hitDedupeRef.current.has(slKey)) {
         hitDedupeRef.current.add(slKey);
         setHitLog((L) => [{ key: slKey + ":" + Date.now(), posId: p.id, kind: "SL" as const, side: p.side, price: sl, at: Date.now() }, ...L].slice(0, 8));
+        toast.error(`⚡ ${symbol} — تم بلوغ وقف الخسارة`, {
+          description: `${p.side.toUpperCase()} · SL @ ${sl.toFixed(precision)}`,
+        });
       }
       if (Number.isFinite(sl)) {
         try {
