@@ -442,7 +442,12 @@ function InvestorPortal() {
       }
     }
     const notesWithReceipt = ((parsed.data.notes ?? "") + receiptNote).trim() || undefined;
-    const { error } = await supabase.from("deposits").insert({ user_id: uid, ...parsed.data, notes: notesWithReceipt });
+    const { error } = await supabase.from("deposits").insert({
+      user_id: uid,
+      ...parsed.data,
+      tx_hash: parsed.data.reference,
+      notes: notesWithReceipt,
+    });
     if (error) return toast.error(error.message);
     await supabase.from("notifications").insert({
       user_id: uid,
