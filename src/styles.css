@@ -71,45 +71,46 @@
 }
 
 :root {
-  /* HK Investment Management — Light theme with platform red primary */
+  /* HK Investment Management — Noir / Navy / Burgundy institutional palette */
   --radius: 0.5rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.18 0.03 220);
-  --surface: oklch(0.98 0.005 220);
-  --surface-2: oklch(0.96 0.008 220);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.18 0.03 220);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.18 0.03 220);
+  /* Steel Blue: #0a1929 / #132f4c / #66b2ff / #e3f2fd */
+  --background: oklch(0.16 0.04 220);         /* #0a1929 deep steel navy */
+  --foreground: oklch(0.97 0.02 200);         /* #e3f2fd icy white-blue */
+  --surface: oklch(0.22 0.05 210);            /* #132f4c raised steel */
+  --surface-2: oklch(0.28 0.06 205);          /* elevated panel */
+  --card: oklch(0.22 0.05 210);
+  --card-foreground: oklch(0.97 0.02 200);
+  --popover: oklch(0.22 0.05 210);
+  --popover-foreground: oklch(0.97 0.02 200);
   --primary: oklch(0.60 0.22 27);              /* platform red */
   --primary-foreground: oklch(0.99 0 0);
   --brand-blue: oklch(0.60 0.22 27);
   --gold: oklch(0.60 0.22 27);
   --gold-soft: oklch(0.72 0.20 27);
-  --secondary: oklch(0.96 0.008 220);
-  --secondary-foreground: oklch(0.18 0.03 220);
-  --muted: oklch(0.96 0.008 220);
-  --muted-foreground: oklch(0.45 0.02 220);
-  --accent: oklch(0.96 0.008 220);
-  --accent-foreground: oklch(0.18 0.03 220);
+  --secondary: oklch(0.25 0.055 210);
+  --secondary-foreground: oklch(0.97 0.02 200);
+  --muted: oklch(0.25 0.055 210);
+  --muted-foreground: oklch(0.75 0.03 200);
+  --accent: oklch(0.68 0.14 200);
+  --accent-foreground: oklch(0.16 0.04 220);
   --destructive: oklch(0.65 0.22 27);
   --destructive-foreground: oklch(0.99 0 0);
-  --border: oklch(0.18 0.03 220 / 12%);
-  --input: oklch(0.18 0.03 220 / 10%);
-  --ring: oklch(0.60 0.22 27);
+  --border: oklch(0.68 0.14 200 / 20%);
+  --input: oklch(0.96 0.014 230 / 10%);
+  --ring: oklch(0.68 0.14 200);
   --chart-1: oklch(0.68 0.14 200);
   --chart-2: oklch(0.80 0.14 85);
   --chart-3: oklch(0.35 0.07 210);
   --chart-4: oklch(0.65 0.22 27);
-  --chart-5: oklch(0.18 0.03 220);
-  --sidebar: oklch(0.98 0.005 220);
-  --sidebar-foreground: oklch(0.18 0.03 220);
-  --sidebar-primary: oklch(0.60 0.22 27);
-  --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.96 0.008 220);
-  --sidebar-accent-foreground: oklch(0.18 0.03 220);
-  --sidebar-border: oklch(0.18 0.03 220 / 12%);
-  --sidebar-ring: oklch(0.60 0.22 27);
+  --chart-5: oklch(0.97 0.02 200);
+  --sidebar: oklch(0.18 0.045 218);
+  --sidebar-foreground: oklch(0.97 0.02 200);
+  --sidebar-primary: oklch(0.68 0.14 200);
+  --sidebar-primary-foreground: oklch(0.16 0.04 220);
+  --sidebar-accent: oklch(0.25 0.055 210);
+  --sidebar-accent-foreground: oklch(0.97 0.02 200);
+  --sidebar-border: oklch(0.68 0.14 200 / 20%);
+  --sidebar-ring: oklch(0.68 0.14 200);
 
   --gradient-brand: linear-gradient(135deg, oklch(0.60 0.22 27), oklch(0.50 0.22 27));
   --gradient-brand-soft: linear-gradient(135deg, oklch(0.60 0.22 27 / 0.22), oklch(0.50 0.22 27 / 0.12));
@@ -123,7 +124,7 @@
 
 @layer base {
   html {
-    color-scheme: light;
+    color-scheme: dark;
     font-family: var(--font-sans);
   }
 
@@ -135,8 +136,8 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     background-image:
-      radial-gradient(1200px 600px at 10% -10%, oklch(0.60 0.22 27 / 0.06), transparent 60%),
-      radial-gradient(900px 500px at 100% 10%, oklch(0.80 0.14 85 / 0.05), transparent 60%);
+      radial-gradient(1200px 600px at 10% -10%, oklch(0.68 0.14 200 / 0.12), transparent 60%),
+      radial-gradient(900px 500px at 100% 10%, oklch(0.80 0.14 85 / 0.08), transparent 60%);
     background-attachment: fixed;
     font-feature-settings: "ss01", "cv11", "tnum";
   }

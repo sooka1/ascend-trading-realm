@@ -79,8 +79,8 @@ export function SiteHeader() {
             <Link
               key={item.to}
               to={item.to}
-              className="rounded-md border border-primary/30 bg-primary/[0.04] px-3 py-2 text-sm text-foreground/80 transition-colors hover:border-primary hover:bg-primary/10 hover:text-primary"
-              activeProps={{ className: "border-primary bg-primary/15 text-primary" }}
+              className="rounded-md border border-gold/40 bg-white/[0.04] px-3 py-2 text-sm text-white/90 transition-colors hover:border-gold hover:bg-gold/15 hover:text-gold"
+              activeProps={{ className: "border-gold bg-gold/20 text-gold" }}
             >
               {t(item.key)}
             </Link>
@@ -126,7 +126,7 @@ export function SiteHeader() {
         <div className="flex items-center gap-2 lg:hidden">
           <LanguageSwitcher compact />
           <button
-            className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-black/10"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-white/10"
             onClick={() => setOpen((v) => !v)}
             aria-label="Toggle menu"
           >
@@ -137,7 +137,7 @@ export function SiteHeader() {
 
       <div
         className={cn(
-          "overflow-hidden border-t border-black/5 lg:hidden",
+          "overflow-hidden border-t border-white/5 lg:hidden",
           open ? "max-h-[520px]" : "max-h-0",
           "transition-[max-height] duration-300",
         )}
@@ -148,7 +148,7 @@ export function SiteHeader() {
               key={item.to}
               to={item.to}
               onClick={() => setOpen(false)}
-              className="rounded-md border border-primary/30 bg-primary/[0.04] px-3 py-2.5 text-sm text-foreground/80 hover:border-primary hover:bg-primary/10 hover:text-primary"
+              className="rounded-md border border-gold/40 bg-white/[0.04] px-3 py-2.5 text-sm text-white/90 hover:border-gold hover:bg-gold/15 hover:text-gold"
             >
               {t(item.key)}
             </Link>
