@@ -3,7 +3,7 @@ import { CandlestickSeries, LineSeries, AreaSeries, BarSeries, createChart } fro
 import type { IChartApi, ISeriesApi, Time } from "lightweight-charts";
 import { getMarketDataProvider } from "../adapters/market-data";
 import type { Candle, Timeframe } from "../adapters/market-data/types";
-import { Minus, Slash, Square, TrendingUp, Trash2, MousePointer2, Activity, LineChart as LineIcon, Waves, BarChart3, Undo2, Redo2, Magnet } from "lucide-react";
+import { Minus, Slash, Square, TrendingUp, Trash2, MousePointer2, Activity, LineChart as LineIcon, Waves, BarChart3, Undo2, Redo2, Magnet, Settings2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ema, bollinger, rsi as rsiCalc, macd as macdCalc } from "../lib/indicators";
 import { supabase } from "@/integrations/supabase/client";
@@ -33,6 +33,18 @@ const FIB_COLORS = ["#94a3b8", "#f59e0b", "#f97316", "#eab308", "#22c55e", "#06b
 type ChartType = "candles" | "line" | "area" | "bars";
 type Indicators = { ema9: boolean; ema21: boolean; ema50: boolean; bb: boolean; rsi: boolean; macd: boolean };
 const DEFAULT_INDICATORS: Indicators = { ema9: false, ema21: false, ema50: false, bb: false, rsi: false, macd: false };
+type IndicatorSettings = {
+  ema9: number; ema21: number; ema50: number;
+  bbPeriod: number; bbStd: number;
+  rsi: number;
+  macdFast: number; macdSlow: number; macdSignal: number;
+};
+const DEFAULT_INDICATOR_SETTINGS: IndicatorSettings = {
+  ema9: 9, ema21: 21, ema50: 50,
+  bbPeriod: 20, bbStd: 2,
+  rsi: 14,
+  macdFast: 12, macdSlow: 26, macdSignal: 9,
+};
 
 function heikinAshi(src: Candle[]): Candle[] {
   const out: Candle[] = [];
