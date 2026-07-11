@@ -8,6 +8,11 @@ import { cn } from "@/lib/utils";
 import { ema, bollinger, rsi as rsiCalc, macd as macdCalc } from "../lib/indicators";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import {
+  loadAlertLog, saveAlertLog, loadSeen, saveSeen,
+  loadAlertSettings, saveAlertSettings, playAlertSound,
+  type AlertEntry, type AlertSettings,
+} from "../lib/tp-sl-alerts";
 
 type DrawTool = "none" | "trend" | "hline" | "rect" | "fib";
 type Anchor = { time: number; price: number };
@@ -84,10 +89,45 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
   const priceLinesRef = useRef<any[]>([]);
   const focusLinesRef = useRef<any[]>([]);
   const hitDedupeRef = useRef<Set<string>>(new Set());
-  type HitLog = { key: string; posId: string; symbol: string; kind: "TP" | "SL"; side: "buy" | "sell"; price: number; entry: number; volume: number; at: number };
-  const [hitLog, setHitLog] = useState<HitLog[]>([]);
+  type HitLog = AlertEntry;
+  const [hitLog, setHitLog] = useState<HitLog[]>(() => loadAlertLog());
   const [selectedHit, setSelectedHit] = useState<HitLog | null>(null);
+  const [logOpen, setLogOpen] = useState(false);
   const [showRiskLines, setShowRiskLines] = useState(true);
+  const [alertSettings, setAlertSettings] = useState<AlertSettings>(() => loadAlertSettings());
+  const [flashKey, setFlashKey] = useState<{ key: string; kind: "TP" | "SL" } | null>(null);
+  // Restore persistent dedupe set on mount.
+  useEffect(() => { hitDedupeRef.current = loadSeen(); }, []);
+  // Persist settings.
+  useEffect(() => { saveAlertSettings(alertSettings); }, [alertSettings]);
+
+  const recordHit = useCallback((entry: AlertEntry) => {
+    if (hitDedupeRef.current.has(entry.key)) return;
+    hitDedupeRef.current.add(entry.key);
+    saveSeen(hitDedupeRef.current);
+    setHitLog((L) => {
+      const next = [entry, ...L].slice(0, 200);
+      saveAlertLog(next);
+      return next;
+    });
+    if (alertSettings.sound) playAlertSound(entry.kind);
+    if (alertSettings.flash) {
+      setFlashKey({ key: entry.key, kind: entry.kind });
+      window.setTimeout(() => setFlashKey((f) => (f && f.key === entry.key ? null : f)), 1200);
+    }
+    const dur = Math.max(1000, alertSettings.toastMs);
+    if (entry.kind === "TP") {
+      toast.success(`⚡ ${entry.symbol} — تم بلوغ جني الأرباح`, {
+        description: `${entry.side.toUpperCase()} · TP @ ${entry.price.toFixed(precision)}`,
+        duration: dur,
+      });
+    } else {
+      toast.error(`⚡ ${entry.symbol} — تم بلوغ وقف الخسارة`, {
+        description: `${entry.side.toUpperCase()} · SL @ ${entry.price.toFixed(precision)}`,
+        duration: dur,
+      });
+    }
+  }, [alertSettings, precision]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const loadedForSymbolRef = useRef<string | null>(null);
   // Snapping: attach drawing anchors to nearest candle time and nearest OHLC price.
@@ -206,13 +246,7 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
       const tpKey = `${p.id}:TP`;
       const tpHit = Number.isFinite(tp) && mp != null && Number.isFinite(mp) &&
         (isBuy ? (mp as number) >= tp : (mp as number) <= tp);
-      if (tpHit && !hitDedupeRef.current.has(tpKey)) {
-        hitDedupeRef.current.add(tpKey);
-        setHitLog((L) => [{ key: tpKey + ":" + Date.now(), posId: p.id, symbol, kind: "TP" as const, side: p.side, price: tp, entry: price, volume: vol, at: Date.now() }, ...L].slice(0, 8));
-        toast.success(`⚡ ${symbol} — تم بلوغ جني الأرباح`, {
-          description: `${p.side.toUpperCase()} · TP @ ${tp.toFixed(precision)}`,
-        });
-      }
+      if (tpHit) recordHit({ key: tpKey, posId: p.id, symbol, kind: "TP", side: p.side, price: tp, entry: price, volume: vol, at: Date.now(), result: "hit" });
       if (Number.isFinite(tp) && showRiskLines) {
         try {
           const line = (series as any).createPriceLine({
@@ -226,13 +260,7 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
       const slKey = `${p.id}:SL`;
       const slHit = Number.isFinite(sl) && mp != null && Number.isFinite(mp) &&
         (isBuy ? (mp as number) <= sl : (mp as number) >= sl);
-      if (slHit && !hitDedupeRef.current.has(slKey)) {
-        hitDedupeRef.current.add(slKey);
-        setHitLog((L) => [{ key: slKey + ":" + Date.now(), posId: p.id, symbol, kind: "SL" as const, side: p.side, price: sl, entry: price, volume: vol, at: Date.now() }, ...L].slice(0, 8));
-        toast.error(`⚡ ${symbol} — تم بلوغ وقف الخسارة`, {
-          description: `${p.side.toUpperCase()} · SL @ ${sl.toFixed(precision)}`,
-        });
-      }
+      if (slHit) recordHit({ key: slKey, posId: p.id, symbol, kind: "SL", side: p.side, price: sl, entry: price, volume: vol, at: Date.now(), result: "hit" });
       if (Number.isFinite(sl) && showRiskLines) {
         try {
           const line = (series as any).createPriceLine({
@@ -257,7 +285,7 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
       }
       priceLinesRef.current = [];
     };
-  }, [positions, symbol, chartType, timeframe, precision, bid, ask, contractSize, showRiskLines]);
+  }, [positions, symbol, chartType, timeframe, precision, bid, ask, contractSize, showRiskLines, recordHit]);
 
   // Draw entry/close lines for a focused historical trade on this symbol.
   useEffect(() => {
@@ -597,11 +625,22 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
       <div ref={ref} className="h-full w-full" />
       {showRiskLines && hitLog.length > 0 && (
         <div className="absolute top-2 left-2 z-10 flex max-w-[260px] flex-col gap-1 text-[10px]" dir="ltr">
-          <div className="pointer-events-auto flex items-center justify-between rounded-md border border-white/10 bg-black/70 px-2 py-1 backdrop-blur-md">
+          <div className="pointer-events-auto flex items-center gap-2 rounded-md border border-white/10 bg-black/70 px-2 py-1 backdrop-blur-md">
             <span className="font-semibold text-white/70">TP/SL Executions</span>
             <button
               type="button"
-              onClick={() => { setHitLog([]); hitDedupeRef.current.clear(); setSelectedHit(null); }}
+              onClick={() => setLogOpen(true)}
+              className="ms-auto rounded px-1.5 py-0.5 text-[9px] text-white/60 hover:bg-white/10 hover:text-white"
+            >
+              Log ({hitLog.length})
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setHitLog([]); saveAlertLog([]);
+                hitDedupeRef.current.clear(); saveSeen(hitDedupeRef.current);
+                setSelectedHit(null);
+              }}
               className="rounded px-1.5 py-0.5 text-[9px] text-white/60 hover:bg-white/10 hover:text-white"
             >
               Clear
@@ -616,7 +655,8 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
                 "pointer-events-auto text-left rounded-md border px-2 py-1 backdrop-blur-md shadow-lg transition hover:brightness-125",
                 h.kind === "TP"
                   ? "border-emerald-400/40 bg-emerald-500/10 text-emerald-200"
-                  : "border-rose-400/40 bg-rose-500/10 text-rose-200"
+                  : "border-rose-400/40 bg-rose-500/10 text-rose-200",
+                flashKey?.key === h.key && "animate-pulse ring-2 ring-amber-400/70",
               )}
             >
               <span className="font-semibold">⚡ {h.kind} HIT</span>
@@ -661,6 +701,47 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
         <span className="inline-flex items-center gap-1"><span className="inline-block h-0.5 w-4 bg-emerald-400" />TP HIT</span>
         <span className="inline-flex items-center gap-1"><span className="inline-block h-0.5 w-4 bg-rose-400" />SL HIT</span>
       </div>
+      {logOpen && (
+        <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setLogOpen(false)}>
+          <div dir="rtl" onClick={(e) => e.stopPropagation()}
+            className="max-h-[80%] w-[92%] max-w-lg overflow-hidden rounded-lg border border-white/10 bg-slate-950/95 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-white/10 px-3 py-2 text-xs font-semibold text-white/80">
+              <span>سجل تنبيهات TP / SL ({hitLog.length})</span>
+              <button onClick={() => setLogOpen(false)} className="rounded px-1.5 py-0.5 text-[10px] text-white/60 hover:bg-white/10 hover:text-white">إغلاق</button>
+            </div>
+            <div className="max-h-[60vh] overflow-auto">
+              {hitLog.length === 0 ? (
+                <div className="py-8 text-center text-[11px] text-white/40">لا يوجد تنبيهات بعد</div>
+              ) : (
+                <table className="w-full text-[11px]">
+                  <thead className="sticky top-0 bg-slate-950/95 text-white/50 text-right">
+                    <tr>
+                      <th className="px-2 py-2">الوقت</th>
+                      <th className="px-2 py-2">الأداة</th>
+                      <th className="px-2 py-2">النوع</th>
+                      <th className="px-2 py-2">الاتجاه</th>
+                      <th className="px-2 py-2">السعر</th>
+                      <th className="px-2 py-2">النتيجة</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {hitLog.map((h) => (
+                      <tr key={h.key + ":" + h.at} className="border-t border-white/[0.04]">
+                        <td className="px-2 py-2 font-mono text-white/70">{new Date(h.at).toLocaleString("en-GB")}</td>
+                        <td className="px-2 py-2">{h.symbol}</td>
+                        <td className={cn("px-2 py-2 font-semibold", h.kind === "TP" ? "text-emerald-300" : "text-rose-300")}>{h.kind}</td>
+                        <td className={cn("px-2 py-2 uppercase", h.side === "buy" ? "text-emerald-400" : "text-red-400")}>{h.side}</td>
+                        <td className="px-2 py-2 font-mono">{h.price.toFixed(precision)}</td>
+                        <td className="px-2 py-2 text-white/70">{h.result}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
       <svg
         ref={svgRef}
         className={cn("absolute inset-0", tool !== "none" ? "pointer-events-auto cursor-crosshair" : "pointer-events-none")}
@@ -954,6 +1035,32 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
               className="h-3.5 w-3.5 accent-amber-400"
             />
           </label>
+          <div className="mb-2 rounded border border-white/10 bg-white/[0.03] p-2 text-[10px] text-white/70">
+            <div className="mb-1 font-semibold text-white/80">تنبيهات TP/SL</div>
+            <label className="mb-1 flex items-center justify-between">
+              <span>صوت</span>
+              <input type="checkbox" checked={alertSettings.sound}
+                onChange={(e) => setAlertSettings((s) => ({ ...s, sound: e.target.checked }))}
+                className="h-3.5 w-3.5 accent-amber-400" />
+            </label>
+            <label className="mb-1 flex items-center justify-between">
+              <span>وميض</span>
+              <input type="checkbox" checked={alertSettings.flash}
+                onChange={(e) => setAlertSettings((s) => ({ ...s, flash: e.target.checked }))}
+                className="h-3.5 w-3.5 accent-amber-400" />
+            </label>
+            <label className="flex items-center justify-between gap-2">
+              <span>مدة Toast (ثانية)</span>
+              <input type="number" min={1} max={30} step={1}
+                value={Math.round(alertSettings.toastMs / 1000)}
+                onChange={(e) => {
+                  const v = Number(e.target.value);
+                  if (!Number.isFinite(v)) return;
+                  setAlertSettings((s) => ({ ...s, toastMs: Math.min(30, Math.max(1, v)) * 1000 }));
+                }}
+                className="h-6 w-14 rounded border border-white/10 bg-white/5 px-1.5 text-right text-white outline-none focus:border-gold/50" />
+            </label>
+          </div>
           {([
             ["ema9", "EMA سريع", 1, 500, 1],
             ["ema21", "EMA متوسط", 1, 500, 1],
