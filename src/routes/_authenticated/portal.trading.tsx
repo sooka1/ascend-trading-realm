@@ -45,6 +45,9 @@ function TradingTerminal() {
   const [selected, setSelected] = useState("XAUUSD");
   const [tf, setTf] = useState<Timeframe>("15m");
   const [chartType, setChartType] = useState<ChartType>("candles");
+  const [histSide, setHistSide] = useState<"all" | "buy" | "sell">("all");
+  const [histResult, setHistResult] = useState<"all" | "win" | "loss">("all");
+  const [focusedHistoryId, setFocusedHistoryId] = useState<string | null>(null);
 
   const allSymbols = useMemo(() => Array.from(new Set([...watchSymbols, selected, ...positions.map(p => p.symbol)])), [watchSymbols, selected, positions]);
   const quotes = useQuotes(allSymbols);
@@ -80,6 +83,18 @@ function TradingTerminal() {
     [history],
   );
   const totalPnl = realized + floating;
+
+  const filteredHistory = useMemo(() => history.filter(h => {
+    if (histSide !== "all" && h.side !== histSide) return false;
+    const p = Number(h.profit ?? 0);
+    if (histResult === "win" && !(p >= 0)) return false;
+    if (histResult === "loss" && !(p < 0)) return false;
+    return true;
+  }), [history, histSide, histResult]);
+  const focusedTrade = useMemo(
+    () => history.find(h => h.id === focusedHistoryId) ?? null,
+    [history, focusedHistoryId],
+  );
 
   return (
     <PortalShell fullscreen eyebrow="بوابة المتداول" title="منصة التداول" subtitle="بيانات حيّة وتنفيذ فوري">
@@ -132,7 +147,7 @@ function TradingTerminal() {
                     </div>
                   </div>
                   <div className="flex-1 min-h-0">
-                    {selInst && <TerminalChart symbol={selected} timeframe={tf} chartType={chartType} precision={selInst.price_precision} positions={positions} bid={bid} ask={ask} contractSize={selInst.contract_size} />}
+                    {selInst && <TerminalChart symbol={selected} timeframe={tf} chartType={chartType} precision={selInst.price_precision} positions={positions} bid={bid} ask={ask} contractSize={selInst.contract_size} focusedTrade={focusedTrade ? { id: focusedTrade.id, symbol: focusedTrade.symbol, side: focusedTrade.side as "buy"|"sell", entry_price: focusedTrade.entry_price, close_price: focusedTrade.close_price, profit: focusedTrade.profit } : null} />}
                   </div>
                 </div>
               </Panel>
@@ -172,14 +187,41 @@ function TradingTerminal() {
                     }
                   </TabsContent>
                   <TabsContent value="history" className="flex-1 mt-0 overflow-auto p-2 text-xs">
-                    {history.length === 0 ? <div className="text-center py-6 text-white/40">لا يوجد سجل بعد</div> :
+                    <div className="flex flex-wrap items-center gap-2 mb-2 px-1">
+                      <span className="text-white/50">النوع:</span>
+                      {(["all","buy","sell"] as const).map(v => (
+                        <button key={v} onClick={() => setHistSide(v)}
+                          className={cn("px-2 py-0.5 rounded border text-[10px]",
+                            histSide === v ? "border-amber-400/40 bg-amber-400/10 text-amber-200" : "border-white/10 text-white/60 hover:bg-white/[0.04]")}>
+                          {v === "all" ? "الكل" : v === "buy" ? "شراء" : "بيع"}
+                        </button>
+                      ))}
+                      <span className="text-white/50 ms-2">النتيجة:</span>
+                      {(["all","win","loss"] as const).map(v => (
+                        <button key={v} onClick={() => setHistResult(v)}
+                          className={cn("px-2 py-0.5 rounded border text-[10px]",
+                            histResult === v ? "border-amber-400/40 bg-amber-400/10 text-amber-200" : "border-white/10 text-white/60 hover:bg-white/[0.04]")}>
+                          {v === "all" ? "الكل" : v === "win" ? "رابحة" : "خاسرة"}
+                        </button>
+                      ))}
+                      {focusedHistoryId && (
+                        <button onClick={() => setFocusedHistoryId(null)}
+                          className="ms-auto px-2 py-0.5 rounded border border-white/10 text-[10px] text-white/60 hover:bg-white/[0.04]">
+                          إلغاء التمييز
+                        </button>
+                      )}
+                    </div>
+                    {filteredHistory.length === 0 ? <div className="text-center py-6 text-white/40">لا يوجد سجل مطابق</div> :
                       <table className="w-full text-[11px]">
                         <thead className="text-white/50 text-right">
                           <tr><th className="px-2 py-2">الأداة</th><th className="px-2 py-2">الاتجاه</th><th className="px-2 py-2">الحجم</th><th className="px-2 py-2">الدخول</th><th className="px-2 py-2">الإغلاق</th><th className="px-2 py-2">الربح</th><th className="px-2 py-2">التاريخ</th></tr>
                         </thead>
                         <tbody>
-                          {history.map(h => (
-                            <tr key={h.id} className="border-t border-white/[0.04]">
+                          {filteredHistory.map(h => (
+                            <tr key={h.id}
+                              onClick={() => { setSelected(h.symbol); setFocusedHistoryId(focusedHistoryId === h.id ? null : h.id); }}
+                              className={cn("border-t border-white/[0.04] cursor-pointer hover:bg-white/[0.03]",
+                                focusedHistoryId === h.id && "bg-amber-400/[0.08]")}>
                               <td className="px-2 py-2">{h.symbol}</td>
                               <td className={`px-2 py-2 ${h.side === "buy" ? "text-emerald-400" : "text-red-400"}`}>{h.side}</td>
                               <td className="px-2 py-2 font-mono">{Number(h.volume).toFixed(2)}</td>
