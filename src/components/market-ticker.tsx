@@ -4,38 +4,62 @@ import { cn } from "@/lib/utils";
 
 type Row = { symbol: string; name: string; price: number; change: number };
 
-const SEED: Row[] = [
-  { symbol: "BTC/USD", name: "Bitcoin", price: 71284.5, change: 1.42 },
-  { symbol: "ETH/USD", name: "Ethereum", price: 3865.1, change: 2.18 },
-  { symbol: "XAU/USD", name: "Gold", price: 2384.2, change: 0.62 },
-  { symbol: "EUR/USD", name: "Euro / Dollar", price: 1.0842, change: -0.14 },
-  { symbol: "GBP/USD", name: "Cable", price: 1.2681, change: -0.22 },
-  { symbol: "USD/JPY", name: "Yen", price: 156.42, change: 0.31 },
-  { symbol: "US30", name: "Dow Jones", price: 39158, change: 0.48 },
-  { symbol: "SPX500", name: "S&P 500", price: 5321, change: 0.71 },
-  { symbol: "NAS100", name: "Nasdaq", price: 18712, change: 1.05 },
-  { symbol: "OIL", name: "Brent Crude", price: 82.14, change: -0.34 },
-  { symbol: "AAPL", name: "Apple", price: 214.28, change: 0.92 },
-  { symbol: "TSLA", name: "Tesla", price: 178.51, change: -1.12 },
+// Display symbol → Yahoo Finance symbol used for live pricing.
+const FEED: { symbol: string; name: string; yahoo: string; fallback: { price: number; change: number } }[] = [
+  { symbol: "BTC/USD", name: "Bitcoin",       yahoo: "BTC-USD",   fallback: { price: 71284.5, change: 1.42 } },
+  { symbol: "ETH/USD", name: "Ethereum",      yahoo: "ETH-USD",   fallback: { price: 3865.1,  change: 2.18 } },
+  { symbol: "XAU/USD", name: "Gold",          yahoo: "GC=F",      fallback: { price: 2384.2,  change: 0.62 } },
+  { symbol: "EUR/USD", name: "Euro / Dollar", yahoo: "EURUSD=X",  fallback: { price: 1.0842,  change: -0.14 } },
+  { symbol: "GBP/USD", name: "Cable",         yahoo: "GBPUSD=X",  fallback: { price: 1.2681,  change: -0.22 } },
+  { symbol: "USD/JPY", name: "Yen",           yahoo: "JPY=X",     fallback: { price: 156.42,  change: 0.31 } },
+  { symbol: "US30",    name: "Dow Jones",     yahoo: "^DJI",      fallback: { price: 39158,   change: 0.48 } },
+  { symbol: "SPX500",  name: "S&P 500",       yahoo: "^GSPC",     fallback: { price: 5321,    change: 0.71 } },
+  { symbol: "NAS100",  name: "Nasdaq",        yahoo: "^IXIC",     fallback: { price: 18712,   change: 1.05 } },
+  { symbol: "OIL",     name: "Brent Crude",   yahoo: "BZ=F",      fallback: { price: 82.14,   change: -0.34 } },
+  { symbol: "AAPL",    name: "Apple",         yahoo: "AAPL",      fallback: { price: 214.28,  change: 0.92 } },
+  { symbol: "TSLA",    name: "Tesla",         yahoo: "TSLA",      fallback: { price: 178.51,  change: -1.12 } },
 ];
 
-function jitter(v: number, pct = 0.0015) {
-  return v * (1 + (Math.random() - 0.5) * pct);
+const SEED: Row[] = FEED.map((f) => ({ symbol: f.symbol, name: f.name, ...f.fallback }));
+
+async function fetchQuote(yahooSym: string): Promise<{ price: number; change: number } | null> {
+  // Yahoo Finance chart endpoint — public, CORS-friendly, no auth required.
+  try {
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(yahooSym)}?interval=1d&range=1d`;
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    const json = await res.json();
+    const meta = json?.chart?.result?.[0]?.meta;
+    if (!meta) return null;
+    const price = Number(meta.regularMarketPrice);
+    const prev = Number(meta.chartPreviousClose ?? meta.previousClose);
+    if (!isFinite(price) || !isFinite(prev) || prev === 0) return null;
+    const change = ((price - prev) / prev) * 100;
+    return { price, change };
+  } catch {
+    return null;
+  }
 }
 
 export function MarketTicker() {
   const [rows, setRows] = useState(SEED);
   useEffect(() => {
-    const id = setInterval(() => {
-      setRows((prev) =>
-        prev.map((r) => {
-          const next = jitter(r.price);
-          const change = r.change + (Math.random() - 0.5) * 0.05;
-          return { ...r, price: next, change };
+    let cancelled = false;
+    const load = async () => {
+      const results = await Promise.all(
+        FEED.map(async (f) => {
+          const q = await fetchQuote(f.yahoo);
+          return { symbol: f.symbol, name: f.name, price: q?.price ?? f.fallback.price, change: q?.change ?? f.fallback.change };
         }),
       );
-    }, 1500);
-    return () => clearInterval(id);
+      if (!cancelled) setRows(results);
+    };
+    void load();
+    const id = setInterval(load, 30_000);
+    return () => {
+      cancelled = true;
+      clearInterval(id);
+    };
   }, []);
 
   const loop = [...rows, ...rows];
