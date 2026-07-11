@@ -123,7 +123,7 @@ function Contact() {
                 className="inline-flex items-center gap-1.5 rounded-md border border-gold/30 bg-gold/10 px-3 py-1.5 text-xs font-medium text-gold hover:bg-gold/20"
               >
                 <Navigation className="h-3.5 w-3.5" />
-                {p.hero?.eyebrow ? "الاتجاهات" : "Get directions"}
+                الاتجاهات · Directions
               </a>
             </div>
           </div>
