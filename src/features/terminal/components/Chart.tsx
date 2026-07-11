@@ -8,6 +8,11 @@ import { cn } from "@/lib/utils";
 import { ema, bollinger, rsi as rsiCalc, macd as macdCalc } from "../lib/indicators";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import {
+  loadAlertLog, saveAlertLog, loadSeen, saveSeen,
+  loadAlertSettings, saveAlertSettings, playAlertSound,
+  type AlertEntry, type AlertSettings,
+} from "../lib/tp-sl-alerts";
 
 type DrawTool = "none" | "trend" | "hline" | "rect" | "fib";
 type Anchor = { time: number; price: number };
@@ -84,10 +89,45 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
   const priceLinesRef = useRef<any[]>([]);
   const focusLinesRef = useRef<any[]>([]);
   const hitDedupeRef = useRef<Set<string>>(new Set());
-  type HitLog = { key: string; posId: string; symbol: string; kind: "TP" | "SL"; side: "buy" | "sell"; price: number; entry: number; volume: number; at: number };
-  const [hitLog, setHitLog] = useState<HitLog[]>([]);
+  type HitLog = AlertEntry;
+  const [hitLog, setHitLog] = useState<HitLog[]>(() => loadAlertLog());
   const [selectedHit, setSelectedHit] = useState<HitLog | null>(null);
+  const [logOpen, setLogOpen] = useState(false);
   const [showRiskLines, setShowRiskLines] = useState(true);
+  const [alertSettings, setAlertSettings] = useState<AlertSettings>(() => loadAlertSettings());
+  const [flashKey, setFlashKey] = useState<{ key: string; kind: "TP" | "SL" } | null>(null);
+  // Restore persistent dedupe set on mount.
+  useEffect(() => { hitDedupeRef.current = loadSeen(); }, []);
+  // Persist settings.
+  useEffect(() => { saveAlertSettings(alertSettings); }, [alertSettings]);
+
+  const recordHit = useCallback((entry: AlertEntry) => {
+    if (hitDedupeRef.current.has(entry.key)) return;
+    hitDedupeRef.current.add(entry.key);
+    saveSeen(hitDedupeRef.current);
+    setHitLog((L) => {
+      const next = [entry, ...L].slice(0, 200);
+      saveAlertLog(next);
+      return next;
+    });
+    if (alertSettings.sound) playAlertSound(entry.kind);
+    if (alertSettings.flash) {
+      setFlashKey({ key: entry.key, kind: entry.kind });
+      window.setTimeout(() => setFlashKey((f) => (f && f.key === entry.key ? null : f)), 1200);
+    }
+    const dur = Math.max(1000, alertSettings.toastMs);
+    if (entry.kind === "TP") {
+      toast.success(`⚡ ${entry.symbol} — تم بلوغ جني الأرباح`, {
+        description: `${entry.side.toUpperCase()} · TP @ ${entry.price.toFixed(precision)}`,
+        duration: dur,
+      });
+    } else {
+      toast.error(`⚡ ${entry.symbol} — تم بلوغ وقف الخسارة`, {
+        description: `${entry.side.toUpperCase()} · SL @ ${entry.price.toFixed(precision)}`,
+        duration: dur,
+      });
+    }
+  }, [alertSettings, precision]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const loadedForSymbolRef = useRef<string | null>(null);
   // Snapping: attach drawing anchors to nearest candle time and nearest OHLC price.
@@ -206,13 +246,7 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
       const tpKey = `${p.id}:TP`;
       const tpHit = Number.isFinite(tp) && mp != null && Number.isFinite(mp) &&
         (isBuy ? (mp as number) >= tp : (mp as number) <= tp);
-      if (tpHit && !hitDedupeRef.current.has(tpKey)) {
-        hitDedupeRef.current.add(tpKey);
-        setHitLog((L) => [{ key: tpKey + ":" + Date.now(), posId: p.id, symbol, kind: "TP" as const, side: p.side, price: tp, entry: price, volume: vol, at: Date.now() }, ...L].slice(0, 8));
-        toast.success(`⚡ ${symbol} — تم بلوغ جني الأرباح`, {
-          description: `${p.side.toUpperCase()} · TP @ ${tp.toFixed(precision)}`,
-        });
-      }
+      if (tpHit) recordHit({ key: tpKey, posId: p.id, symbol, kind: "TP", side: p.side, price: tp, entry: price, volume: vol, at: Date.now(), result: "hit" });
       if (Number.isFinite(tp) && showRiskLines) {
         try {
           const line = (series as any).createPriceLine({
@@ -226,13 +260,7 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
       const slKey = `${p.id}:SL`;
       const slHit = Number.isFinite(sl) && mp != null && Number.isFinite(mp) &&
         (isBuy ? (mp as number) <= sl : (mp as number) >= sl);
-      if (slHit && !hitDedupeRef.current.has(slKey)) {
-        hitDedupeRef.current.add(slKey);
-        setHitLog((L) => [{ key: slKey + ":" + Date.now(), posId: p.id, symbol, kind: "SL" as const, side: p.side, price: sl, entry: price, volume: vol, at: Date.now() }, ...L].slice(0, 8));
-        toast.error(`⚡ ${symbol} — تم بلوغ وقف الخسارة`, {
-          description: `${p.side.toUpperCase()} · SL @ ${sl.toFixed(precision)}`,
-        });
-      }
+      if (slHit) recordHit({ key: slKey, posId: p.id, symbol, kind: "SL", side: p.side, price: sl, entry: price, volume: vol, at: Date.now(), result: "hit" });
       if (Number.isFinite(sl) && showRiskLines) {
         try {
           const line = (series as any).createPriceLine({
@@ -257,7 +285,7 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
       }
       priceLinesRef.current = [];
     };
-  }, [positions, symbol, chartType, timeframe, precision, bid, ask, contractSize, showRiskLines]);
+  }, [positions, symbol, chartType, timeframe, precision, bid, ask, contractSize, showRiskLines, recordHit]);
 
   // Draw entry/close lines for a focused historical trade on this symbol.
   useEffect(() => {
