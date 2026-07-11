@@ -1035,6 +1035,32 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
               className="h-3.5 w-3.5 accent-amber-400"
             />
           </label>
+          <div className="mb-2 rounded border border-white/10 bg-white/[0.03] p-2 text-[10px] text-white/70">
+            <div className="mb-1 font-semibold text-white/80">تنبيهات TP/SL</div>
+            <label className="mb-1 flex items-center justify-between">
+              <span>صوت</span>
+              <input type="checkbox" checked={alertSettings.sound}
+                onChange={(e) => setAlertSettings((s) => ({ ...s, sound: e.target.checked }))}
+                className="h-3.5 w-3.5 accent-amber-400" />
+            </label>
+            <label className="mb-1 flex items-center justify-between">
+              <span>وميض</span>
+              <input type="checkbox" checked={alertSettings.flash}
+                onChange={(e) => setAlertSettings((s) => ({ ...s, flash: e.target.checked }))}
+                className="h-3.5 w-3.5 accent-amber-400" />
+            </label>
+            <label className="flex items-center justify-between gap-2">
+              <span>مدة Toast (ثانية)</span>
+              <input type="number" min={1} max={30} step={1}
+                value={Math.round(alertSettings.toastMs / 1000)}
+                onChange={(e) => {
+                  const v = Number(e.target.value);
+                  if (!Number.isFinite(v)) return;
+                  setAlertSettings((s) => ({ ...s, toastMs: Math.min(30, Math.max(1, v)) * 1000 }));
+                }}
+                className="h-6 w-14 rounded border border-white/10 bg-white/5 px-1.5 text-right text-white outline-none focus:border-gold/50" />
+            </label>
+          </div>
           {([
             ["ema9", "EMA سريع", 1, 500, 1],
             ["ema21", "EMA متوسط", 1, 500, 1],
