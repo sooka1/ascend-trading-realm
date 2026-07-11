@@ -10,7 +10,7 @@ interface HKLogoProps {
 }
 
 export function HKLogo({ className, showWordmark = false, size = "md", variant = "default" }: HKLogoProps) {
-  const dim = size === "sm" ? "h-8 w-28" : size === "lg" ? "h-14 w-48" : "h-10 w-36";
+  const dim = size === "sm" ? "h-20 w-72" : size === "lg" ? "h-36 w-[30rem]" : "h-24 w-96";
   const text = size === "sm" ? "text-sm" : size === "lg" ? "text-2xl" : "text-lg";
   if (variant === "chip") {
     return (
