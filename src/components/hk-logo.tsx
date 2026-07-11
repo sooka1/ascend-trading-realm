@@ -38,7 +38,7 @@ export function HKLogo({ className, showWordmark = true, size = "md", variant = 
         </span>
         {showWordmark && (
           <span className={cn("leading-none tracking-tight", text)}>
-            HK <span className="text-gradient">Invest</span>
+            HK <span className="text-black">Invest</span>
           </span>
         )}
       </span>
@@ -59,7 +59,7 @@ export function HKLogo({ className, showWordmark = true, size = "md", variant = 
       </span>
       {showWordmark && (
         <span className={cn("leading-none tracking-tight", text)}>
-          HK <span className="text-gradient">Investment</span>
+          HK <span className="text-black">Investment</span>
         </span>
       )}
     </span>
