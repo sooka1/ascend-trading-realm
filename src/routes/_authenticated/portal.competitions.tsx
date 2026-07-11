@@ -57,7 +57,7 @@ function PortalCompetitionsPage() {
       title="اشتراكات المسابقات"
       subtitle="سجل الخصومات من محفظتك مقابل الاشتراك في المسابقات."
     >
-      <PortalCard>
+      <PortalCard title="سجل اشتراكات المسابقات" icon={Trophy}>
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Trophy className="h-4 w-4 text-gold" />
