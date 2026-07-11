@@ -80,6 +80,9 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
   const indicatorSeriesRef = useRef<Record<string, ISeriesApi<"Line"> | ISeriesApi<"Area"> | null>>({});
   const candlesRef = useRef<Candle[]>([]);
   const priceLinesRef = useRef<any[]>([]);
+  const hitDedupeRef = useRef<Set<string>>(new Set());
+  type HitLog = { key: string; posId: string; kind: "TP" | "SL"; side: "buy" | "sell"; price: number; at: number };
+  const [hitLog, setHitLog] = useState<HitLog[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const loadedForSymbolRef = useRef<string | null>(null);
   // Snapping: attach drawing anchors to nearest candle time and nearest OHLC price.
@@ -195,25 +198,45 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
         priceLinesRef.current.push(line);
       } catch { /* noop */ }
       const tp = p.take_profit == null ? NaN : Number(p.take_profit);
+      const tpKey = `${p.id}:TP`;
+      const tpHit = Number.isFinite(tp) && mp != null && Number.isFinite(mp) &&
+        (isBuy ? (mp as number) >= tp : (mp as number) <= tp);
+      if (tpHit && !hitDedupeRef.current.has(tpKey)) {
+        hitDedupeRef.current.add(tpKey);
+        setHitLog((L) => [{ key: tpKey + ":" + Date.now(), posId: p.id, kind: "TP" as const, side: p.side, price: tp, at: Date.now() }, ...L].slice(0, 8));
+      }
       if (Number.isFinite(tp)) {
         try {
           const line = (series as any).createPriceLine({
-            price: tp, color: "#10b981", lineWidth: 1, lineStyle: 2,
-            axisLabelVisible: true, title: `TP ${tp.toFixed(precision)}`,
+            price: tp, color: tpHit ? "#34d399" : "#10b981", lineWidth: tpHit ? 3 : 1, lineStyle: tpHit ? 0 : 2,
+            axisLabelVisible: true, title: `${tpHit ? "⚡ TP HIT" : "TP"} ${tp.toFixed(precision)}`,
           });
           priceLinesRef.current.push(line);
         } catch { /* noop */ }
       }
       const sl = p.stop_loss == null ? NaN : Number(p.stop_loss);
+      const slKey = `${p.id}:SL`;
+      const slHit = Number.isFinite(sl) && mp != null && Number.isFinite(mp) &&
+        (isBuy ? (mp as number) <= sl : (mp as number) >= sl);
+      if (slHit && !hitDedupeRef.current.has(slKey)) {
+        hitDedupeRef.current.add(slKey);
+        setHitLog((L) => [{ key: slKey + ":" + Date.now(), posId: p.id, kind: "SL" as const, side: p.side, price: sl, at: Date.now() }, ...L].slice(0, 8));
+      }
       if (Number.isFinite(sl)) {
         try {
           const line = (series as any).createPriceLine({
-            price: sl, color: "#f43f5e", lineWidth: 1, lineStyle: 2,
-            axisLabelVisible: true, title: `SL ${sl.toFixed(precision)}`,
+            price: sl, color: slHit ? "#fb7185" : "#f43f5e", lineWidth: slHit ? 3 : 1, lineStyle: slHit ? 0 : 2,
+            axisLabelVisible: true, title: `${slHit ? "⚡ SL HIT" : "SL"} ${sl.toFixed(precision)}`,
           });
           priceLinesRef.current.push(line);
         } catch { /* noop */ }
       }
+    }
+    // Clear dedupe entries for positions that no longer exist.
+    const alive = new Set<string>();
+    for (const p of mine) { alive.add(`${p.id}:TP`); alive.add(`${p.id}:SL`); }
+    for (const k of Array.from(hitDedupeRef.current)) {
+      if (!alive.has(k)) hitDedupeRef.current.delete(k);
     }
     return () => {
       const s = seriesRef.current;
@@ -519,6 +542,28 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
   return (
     <div ref={wrapRef} className="relative h-full w-full">
       <div ref={ref} className="h-full w-full" />
+      {hitLog.length > 0 && (
+        <div className="pointer-events-none absolute top-2 left-2 z-10 flex max-w-[240px] flex-col gap-1 text-[10px]" dir="ltr">
+          {hitLog.slice(0, 4).map((h) => (
+            <div key={h.key}
+              className={cn(
+                "pointer-events-auto rounded-md border px-2 py-1 backdrop-blur-md shadow-lg",
+                h.kind === "TP"
+                  ? "border-emerald-400/40 bg-emerald-500/10 text-emerald-200"
+                  : "border-rose-400/40 bg-rose-500/10 text-rose-200"
+              )}
+            >
+              <span className="font-semibold">⚡ {h.kind} HIT</span>
+              <span className="mx-1 opacity-60">·</span>
+              <span className="uppercase">{h.side}</span>
+              <span className="mx-1 opacity-60">@</span>
+              <span className="font-mono">{h.price.toFixed(precision)}</span>
+              <span className="mx-1 opacity-60">·</span>
+              <span className="opacity-70">{new Date(h.at).toLocaleTimeString("en-GB")}</span>
+            </div>
+          ))}
+        </div>
+      )}
       <svg
         ref={svgRef}
         className={cn("absolute inset-0", tool !== "none" ? "pointer-events-auto cursor-crosshair" : "pointer-events-none")}
