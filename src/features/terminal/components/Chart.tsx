@@ -61,7 +61,7 @@ function heikinAshi(src: Candle[]): Candle[] {
 }
 
 export type PositionMarker = { id: string; symbol: string; side: "buy" | "sell"; entry_price: number | string; volume: number | string; take_profit?: number | string | null; stop_loss?: number | string | null };
-export function TerminalChart({ symbol, timeframe, chartType, precision, positions = [] }: { symbol: string; timeframe: Timeframe; chartType: ChartType; precision: number; positions?: PositionMarker[] }) {
+export function TerminalChart({ symbol, timeframe, chartType, precision, positions = [], bid, ask, contractSize = 1 }: { symbol: string; timeframe: Timeframe; chartType: ChartType; precision: number; positions?: PositionMarker[]; bid?: number; ask?: number; contractSize?: number }) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const ref = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
@@ -176,6 +176,13 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
       const color = isBuy ? "#22c55e" : "#ef4444";
       const price = Number(p.entry_price);
       if (!Number.isFinite(price)) continue;
+      const mp = isBuy ? bid : ask;
+      const vol = Number(p.volume);
+      let pnlStr = "";
+      if (mp != null && Number.isFinite(mp) && Number.isFinite(vol)) {
+        const pnl = (mp - price) * (isBuy ? 1 : -1) * vol * contractSize;
+        pnlStr = ` · ${pnl >= 0 ? "+" : ""}$${pnl.toFixed(2)}`;
+      }
       try {
         const line = (series as any).createPriceLine({
           price,
@@ -183,7 +190,7 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
           lineWidth: 2,
           lineStyle: 0,
           axisLabelVisible: true,
-          title: `${isBuy ? "BUY" : "SELL"} ${Number(p.volume).toFixed(2)}`,
+          title: `${isBuy ? "BUY" : "SELL"} ${vol.toFixed(2)}${pnlStr}`,
         });
         priceLinesRef.current.push(line);
       } catch { /* noop */ }
@@ -216,7 +223,7 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
       }
       priceLinesRef.current = [];
     };
-  }, [positions, symbol, chartType, timeframe, precision]);
+  }, [positions, symbol, chartType, timeframe, precision, bid, ask, contractSize]);
 
   // Add / remove and refresh indicator series based on toggles.
   const recomputeIndicators = useCallback(() => {
