@@ -842,7 +842,14 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
                   </thead>
                   <tbody>
                     {filteredHitLog.map((h) => (
-                      <tr key={h.key + ":" + h.at} className="border-t border-white/[0.04]">
+                      <tr
+                        key={h.key + ":" + h.at}
+                        onClick={() => { setFocusedHit(h); setSelectedHit(h); setLogOpen(false); }}
+                        className={cn(
+                          "cursor-pointer border-t border-white/[0.04] hover:bg-white/5",
+                          focusedHit && focusedHit.key === h.key && focusedHit.at === h.at && "bg-white/10",
+                        )}
+                      >
                         <td className="px-2 py-2 font-mono text-white/70">{new Date(h.at).toLocaleString("en-GB")}</td>
                         <td className="px-2 py-2">{h.symbol}</td>
                         <td className={cn("px-2 py-2 font-semibold", h.kind === "TP" ? "text-emerald-300" : "text-rose-300")}>{h.kind}</td>
