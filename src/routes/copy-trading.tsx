@@ -15,6 +15,11 @@ type CopySearch = {
   perPage: number;
   trader: string;
   redirect: string;
+  asset: string;
+  risk: string;
+  minReturn: number;
+  maxDeposit: number;
+  sort: string;
 };
 
 const searchSchema = z.object({
@@ -22,6 +27,11 @@ const searchSchema = z.object({
   perPage: fallback(z.number().int(), 4).default(4),
   trader: fallback(z.string(), "").default(""),
   redirect: fallback(z.string(), "").default(""),
+  asset: fallback(z.string(), "all").default("all"),
+  risk: fallback(z.string(), "all").default("all"),
+  minReturn: fallback(z.number(), -10).default(-10),
+  maxDeposit: fallback(z.number().int(), 5000).default(5000),
+  sort: fallback(z.string(), "return").default("return"),
 });
 
 const PER_PAGE_OPTIONS = [2, 4, 6, 8] as const;
@@ -128,11 +138,23 @@ function CopyTradingPage() {
   const perPage = PER_PAGE_OPTIONS.includes(search.perPage as (typeof PER_PAGE_OPTIONS)[number])
     ? search.perPage
     : 4;
-  const [asset, setAsset] = useState<Asset | "all">("all");
-  const [risk, setRisk] = useState<Risk | "all">("all");
-  const [minReturn, setMinReturn] = useState<number>(-10);
-  const [maxDeposit, setMaxDeposit] = useState<number>(5000);
-  const [sort, setSort] = useState<SortKey>("return");
+
+  const ASSET_KEYS: (Asset | "all")[] = ["all", "forex", "crypto", "metals", "indices", "stocks", "energy", "commodities"];
+  const RISK_KEYS: (Risk | "all")[] = ["all", "low", "medium", "high"];
+  const SORT_KEYS: SortKey[] = ["return", "min-asc", "min-desc", "followers", "winRate"];
+  const asset = (ASSET_KEYS as string[]).includes(search.asset) ? (search.asset as Asset | "all") : "all";
+  const risk = (RISK_KEYS as string[]).includes(search.risk) ? (search.risk as Risk | "all") : "all";
+  const sort = (SORT_KEYS as string[]).includes(search.sort) ? (search.sort as SortKey) : "return";
+  const minReturn = Math.max(-10, Math.min(15, search.minReturn));
+  const maxDeposit = Math.max(500, Math.min(5000, search.maxDeposit));
+
+  const patchSearch = (patch: Partial<CopySearch>) =>
+    navigate({ search: (p: CopySearch) => ({ ...p, ...patch, page: 1 }) });
+  const setAsset = (v: Asset | "all") => patchSearch({ asset: v });
+  const setRisk = (v: Risk | "all") => patchSearch({ risk: v });
+  const setMinReturn = (v: number) => patchSearch({ minReturn: v });
+  const setMaxDeposit = (v: number) => patchSearch({ maxDeposit: v });
+  const setSort = (v: SortKey) => patchSearch({ sort: v });
 
   const filtered = useMemo(() => {
     const rows = TRADERS.map((t) => ({ t, ret: lastMonthReturn(t) }))
@@ -161,12 +183,6 @@ function CopyTradingPage() {
     [filtered, safePage, perPage],
   );
 
-  // Reset to page 1 when filters change.
-  useEffect(() => {
-    if (search.page !== 1) navigate({ search: (p: CopySearch) => ({ ...p, page: 1 }), replace: true });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [asset, risk, minReturn, maxDeposit, sort]);
-
   // Clamp page if it overshoots after filtering.
   useEffect(() => {
     if (search.page > totalPages) navigate({ search: (p: CopySearch) => ({ ...p, page: totalPages }), replace: true });
@@ -177,9 +193,18 @@ function CopyTradingPage() {
   const setPerPage = (n: number) =>
     navigate({ search: (p: CopySearch) => ({ ...p, perPage: n, page: 1 }) });
 
-  const resetFilters = () => {
-    setAsset("all"); setRisk("all"); setMinReturn(-10); setMaxDeposit(5000); setSort("return");
-  };
+  const resetFilters = () =>
+    navigate({
+      search: (p: CopySearch) => ({
+        ...p,
+        asset: "all",
+        risk: "all",
+        minReturn: -10,
+        maxDeposit: 5000,
+        sort: "return",
+        page: 1,
+      }),
+    });
 
   const monthLabel = new Date().toLocaleDateString("ar", { month: "long", year: "numeric" });
 
