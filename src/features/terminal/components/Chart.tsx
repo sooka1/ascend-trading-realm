@@ -701,6 +701,47 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
         <span className="inline-flex items-center gap-1"><span className="inline-block h-0.5 w-4 bg-emerald-400" />TP HIT</span>
         <span className="inline-flex items-center gap-1"><span className="inline-block h-0.5 w-4 bg-rose-400" />SL HIT</span>
       </div>
+      {logOpen && (
+        <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setLogOpen(false)}>
+          <div dir="rtl" onClick={(e) => e.stopPropagation()}
+            className="max-h-[80%] w-[92%] max-w-lg overflow-hidden rounded-lg border border-white/10 bg-slate-950/95 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-white/10 px-3 py-2 text-xs font-semibold text-white/80">
+              <span>سجل تنبيهات TP / SL ({hitLog.length})</span>
+              <button onClick={() => setLogOpen(false)} className="rounded px-1.5 py-0.5 text-[10px] text-white/60 hover:bg-white/10 hover:text-white">إغلاق</button>
+            </div>
+            <div className="max-h-[60vh] overflow-auto">
+              {hitLog.length === 0 ? (
+                <div className="py-8 text-center text-[11px] text-white/40">لا يوجد تنبيهات بعد</div>
+              ) : (
+                <table className="w-full text-[11px]">
+                  <thead className="sticky top-0 bg-slate-950/95 text-white/50 text-right">
+                    <tr>
+                      <th className="px-2 py-2">الوقت</th>
+                      <th className="px-2 py-2">الأداة</th>
+                      <th className="px-2 py-2">النوع</th>
+                      <th className="px-2 py-2">الاتجاه</th>
+                      <th className="px-2 py-2">السعر</th>
+                      <th className="px-2 py-2">النتيجة</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {hitLog.map((h) => (
+                      <tr key={h.key + ":" + h.at} className="border-t border-white/[0.04]">
+                        <td className="px-2 py-2 font-mono text-white/70">{new Date(h.at).toLocaleString("en-GB")}</td>
+                        <td className="px-2 py-2">{h.symbol}</td>
+                        <td className={cn("px-2 py-2 font-semibold", h.kind === "TP" ? "text-emerald-300" : "text-rose-300")}>{h.kind}</td>
+                        <td className={cn("px-2 py-2 uppercase", h.side === "buy" ? "text-emerald-400" : "text-red-400")}>{h.side}</td>
+                        <td className="px-2 py-2 font-mono">{h.price.toFixed(precision)}</td>
+                        <td className="px-2 py-2 text-white/70">{h.result}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
       <svg
         ref={svgRef}
         className={cn("absolute inset-0", tool !== "none" ? "pointer-events-auto cursor-crosshair" : "pointer-events-none")}
