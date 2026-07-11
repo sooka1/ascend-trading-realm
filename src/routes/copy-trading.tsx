@@ -1,7 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { PageShell, PageHero } from "@/components/page-shell";
-import { Copy, TrendingUp, TrendingDown, Users, Wallet, Percent, Award } from "lucide-react";
+import { Copy, TrendingUp, TrendingDown, Users, Wallet, Percent, Award, Lock } from "lucide-react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { useAuth } from "@/hooks/use-auth";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/copy-trading")({
   head: () => ({
@@ -65,6 +68,7 @@ function buildHistory(t: Trader) {
 const fmtMoney = (n: number) => new Intl.NumberFormat("en-US").format(n);
 
 function CopyTradingPage() {
+  const { user, loading } = useAuth();
   return (
     <PageShell>
       <PageHero
@@ -72,10 +76,23 @@ function CopyTradingPage() {
         title={<>انسخ صفقات <span className="text-gold">نخبة المتداولين العالميين</span></>}
         subtitle={"باقات مختارة يديرها متداولون محترفون حول العالم. تصفّح النتائج الشهرية على مدى 24 شهراً،\nواختر الباقة المناسبة لحدّك الأدنى للإيداع ونسبة أرباح واضحة."}
       />
+      {!loading && !user && (
+        <div className="mx-auto mt-6 max-w-4xl px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-gold/40 bg-gold/10 px-4 py-3 text-sm">
+            <div className="flex items-center gap-2 text-gold">
+              <Lock className="h-4 w-4" />
+              <span>يجب تسجيل الدخول لاختيار متداول أو طلب نسخ الصفقات.</span>
+            </div>
+            <Link to="/auth" className="rounded-lg bg-gold px-3 py-1.5 font-semibold text-background hover:bg-gold/90">
+              تسجيل الدخول
+            </Link>
+          </div>
+        </div>
+      )}
       <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-2">
           {TRADERS.map((t) => (
-            <TraderCard key={t.id} trader={t} />
+            <TraderCard key={t.id} trader={t} isAuthed={!!user} />
           ))}
         </div>
         <p className="mt-10 text-center text-xs text-muted-foreground">
@@ -86,8 +103,9 @@ function CopyTradingPage() {
   );
 }
 
-function TraderCard({ trader }: { trader: Trader }) {
+function TraderCard({ trader, isAuthed }: { trader: Trader; isAuthed: boolean }) {
   const history = useMemo(() => buildHistory(trader), [trader]);
+  const navigate = useNavigate();
   const lastMonth = history[history.length - 1];
   const total = useMemo(() => history.reduce((s, m) => s + m.pct, 0), [history]);
   const positiveMonths = history.filter((m) => m.pct > 0).length;
@@ -152,9 +170,19 @@ function TraderCard({ trader }: { trader: Trader }) {
         <MiniStat label="أعلى / أدنى" value={`${best.pct.toFixed(1)}% / ${worst.pct.toFixed(1)}%`} />
       </div>
 
-      <button className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-gold/40 bg-gold/10 px-4 py-2.5 text-sm font-semibold text-gold transition hover:bg-gold/20">
-        <Copy className="h-4 w-4" />
-        نسخ صفقات {trader.name.split(" ")[0]}
+      <button
+        onClick={() => {
+          if (!isAuthed) {
+            toast.error("سجّل الدخول أولاً لطلب نسخ الصفقات.");
+            navigate({ to: "/auth" });
+            return;
+          }
+          toast.success(`تم إرسال طلب نسخ صفقات ${trader.name}.`);
+        }}
+        className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-gold/40 bg-gold/10 px-4 py-2.5 text-sm font-semibold text-gold transition hover:bg-gold/20"
+      >
+        {isAuthed ? <Copy className="h-4 w-4" /> : <Lock className="h-4 w-4" />}
+        {isAuthed ? `نسخ صفقات ${trader.name.split(" ")[0]}` : "سجّل الدخول للنسخ"}
       </button>
     </article>
   );
