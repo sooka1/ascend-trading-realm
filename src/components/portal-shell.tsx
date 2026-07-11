@@ -262,8 +262,8 @@ export function PortalShell({
                   </button>
                 </div>
               </div>
-              <div className="flex flex-wrap items-end justify-between gap-4">
-                <div className="min-w-0">
+              <div className="flex w-full max-w-full flex-wrap items-end justify-between gap-4 overflow-hidden">
+                <div className="min-w-0 max-w-full flex-1 basis-full sm:basis-auto">
                   <nav
                     aria-label="مسار التنقّل"
                     className="mb-2 flex flex-wrap items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground"
@@ -282,9 +282,9 @@ export function PortalShell({
                       </>
                     )}
                   </nav>
-                  <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-gold/80">{derivedEyebrow}</p>
-                  <h1 className="mt-2 font-display text-2xl font-semibold sm:text-3xl md:text-4xl">{derivedTitle}</h1>
-                  {subtitle && <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{subtitle}</p>}
+                  <p className="break-words font-mono text-[10px] uppercase tracking-[0.22em] text-gold/80">{derivedEyebrow}</p>
+                  <h1 className="mt-2 break-words font-display text-2xl font-semibold leading-tight sm:text-3xl md:text-4xl">{derivedTitle}</h1>
+                  {subtitle && <p className="mt-2 max-w-2xl break-words text-sm text-muted-foreground">{subtitle}</p>}
                 </div>
                 {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
                 <div className="hidden items-center gap-2 lg:flex">
