@@ -62,7 +62,7 @@ export const PORTFOLIOS: Record<Lang, PortfoliosContent> = {
     ],
   },
   ar: {
-    eyebrow: "المحافظ المُدارة",
+    eyebrow: "باقات الاستثمار",
     title: "ثلاث استراتيجيات. معيار واحد من العناية.",
     subtitle:
       "تُدار كل محفظة بالانضباط ذاته — تختار أنت مستوى المخاطر الذي يناسب أهدافك.",
