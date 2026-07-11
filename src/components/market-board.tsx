@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import { ArrowDownRight, ArrowUpRight, Circle } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ArrowDownRight, ArrowUpRight, Circle, RotateCw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useServerFn } from "@tanstack/react-start";
 import { getQuotes } from "@/lib/quotes.functions";
@@ -76,6 +76,15 @@ const POLL_MS = 5_000;
 // slower over the server-fn to avoid rate-limits.
 const NON_CRYPTO_POLL_MS = 15_000;
 
+// WebSocket reconnect policy: capped exponential backoff with a bounded
+// number of automatic attempts. After the cap, we stop and require a
+// manual retry from the user so we don't spam Binance from broken tabs.
+const WS_MAX_ATTEMPTS = 8;
+const WS_BASE_BACKOFF_MS = 1_000;
+const WS_MAX_BACKOFF_MS = 30_000;
+
+type WsStatus = "connecting" | "connected" | "reconnecting" | "disconnected";
+
 // Binance uses USDT pairs; treat them as USD equivalents for the board.
 const BINANCE_STREAM: Record<string, string> = {
   "BTC/USD": "btcusdt",
@@ -108,6 +117,9 @@ export function MarketBoard() {
   const [category, setCategory] = useState<Category>("all");
   const [query, setQuery] = useState("");
   const [live, setLive] = useState(false);
+  const [wsStatus, setWsStatus] = useState<WsStatus>("connecting");
+  const [wsAttempt, setWsAttempt] = useState(0);
+  const [manualRetryToken, setManualRetryToken] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
   const fetchQuotes = useServerFn(getQuotes);
 
@@ -174,14 +186,40 @@ export function MarketBoard() {
   }, [fetchQuotes]);
 
   // Real-time crypto stream over Binance WebSocket — no polling, ticks push.
-  // Auto-reconnects with exponential backoff and pauses when the tab is hidden.
+  // Auto-reconnects with capped exponential backoff and pauses when the tab
+  // is hidden. Ticks are batched via rAF to avoid render thrash under load.
   useEffect(() => {
     const streams = Object.values(BINANCE_STREAM).map((s) => `${s}@ticker`).join("/");
     const url = `wss://stream.binance.com:9443/stream?streams=${streams}`;
     let ws: WebSocket | null = null;
     let closedByUs = false;
-    let backoff = 1_000;
+    let attempt = 0;
+    let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
     let flashTimer: ReturnType<typeof setTimeout> | null = null;
+
+    // Batch WS ticks: accumulate updates keyed by symbol and flush once per
+    // animation frame. Prevents jitter when many symbols tick at once.
+    const pending = new Map<string, { price: number; change: number }>();
+    let rafHandle: number | null = null;
+    const flush = () => {
+      rafHandle = null;
+      if (pending.size === 0) return;
+      const batch = new Map(pending);
+      pending.clear();
+      setRows((prev) =>
+        prev.map((r) => {
+          const upd = batch.get(r.symbol);
+          if (!upd) return r;
+          const flashing: Row["flashing"] = upd.price > r.price ? "up" : upd.price < r.price ? "down" : r.flashing;
+          return { ...r, price: upd.price, change: upd.change, updatedAt: Date.now(), flashing };
+        }),
+      );
+      scheduleFlashClear();
+    };
+    const schedule = () => {
+      if (rafHandle != null) return;
+      rafHandle = requestAnimationFrame(flush);
+    };
 
     const scheduleFlashClear = () => {
       if (flashTimer) clearTimeout(flashTimer);
@@ -189,13 +227,21 @@ export function MarketBoard() {
     };
 
     const connect = () => {
+      setWsStatus(attempt === 0 ? "connecting" : "reconnecting");
+      setWsAttempt(attempt);
       try {
         ws = new WebSocket(url);
       } catch (e) {
         console.warn("[market-board] ws init failed", e);
+        scheduleReconnect();
         return;
       }
-      ws.onopen = () => { backoff = 1_000; setLive(true); };
+      ws.onopen = () => {
+        attempt = 0;
+        setWsAttempt(0);
+        setWsStatus("connected");
+        setLive(true);
+      };
       ws.onmessage = (ev) => {
         try {
           const msg = JSON.parse(ev.data as string);
@@ -207,26 +253,35 @@ export function MarketBoard() {
           const price = Number(d?.c);
           const change = Number(d?.P);
           if (!isFinite(price) || !isFinite(change)) return;
-          setRows((prev) =>
-            prev.map((r) => {
-              if (r.symbol !== sym) return r;
-              const flashing: Row["flashing"] = price > r.price ? "up" : price < r.price ? "down" : r.flashing;
-              return { ...r, price, change, updatedAt: Date.now(), flashing };
-            }),
-          );
-          scheduleFlashClear();
+          pending.set(sym, { price, change });
+          schedule();
         } catch {
           /* ignore malformed frames */
         }
       };
       ws.onclose = () => {
-        if (closedByUs) return;
         setLive(false);
-        setTimeout(connect, backoff);
-        backoff = Math.min(backoff * 2, 30_000);
+        if (closedByUs) return;
+        scheduleReconnect();
       };
       ws.onerror = () => { try { ws?.close(); } catch { /* noop */ } };
     };
+
+    const scheduleReconnect = () => {
+      attempt += 1;
+      setWsAttempt(attempt);
+      if (attempt > WS_MAX_ATTEMPTS) {
+        setWsStatus("disconnected");
+        return;
+      }
+      setWsStatus("reconnecting");
+      // Exponential backoff with ±20% jitter, capped.
+      const raw = WS_BASE_BACKOFF_MS * 2 ** (attempt - 1);
+      const capped = Math.min(raw, WS_MAX_BACKOFF_MS);
+      const jittered = capped * (0.8 + Math.random() * 0.4);
+      reconnectTimer = setTimeout(connect, jittered);
+    };
+
     connect();
 
     const onVis = () => {
@@ -235,6 +290,7 @@ export function MarketBoard() {
         try { ws?.close(); } catch { /* noop */ }
       } else if (!ws || ws.readyState === WebSocket.CLOSED) {
         closedByUs = false;
+        attempt = 0;
         connect();
       }
     };
@@ -243,10 +299,12 @@ export function MarketBoard() {
     return () => {
       closedByUs = true;
       document.removeEventListener("visibilitychange", onVis);
+      if (reconnectTimer) clearTimeout(reconnectTimer);
+      if (rafHandle != null) cancelAnimationFrame(rafHandle);
       if (flashTimer) clearTimeout(flashTimer);
       try { ws?.close(); } catch { /* noop */ }
     };
-  }, []);
+  }, [manualRetryToken]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -276,10 +334,7 @@ export function MarketBoard() {
     <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <span className={cn("inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs", live ? "border-bull/40 bg-bull/10 text-bull" : "border-white/10 text-muted-foreground")}>
-            <Circle className={cn("h-2 w-2", live ? "fill-bull text-bull animate-pulse" : "fill-muted-foreground")} />
-            {live ? "مباشر" : "غير متصل"}
-          </span>
+          <WsStatusBadge status={wsStatus} attempt={wsAttempt} onRetry={() => setManualRetryToken((v) => v + 1)} />
           <h2 className="font-display text-xl font-semibold">شاشة الأسواق الحيّة</h2>
         </div>
         <input
