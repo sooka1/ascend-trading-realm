@@ -595,12 +595,25 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
   return (
     <div ref={wrapRef} className="relative h-full w-full">
       <div ref={ref} className="h-full w-full" />
-      {hitLog.length > 0 && (
-        <div className="pointer-events-none absolute top-2 left-2 z-10 flex max-w-[240px] flex-col gap-1 text-[10px]" dir="ltr">
+      {showRiskLines && hitLog.length > 0 && (
+        <div className="absolute top-2 left-2 z-10 flex max-w-[260px] flex-col gap-1 text-[10px]" dir="ltr">
+          <div className="pointer-events-auto flex items-center justify-between rounded-md border border-white/10 bg-black/70 px-2 py-1 backdrop-blur-md">
+            <span className="font-semibold text-white/70">TP/SL Executions</span>
+            <button
+              type="button"
+              onClick={() => { setHitLog([]); hitDedupeRef.current.clear(); setSelectedHit(null); }}
+              className="rounded px-1.5 py-0.5 text-[9px] text-white/60 hover:bg-white/10 hover:text-white"
+            >
+              Clear
+            </button>
+          </div>
           {hitLog.slice(0, 4).map((h) => (
-            <div key={h.key}
+            <button
+              type="button"
+              key={h.key}
+              onClick={() => setSelectedHit(h)}
               className={cn(
-                "pointer-events-auto rounded-md border px-2 py-1 backdrop-blur-md shadow-lg",
+                "pointer-events-auto text-left rounded-md border px-2 py-1 backdrop-blur-md shadow-lg transition hover:brightness-125",
                 h.kind === "TP"
                   ? "border-emerald-400/40 bg-emerald-500/10 text-emerald-200"
                   : "border-rose-400/40 bg-rose-500/10 text-rose-200"
@@ -613,10 +626,41 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
               <span className="font-mono">{h.price.toFixed(precision)}</span>
               <span className="mx-1 opacity-60">·</span>
               <span className="opacity-70">{new Date(h.at).toLocaleTimeString("en-GB")}</span>
-            </div>
+            </button>
           ))}
         </div>
       )}
+      {selectedHit && (
+        <div className="absolute top-2 right-2 z-20 w-56 rounded-md border border-white/10 bg-black/85 p-3 text-[11px] shadow-xl backdrop-blur" dir="rtl">
+          <div className="mb-2 flex items-center justify-between">
+            <span className={cn("font-semibold", selectedHit.kind === "TP" ? "text-emerald-300" : "text-rose-300")}>
+              ⚡ {selectedHit.kind} HIT
+            </span>
+            <button
+              type="button"
+              onClick={() => setSelectedHit(null)}
+              className="rounded px-1.5 py-0.5 text-[10px] text-white/60 hover:bg-white/10 hover:text-white"
+            >
+              إغلاق
+            </button>
+          </div>
+          <div className="space-y-1 text-white/80">
+            <div className="flex justify-between"><span className="text-white/50">الأداة</span><span className="font-mono">{selectedHit.symbol}</span></div>
+            <div className="flex justify-between"><span className="text-white/50">الاتجاه</span><span className={cn("uppercase", selectedHit.side === "buy" ? "text-emerald-300" : "text-rose-300")}>{selectedHit.side}</span></div>
+            <div className="flex justify-between"><span className="text-white/50">الحجم</span><span className="font-mono">{selectedHit.volume.toFixed(2)}</span></div>
+            <div className="flex justify-between"><span className="text-white/50">الدخول</span><span className="font-mono">{selectedHit.entry.toFixed(precision)}</span></div>
+            <div className="flex justify-between"><span className="text-white/50">سعر {selectedHit.kind}</span><span className="font-mono">{selectedHit.price.toFixed(precision)}</span></div>
+            <div className="flex justify-between"><span className="text-white/50">الوقت</span><span className="font-mono">{new Date(selectedHit.at).toLocaleString("en-GB")}</span></div>
+          </div>
+        </div>
+      )}
+      {/* Legend */}
+      <div className="pointer-events-none absolute bottom-2 left-2 z-10 flex items-center gap-3 rounded-md border border-white/10 bg-black/60 px-2 py-1 text-[9px] text-white/70 backdrop-blur-md" dir="ltr">
+        <span className="inline-flex items-center gap-1"><span className="inline-block h-0.5 w-4 border-t-2 border-dashed border-emerald-400" />TP</span>
+        <span className="inline-flex items-center gap-1"><span className="inline-block h-0.5 w-4 border-t-2 border-dashed border-rose-400" />SL</span>
+        <span className="inline-flex items-center gap-1"><span className="inline-block h-0.5 w-4 bg-emerald-400" />TP HIT</span>
+        <span className="inline-flex items-center gap-1"><span className="inline-block h-0.5 w-4 bg-rose-400" />SL HIT</span>
+      </div>
       <svg
         ref={svgRef}
         className={cn("absolute inset-0", tool !== "none" ? "pointer-events-auto cursor-crosshair" : "pointer-events-none")}
