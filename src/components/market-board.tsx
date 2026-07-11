@@ -366,7 +366,8 @@ export function MarketBoard() {
     <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <WsStatusBadge status={wsStatus} attempt={wsAttempt} onRetry={() => setManualRetryToken((v) => v + 1)} />
+          <FeedStatusBadge label="عملات رقمية" status={wsStatus} attempt={wsAttempt} onRetry={() => setManualRetryToken((v) => v + 1)} />
+          <FeedStatusBadge label="أسواق تقليدية" status={pollStatus} attempt={pollAttempt} onRetry={() => setPollRetryToken((v) => v + 1)} />
           <h2 className="font-display text-xl font-semibold">شاشة الأسواق الحيّة</h2>
         </div>
         <input
