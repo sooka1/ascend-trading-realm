@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
-import logoSrc from "@/assets/brand/svg/hk-icon-white.svg";
+import logoAsset from "@/assets/brand/hk-logo.svg.asset.json";
+const logoSrc = logoAsset.url;
 
 interface HKLogoProps {
   className?: string;
