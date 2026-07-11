@@ -61,7 +61,8 @@ function heikinAshi(src: Candle[]): Candle[] {
 }
 
 export type PositionMarker = { id: string; symbol: string; side: "buy" | "sell"; entry_price: number | string; volume: number | string; take_profit?: number | string | null; stop_loss?: number | string | null };
-export function TerminalChart({ symbol, timeframe, chartType, precision, positions = [], bid, ask, contractSize = 1 }: { symbol: string; timeframe: Timeframe; chartType: ChartType; precision: number; positions?: PositionMarker[]; bid?: number; ask?: number; contractSize?: number }) {
+export type FocusedTrade = { id: string; symbol: string; side: "buy" | "sell"; entry_price: number | string; close_price: number | string; profit?: number | string | null };
+export function TerminalChart({ symbol, timeframe, chartType, precision, positions = [], bid, ask, contractSize = 1, focusedTrade }: { symbol: string; timeframe: Timeframe; chartType: ChartType; precision: number; positions?: PositionMarker[]; bid?: number; ask?: number; contractSize?: number; focusedTrade?: FocusedTrade | null }) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const ref = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
@@ -80,6 +81,7 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
   const indicatorSeriesRef = useRef<Record<string, ISeriesApi<"Line"> | ISeriesApi<"Area"> | null>>({});
   const candlesRef = useRef<Candle[]>([]);
   const priceLinesRef = useRef<any[]>([]);
+  const focusLinesRef = useRef<any[]>([]);
   const hitDedupeRef = useRef<Set<string>>(new Set());
   type HitLog = { key: string; posId: string; kind: "TP" | "SL"; side: "buy" | "sell"; price: number; at: number };
   const [hitLog, setHitLog] = useState<HitLog[]>([]);
@@ -247,6 +249,48 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
       priceLinesRef.current = [];
     };
   }, [positions, symbol, chartType, timeframe, precision, bid, ask, contractSize]);
+
+  // Draw entry/close lines for a focused historical trade on this symbol.
+  useEffect(() => {
+    const series = seriesRef.current;
+    if (!series) return;
+    for (const pl of focusLinesRef.current) {
+      try { (series as any).removePriceLine(pl); } catch { /* noop */ }
+    }
+    focusLinesRef.current = [];
+    if (!focusedTrade || focusedTrade.symbol !== symbol) return;
+    const isBuy = focusedTrade.side === "buy";
+    const entry = Number(focusedTrade.entry_price);
+    const close = Number(focusedTrade.close_price);
+    const profit = Number(focusedTrade.profit ?? 0);
+    const win = profit >= 0;
+    const entryColor = isBuy ? "#22c55e" : "#ef4444";
+    const closeColor = win ? "#10b981" : "#f43f5e";
+    if (Number.isFinite(entry)) {
+      try {
+        focusLinesRef.current.push((series as any).createPriceLine({
+          price: entry, color: entryColor, lineWidth: 2, lineStyle: 1,
+          axisLabelVisible: true, title: `📌 ${isBuy ? "BUY" : "SELL"} @ ${entry.toFixed(precision)}`,
+        }));
+      } catch { /* noop */ }
+    }
+    if (Number.isFinite(close)) {
+      try {
+        focusLinesRef.current.push((series as any).createPriceLine({
+          price: close, color: closeColor, lineWidth: 2, lineStyle: 1,
+          axisLabelVisible: true, title: `${win ? "✓ WIN" : "✕ LOSS"} @ ${close.toFixed(precision)} · $${profit.toFixed(2)}`,
+        }));
+      } catch { /* noop */ }
+    }
+    return () => {
+      const s = seriesRef.current;
+      if (!s) return;
+      for (const pl of focusLinesRef.current) {
+        try { (s as any).removePriceLine(pl); } catch { /* noop */ }
+      }
+      focusLinesRef.current = [];
+    };
+  }, [focusedTrade, symbol, chartType, timeframe, precision]);
 
   // Add / remove and refresh indicator series based on toggles.
   const recomputeIndicators = useCallback(() => {
