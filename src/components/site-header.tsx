@@ -79,8 +79,8 @@ export function SiteHeader() {
             <Link
               key={item.to}
               to={item.to}
-              className="rounded-md px-3 py-2 text-sm text-white/85 transition-colors hover:bg-white/15 hover:text-white"
-              activeProps={{ className: "text-white bg-white/15" }}
+              className="rounded-md border border-gold/40 bg-white/[0.04] px-3 py-2 text-sm text-white/90 transition-colors hover:border-gold hover:bg-gold/15 hover:text-gold"
+              activeProps={{ className: "border-gold bg-gold/20 text-gold" }}
             >
               {t(item.key)}
             </Link>
@@ -148,7 +148,7 @@ export function SiteHeader() {
               key={item.to}
               to={item.to}
               onClick={() => setOpen(false)}
-              className="rounded-md px-3 py-2.5 text-sm text-muted-foreground hover:bg-white/5 hover:text-foreground"
+              className="rounded-md border border-gold/40 bg-white/[0.04] px-3 py-2.5 text-sm text-white/90 hover:border-gold hover:bg-gold/15 hover:text-gold"
             >
               {t(item.key)}
             </Link>
