@@ -29,6 +29,7 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
     if (!ref.current) return;
     const chart = createChart(ref.current, {
       layout: { background: { color: "transparent" }, textColor: "#c9d1d9", fontFamily: "inherit" },
+      localization: { locale: "en-US" },
       grid: { vertLines: { color: "rgba(255,255,255,0.04)" }, horzLines: { color: "rgba(255,255,255,0.04)" } },
       rightPriceScale: { borderColor: "rgba(255,255,255,0.08)" },
       timeScale: { borderColor: "rgba(255,255,255,0.08)", timeVisible: true, secondsVisible: false },
