@@ -3,6 +3,11 @@ import { useEffect, useState } from "react";
 import { PageShell, PageHero } from "@/components/page-shell";
 import { Trophy, Timer, Users, Wallet, Target, Medal, CheckCircle2, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
+import { subscribeCompetition } from "@/lib/actions.functions";
+import { useAuth } from "@/hooks/use-auth";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/competitions")({
   head: () => ({
@@ -53,6 +58,36 @@ const STATUS_STYLE: Record<Comp["status"], { label: string; cls: string }> = {
 const fmtMoney = (n: number) => "$" + new Intl.NumberFormat("en-US").format(n);
 
 function CompetitionsPage() {
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
+  const submitSubscribe = useServerFn(subscribeCompetition);
+  const [pending, setPending] = useState<string | null>(null);
+
+  async function handleSubscribe(fee: number, competitionId?: string) {
+    if (!loading && !user) {
+      toast.error("سجّل الدخول أولاً للاشتراك في المسابقة.");
+      navigate({ to: "/auth", search: { redirect: "/competitions" } as never });
+      return;
+    }
+    const key = competitionId ?? `tier-${fee}`;
+    setPending(key);
+    try {
+      // Server-side guarded — rejects unauthenticated callers with 401.
+      await submitSubscribe({ data: { tierFee: fee, competitionId } });
+      toast.success(`تم تسجيل اشتراكك بـ $${fee}.`);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "";
+      if (/unauthor/i.test(msg) || /401/.test(msg)) {
+        toast.error("انتهت الجلسة. سجّل الدخول مجدداً.");
+        navigate({ to: "/auth", search: { redirect: "/competitions" } as never });
+      } else {
+        toast.error("تعذّر إتمام الاشتراك. حاول لاحقاً.");
+      }
+    } finally {
+      setPending(null);
+    }
+  }
+
   return (
     <PageShell>
       <PageHero
@@ -111,7 +146,12 @@ function CompetitionsPage() {
                 <Row label="الجائزة القابلة للسحب" value={fmtMoney(tier.prize)} highlight />
                 <Row label="شرط الفوز" value="ضمن الخمسة الأوائل" />
               </div>
-              <Button className="mt-5 w-full" variant={tier.popular ? "default" : "outline"}>
+              <Button
+                className="mt-5 w-full"
+                variant={tier.popular ? "default" : "outline"}
+                disabled={pending === `tier-${tier.fee}`}
+                onClick={() => handleSubscribe(tier.fee)}
+              >
                 اشترك بـ {fmtMoney(tier.fee)}
               </Button>
             </div>
@@ -127,7 +167,12 @@ function CompetitionsPage() {
         </div>
         <div className="grid gap-4 md:grid-cols-2">
           {COMPS.map((c) => (
-            <CompetitionCard key={c.id} comp={c} />
+            <CompetitionCard
+              key={c.id}
+              comp={c}
+              pending={pending === c.id}
+              onJoin={() => handleSubscribe(TIERS[0].fee, c.id)}
+            />
           ))}
         </div>
       </section>
@@ -171,7 +216,7 @@ function Row({ label, value, highlight }: { label: string; value: string; highli
   );
 }
 
-function CompetitionCard({ comp }: { comp: Comp }) {
+function CompetitionCard({ comp, pending, onJoin }: { comp: Comp; pending: boolean; onJoin: () => void }) {
   const s = STATUS_STYLE[comp.status];
   const countdown = useCountdown(comp.status === "live" ? comp.end : comp.start);
   return (
@@ -202,7 +247,7 @@ function CompetitionCard({ comp }: { comp: Comp }) {
         )}
       </div>
 
-      <Button className="mt-4 w-full" disabled={comp.status === "ended"}>
+      <Button className="mt-4 w-full" disabled={comp.status === "ended" || pending} onClick={onJoin}>
         {comp.status === "ended" ? "انتهت المسابقة" : comp.status === "live" ? "انضم الآن" : "احجز مقعدك"}
       </Button>
     </article>
