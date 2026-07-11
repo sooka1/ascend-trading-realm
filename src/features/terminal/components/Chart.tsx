@@ -569,6 +569,30 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
         >
           <Redo2 className="h-3.5 w-3.5" />
         </button>
+        <div className="my-0.5 h-px w-full bg-white/10" />
+        <button
+          type="button"
+          title={snapEnabled ? "Snap مفعّل (شمعة)" : "تفعيل Snap للشمعة"}
+          onClick={() => setSnapEnabled((v) => !v)}
+          className={cn(
+            "flex h-7 w-7 items-center justify-center rounded text-white/70 transition hover:bg-white/10 hover:text-white",
+            snapEnabled && "bg-gold/20 text-gold ring-1 ring-gold/40",
+          )}
+        >
+          <Magnet className="h-3.5 w-3.5" />
+        </button>
+        <button
+          type="button"
+          title={snapPrice ? "Snap للسعر OHLC مفعّل" : "تفعيل Snap للسعر OHLC"}
+          disabled={!snapEnabled}
+          onClick={() => setSnapPrice((v) => !v)}
+          className={cn(
+            "flex h-7 w-7 items-center justify-center rounded text-[10px] font-semibold text-white/70 transition hover:bg-white/10 hover:text-white disabled:opacity-30",
+            snapEnabled && snapPrice && "bg-gold/20 text-gold ring-1 ring-gold/40",
+          )}
+        >
+          $
+        </button>
       </div>
       <div className="absolute right-2 top-2 z-10 flex flex-wrap gap-1 rounded-md border border-white/10 bg-black/60 p-1 backdrop-blur">
         {indicatorToggles.map((it) => {
