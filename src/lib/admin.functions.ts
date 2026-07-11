@@ -1087,3 +1087,169 @@ export const getReceiptSignedUrlAdmin = createServerFn({ method: "GET" })
     if (error) throw new Error(error.message);
     return { url: signed.signedUrl };
   });
+
+// ============================================================================
+// Portfolio Manager Dashboard
+// Consolidates AUM by portfolio (package), pending approvals, top investors,
+// weekly profit distribution status, and recent audit trail — everything a
+// portfolio manager needs to run the managed-investments book from one place.
+// ============================================================================
+
+export const getPortfolioManagerDashboard = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const auth = await assertAdmin(context);
+    if (!auth.ok) throw new Error("Forbidden");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const [packagesRes, subsRes, pendingDepRes, pendingWdRes, distToday, dist30, topInvestors, auditRes] =
+      await Promise.all([
+        supabaseAdmin
+          .from("packages")
+          .select("id,name,risk_level,target_return_pct,min_amount,lockup_months,currency,active,sort_order")
+          .order("sort_order", { ascending: true }),
+        supabaseAdmin
+          .from("subscriptions")
+          .select("id,user_id,package_id,amount,currency,status,started_at,created_at"),
+        supabaseAdmin
+          .from("deposits")
+          .select("id,user_id,amount,currency,created_at")
+          .eq("status", "pending")
+          .order("created_at", { ascending: false })
+          .limit(50),
+        supabaseAdmin
+          .from("withdrawals")
+          .select("id,user_id,amount,currency,created_at")
+          .eq("status", "pending")
+          .order("created_at", { ascending: false })
+          .limit(50),
+        supabaseAdmin
+          .from("profit_distributions")
+          .select("id,amount,user_id")
+          .gte("period_start", new Date().toISOString().slice(0, 10)),
+        supabaseAdmin
+          .from("profit_distributions")
+          .select("amount,period_start")
+          .gte("period_start", new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10)),
+        supabaseAdmin
+          .from("subscriptions")
+          .select("user_id,amount,status")
+          .eq("status", "active"),
+        supabaseAdmin
+          .from("finance_audit_log")
+          .select("id,request_kind,action,from_status,to_status,reason,created_at,target_user_id,admin_id")
+          .order("created_at", { ascending: false })
+          .limit(15),
+      ]);
+
+    const packages = packagesRes.data ?? [];
+    const subs = subsRes.data ?? [];
+
+    // AUM per package (active subs only)
+    const byPackage = packages.map((p) => {
+      const rows = subs.filter((s) => s.package_id === p.id && s.status === "active");
+      const aum = rows.reduce((a, r) => a + Number(r.amount || 0), 0);
+      const investors = new Set(rows.map((r) => r.user_id)).size;
+      return {
+        id: p.id,
+        name: p.name,
+        risk_level: p.risk_level,
+        target_return_pct: Number(p.target_return_pct ?? 0),
+        min_amount: Number(p.min_amount ?? 0),
+        lockup_months: p.lockup_months ?? 0,
+        currency: p.currency ?? "USD",
+        active: p.active,
+        aum,
+        investors,
+        subs: rows.length,
+      };
+    });
+
+    const totalAum = byPackage.reduce((a, r) => a + r.aum, 0);
+    const activeSubs = subs.filter((s) => s.status === "active").length;
+    const pendingSubs = subs.filter((s) => s.status === "pending").length;
+    const uniqueInvestors = new Set(
+      subs.filter((s) => s.status === "active").map((s) => s.user_id),
+    ).size;
+
+    // Top investors by allocated capital (active subs)
+    const perUser = new Map<string, number>();
+    for (const s of topInvestors.data ?? []) {
+      perUser.set(s.user_id, (perUser.get(s.user_id) ?? 0) + Number(s.amount || 0));
+    }
+    const topIds = [...perUser.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 20);
+    let profiles: any[] = [];
+    if (topIds.length > 0) {
+      const { data } = await supabaseAdmin
+        .from("profiles")
+        .select("id,display_name,email,verification_status")
+        .in("id", topIds.map(([id]) => id));
+      profiles = data ?? [];
+    }
+    const topInvestorsRows = topIds.map(([id, aum]) => {
+      const p = profiles.find((x) => x.id === id);
+      return {
+        user_id: id,
+        aum,
+        display_name: p?.display_name ?? null,
+        email: p?.email ?? null,
+        verification_status: p?.verification_status ?? null,
+      };
+    });
+
+    // Enrich audit trail with actor + target
+    const auditRows = auditRes.data ?? [];
+    const actorIds = Array.from(
+      new Set(auditRows.flatMap((r) => [r.admin_id, r.target_user_id]).filter(Boolean)),
+    );
+    let auditProfiles: any[] = [];
+    if (actorIds.length > 0) {
+      const { data } = await supabaseAdmin
+        .from("profiles")
+        .select("id,display_name,email")
+        .in("id", actorIds);
+      auditProfiles = data ?? [];
+    }
+    const pickProfile = (id: string) => auditProfiles.find((p) => p.id === id);
+    const audit = auditRows.map((r) => ({
+      ...r,
+      admin: pickProfile(r.admin_id),
+      target: pickProfile(r.target_user_id),
+    }));
+
+    const pendingDeposits = pendingDepRes.data ?? [];
+    const pendingWithdrawals = pendingWdRes.data ?? [];
+
+    return {
+      totals: {
+        aum: totalAum,
+        activeSubs,
+        pendingSubs,
+        investors: uniqueInvestors,
+        pendingDepositsCount: pendingDeposits.length,
+        pendingDepositsAmount: pendingDeposits.reduce((a, r) => a + Number(r.amount || 0), 0),
+        pendingWithdrawalsCount: pendingWithdrawals.length,
+        pendingWithdrawalsAmount: pendingWithdrawals.reduce((a, r) => a + Number(r.amount || 0), 0),
+        distributedToday: (distToday.data ?? []).reduce((a, r) => a + Number(r.amount || 0), 0),
+        distributedTodayCount: (distToday.data ?? []).length,
+        distributed30d: (dist30.data ?? []).reduce((a, r) => a + Number(r.amount || 0), 0),
+      },
+      byPackage,
+      topInvestors: topInvestorsRows,
+      audit,
+      isSuperAdmin: auth.isSuper,
+    };
+  });
+
+export const triggerWeeklyDistribution = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const auth = await assertAdmin(context);
+    if (!auth.ok || !auth.isSuper) throw new Error("Forbidden — super admin required");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data, error } = await supabaseAdmin.rpc("distribute_weekly_profits");
+    if (error) throw new Error(error.message);
+    return { inserted: Number(data ?? 0) };
+  });
