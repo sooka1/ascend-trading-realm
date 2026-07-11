@@ -646,6 +646,29 @@ export const decidePaymentAdmin = createServerFn({ method: "POST" })
             : "تم رفض طلب السحب",
       body: `${row.amount} ${row.currency}${data.note ? " — " + data.note : ""}`,
     });
+    // Send branded email on approval
+    if (data.decision === "approved") {
+      try {
+        const { data: prof } = await supabaseAdmin
+          .from("profiles")
+          .select("email")
+          .eq("id", row.user_id)
+          .maybeSingle();
+        if (prof?.email) {
+          const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
+          await sendTemplateEmail(
+            data.kind === "deposit" ? "deposit-confirmation" : "withdrawal-confirmation",
+            prof.email,
+            {
+              templateData: { amount: row.amount, currency: row.currency, reference: row.id },
+              idempotencyKey: `${data.kind}-approved-${row.id}`,
+            },
+          );
+        }
+      } catch (e) {
+        console.error("[decidePaymentAdmin] email send failed", e);
+      }
+    }
     return { ok: true };
   });
 
