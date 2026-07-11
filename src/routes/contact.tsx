@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Mail, MapPin } from "lucide-react";
+import { Mail, MapPin, Navigation } from "lucide-react";
 import { PageShell, PageHero } from "@/components/page-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -97,16 +97,41 @@ function Contact() {
         </form>
 
         <div className="space-y-4">
-          {[
-            { icon: MapPin, title: p.hqT, body: p.hqB },
-            { icon: Mail, title: p.emailT, body: "info@hkexinvest.com" },
-          ].map((c) => (
-            <div key={c.title} className="glass rounded-2xl p-6">
-              <c.icon className="h-5 w-5 text-gold" />
-              <div className="mt-3 font-medium">{c.title}</div>
-              <div className="mt-1 whitespace-pre-line text-sm text-muted-foreground">{c.body}</div>
+          <div className="glass overflow-hidden rounded-2xl">
+            <div className="p-6">
+              <MapPin className="h-5 w-5 text-gold" />
+              <div className="mt-3 font-medium">{p.hqT}</div>
+              <div className="mt-1 whitespace-pre-line text-sm text-muted-foreground">
+                {p.hqB}
+              </div>
             </div>
-          ))}
+            <iframe
+              title="HKEX Hong Kong HQ map"
+              src="https://www.google.com/maps?q=Two+Exchange+Square,+8+Connaught+Place,+Central,+Hong+Kong&output=embed"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              className="block h-64 w-full border-0"
+            />
+            <div className="flex items-center justify-between gap-2 border-t border-white/5 p-4">
+              <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                22.2847°N · 114.1577°E
+              </span>
+              <a
+                href="https://www.google.com/maps/dir/?api=1&destination=Two+Exchange+Square,+8+Connaught+Place,+Central,+Hong+Kong"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-md border border-gold/30 bg-gold/10 px-3 py-1.5 text-xs font-medium text-gold hover:bg-gold/20"
+              >
+                <Navigation className="h-3.5 w-3.5" />
+                {p.hero?.eyebrow ? "الاتجاهات" : "Get directions"}
+              </a>
+            </div>
+          </div>
+          <div className="glass rounded-2xl p-6">
+            <Mail className="h-5 w-5 text-gold" />
+            <div className="mt-3 font-medium">{p.emailT}</div>
+            <div className="mt-1 text-sm text-muted-foreground">info@hkexinvest.com</div>
+          </div>
           <div className="glass rounded-2xl p-6">
             <div className="font-medium">{p.officesT}</div>
             <div className="mt-2 grid grid-cols-2 gap-2 text-sm text-muted-foreground">
