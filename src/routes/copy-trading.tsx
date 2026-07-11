@@ -76,6 +76,18 @@ const TRADERS: Trader[] = [
   { id: "et", name: "Elena Tavares", country: "البرتغال", flag: "🇵🇹", strategy: "أسهم أمريكية — Growth", asset: "stocks", risk: "medium", minDeposit: 2500, profitShare: 28, followers: 1420, winRate: 69, seed: 79 },
   { id: "hj", name: "Henrik Johansson", country: "السويد", flag: "🇸🇪", strategy: "كريبتو — BTC/ETH", asset: "crypto", risk: "high", minDeposit: 3000, profitShare: 30, followers: 3208, winRate: 73, seed: 89 },
   { id: "rd", name: "Rafael Duarte", country: "البرازيل", flag: "🇧🇷", strategy: "سلع زراعية", asset: "commodities", risk: "medium", minDeposit: 5000, profitShare: 30, followers: 845, winRate: 65, seed: 103 },
+  { id: "km", name: "Karim Mansour", country: "مصر", flag: "🇪🇬", strategy: "ذهب — Intraday", asset: "metals", risk: "medium", minDeposit: 600, profitShare: 22, followers: 1876, winRate: 70, seed: 113 },
+  { id: "ys", name: "Yusuf Al-Saadi", country: "الإمارات", flag: "🇦🇪", strategy: "نفط برنت — Swing", asset: "energy", risk: "medium", minDeposit: 1200, profitShare: 26, followers: 2412, winRate: 72, seed: 127 },
+  { id: "nf", name: "Noor Al-Farsi", country: "السعودية", flag: "🇸🇦", strategy: "مؤشرات خليجية", asset: "indices", risk: "low", minDeposit: 800, profitShare: 20, followers: 1543, winRate: 67, seed: 139 },
+  { id: "ac", name: "Aiko Chen", country: "سنغافورة", flag: "🇸🇬", strategy: "USD/JPY — Trend", asset: "forex", risk: "medium", minDeposit: 900, profitShare: 24, followers: 2087, winRate: 69, seed: 149 },
+  { id: "dp", name: "Dmitri Petrov", country: "روسيا", flag: "🇷🇺", strategy: "غاز طبيعي", asset: "energy", risk: "high", minDeposit: 2500, profitShare: 30, followers: 734, winRate: 63, seed: 163 },
+  { id: "sm", name: "Sofía Martínez", country: "إسبانيا", flag: "🇪🇸", strategy: "IBEX35 & مؤشرات", asset: "indices", risk: "medium", minDeposit: 1100, profitShare: 24, followers: 1298, winRate: 68, seed: 173 },
+  { id: "jw", name: "James Whitmore", country: "الولايات المتحدة", flag: "🇺🇸", strategy: "أسهم تقنية — Momentum", asset: "stocks", risk: "high", minDeposit: 3500, profitShare: 30, followers: 4120, winRate: 74, seed: 181 },
+  { id: "co", name: "Chidi Okafor", country: "نيجيريا", flag: "🇳🇬", strategy: "كاكاو وسلع أفريقية", asset: "commodities", risk: "medium", minDeposit: 700, profitShare: 22, followers: 512, winRate: 66, seed: 191 },
+  { id: "ik", name: "Ingrid Kristiansen", country: "النرويج", flag: "🇳🇴", strategy: "نفط WTI — Position", asset: "energy", risk: "low", minDeposit: 1800, profitShare: 26, followers: 1024, winRate: 70, seed: 199 },
+  { id: "vb", name: "Valentina Bianchi", country: "الأرجنتين", flag: "🇦🇷", strategy: "فضة ومعادن ثمينة", asset: "metals", risk: "medium", minDeposit: 950, profitShare: 24, followers: 1156, winRate: 68, seed: 211 },
+  { id: "hp", name: "Hassan Al-Rashid", country: "قطر", flag: "🇶🇦", strategy: "كريبتو — Altcoins", asset: "crypto", risk: "high", minDeposit: 2200, profitShare: 30, followers: 2890, winRate: 71, seed: 223 },
+  { id: "ml", name: "Margaux Laurent", country: "فرنسا", flag: "🇫🇷", strategy: "EUR/USD — Day Trade", asset: "forex", risk: "medium", minDeposit: 850, profitShare: 22, followers: 1687, winRate: 69, seed: 233 },
 ];
 
 const ASSET_LABEL: Record<Asset, string> = {
