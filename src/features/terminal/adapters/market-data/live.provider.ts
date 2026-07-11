@@ -56,6 +56,14 @@ export function createLiveProvider(): MarketDataProvider {
   const changePct = new Map<string, number>();
   // Live OHLC state per (symbol|tf) so ticks build realistic candles.
   const liveCandle = new Map<string, Candle>();
+  // In-memory candle cache keyed by `${symbol}|${tf}`. TTL scales with the
+  // timeframe (short bars refresh often, high bars rarely) so repeat opens of
+  // the market page and TF-switching skip redundant Binance/Twelve Data calls.
+  const candleCache = new Map<string, { at: number; ttl: number; candles: Candle[] }>();
+  const CANDLE_TTL_MS: Record<Timeframe, number> = {
+    "1m": 10_000, "5m": 30_000, "15m": 60_000, "30m": 90_000,
+    "1h": 120_000, "4h": 300_000, "1d": 900_000, "1w": 3_600_000, "1M": 6 * 3_600_000,
+  };
 
   // Seed anchor prices so synthetic history/ticks look believable even before
   // the first real quote lands (weekend FX, cold start, rate limits).
@@ -324,6 +332,19 @@ export function createLiveProvider(): MarketDataProvider {
       return () => { list.forEach((u) => u()); ensureBinanceWs(); ensurePolling(); stopTickLoopIfIdle(); };
     },
     async getCandles(symbol, tf, count = 300) {
+      const cacheKey = `${symbol}|${tf}`;
+      const cached = candleCache.get(cacheKey);
+      if (cached && Date.now() - cached.at < cached.ttl && cached.candles.length >= count * 0.8) {
+        // Re-align the tail against "now" — a cached in-progress bar from a
+        // previous bucket must not leak into the new one.
+        const aligned = alignTail(cached.candles.map((c) => ({ ...c })), tf);
+        const last = aligned[aligned.length - 1];
+        anchorPrice.set(symbol, last.close);
+        syntheticPrice.set(symbol, last.close);
+        lastPrice.set(symbol, last.close);
+        liveCandle.set(cacheKey, { ...last });
+        return aligned;
+      }
       if (isBinance(symbol)) {
         // Binance klines REST (free, no key)
         const url = `https://api.binance.com/api/v3/klines?symbol=${BINANCE_MAP[symbol].toUpperCase()}&interval=${BINANCE_INTERVAL[tf]}&limit=${Math.min(count, 1000)}`;
@@ -344,6 +365,7 @@ export function createLiveProvider(): MarketDataProvider {
         syntheticPrice.set(symbol, last.close);
         lastPrice.set(symbol, last.close);
         liveCandle.set(`${symbol}|${tf}`, { ...last });
+        candleCache.set(cacheKey, { at: Date.now(), ttl: CANDLE_TTL_MS[tf] ?? 60_000, candles: out });
         return out;
       }
       const res = await fetchLiveCandles({ data: { symbol, tf, count } });
@@ -355,6 +377,7 @@ export function createLiveProvider(): MarketDataProvider {
       syntheticPrice.set(symbol, last.close);
       lastPrice.set(symbol, last.close);
       liveCandle.set(`${symbol}|${tf}`, { ...last });
+      candleCache.set(cacheKey, { at: Date.now(), ttl: CANDLE_TTL_MS[tf] ?? 60_000, candles });
       return candles;
     },
     onCandle(symbol, tf, cb) {
