@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { AdminShell, AdminCard } from "@/components/admin-shell";
-import { Bell, Send, History, TestTube2, ExternalLink, ShieldCheck, RefreshCw } from "lucide-react";
+import { Bell, Send, History, TestTube2, ExternalLink, ShieldCheck, RefreshCw, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,6 +11,7 @@ import { broadcastNotification, listBroadcasts } from "@/lib/broadcast.functions
 import { sendTestPushToSelf } from "@/lib/push.functions";
 import { canUsePush, ensurePushSubscription } from "@/lib/push-client";
 import { checkEmailDns } from "@/lib/email-dns.functions";
+import { sendTestEmail } from "@/lib/email-test.functions";
 
 export const Route = createFileRoute("/_authenticated/_admin/admin/notifications")({
   head: () => ({ meta: [{ title: "Admin — Notifications" }] }),
@@ -26,6 +27,10 @@ function AdminNotifications() {
   const sendTest = useServerFn(sendTestPushToSelf);
   const [testing, setTesting] = useState(false);
   const runDnsCheck = useServerFn(checkEmailDns);
+  const sendTestMail = useServerFn(sendTestEmail);
+  const [testEmail, setTestEmail] = useState("");
+  const [testMailSending, setTestMailSending] = useState(false);
+  const [testMailResult, setTestMailResult] = useState<{ ok: boolean; message: string } | null>(null);
   const [dns, setDns] = useState<Awaited<ReturnType<typeof checkEmailDns>> | null>(null);
   const [dnsLoading, setDnsLoading] = useState(false);
 
@@ -91,6 +96,24 @@ function AdminNotifications() {
       toast.error(e?.message ?? "فشل إرسال الاختبار");
     } finally {
       setTesting(false);
+    }
+  }
+
+  async function onSendTestEmail() {
+    if (!testEmail.trim()) return;
+    setTestMailSending(true);
+    setTestMailResult(null);
+    try {
+      const res = await sendTestMail({ data: { to: testEmail.trim() } });
+      setTestMailResult({ ok: res.ok, message: res.message });
+      if (res.ok) toast.success(res.message);
+      else toast.error(res.message);
+    } catch (e: any) {
+      const msg = e?.message ?? "فشل الإرسال";
+      setTestMailResult({ ok: false, message: msg });
+      toast.error(msg);
+    } finally {
+      setTestMailSending(false);
     }
   }
   const [logs, setLogs] = useState<
@@ -311,6 +334,38 @@ function AdminNotifications() {
           )}
           <p className="text-xs text-muted-foreground">
             سجلات DNS يديرها Lovable عبر تفويض NS. إذا ظهر SPF/DKIM/DMARC بحالة سليمة فإن Gmail يقبل الرسائل من نطاقك دون علامات Spam.
+          </p>
+        </div>
+      </AdminCard>
+
+      <AdminCard title="إرسال بريد اختبار" icon={Mail}>
+        <div className="space-y-3">
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <Input
+              type="email"
+              value={testEmail}
+              onChange={(e) => setTestEmail(e.target.value)}
+              placeholder="you@example.com"
+              disabled={testMailSending}
+            />
+            <Button onClick={onSendTestEmail} disabled={testMailSending || !testEmail.trim()}>
+              <Send className="me-1.5 h-3.5 w-3.5" />
+              {testMailSending ? "جارٍ الإرسال…" : "إرسال اختبار"}
+            </Button>
+          </div>
+          {testMailResult && (
+            <div
+              className={`rounded-sm border p-2.5 text-xs ${
+                testMailResult.ok
+                  ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-200"
+                  : "border-red-500/30 bg-red-500/10 text-red-200"
+              }`}
+            >
+              {testMailResult.message}
+            </div>
+          )}
+          <p className="text-xs text-muted-foreground">
+            يستخدم قالب البث نفسه، ويظهر البريد قادمًا من noreply@notify.hkexinvest.com.
           </p>
         </div>
       </AdminCard>
