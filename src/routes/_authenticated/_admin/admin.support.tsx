@@ -1,10 +1,10 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageShell } from "@/components/page-shell";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { MessageCircle, Send, Mail, Phone, User, Trash2, CheckCheck, Circle, CheckCheckIcon } from "lucide-react";
+import { ArrowRight, MessageCircle, Send, Mail, Phone, User, Trash2, CheckCheck, Circle, CheckCheckIcon } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/_admin/admin/support")({
@@ -116,7 +116,10 @@ function AdminSupport() {
   return (
     <PageShell bare>
       <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-        <p className="text-xs uppercase tracking-widest text-gold">Admin</p>
+        <Link to="/admin" className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground">
+          <ArrowRight className="h-4 w-4" /> رجوع إلى لوحة الإدارة
+        </Link>
+        <p className="mt-3 text-xs uppercase tracking-widest text-gold">Admin</p>
         <h1 className="mt-1 flex items-center gap-2 font-display text-3xl font-semibold md:text-4xl">
           <MessageCircle className="h-6 w-6 text-gold" /> رسائل العملاء
         </h1>
