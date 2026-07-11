@@ -14,8 +14,11 @@ export const sendSupportInquiry = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => schema.parse(data))
   .handler(async ({ data }) => {
     // Kept inside handler so it never ships to the client bundle.
+    // Public-facing address is support@hkexinvest.com (shown in UI/emails),
+    // but delivery is routed to the personal inbox below. This constant lives
+    // inside the handler so it never ships to the client bundle.
     const SUPPORT_INBOX =
-      process.env.SUPPORT_INBOX_EMAIL || "support@hkexinvest.com";
+      process.env.SUPPORT_INBOX_EMAIL || "hassan.muorad@gmail.com";
     const { sendTemplateEmail } = await import(
       "@/lib/email-templates/send-email"
     );
