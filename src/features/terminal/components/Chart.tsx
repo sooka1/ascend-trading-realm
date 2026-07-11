@@ -3,7 +3,7 @@ import { CandlestickSeries, LineSeries, AreaSeries, BarSeries, createChart } fro
 import type { IChartApi, ISeriesApi, Time } from "lightweight-charts";
 import { getMarketDataProvider } from "../adapters/market-data";
 import type { Candle, Timeframe } from "../adapters/market-data/types";
-import { Minus, Slash, Square, TrendingUp, Trash2, MousePointer2, Activity, LineChart as LineIcon, Waves, BarChart3 } from "lucide-react";
+import { Minus, Slash, Square, TrendingUp, Trash2, MousePointer2, Activity, LineChart as LineIcon, Waves, BarChart3, Undo2, Redo2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ema, bollinger, rsi as rsiCalc, macd as macdCalc } from "../lib/indicators";
 
@@ -46,6 +46,9 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
   const [drawings, setDrawings] = useState<Drawing[]>([]);
   const [pending, setPending] = useState<Anchor | null>(null);
   const [hover, setHover] = useState<Anchor | null>(null);
+  const [past, setPast] = useState<Drawing[][]>([]);
+  const [future, setFuture] = useState<Drawing[][]>([]);
+  const drawingsRef = useRef<Drawing[]>([]);
   const [indicators, setIndicators] = useState<Indicators>(DEFAULT_INDICATORS);
   const indicatorSeriesRef = useRef<Record<string, ISeriesApi<"Line"> | ISeriesApi<"Area"> | null>>({});
   const candlesRef = useRef<Candle[]>([]);
@@ -242,11 +245,48 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
     return () => { window.removeEventListener("pointermove", onMove); window.removeEventListener("pointerup", onUp); };
   }, [posFromNative]);
 
-  // Delete selected with Delete/Backspace.
+  // History (undo/redo) helpers.
+  useEffect(() => { drawingsRef.current = drawings; }, [drawings]);
+  const commit = useCallback(() => {
+    setPast((p) => [...p, drawingsRef.current]);
+    setFuture([]);
+  }, []);
+  const undo = useCallback(() => {
+    setPast((p) => {
+      if (!p.length) return p;
+      const prev = p[p.length - 1];
+      setFuture((f) => [...f, drawingsRef.current]);
+      setDrawings(prev);
+      return p.slice(0, -1);
+    });
+  }, []);
+  const redo = useCallback(() => {
+    setFuture((f) => {
+      if (!f.length) return f;
+      const next = f[f.length - 1];
+      setPast((p) => [...p, drawingsRef.current]);
+      setDrawings(next);
+      return f.slice(0, -1);
+    });
+  }, []);
+
+  // Keyboard: Delete/Backspace/Esc + Ctrl+Z / Ctrl+Shift+Z / Ctrl+Y.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      const mod = e.ctrlKey || e.metaKey;
+      if (mod && (e.key === "z" || e.key === "Z")) {
+        e.preventDefault();
+        if (e.shiftKey) redo(); else undo();
+        return;
+      }
+      if (mod && (e.key === "y" || e.key === "Y")) {
+        e.preventDefault();
+        redo();
+        return;
+      }
       if (!selectedId) return;
       if (e.key === "Delete" || e.key === "Backspace") {
+        commit();
         setDrawings((prev) => prev.filter((d) => d.id !== selectedId));
         setSelectedId(null);
       } else if (e.key === "Escape") {
@@ -255,13 +295,14 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [selectedId]);
+  }, [selectedId, commit, undo, redo]);
 
   const startDrag = (e: React.PointerEvent, drawing: Drawing, handle: "a" | "b" | "move" | "price") => {
     e.stopPropagation();
     if (tool !== "none") return;
     const origin = posFromEvent(e);
     if (!origin) return;
+    commit();
     setSelectedId(drawing.id);
     dragRef.current = { id: drawing.id, handle, origin, snapshot: drawing };
   };
@@ -272,10 +313,12 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
     if (!p) return;
     const id = Math.random().toString(36).slice(2);
     if (tool === "hline") {
+      commit();
       setDrawings((d) => [...d, { id, type: "hline", price: p.price }]);
       return;
     }
     if (!pending) { setPending(p); return; }
+    commit();
     setDrawings((d) => [...d, { id, type: tool as "trend" | "rect" | "fib", a: pending, b: p }]);
     setPending(null);
   };
@@ -432,12 +475,31 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
           <button
             type="button"
             title="مسح الكل"
-            onClick={() => { setDrawings([]); setPending(null); }}
+            onClick={() => { commit(); setDrawings([]); setPending(null); setSelectedId(null); }}
             className="flex h-7 w-7 items-center justify-center rounded text-red-300/80 hover:bg-red-500/15 hover:text-red-200"
           >
             <Trash2 className="h-3.5 w-3.5" />
           </button>
         )}
+        <div className="my-0.5 h-px w-full bg-white/10" />
+        <button
+          type="button"
+          title="تراجع (Ctrl+Z)"
+          disabled={past.length === 0}
+          onClick={undo}
+          className="flex h-7 w-7 items-center justify-center rounded text-white/70 transition hover:bg-white/10 hover:text-white disabled:opacity-30 disabled:hover:bg-transparent"
+        >
+          <Undo2 className="h-3.5 w-3.5" />
+        </button>
+        <button
+          type="button"
+          title="إعادة (Ctrl+Shift+Z)"
+          disabled={future.length === 0}
+          onClick={redo}
+          className="flex h-7 w-7 items-center justify-center rounded text-white/70 transition hover:bg-white/10 hover:text-white disabled:opacity-30 disabled:hover:bg-transparent"
+        >
+          <Redo2 className="h-3.5 w-3.5" />
+        </button>
       </div>
       <div className="absolute right-2 top-2 z-10 flex flex-wrap gap-1 rounded-md border border-white/10 bg-black/60 p-1 backdrop-blur">
         {indicatorToggles.map((it) => {
