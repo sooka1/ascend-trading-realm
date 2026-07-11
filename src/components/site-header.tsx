@@ -79,8 +79,8 @@ export function SiteHeader() {
             <Link
               key={item.to}
               to={item.to}
-              className="rounded-md border border-gold/40 bg-white/[0.04] px-3 py-2 text-sm text-white/90 transition-colors hover:border-gold hover:bg-gold/15 hover:text-gold"
-              activeProps={{ className: "border-gold bg-gold/20 text-gold" }}
+              className="px-3 py-2 text-sm text-white/90 transition-colors hover:text-gold"
+              activeProps={{ className: "text-gold" }}
             >
               {t(item.key)}
             </Link>
@@ -148,7 +148,7 @@ export function SiteHeader() {
               key={item.to}
               to={item.to}
               onClick={() => setOpen(false)}
-              className="rounded-md border border-gold/40 bg-white/[0.04] px-3 py-2.5 text-sm text-white/90 hover:border-gold hover:bg-gold/15 hover:text-gold"
+              className="px-3 py-2.5 text-sm text-white/90 hover:text-gold"
             >
               {t(item.key)}
             </Link>
