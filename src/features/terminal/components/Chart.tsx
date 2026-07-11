@@ -245,11 +245,48 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
     return () => { window.removeEventListener("pointermove", onMove); window.removeEventListener("pointerup", onUp); };
   }, [posFromNative]);
 
-  // Delete selected with Delete/Backspace.
+  // History (undo/redo) helpers.
+  useEffect(() => { drawingsRef.current = drawings; }, [drawings]);
+  const commit = useCallback(() => {
+    setPast((p) => [...p, drawingsRef.current]);
+    setFuture([]);
+  }, []);
+  const undo = useCallback(() => {
+    setPast((p) => {
+      if (!p.length) return p;
+      const prev = p[p.length - 1];
+      setFuture((f) => [...f, drawingsRef.current]);
+      setDrawings(prev);
+      return p.slice(0, -1);
+    });
+  }, []);
+  const redo = useCallback(() => {
+    setFuture((f) => {
+      if (!f.length) return f;
+      const next = f[f.length - 1];
+      setPast((p) => [...p, drawingsRef.current]);
+      setDrawings(next);
+      return f.slice(0, -1);
+    });
+  }, []);
+
+  // Keyboard: Delete/Backspace/Esc + Ctrl+Z / Ctrl+Shift+Z / Ctrl+Y.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      const mod = e.ctrlKey || e.metaKey;
+      if (mod && (e.key === "z" || e.key === "Z")) {
+        e.preventDefault();
+        if (e.shiftKey) redo(); else undo();
+        return;
+      }
+      if (mod && (e.key === "y" || e.key === "Y")) {
+        e.preventDefault();
+        redo();
+        return;
+      }
       if (!selectedId) return;
       if (e.key === "Delete" || e.key === "Backspace") {
+        commit();
         setDrawings((prev) => prev.filter((d) => d.id !== selectedId));
         setSelectedId(null);
       } else if (e.key === "Escape") {
@@ -258,13 +295,14 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [selectedId]);
+  }, [selectedId, commit, undo, redo]);
 
   const startDrag = (e: React.PointerEvent, drawing: Drawing, handle: "a" | "b" | "move" | "price") => {
     e.stopPropagation();
     if (tool !== "none") return;
     const origin = posFromEvent(e);
     if (!origin) return;
+    commit();
     setSelectedId(drawing.id);
     dragRef.current = { id: drawing.id, handle, origin, snapshot: drawing };
   };
@@ -275,10 +313,12 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
     if (!p) return;
     const id = Math.random().toString(36).slice(2);
     if (tool === "hline") {
+      commit();
       setDrawings((d) => [...d, { id, type: "hline", price: p.price }]);
       return;
     }
     if (!pending) { setPending(p); return; }
+    commit();
     setDrawings((d) => [...d, { id, type: tool as "trend" | "rect" | "fib", a: pending, b: p }]);
     setPending(null);
   };
