@@ -84,7 +84,10 @@ const WS_MAX_ATTEMPTS = 8;
 const WS_BASE_BACKOFF_MS = 1_000;
 const WS_MAX_BACKOFF_MS = 30_000;
 
-type WsStatus = "connecting" | "connected" | "reconnecting" | "disconnected";
+// Unified feed status shared by the crypto WebSocket and the traditional-
+// markets poller so the UI shows the same loading/error surface for both.
+type FeedStatus = "connecting" | "connected" | "reconnecting" | "disconnected";
+type WsStatus = FeedStatus;
 
 // Binance uses USDT pairs; treat them as USD equivalents for the board.
 const BINANCE_STREAM: Record<string, string> = {
@@ -118,9 +121,12 @@ export function MarketBoard() {
   const [category, setCategory] = useState<Category>("all");
   const [query, setQuery] = useState("");
   const [live, setLive] = useState(false);
-  const [wsStatus, setWsStatus] = useState<WsStatus>("connecting");
+  const [wsStatus, setWsStatus] = useState<FeedStatus>("connecting");
   const [wsAttempt, setWsAttempt] = useState(0);
   const [manualRetryToken, setManualRetryToken] = useState(0);
+  const [pollStatus, setPollStatus] = useState<FeedStatus>("connecting");
+  const [pollAttempt, setPollAttempt] = useState(0);
+  const [pollRetryToken, setPollRetryToken] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
   const fetchQuotes = useServerFn(getQuotes);
   const { list: watchlist, has: inWatchlist, remove: removeWatch } = useWatchlist();
@@ -128,6 +134,7 @@ export function MarketBoard() {
   useEffect(() => {
     let cancelled = false;
     let timer: ReturnType<typeof setTimeout> | null = null;
+    let attempt = 0;
 
     const load = async () => {
       try {
@@ -157,17 +164,33 @@ export function MarketBoard() {
           }),
         );
         setLive(true);
+        attempt = 0;
+        setPollAttempt(0);
+        setPollStatus("connected");
         // clear flash after animation
         setTimeout(() => {
           if (!cancelled) setRows((rs) => rs.map((r) => ({ ...r, flashing: null })));
         }, 700);
+        if (!cancelled) timer = setTimeout(load, NON_CRYPTO_POLL_MS);
       } catch (e) {
         console.warn("[market-board] fetch failed", e);
         setLive(false);
-      } finally {
-        if (!cancelled) timer = setTimeout(load, NON_CRYPTO_POLL_MS);
+        if (cancelled) return;
+        attempt += 1;
+        setPollAttempt(attempt);
+        if (attempt > WS_MAX_ATTEMPTS) {
+          setPollStatus("disconnected");
+          return; // stop until manual retry
+        }
+        setPollStatus("reconnecting");
+        const raw = WS_BASE_BACKOFF_MS * 2 ** (attempt - 1);
+        const capped = Math.min(raw, WS_MAX_BACKOFF_MS);
+        const jittered = capped * (0.8 + Math.random() * 0.4);
+        timer = setTimeout(load, jittered);
       }
     };
+    setPollStatus("connecting");
+    setPollAttempt(0);
     void load();
 
     const onVis = () => {
@@ -185,7 +208,7 @@ export function MarketBoard() {
       if (timer) clearTimeout(timer);
       document.removeEventListener("visibilitychange", onVis);
     };
-  }, [fetchQuotes]);
+  }, [fetchQuotes, pollRetryToken]);
 
   // Real-time crypto stream over Binance WebSocket — no polling, ticks push.
   // Auto-reconnects with capped exponential backoff and pauses when the tab
