@@ -481,12 +481,34 @@ function CompetitionTradePage() {
           {/* Positions strip */}
           <div className="border-t border-white/5 bg-[#0a0f1e] max-h-[30%] overflow-y-auto">
             <div className="sticky top-0 flex items-center justify-between border-b border-white/5 bg-[#0a0f1e] px-3 py-1.5 text-[11px]">
-              <span className="font-semibold">الصفقات المفتوحة ({positions.length})</span>
-              <span className={`font-mono tabular-nums ${openPnL >= 0 ? "text-emerald-400" : "text-red-400"}`}>
-                إجمالي: {openPnL >= 0 ? "+" : ""}${fmt(openPnL)}
-              </span>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => setHistoryTab("open")}
+                  className={`rounded-md px-2 py-0.5 font-semibold ${historyTab === "open" ? "bg-white/10 text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                >
+                  المفتوحة ({positions.length})
+                </button>
+                <button
+                  onClick={() => setHistoryTab("history")}
+                  className={`rounded-md px-2 py-0.5 font-semibold ${historyTab === "history" ? "bg-white/10 text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                >
+                  السجل ({history.length})
+                </button>
+              </div>
+              {historyTab === "open" ? (
+                <span className={`font-mono tabular-nums ${openPnL >= 0 ? "text-emerald-400" : "text-red-400"}`}>
+                  إجمالي: {openPnL >= 0 ? "+" : ""}${fmt(openPnL)}
+                </span>
+              ) : (
+                <span className="font-mono tabular-nums text-muted-foreground">
+                  صافي: ${fmt(history.reduce((s, h) => s + h.pnl, 0))}
+                </span>
+              )}
             </div>
-            {positions.length === 0 ? (
+            {!loaded ? (
+              <div className="px-3 py-4 text-center text-[11px] text-muted-foreground">جارٍ التحميل…</div>
+            ) : historyTab === "open" ? (
+              positions.length === 0 ? (
               <div className="px-3 py-4 text-center text-[11px] text-muted-foreground">لا توجد صفقات مفتوحة</div>
             ) : (
               <table className="w-full text-[11px]">
@@ -526,6 +548,46 @@ function CompetitionTradePage() {
                           >
                             <XCircle className="h-3 w-3" /> إغلاق
                           </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+              )
+            ) : history.length === 0 ? (
+              <div className="px-3 py-4 text-center text-[11px] text-muted-foreground">لا يوجد سجل صفقات</div>
+            ) : (
+              <table className="w-full text-[11px]">
+                <thead className="text-muted-foreground">
+                  <tr className="border-b border-white/5">
+                    <th className="px-3 py-1.5 text-right font-normal">الأداة</th>
+                    <th className="px-3 py-1.5 text-right font-normal">الاتجاه</th>
+                    <th className="px-3 py-1.5 text-right font-normal">اللوت</th>
+                    <th className="px-3 py-1.5 text-right font-normal">الدخول</th>
+                    <th className="px-3 py-1.5 text-right font-normal">الإغلاق</th>
+                    <th className="px-3 py-1.5 text-right font-normal">الربح/الخسارة</th>
+                    <th className="px-3 py-1.5 text-right font-normal">التاريخ</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {history.map((h) => {
+                    const inst = INSTRUMENTS.find((i) => i.code === h.code);
+                    const d = inst?.digits ?? 2;
+                    return (
+                      <tr key={h.id} className="border-b border-white/5 hover:bg-white/[0.03]">
+                        <td className="px-3 py-1.5 font-semibold">{h.code}</td>
+                        <td className={`px-3 py-1.5 ${h.side === "buy" ? "text-emerald-400" : "text-red-400"}`}>
+                          {h.side === "buy" ? "شراء" : "بيع"}
+                        </td>
+                        <td className="px-3 py-1.5 font-mono tabular-nums">{h.lots}</td>
+                        <td className="px-3 py-1.5 font-mono tabular-nums">{fmt(h.entry, d)}</td>
+                        <td className="px-3 py-1.5 font-mono tabular-nums">{fmt(h.exit, d)}</td>
+                        <td className={`px-3 py-1.5 font-mono tabular-nums ${h.pnl >= 0 ? "text-emerald-400" : "text-red-400"}`}>
+                          {h.pnl >= 0 ? "+" : ""}${fmt(h.pnl)}
+                        </td>
+                        <td className="px-3 py-1.5 text-muted-foreground">
+                          {new Date(h.closedAt).toLocaleString("ar", { hour12: false })}
                         </td>
                       </tr>
                     );
