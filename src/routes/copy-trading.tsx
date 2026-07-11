@@ -179,7 +179,7 @@ function CopyTradingPage() {
   const asset = (ASSET_KEYS as string[]).includes(search.asset) ? (search.asset as Asset | "all") : "all";
   const risk = (RISK_KEYS as string[]).includes(search.risk) ? (search.risk as Risk | "all") : "all";
   const sort = (SORT_KEYS as string[]).includes(search.sort) ? (search.sort as SortKey) : "return";
-  const minReturn = Math.max(-10, Math.min(15, search.minReturn));
+  const minReturn = Math.max(0, Math.min(40, search.minReturn));
   const maxDeposit = Math.max(500, Math.min(5000, search.maxDeposit));
 
   const patchSearch = (patch: Partial<CopySearch>) =>
@@ -347,7 +347,7 @@ function CopyTradingPage() {
               <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
                 أدنى عائد آخر شهر: {minReturn}%
               </span>
-              <input type="range" min={-10} max={15} step={1} value={minReturn}
+              <input type="range" min={0} max={40} step={1} value={minReturn}
                 onChange={(e) => setMinReturn(Number(e.target.value))}
                 className="mt-2 w-full accent-[color:var(--color-gold,#d4af37)]" />
             </label>
