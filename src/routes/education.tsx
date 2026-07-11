@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { BookOpen, Brain, Calculator, ExternalLink, GraduationCap, Globe2, LineChart, PlayCircle, Search, Video } from "lucide-react";
+import { BookOpen, Brain, Calculator, ExternalLink, FileText, GraduationCap, Globe2, LineChart, Network, PlayCircle, Search, ShieldAlert, Video } from "lucide-react";
 import { PageShell, PageHero } from "@/components/page-shell";
 import { usePage } from "@/lib/i18n";
 import { EDU_VIDEOS, type EduVideo } from "@/lib/education-videos";
+import { EDU_BOOKS, type EduBook } from "@/lib/education-books";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -52,6 +53,7 @@ function Education() {
         <ForeignCoursesSection />
       </section>
       <VideoLibrarySection />
+      <BooksLibrarySection />
     </PageShell>
   );
 }
