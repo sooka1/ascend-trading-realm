@@ -945,6 +945,15 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
               استعادة الافتراضي
             </button>
           </div>
+          <label className="mb-2 flex items-center justify-between gap-2 rounded border border-white/10 bg-white/[0.03] px-2 py-1 text-[10px] text-white/80">
+            <span>عرض خطوط TP/SL ووسم HIT</span>
+            <input
+              type="checkbox"
+              checked={showRiskLines}
+              onChange={(e) => setShowRiskLines(e.target.checked)}
+              className="h-3.5 w-3.5 accent-amber-400"
+            />
+          </label>
           {([
             ["ema9", "EMA سريع", 1, 500, 1],
             ["ema21", "EMA متوسط", 1, 500, 1],
