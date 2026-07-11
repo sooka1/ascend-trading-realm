@@ -31,7 +31,7 @@ type AuditRow = { id: string; withdrawal_id: string; subscription_id: string | n
 const depositSchema = z.object({
   amount: z.coerce.number().positive().max(10_000_000),
   method: z.enum(["binance_pay", "usdt_trc20"]),
-  reference: z.string().trim().max(120).optional(),
+  reference: z.string().trim().min(1, "حقل Transaction Hash (TxID) مطلوب").max(120),
   notes: z.string().trim().max(500).optional(),
 });
 const withdrawSchema = z.object({
