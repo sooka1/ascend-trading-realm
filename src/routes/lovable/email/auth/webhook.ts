@@ -9,7 +9,7 @@ import { EmailChangeEmail } from '@/lib/email-templates/email-change'
 import { ReauthenticationEmail } from '@/lib/email-templates/reauthentication'
 
 // Configuration
-const SITE_NAME = "HKEX-Investment"
+const SITE_NAME = "HKEX"
 const SENDER_DOMAIN = "notify.hkexinvest.com"
 const ROOT_DOMAIN = "hkexinvest.com"
 const FROM_DOMAIN = "hkexinvest.com"
