@@ -7,6 +7,8 @@ import { useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { subscribeCompetition } from "@/lib/actions.functions";
 import { useAuth } from "@/hooks/use-auth";
+import { useAvailableBalance } from "@/hooks/use-balance";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/competitions")({
@@ -62,6 +64,7 @@ function CompetitionsPage() {
   const navigate = useNavigate();
   const submitSubscribe = useServerFn(subscribeCompetition);
   const [pending, setPending] = useState<string | null>(null);
+  const { available, reload: reloadBalance } = useAvailableBalance();
 
   async function handleSubscribe(fee: number, competitionId?: string) {
     if (!loading && !user) {
@@ -72,9 +75,28 @@ function CompetitionsPage() {
     const key = competitionId ?? `tier-${fee}`;
     setPending(key);
     try {
+      if (available < fee) {
+        toast.error(
+          `رصيدك المتاح $${available.toFixed(2)} لا يكفي لرسم اشتراك $${fee}. أعد التوجيه إلى صفحة الإيداع.`,
+        );
+        navigate({ to: "/investor", hash: "deposit" });
+        return;
+      }
+      const { error: entryErr } = await supabase.from("competition_entries").insert({
+        user_id: user!.id,
+        competition_id: competitionId ?? null,
+        tier_fee: fee,
+        currency: "USD",
+        status: "active",
+      });
+      if (entryErr) {
+        toast.error("تعذّر خصم رسم الاشتراك من المحفظة.");
+        return;
+      }
       // Server-side guarded — rejects unauthenticated callers with 401.
       await submitSubscribe({ data: { tierFee: fee, competitionId } });
-      toast.success(`تم تسجيل اشتراكك بـ $${fee}.`);
+      toast.success(`تم خصم $${fee} من محفظتك وتسجيل اشتراكك.`);
+      await reloadBalance();
     } catch (err) {
       const msg = err instanceof Error ? err.message : "";
       if (/unauthor/i.test(msg) || /401/.test(msg)) {
