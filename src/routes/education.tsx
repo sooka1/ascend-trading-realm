@@ -188,6 +188,120 @@ function VideoCard({ v }: { v: EduVideo }) {
   );
 }
 
+function BooksLibrarySection() {
+  const [topic, setTopic] = useState<"all" | "market-structure" | "risk">("all");
+  const [q, setQ] = useState("");
+
+  const filtered = useMemo(() => {
+    const needle = q.trim().toLowerCase();
+    return EDU_BOOKS.filter((b) => {
+      if (topic !== "all" && b.topic !== topic) return false;
+      if (!needle) return true;
+      return b.title.toLowerCase().includes(needle) || b.author.toLowerCase().includes(needle);
+    });
+  }, [topic, q]);
+
+  const msCount = EDU_BOOKS.filter((b) => b.topic === "market-structure").length;
+  const rkCount = EDU_BOOKS.filter((b) => b.topic === "risk").length;
+
+  return (
+    <section className="mx-auto max-w-7xl px-4 pb-24 sm:px-6 lg:px-8">
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <div className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-widest text-gold">
+            <BookOpen className="h-3.5 w-3.5" /> كتب وملفات
+          </div>
+          <h2 className="mt-2 font-display text-2xl font-semibold sm:text-3xl">
+            كتب و PDF عن <span className="text-gradient">بنية السوق والمخاطر</span>
+          </h2>
+          <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
+            مرجع موسّع — {msCount} حول بنية السوق و {rkCount} حول إدارة المخاطر. الروابط تفتح مصادر رسمية (SEC, BIS, IMF, CFTC…) أو نتائج البحث للحصول على أحدث PDF.
+          </p>
+        </div>
+      </div>
+
+      <div className="mb-5 flex flex-wrap items-center gap-2">
+        <div className="flex overflow-hidden rounded-full border border-white/10">
+          {([
+            ["all", "الكل", null],
+            ["market-structure", "بنية السوق", Network],
+            ["risk", "المخاطر", ShieldAlert],
+          ] as const).map(([k, label, Icon]) => (
+            <button
+              key={k}
+              onClick={() => setTopic(k)}
+              className={`inline-flex items-center gap-1.5 px-4 py-1.5 text-xs transition ${
+                topic === k ? "bg-gold text-background" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {Icon ? <Icon className="h-3.5 w-3.5" /> : null}
+              {label}
+            </button>
+          ))}
+        </div>
+        <div className="relative flex-1 min-w-[220px]">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="ابحث عن كتاب أو مؤلف…"
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            className="pl-9"
+          />
+        </div>
+        <div className="text-xs text-muted-foreground">{filtered.length} عنوان</div>
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {filtered.map((b) => (
+          <BookCard key={b.id} b={b} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function BookCard({ b }: { b: EduBook }) {
+  const topicStyle =
+    b.topic === "market-structure"
+      ? "border-cyan-400/40 bg-cyan-400/10 text-cyan-200"
+      : "border-bear/40 bg-bear/10 text-bear";
+  const TopicIcon = b.topic === "market-structure" ? Network : ShieldAlert;
+  const FormatIcon = b.format === "PDF" ? FileText : BookOpen;
+  return (
+    <a
+      href={b.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      onClick={(e) => {
+        e.preventDefault();
+        window.open(b.url, "_blank", "noopener,noreferrer") ||
+          (window.top ? (window.top.location.href = b.url) : (window.location.href = b.url));
+      }}
+      className="glass group flex flex-col rounded-2xl p-4 transition hover:border-gold/40"
+    >
+      <div className="flex items-center justify-between gap-2">
+        <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] ${topicStyle}`}>
+          <TopicIcon className="h-3 w-3" />
+          {b.topic === "market-structure" ? "بنية السوق" : "المخاطر"}
+        </span>
+        <span className="inline-flex items-center gap-1 rounded-md border border-white/10 px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
+          <FormatIcon className="h-3 w-3" />
+          {b.format}
+        </span>
+      </div>
+      <h3 className="mt-3 line-clamp-2 font-display text-sm font-semibold group-hover:text-gold">
+        {b.title}
+      </h3>
+      <div className="mt-auto flex items-center justify-between pt-3">
+        <span className="text-[11px] uppercase tracking-widest text-muted-foreground">{b.author}</span>
+        <span className="inline-flex items-center gap-1 text-[11px] text-gold/90 group-hover:text-gold">
+          فتح <ExternalLink className="h-3 w-3" />
+        </span>
+      </div>
+    </a>
+  );
+}
+
 type ForeignCourse = {
   provider: string;
   title: string;
