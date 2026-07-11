@@ -57,7 +57,7 @@ const en: PageContent = {
     hero: { eyebrow: "Contact", titleA: "Let's", titleB: "talk", subtitle: "Sales, partnerships, or press — we typically reply within one business hour." },
     formTitle: "Send us a message",
     fullName: "Full name", email: "Email", subject: "Subject", message: "Message", send: "Send message", sent: "Thanks — we'll be in touch shortly.",
-    hqT: "Global HQ", hqB: "One Canada Square, Level 41, London E14 5AB, United Kingdom", emailT: "Email", phoneT: "Phone", officesT: "Offices",
+    hqT: "Registered Office — Hong Kong", hqB: "8/F, Two Exchange Square\n8 Connaught Place, Central\nHong Kong", emailT: "Email", phoneT: "Phone", officesT: "Offices",
   },
   economic: {
     meta: { title: "Economic Calendar — Live macro events | HK Global Trading", desc: "Live economic calendar.", ogTitle: "HK Economic Calendar", ogDesc: "The macro events that move markets." },
@@ -216,7 +216,7 @@ const ar: PageContent = {
     hero: { eyebrow: "تواصل", titleA: "لنَـ", titleB: "تحدّث", subtitle: "مبيعات أو شراكات أو صحافة — نردّ خلال ساعة عمل." },
     formTitle: "أرسل لنا رسالة",
     fullName: "الاسم الكامل", email: "البريد الإلكتروني", subject: "الموضوع", message: "الرسالة", send: "إرسال", sent: "شكرًا — سنتواصل معك قريبًا.",
-    hqT: "المقر العالمي", hqB: "One Canada Square, London E14 5AB, المملكة المتحدة", emailT: "البريد الإلكتروني", phoneT: "الهاتف", officesT: "المكاتب",
+    hqT: "المقر المسجّل — هونغ كونغ", hqB: "8/F, Two Exchange Square\n8 Connaught Place, Central\nHong Kong", emailT: "البريد الإلكتروني", phoneT: "الهاتف", officesT: "المكاتب",
   },
   economic: {
     meta: { title: "التقويم الاقتصادي — HK Global Trading", desc: "تقويم اقتصادي مباشر.", ogTitle: "التقويم الاقتصادي HK", ogDesc: "الأحداث التي تحرّك الأسواق." },
