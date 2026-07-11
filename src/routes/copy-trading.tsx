@@ -365,6 +365,28 @@ function CopyTradingPage() {
           <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
             <span>عرض {filtered.length} من {TRADERS.length} متداول</span>
             <div className="flex items-center gap-2">
+              <label className="inline-flex items-center gap-1">
+                <span className="font-mono uppercase tracking-widest">من</span>
+                <input
+                  type="month"
+                  min={months[0]}
+                  max={months[months.length - 1]}
+                  value={fromYM}
+                  onChange={(e) => setFromYM(e.target.value || months[0])}
+                  className="rounded-md border border-white/10 bg-white/5 px-2 py-1 text-foreground outline-none focus:border-gold/50"
+                />
+              </label>
+              <label className="inline-flex items-center gap-1">
+                <span className="font-mono uppercase tracking-widest">إلى</span>
+                <input
+                  type="month"
+                  min={months[0]}
+                  max={months[months.length - 1]}
+                  value={toYM}
+                  onChange={(e) => setToYM(e.target.value || months[months.length - 1])}
+                  className="rounded-md border border-white/10 bg-white/5 px-2 py-1 text-foreground outline-none focus:border-gold/50"
+                />
+              </label>
               <button onClick={exportCsv} disabled={filtered.length === 0}
                 className="inline-flex items-center gap-1 rounded-md border border-white/10 px-2 py-1 hover:border-gold/40 hover:text-foreground disabled:opacity-40">
                 <FileDown className="h-3.5 w-3.5" /> CSV
