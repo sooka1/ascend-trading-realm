@@ -55,7 +55,7 @@ export const updateMyCopySubscription = createServerFn({ method: "POST" })
     z.object({ id: uuid, status: z.enum(["active", "paused", "closed"]) }).parse(data),
   )
   .handler(async ({ data, context }) => {
-    const patch: Record<string, unknown> = { status: data.status };
+    const patch: { status: "active" | "paused" | "closed"; closed_at?: string } = { status: data.status };
     if (data.status === "closed") patch.closed_at = new Date().toISOString();
     const { error } = await context.supabase
       .from("copy_subscriptions")
@@ -170,7 +170,7 @@ export const adminSetSubscriptionStatus = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await assertSuperAdmin(context);
-    const patch: Record<string, unknown> = { status: data.status };
+    const patch: { status: "active" | "paused" | "closed"; closed_at?: string } = { status: data.status };
     if (data.status === "closed") patch.closed_at = new Date().toISOString();
     const { error } = await context.supabase
       .from("copy_subscriptions")
@@ -259,7 +259,11 @@ export const adminAdjustBalance = createServerFn({ method: "POST" })
     z
       .object({
         user_email: z.string().trim().toLowerCase().email().max(255),
-        delta: z.number().refine((n) => n !== 0, "Delta must be non-zero").min(-1_000_000).max(1_000_000),
+        delta: z
+          .number()
+          .min(-1_000_000)
+          .max(1_000_000)
+          .refine((n) => n !== 0, "Delta must be non-zero"),
         reason: z.string().trim().min(3).max(500),
       })
       .parse(data),
