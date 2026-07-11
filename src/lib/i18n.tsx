@@ -947,7 +947,7 @@ const I18nContext = createContext<Ctx | null>(null);
 const STORAGE_KEY = "hk_lang";
 
 export function I18nProvider({ children }: { children: ReactNode }) {
-  const [lang, setLangState] = useState<Lang>("ar");
+  const [lang, setLangState] = useState<Lang>("en");
 
   useEffect(() => {
     try {
