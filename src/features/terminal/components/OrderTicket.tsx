@@ -64,10 +64,10 @@ export function OrderTicket({ instrument, bid, ask, balance, leverage }: {
     <div dir="rtl" className="space-y-3 p-3 text-right">
       <Tabs value={orderType} onValueChange={(v) => setOrderType(v as OrderType)}>
         <TabsList className="grid grid-cols-4 h-8">
-          <TabsTrigger value="market" className="text-[11px]">سوق</TabsTrigger>
-          <TabsTrigger value="limit" className="text-[11px]">Limit</TabsTrigger>
-          <TabsTrigger value="stop" className="text-[11px]">Stop</TabsTrigger>
-          <TabsTrigger value="stop_limit" className="text-[11px]">S-Limit</TabsTrigger>
+          <TabsTrigger value="market" className="text-xs">سوق</TabsTrigger>
+          <TabsTrigger value="limit" className="text-xs">Limit</TabsTrigger>
+          <TabsTrigger value="stop" className="text-xs">Stop</TabsTrigger>
+          <TabsTrigger value="stop_limit" className="text-xs">S-Limit</TabsTrigger>
         </TabsList>
       </Tabs>
 
@@ -120,13 +120,13 @@ export function OrderTicket({ instrument, bid, ask, balance, leverage }: {
       </div>
 
       <div className="grid grid-cols-2 gap-2">
-        <Button onClick={() => submit("sell")} disabled={busy} className="flex h-12 min-w-0 items-center justify-center gap-2 overflow-hidden bg-red-500 px-2 text-white hover:bg-red-600">
-          <span className="shrink-0 text-sm font-semibold leading-none">بيع</span>
-          <span dir="ltr" className="truncate font-mono text-sm font-semibold leading-none tabular-nums opacity-95">{bid.toFixed(instrument.price_precision)}</span>
+        <Button onClick={() => submit("sell")} disabled={busy} className="flex h-10 min-w-0 items-center justify-center gap-1.5 overflow-hidden whitespace-nowrap bg-red-500 px-2 text-white hover:bg-red-600">
+          <span className="shrink-0 text-xs font-semibold leading-none">بيع</span>
+          <span dir="ltr" className="truncate font-mono text-xs font-semibold leading-none tabular-nums opacity-95">{bid.toFixed(instrument.price_precision)}</span>
         </Button>
-        <Button onClick={() => submit("buy")} disabled={busy} className="flex h-12 min-w-0 items-center justify-center gap-2 overflow-hidden bg-emerald-500 px-2 text-white hover:bg-emerald-600">
-          <span className="shrink-0 text-sm font-semibold leading-none">شراء</span>
-          <span dir="ltr" className="truncate font-mono text-sm font-semibold leading-none tabular-nums opacity-95">{ask.toFixed(instrument.price_precision)}</span>
+        <Button onClick={() => submit("buy")} disabled={busy} className="flex h-10 min-w-0 items-center justify-center gap-1.5 overflow-hidden whitespace-nowrap bg-emerald-500 px-2 text-white hover:bg-emerald-600">
+          <span className="shrink-0 text-xs font-semibold leading-none">شراء</span>
+          <span dir="ltr" className="truncate font-mono text-xs font-semibold leading-none tabular-nums opacity-95">{ask.toFixed(instrument.price_precision)}</span>
         </Button>
       </div>
     </div>
