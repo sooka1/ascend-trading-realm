@@ -111,8 +111,11 @@ function Contact() {
           <div className="glass rounded-2xl p-6">
             <div className="font-medium">{p.officesT}</div>
             <div className="mt-2 grid grid-cols-2 gap-2 text-sm text-muted-foreground">
-              <div>London 🇬🇧</div><div>Dubai 🇦🇪</div><div>Singapore 🇸🇬</div>
-              <div>New York 🇺🇸</div><div>Zurich 🇨🇭</div><div>Tokyo 🇯🇵</div>
+              <div>Hong Kong 🇭🇰</div><div>Beijing 🇨🇳</div>
+              <div>Shanghai 🇨🇳</div><div>Singapore 🇸🇬</div>
+              <div>London 🇬🇧</div><div>Dubai 🇦🇪</div>
+              <div>New York 🇺🇸</div><div>Zurich 🇨🇭</div>
+              <div>Tokyo 🇯🇵</div>
             </div>
           </div>
         </div>
