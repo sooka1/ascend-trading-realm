@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import { ArrowDownRight, ArrowUpRight, Circle, AlertTriangle, Loader2, RotateCw } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight, Circle, AlertTriangle, Loader2, RotateCw, Star } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import { PriceSparkline } from "@/components/price-sparkline";
+import { useWatchlist } from "@/hooks/use-watchlist";
 type DepthStatus = "loading" | "connected" | "reconnecting" | "error";
 
 // Warn the user when live ticks stall (network issue, market close, etc.).
@@ -184,6 +186,7 @@ export function MarketDetailDialog({
             <span className="text-gradient">{item.symbol}</span>
             <span className="text-sm font-normal text-muted-foreground">{item.name}</span>
             <StatusChip status={depthStatus} attempt={attempt} isBinance={!!item.binanceStream} />
+            <WatchlistToggle symbol={item.symbol} />
           </DialogTitle>
           <DialogDescription>آخر سعر، تغيّر 24س، وعمق السوق (أفضل الطلبات والعروض).</DialogDescription>
         </DialogHeader>
@@ -231,6 +234,14 @@ export function MarketDetailDialog({
             </div>
           </div>
         </div>
+
+        <PriceSparkline
+          symbol={item.symbol}
+          price={item.price}
+          changePct={item.change}
+          binanceStream={item.binanceStream}
+          className="mt-3"
+        />
 
         {depthStatus === "loading" && !hasDepth ? (
           <div className="mt-2 grid gap-3 sm:grid-cols-2">
