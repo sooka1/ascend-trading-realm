@@ -82,15 +82,21 @@ function CompetitionsPage() {
         navigate({ to: "/investor", hash: "deposit" });
         return;
       }
-      const { error: entryErr } = await supabase.from("competition_entries").insert({
-        user_id: user!.id,
-        competition_id: competitionId ?? null,
-        tier_fee: fee,
-        currency: "USD",
-        status: "active",
+      // Atomic deduct + insert via SECURITY DEFINER RPC; prevents
+      // double-click duplicates and race conditions on the wallet balance.
+      const { error: rpcErr } = await supabase.rpc("enter_competition", {
+        _competition_id: competitionId ?? null,
+        _tier_fee: fee,
       });
-      if (entryErr) {
-        toast.error("تعذّر خصم رسم الاشتراك من المحفظة.");
+      if (rpcErr) {
+        if (/Insufficient balance/i.test(rpcErr.message)) {
+          toast.error("الرصيد غير كافٍ. توجّه إلى صفحة الإيداع.");
+          navigate({ to: "/investor", hash: "deposit" });
+        } else if (/Duplicate/i.test(rpcErr.message)) {
+          toast.error("هذا الاشتراك تم للتو — لا تكرار.");
+        } else {
+          toast.error("تعذّر إتمام الاشتراك. حاول مجدداً.");
+        }
         return;
       }
       // Server-side guarded — rejects unauthenticated callers with 401.
