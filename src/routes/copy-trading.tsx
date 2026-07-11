@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { PageShell, PageHero } from "@/components/page-shell";
-import { Copy, TrendingUp, TrendingDown, Users, Wallet, Percent, Award, Lock, Calculator } from "lucide-react";
+import { Copy, TrendingUp, TrendingDown, Users, Wallet, Percent, Award, Lock, Calculator, FileDown, Printer } from "lucide-react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
@@ -131,6 +131,72 @@ function CopyTradingPage() {
     setAsset("all"); setRisk("all"); setMinReturn(-10); setMaxDeposit(5000); setSort("return");
   };
 
+  const monthLabel = new Date().toLocaleDateString("ar", { month: "long", year: "numeric" });
+
+  const exportCsv = () => {
+    const headers = ["الاسم", "الدولة", "الأصل", "المخاطر", "عائد آخر شهر %", "حد أدنى للإيداع", "حصة المتداول %", "نسبة النجاح %", "المتابعون"];
+    const rows = filtered.map((t) => [
+      t.name, t.country, ASSET_LABEL[t.asset], RISK_LABEL[t.risk],
+      lastMonthReturn(t).toFixed(2), t.minDeposit, t.profitShare, t.winRate, t.followers,
+    ]);
+    const escape = (v: string | number) => {
+      const s = String(v);
+      return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+    };
+    const csv = "\uFEFF" + [headers, ...rows].map((r) => r.map(escape).join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `copy-trading-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const exportPdf = () => {
+    const rowsHtml = filtered.map((t) => {
+      const ret = lastMonthReturn(t);
+      const tone = ret >= 0 ? "#059669" : "#dc2626";
+      return `<tr>
+        <td>${t.flag} ${t.name}</td>
+        <td>${t.country}</td>
+        <td>${ASSET_LABEL[t.asset]}</td>
+        <td>${RISK_LABEL[t.risk]}</td>
+        <td style="color:${tone};font-weight:600">${ret >= 0 ? "+" : ""}${ret.toFixed(2)}%</td>
+        <td>$${fmtMoney(t.minDeposit)}</td>
+        <td>${t.profitShare}%</td>
+        <td>${t.winRate}%</td>
+        <td>${fmtMoney(t.followers)}</td>
+      </tr>`;
+    }).join("");
+    const html = `<!doctype html><html dir="rtl" lang="ar"><head><meta charset="utf-8"><title>تقرير نسخ الصفقات — ${monthLabel}</title>
+      <style>
+        *{box-sizing:border-box}
+        body{font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial;padding:24px;color:#111}
+        h1{margin:0 0 4px;font-size:22px}
+        .sub{color:#666;font-size:12px;margin-bottom:16px}
+        table{width:100%;border-collapse:collapse;font-size:12px}
+        th,td{border:1px solid #ddd;padding:8px;text-align:right}
+        th{background:#f5f5f5;font-weight:600}
+        tr:nth-child(even) td{background:#fafafa}
+        .foot{margin-top:16px;font-size:10px;color:#888}
+      </style></head><body>
+      <h1>تقرير نسخ الصفقات الشهري</h1>
+      <div class="sub">الفترة: ${monthLabel} · عدد المتداولين: ${filtered.length}</div>
+      <table><thead><tr>
+        <th>المتداول</th><th>الدولة</th><th>الأصل</th><th>المخاطر</th>
+        <th>عائد آخر شهر</th><th>حد أدنى</th><th>حصة المتداول</th><th>نسبة النجاح</th><th>المتابعون</th>
+      </tr></thead><tbody>${rowsHtml}</tbody></table>
+      <div class="foot">تقرير آلي — الأداء الماضي لا يشكّل ضماناً لأي نتائج مستقبلية.</div>
+      <script>window.onload=()=>{window.focus();window.print();}<\/script>
+    </body></html>`;
+    const w = window.open("", "_blank", "width=1024,height=768");
+    if (!w) { toast.error("السماح بالنوافذ المنبثقة مطلوب لتصدير PDF."); return; }
+    w.document.open();
+    w.document.write(html);
+    w.document.close();
+  };
+
   return (
     <PageShell>
       <PageHero
@@ -179,9 +245,19 @@ function CopyTradingPage() {
           </div>
           <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
             <span>عرض {filtered.length} من {TRADERS.length} متداول</span>
-            <button onClick={resetFilters} className="rounded-md border border-white/10 px-2 py-1 hover:border-gold/40 hover:text-foreground">
-              إعادة تعيين
-            </button>
+            <div className="flex items-center gap-2">
+              <button onClick={exportCsv} disabled={filtered.length === 0}
+                className="inline-flex items-center gap-1 rounded-md border border-white/10 px-2 py-1 hover:border-gold/40 hover:text-foreground disabled:opacity-40">
+                <FileDown className="h-3.5 w-3.5" /> CSV
+              </button>
+              <button onClick={exportPdf} disabled={filtered.length === 0}
+                className="inline-flex items-center gap-1 rounded-md border border-white/10 px-2 py-1 hover:border-gold/40 hover:text-foreground disabled:opacity-40">
+                <Printer className="h-3.5 w-3.5" /> PDF
+              </button>
+              <button onClick={resetFilters} className="rounded-md border border-white/10 px-2 py-1 hover:border-gold/40 hover:text-foreground">
+                إعادة تعيين
+              </button>
+            </div>
           </div>
         </div>
         {filtered.length === 0 ? (
