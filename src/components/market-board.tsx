@@ -354,7 +354,7 @@ function FeedStatusBadge({ label, status, attempt, onRetry }: { label: string; s
   const map = {
     connecting:   { text: "جارٍ الاتصال…",                              cls: "border-white/10 text-muted-foreground",              dot: "fill-muted-foreground animate-pulse" },
     connected:    { text: "مباشر",                                       cls: "border-bull/40 bg-bull/10 text-bull",                dot: "fill-bull text-bull animate-pulse" },
-    reconnecting: { text: `إعادة اتصال (${attempt}/${WS_MAX_ATTEMPTS})`, cls: "border-amber-500/40 bg-amber-500/10 text-amber-200", dot: "fill-amber-300 animate-pulse" },
+    reconnecting: { text: `إعادة اتصال (${attempt}/${FEED_MAX_ATTEMPTS})`, cls: "border-amber-500/40 bg-amber-500/10 text-amber-200", dot: "fill-amber-300 animate-pulse" },
     disconnected: { text: "غير متصل",                                    cls: "border-bear/40 bg-bear/10 text-bear",                dot: "fill-bear" },
   }[status];
   return (
@@ -375,14 +375,14 @@ function FeedStatusBanner({ label, status, attempt, onRetry }: { label: string; 
   if (status === "reconnecting") {
     return (
       <div className="mt-3 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-2 text-xs text-amber-200">
-        انقطع {label}. جارٍ إعادة المحاولة… ({attempt}/{WS_MAX_ATTEMPTS})
+        انقطع {label}. جارٍ إعادة المحاولة… ({attempt}/{FEED_MAX_ATTEMPTS})
       </div>
     );
   }
   if (status === "disconnected") {
     return (
       <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-bear/30 bg-bear/10 px-4 py-2 text-xs text-bear">
-        <span>تعذّر الاتصال بـ{label} بعد {WS_MAX_ATTEMPTS} محاولات. الأسعار المعروضة هي آخر قيمة مستلمة.</span>
+        <span>تعذّر الاتصال بـ{label} بعد {FEED_MAX_ATTEMPTS} محاولات. الأسعار المعروضة هي آخر قيمة مستلمة.</span>
         <button
           onClick={onRetry}
           className="inline-flex items-center gap-1 rounded-md border border-bear/40 px-2 py-1 font-medium hover:bg-bear/20"
