@@ -77,8 +77,8 @@ function TradingTerminal() {
   const marginLevel = usedMargin > 0 ? (equity / usedMargin) * 100 : 0;
 
   return (
-    <PortalShell eyebrow="بوابة المتداول" title="منصة التداول" subtitle="بيانات حيّة وتنفيذ فوري">
-      <div className="h-[calc(100vh-16rem)] min-h-[600px] w-full rounded-xl border border-white/10 bg-slate-950/60 overflow-hidden">
+    <PortalShell fullscreen eyebrow="بوابة المتداول" title="منصة التداول" subtitle="بيانات حيّة وتنفيذ فوري">
+      <div className="h-[calc(100vh-10rem)] min-h-[600px] w-full rounded-xl border border-white/10 bg-slate-950/60 overflow-hidden">
         <PanelGroup orientation="horizontal" className="flex h-full w-full">
           {/* LEFT: order ticket + account */}
           <Panel defaultSize={22} minSize={16}>
