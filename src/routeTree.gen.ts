@@ -69,6 +69,7 @@ import { Route as AuthenticatedAdminAdminSubscriptionsRouteImport } from './rout
 import { Route as AuthenticatedAdminAdminSettingsRouteImport } from './routes/_authenticated/_admin/admin.settings'
 import { Route as AuthenticatedAdminAdminSearchRouteImport } from './routes/_authenticated/_admin/admin.search'
 import { Route as AuthenticatedAdminAdminRolesRouteImport } from './routes/_authenticated/_admin/admin.roles'
+import { Route as AuthenticatedAdminAdminPortfolioManagerRouteImport } from './routes/_authenticated/_admin/admin.portfolio-manager'
 import { Route as AuthenticatedAdminAdminPaymentsRouteImport } from './routes/_authenticated/_admin/admin.payments'
 import { Route as AuthenticatedAdminAdminPartnersRouteImport } from './routes/_authenticated/_admin/admin.partners'
 import { Route as AuthenticatedAdminAdminOrganizationsRouteImport } from './routes/_authenticated/_admin/admin.organizations'
@@ -415,6 +416,12 @@ const AuthenticatedAdminAdminRolesRoute =
     path: '/admin/roles',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
+const AuthenticatedAdminAdminPortfolioManagerRoute =
+  AuthenticatedAdminAdminPortfolioManagerRouteImport.update({
+    id: '/admin/portfolio-manager',
+    path: '/admin/portfolio-manager',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 const AuthenticatedAdminAdminPaymentsRoute =
   AuthenticatedAdminAdminPaymentsRouteImport.update({
     id: '/admin/payments',
@@ -567,6 +574,7 @@ export interface FileRoutesByFullPath {
   '/admin/organizations': typeof AuthenticatedAdminAdminOrganizationsRoute
   '/admin/partners': typeof AuthenticatedAdminAdminPartnersRoute
   '/admin/payments': typeof AuthenticatedAdminAdminPaymentsRoute
+  '/admin/portfolio-manager': typeof AuthenticatedAdminAdminPortfolioManagerRoute
   '/admin/roles': typeof AuthenticatedAdminAdminRolesRoute
   '/admin/search': typeof AuthenticatedAdminAdminSearchRoute
   '/admin/settings': typeof AuthenticatedAdminAdminSettingsRoute
@@ -642,6 +650,7 @@ export interface FileRoutesByTo {
   '/admin/organizations': typeof AuthenticatedAdminAdminOrganizationsRoute
   '/admin/partners': typeof AuthenticatedAdminAdminPartnersRoute
   '/admin/payments': typeof AuthenticatedAdminAdminPaymentsRoute
+  '/admin/portfolio-manager': typeof AuthenticatedAdminAdminPortfolioManagerRoute
   '/admin/roles': typeof AuthenticatedAdminAdminRolesRoute
   '/admin/search': typeof AuthenticatedAdminAdminSearchRoute
   '/admin/settings': typeof AuthenticatedAdminAdminSettingsRoute
@@ -720,6 +729,7 @@ export interface FileRoutesById {
   '/_authenticated/_admin/admin/organizations': typeof AuthenticatedAdminAdminOrganizationsRoute
   '/_authenticated/_admin/admin/partners': typeof AuthenticatedAdminAdminPartnersRoute
   '/_authenticated/_admin/admin/payments': typeof AuthenticatedAdminAdminPaymentsRoute
+  '/_authenticated/_admin/admin/portfolio-manager': typeof AuthenticatedAdminAdminPortfolioManagerRoute
   '/_authenticated/_admin/admin/roles': typeof AuthenticatedAdminAdminRolesRoute
   '/_authenticated/_admin/admin/search': typeof AuthenticatedAdminAdminSearchRoute
   '/_authenticated/_admin/admin/settings': typeof AuthenticatedAdminAdminSettingsRoute
@@ -797,6 +807,7 @@ export interface FileRouteTypes {
     | '/admin/organizations'
     | '/admin/partners'
     | '/admin/payments'
+    | '/admin/portfolio-manager'
     | '/admin/roles'
     | '/admin/search'
     | '/admin/settings'
@@ -872,6 +883,7 @@ export interface FileRouteTypes {
     | '/admin/organizations'
     | '/admin/partners'
     | '/admin/payments'
+    | '/admin/portfolio-manager'
     | '/admin/roles'
     | '/admin/search'
     | '/admin/settings'
@@ -949,6 +961,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_admin/admin/organizations'
     | '/_authenticated/_admin/admin/partners'
     | '/_authenticated/_admin/admin/payments'
+    | '/_authenticated/_admin/admin/portfolio-manager'
     | '/_authenticated/_admin/admin/roles'
     | '/_authenticated/_admin/admin/search'
     | '/_authenticated/_admin/admin/settings'
@@ -1411,6 +1424,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminAdminRolesRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/_admin/admin/portfolio-manager': {
+      id: '/_authenticated/_admin/admin/portfolio-manager'
+      path: '/admin/portfolio-manager'
+      fullPath: '/admin/portfolio-manager'
+      preLoaderRoute: typeof AuthenticatedAdminAdminPortfolioManagerRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/_admin/admin/payments': {
       id: '/_authenticated/_admin/admin/payments'
       path: '/admin/payments'
@@ -1535,6 +1555,7 @@ interface AuthenticatedAdminRouteRouteChildren {
   AuthenticatedAdminAdminOrganizationsRoute: typeof AuthenticatedAdminAdminOrganizationsRoute
   AuthenticatedAdminAdminPartnersRoute: typeof AuthenticatedAdminAdminPartnersRoute
   AuthenticatedAdminAdminPaymentsRoute: typeof AuthenticatedAdminAdminPaymentsRoute
+  AuthenticatedAdminAdminPortfolioManagerRoute: typeof AuthenticatedAdminAdminPortfolioManagerRoute
   AuthenticatedAdminAdminRolesRoute: typeof AuthenticatedAdminAdminRolesRoute
   AuthenticatedAdminAdminSearchRoute: typeof AuthenticatedAdminAdminSearchRoute
   AuthenticatedAdminAdminSettingsRoute: typeof AuthenticatedAdminAdminSettingsRoute
@@ -1569,6 +1590,8 @@ const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren
       AuthenticatedAdminAdminOrganizationsRoute,
     AuthenticatedAdminAdminPartnersRoute: AuthenticatedAdminAdminPartnersRoute,
     AuthenticatedAdminAdminPaymentsRoute: AuthenticatedAdminAdminPaymentsRoute,
+    AuthenticatedAdminAdminPortfolioManagerRoute:
+      AuthenticatedAdminAdminPortfolioManagerRoute,
     AuthenticatedAdminAdminRolesRoute: AuthenticatedAdminAdminRolesRoute,
     AuthenticatedAdminAdminSearchRoute: AuthenticatedAdminAdminSearchRoute,
     AuthenticatedAdminAdminSettingsRoute: AuthenticatedAdminAdminSettingsRoute,

@@ -257,7 +257,7 @@ function PortfolioManager() {
         <AdminCard
           title="سجل التدقيق المالي"
           icon={History}
-          actions={
+          action={
             <Link
               to="/admin/audit"
               className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground hover:text-gold"
