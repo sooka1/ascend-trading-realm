@@ -646,12 +646,77 @@ export const decidePaymentAdmin = createServerFn({ method: "POST" })
             : "تم رفض طلب السحب",
       body: `${row.amount} ${row.currency}${data.note ? " — " + data.note : ""}`,
     });
+    // Send branded email on approval
+    if (data.decision === "approved") {
+      try {
+        const { data: prof } = await supabaseAdmin
+          .from("profiles")
+          .select("email")
+          .eq("id", row.user_id)
+          .maybeSingle();
+        if (prof?.email) {
+          const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
+          await sendTemplateEmail(
+            data.kind === "deposit" ? "deposit-confirmation" : "withdrawal-confirmation",
+            prof.email,
+            {
+              templateData: { amount: row.amount, currency: row.currency, reference: row.id },
+              idempotencyKey: `${data.kind}-approved-${row.id}`,
+            },
+          );
+        }
+      } catch (e) {
+        console.error("[decidePaymentAdmin] email send failed", e);
+      }
+    }
     return { ok: true };
   });
 
 // ============================================================
 // Role Permissions Matrix
 // ============================================================
+
+export const decideKycAdmin = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { userId: string; decision: "approved" | "rejected"; notes?: string | null }) => {
+    if (!data?.userId) throw new Error("Invalid userId");
+    if (data.decision !== "approved" && data.decision !== "rejected") throw new Error("Invalid decision");
+    return data;
+  })
+  .handler(async ({ data, context }) => {
+    const auth = await assertAdmin(context);
+    if (!auth.ok) throw new Error("Forbidden");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: row, error } = await (supabaseAdmin as any)
+      .from("profiles")
+      .update({
+        verification_status: data.decision,
+        verified_at: data.decision === "approved" ? new Date().toISOString() : null,
+        verification_notes: data.notes ?? null,
+      })
+      .eq("id", data.userId)
+      .select("id,email,display_name")
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    if (!row) throw new Error("Profile not found");
+    await supabaseAdmin.from("notifications").insert({
+      user_id: row.id,
+      title: data.decision === "approved" ? "تم توثيق حسابك" : "تم رفض طلب التوثيق",
+      body: data.notes ?? "",
+    });
+    if (row.email) {
+      try {
+        const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
+        await sendTemplateEmail("kyc-status", row.email, {
+          templateData: { status: data.decision, reason: data.notes ?? undefined },
+          idempotencyKey: `kyc-${data.decision}-${row.id}`,
+        });
+      } catch (e) {
+        console.error("[decideKycAdmin] email send failed", e);
+      }
+    }
+    return { ok: true };
+  });
 
 export const PERMISSION_CATALOG: Array<{
   key: string;
