@@ -120,13 +120,13 @@ export function OrderTicket({ instrument, bid, ask, balance, leverage }: {
       </div>
 
       <div className="grid grid-cols-2 gap-2">
-        <Button onClick={() => submit("sell")} disabled={busy} className="flex h-12 min-w-0 flex-col items-center justify-center gap-0.5 overflow-hidden bg-red-500 leading-tight text-white hover:bg-red-600">
-          <span className="text-sm font-semibold">بيع</span>
-          <span className="truncate font-mono text-xs font-semibold tabular-nums opacity-90" dir="ltr">{bid.toFixed(instrument.price_precision)}</span>
+        <Button onClick={() => submit("sell")} disabled={busy} className="flex h-12 min-w-0 items-center justify-center gap-2 overflow-hidden bg-red-500 px-2 text-white hover:bg-red-600">
+          <span className="shrink-0 text-sm font-semibold leading-none">بيع</span>
+          <span dir="ltr" className="truncate font-mono text-sm font-semibold leading-none tabular-nums opacity-95">{bid.toFixed(instrument.price_precision)}</span>
         </Button>
-        <Button onClick={() => submit("buy")} disabled={busy} className="flex h-12 min-w-0 flex-col items-center justify-center gap-0.5 overflow-hidden bg-emerald-500 leading-tight text-white hover:bg-emerald-600">
-          <span className="text-sm font-semibold">شراء</span>
-          <span className="truncate font-mono text-xs font-semibold tabular-nums opacity-90" dir="ltr">{ask.toFixed(instrument.price_precision)}</span>
+        <Button onClick={() => submit("buy")} disabled={busy} className="flex h-12 min-w-0 items-center justify-center gap-2 overflow-hidden bg-emerald-500 px-2 text-white hover:bg-emerald-600">
+          <span className="shrink-0 text-sm font-semibold leading-none">شراء</span>
+          <span dir="ltr" className="truncate font-mono text-sm font-semibold leading-none tabular-nums opacity-95">{ask.toFixed(instrument.price_precision)}</span>
         </Button>
       </div>
     </div>
