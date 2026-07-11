@@ -167,6 +167,21 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
       String(h.entry).includes(q)
     );
   });
+  // If the focused row isn't in the filtered result set, fall back to the first match.
+  useEffect(() => {
+    if (!focusedHit) return;
+    if (filteredHitLog.length === 0) return;
+    const stillThere = filteredHitLog.some((h) => h.key === focusedHit.key && h.at === focusedHit.at);
+    if (!stillThere) {
+      setFocusedHit(filteredHitLog[0]);
+      setSelectedHit(filteredHitLog[0]);
+    }
+  }, [logKind, logSide, logQuery, hitLog]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (logOpen && focusedRowRef.current) {
+      focusedRowRef.current.scrollIntoView({ block: "center", behavior: "smooth" });
+    }
+  }, [logOpen, focusedHit]);
   const [showRiskLines, setShowRiskLines] = useState<boolean>(() => {
     try {
       if (typeof window === "undefined") return true;
