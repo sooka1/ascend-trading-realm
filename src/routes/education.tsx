@@ -45,8 +45,8 @@ function Education() {
             </div>
           ))}
         </div>
+        <ForeignCoursesSection />
       </section>
-      <ForeignCoursesSection />
     </PageShell>
   );
 }
@@ -135,7 +135,7 @@ const LEVEL_STYLE: Record<ForeignCourse["level"], string> = {
 
 function ForeignCoursesSection() {
   return (
-    <section className="mx-auto max-w-7xl px-4 pb-20 sm:px-6 lg:px-8">
+    <div className="mt-16">
       <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
         <div>
           <div className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-widest text-gold">
@@ -186,6 +186,6 @@ function ForeignCoursesSection() {
       <p className="mt-4 text-[11px] text-muted-foreground/70">
         الروابط تنقلك إلى المصادر الأجنبية الأصلية؛ HK Global غير مسؤول عن محتوى الجهات الخارجية.
       </p>
-    </section>
+    </div>
   );
 }
