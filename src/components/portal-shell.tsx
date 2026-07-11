@@ -123,11 +123,16 @@ export function PortalShell({
     [],
   );
 
+  const isNavActive = (to: string) => {
+    if (to === "/portal") return pathname === "/portal";
+    return pathname === to || pathname.startsWith(to + "/");
+  };
+
   const activeNav = useMemo(
     () =>
       [...NAV]
         .sort((a, b) => b.to.length - a.to.length)
-        .find((n) => (n.to === "/portal" ? pathname === "/portal" : pathname.startsWith(n.to))) ?? NAV[0],
+        .find((n) => isNavActive(n.to)) ?? NAV[0],
     [pathname],
   );
   const ActiveIcon = activeNav.icon;
@@ -141,8 +146,7 @@ export function PortalShell({
           </p>
           <ul className="space-y-0.5">
             {NAV.filter((n) => (n.group ?? "misc") === g).map((n) => {
-              const active =
-                n.to === "/portal" ? pathname === "/portal" : pathname.startsWith(n.to);
+              const active = isNavActive(n.to);
               return (
                 <li key={n.to}>
                   <Link
