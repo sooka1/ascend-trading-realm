@@ -533,6 +533,69 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
         })()}
         {void height}
       </svg>
+      {(() => {
+        if (!selectedId || tool !== "none") return null;
+        const d = drawings.find((x) => x.id === selectedId);
+        if (!d) return null;
+        let cx = 0, cy = 0;
+        if (d.type === "hline") {
+          const y = priceY(d.price); if (y == null) return null;
+          cx = width / 2; cy = y;
+        } else {
+          const pa = project(d.a), pb = project(d.b); if (!pa || !pb) return null;
+          cx = (pa.x + pb.x) / 2; cy = Math.min(pa.y, pb.y);
+        }
+        const st = resolveStyle(d);
+        const update = (patch: Partial<DrawStyle>) => {
+          setDrawings((prev) => prev.map((x) => x.id === d.id ? { ...x, style: { ...(x.style ?? {}), ...patch } } : x));
+        };
+        const left = Math.max(8, Math.min(width - 240, cx - 120));
+        const top = Math.max(8, cy - 74);
+        return (
+          <div
+            className="absolute z-20 flex items-center gap-2 rounded-md border border-white/10 bg-black/80 px-2 py-1.5 shadow-lg backdrop-blur"
+            style={{ left, top }}
+            onPointerDown={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-1">
+              {PALETTE.map((c) => (
+                <button
+                  key={c}
+                  type="button"
+                  onClick={() => { commit(); update({ color: c }); }}
+                  className={cn("h-4 w-4 rounded-full ring-1 ring-white/20 transition hover:scale-110", st.color === c && "ring-2 ring-white")}
+                  style={{ background: c }}
+                />
+              ))}
+            </div>
+            <div className="h-4 w-px bg-white/10" />
+            <label className="flex items-center gap-1 text-[10px] text-white/60">
+              سُمك
+              <input type="range" min={1} max={6} step={0.5} value={st.width}
+                onChange={(e) => update({ width: Number(e.target.value) })}
+                onPointerUp={() => commit()}
+                className="h-1 w-16 accent-gold" />
+              <span className="w-4 tabular-nums text-white/70">{st.width}</span>
+            </label>
+            <label className="flex items-center gap-1 text-[10px] text-white/60">
+              شفافية
+              <input type="range" min={0.1} max={1} step={0.05} value={st.opacity}
+                onChange={(e) => update({ opacity: Number(e.target.value) })}
+                onPointerUp={() => commit()}
+                className="h-1 w-16 accent-gold" />
+              <span className="w-6 tabular-nums text-white/70">{Math.round(st.opacity * 100)}%</span>
+            </label>
+            <button
+              type="button"
+              title="حذف"
+              onClick={() => { commit(); setDrawings((p) => p.filter((x) => x.id !== d.id)); setSelectedId(null); }}
+              className="ml-1 flex h-5 w-5 items-center justify-center rounded text-red-300 hover:bg-red-500/15"
+            >
+              <Trash2 className="h-3 w-3" />
+            </button>
+          </div>
+        );
+      })()}
       <div className="absolute left-2 top-2 z-10 flex flex-col gap-1 rounded-md border border-white/10 bg-black/60 p-1 backdrop-blur">
         {tools.map((t) => {
           const Icon = t.icon;
