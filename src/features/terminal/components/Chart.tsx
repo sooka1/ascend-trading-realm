@@ -716,7 +716,34 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
             className="max-h-[80%] w-[92%] max-w-lg overflow-hidden rounded-lg border border-white/10 bg-slate-950/95 shadow-2xl">
             <div className="flex items-center justify-between border-b border-white/10 px-3 py-2 text-xs font-semibold text-white/80">
               <span>سجل تنبيهات TP / SL ({hitLog.length})</span>
-              <button onClick={() => setLogOpen(false)} className="rounded px-1.5 py-0.5 text-[10px] text-white/60 hover:bg-white/10 hover:text-white">إغلاق</button>
+              <div className="flex items-center gap-2">
+                <button
+                  disabled={hitLog.length === 0}
+                  onClick={() => {
+                    const header = ["at_iso","symbol","kind","side","entry","price","volume","result","pos_id"];
+                    const esc = (v: unknown) => {
+                      const s = String(v ?? "");
+                      return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+                    };
+                    const rows = hitLog.map((h) => [
+                      new Date(h.at).toISOString(), h.symbol, h.kind, h.side,
+                      h.entry, h.price, h.volume, h.result, h.posId,
+                    ].map(esc).join(","));
+                    const csv = "\uFEFF" + [header.join(","), ...rows].join("\n");
+                    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = `tp-sl-alerts-${new Date().toISOString().slice(0,10)}.csv`;
+                    document.body.appendChild(a); a.click(); a.remove();
+                    URL.revokeObjectURL(url);
+                  }}
+                  className="rounded border border-white/10 px-2 py-0.5 text-[10px] text-white/70 hover:bg-white/10 hover:text-white disabled:opacity-40"
+                >
+                  تصدير CSV
+                </button>
+                <button onClick={() => setLogOpen(false)} className="rounded px-1.5 py-0.5 text-[10px] text-white/60 hover:bg-white/10 hover:text-white">إغلاق</button>
+              </div>
             </div>
             <div className="max-h-[60vh] overflow-auto">
               {hitLog.length === 0 ? (
