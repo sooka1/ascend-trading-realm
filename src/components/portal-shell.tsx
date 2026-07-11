@@ -78,12 +78,14 @@ export function PortalShell({
   subtitle,
   actions,
   children,
+  fullscreen = false,
 }: {
   eyebrow?: string;
   title?: string;
   subtitle?: string;
   actions?: ReactNode;
   children: ReactNode;
+  fullscreen?: boolean;
 }) {
   const routerPathname = useRouterState({ select: (s) => s.location.pathname });
   // On first paint (before router hydration), fall back to window.location so
@@ -200,9 +202,10 @@ export function PortalShell({
 
   return (
     <PageShell bare>
-      <div className="mx-auto max-w-[1500px] px-4 py-8 sm:px-6 lg:px-8">
-        <div className="grid gap-6 lg:grid-cols-[240px_1fr]">
+      <div className={fullscreen ? "w-full px-2 py-3 sm:px-3" : "mx-auto max-w-[1500px] px-4 py-8 sm:px-6 lg:px-8"}>
+        <div className={fullscreen ? "grid gap-4" : "grid gap-6 lg:grid-cols-[240px_1fr]"}>
           {/* Sidebar */}
+          {!fullscreen && (
           <aside className="sticky top-6 hidden self-start lg:block">
             <div className="rounded-xl border border-white/10 bg-card/50 p-4 backdrop-blur-xl">
               <p className="mb-4 px-2 font-mono text-[10px] uppercase tracking-[0.22em] text-gold/80">
@@ -211,10 +214,11 @@ export function PortalShell({
               <NavList />
             </div>
           </aside>
+          )}
 
           {/* Main */}
           <main className="min-w-0">
-            <header className="mb-6 border-b border-white/5 pb-6">
+            <header className={fullscreen ? "mb-3 border-b border-white/5 pb-3" : "mb-6 border-b border-white/5 pb-6"}>
               <div className="mb-4 flex items-center justify-between gap-2 lg:hidden">
                 <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
                   <div className="flex min-w-0 items-center gap-2">
