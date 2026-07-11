@@ -25,9 +25,9 @@ type Tier = { fee: number; demo: number; prize: number; popular?: boolean };
 
 const TIERS: Tier[] = [
   { fee: 10, demo: 1000, prize: 1000 },
-  { fee: 20, demo: 2000, prize: 2000, popular: true },
-  { fee: 50, demo: 5000, prize: 5000 },
-  { fee: 100, demo: 10000, prize: 10000 },
+  { fee: 20, demo: 1000, prize: 2000, popular: true },
+  { fee: 50, demo: 1000, prize: 5000 },
+  { fee: 100, demo: 1000, prize: 10000 },
 ];
 
 type Comp = {
