@@ -71,7 +71,7 @@ const en: LandingContent = {
     subtitle:
       "Experienced portfolio management with disciplined risk controls, transparent reporting and client-focused service — across Forex, Gold, Commodities, Indices and Stocks.",
     ctaOpen: "Open Investment Account",
-    ctaAdvisor: "Talk to an Advisor",
+    ctaAdvisor: "Copy Trading",
     ctaLearn: "Learn More",
     statAum: "AUM",
     statClients: "Clients",
@@ -186,7 +186,7 @@ const ar: LandingContent = {
     subtitle:
       "فريق من المتداولين المحترفين يدير عمليات التداول باستخدام استراتيجيات مدروسة وإدارة مخاطر دقيقة، لتتمكن من الاستثمار دون الحاجة إلى تعلم التداول أو متابعة الأسواق بنفسك.\nتأسست في 2019، وتجمع HK Global Trading بين التنفيذ المؤسسي ومنظومة مسابقات عالمية — بثقة أكثر من مليوني عميل.",
     ctaOpen: "افتح حساب استثمار",
-    ctaAdvisor: "تحدّث مع مستشار",
+    ctaAdvisor: "نسخ صفقات",
     ctaLearn: "اعرف المزيد",
     statAum: "الأصول المُدارة",
     statClients: "العملاء",
@@ -301,7 +301,7 @@ const fr: LandingContent = {
     subtitle:
       "Gestion de portefeuille expérimentée, contrôle des risques rigoureux, reporting transparent et service centré client — sur le Forex, l'Or, les matières premières, les indices et les actions.",
     ctaOpen: "Ouvrir un compte d'investissement",
-    ctaAdvisor: "Parler à un conseiller",
+    ctaAdvisor: "Copie de trades",
     ctaLearn: "En savoir plus",
     statAum: "Actifs gérés",
     statClients: "Clients",
@@ -417,7 +417,7 @@ const es: LandingContent = {
     subtitle:
       "Gestión de carteras experimentada con controles de riesgo disciplinados, reportes transparentes y servicio enfocado al cliente — en Forex, Oro, Materias primas, Índices y Acciones.",
     ctaOpen: "Abrir cuenta de inversión",
-    ctaAdvisor: "Hablar con un asesor",
+    ctaAdvisor: "Copiar operaciones",
     ctaLearn: "Saber más",
     statAum: "Activos gestionados",
     statClients: "Clientes",
@@ -532,7 +532,7 @@ const tr: LandingContent = {
     subtitle:
       "Disiplinli risk kontrolleri, şeffaf raporlama ve müşteri odaklı hizmet ile deneyimli portföy yönetimi — Forex, Altın, Emtia, Endeksler ve Hisseler genelinde.",
     ctaOpen: "Yatırım hesabı aç",
-    ctaAdvisor: "Bir danışmanla görüş",
+    ctaAdvisor: "İşlem Kopyalama",
     ctaLearn: "Daha fazla bilgi",
     statAum: "Yönetilen Varlık",
     statClients: "Müşteri",

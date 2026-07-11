@@ -236,7 +236,7 @@ function Hero({ c }: { c: LandingContent }) {
               <Link to="/auth">{c.hero.ctaOpen} <ArrowRight className="ml-2 h-4 w-4" /></Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="rounded-sm border-gold/30 bg-transparent text-foreground transition hover:border-gold/70 hover:bg-gold/[0.06]">
-              <Link to="/contact">{c.hero.ctaAdvisor}</Link>
+              <Link to="/copy-trading">{c.hero.ctaAdvisor}</Link>
             </Button>
             <Button asChild size="lg" variant="ghost">
               <Link to="/competitions">{c.hero.ctaLearn}</Link>
@@ -571,7 +571,7 @@ function FinalCTA({ c }: { c: LandingContent }) {
           <Link to="/auth">{c.final.cta}</Link>
         </Button>
         <Button asChild size="lg" variant="outline" className="border-white/15">
-          <Link to="/contact">{c.hero.ctaAdvisor}</Link>
+          <Link to="/copy-trading">{c.hero.ctaAdvisor}</Link>
         </Button>
       </div>
     </section>
