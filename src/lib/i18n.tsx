@@ -200,7 +200,7 @@ export const DICTS: Record<Lang, Dict> = {
     "about.val.transB": "كل مركز وكل رسم يُفصح عنه — لا شيء مخفي.",
     "about.val.excT": "التميّز",
     "about.val.excB": "فريق قيادي بخبرة مؤسسية تمتد لعقود.",
-    "about.cta.portfolios": "استعرض المحافظ المُدارة",
+    "about.cta.portfolios": "استعرض باقات الاستثمار",
     "about.cta.advisor": "تحدّث مع مستشار",
     },
   en: {

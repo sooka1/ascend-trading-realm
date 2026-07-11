@@ -18,10 +18,10 @@ import * as React from "react";
 export const Route = createFileRoute("/portfolios")({
   head: () => ({
     meta: [
-      { title: "Managed Portfolios — HK Investment Management" },
-      { name: "description", content: "Three managed portfolio strategies — Conservative, Balanced and Growth — matched to your risk profile and goals." },
-      { property: "og:title", content: "Managed Portfolios" },
-      { property: "og:description", content: "Conservative, Balanced and Growth strategies with disciplined risk management." },
+      { title: "باقات الاستثمار — HK Investment Management" },
+      { name: "description", content: "ثلاث باقات استثمار مُدارة — المحافظة والمتوازنة والنمو — تناسب أهدافك ومستوى المخاطرة." },
+      { property: "og:title", content: "باقات الاستثمار" },
+      { property: "og:description", content: "المحافظة والمتوازنة والنمو — إدارة مخاطر منضبطة." },
     ],
   }),
   component: PortfoliosPage,
@@ -38,7 +38,7 @@ type ReviewsContent = { eyebrow: string; title: string; subtitle: string; items:
 const REVIEWS: Record<Lang, ReviewsContent> = {
   ar: {
     eyebrow: "آراء العملاء",
-    title: "ماذا يقول عملاء المحافظ",
+    title: "ماذا يقول عملاء باقات الاستثمار",
     subtitle: "تجارب حقيقية من مستثمرين يديرون محافظهم معنا.",
     items: [
       { name: "خالد المنصوري", role: "رجل أعمال — دبي", tier: "المتوازنة", rating: 5, quote: "المحفظة المتوازنة أعطتني عوائد ثابتة مع تقارير شهرية شفافة. راحة بال حقيقية.", verified: true },
