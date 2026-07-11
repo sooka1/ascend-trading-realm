@@ -88,7 +88,7 @@ export function SiteFooter() {
         </div>
 
         <div className="mt-8 flex flex-col items-start justify-between gap-3 text-xs text-muted-foreground sm:flex-row sm:items-center">
-          <p>{t("footer.copyright").replace("{year}", String(new Date().getFullYear()))}</p>
+          <p>©2017-26 Hong Kong Exchanges and Clearing Limited. All rights reserved.</p>
           <p>{t("footer.compliance")}</p>
         </div>
       </div>
