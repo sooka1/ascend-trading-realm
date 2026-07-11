@@ -104,7 +104,7 @@ function Contact() {
             <div key={c.title} className="glass rounded-2xl p-6">
               <c.icon className="h-5 w-5 text-gold" />
               <div className="mt-3 font-medium">{c.title}</div>
-              <div className="mt-1 text-sm text-muted-foreground">{c.body}</div>
+              <div className="mt-1 whitespace-pre-line text-sm text-muted-foreground">{c.body}</div>
             </div>
           ))}
           <div className="glass rounded-2xl p-6">
