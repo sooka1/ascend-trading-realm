@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { PageShell, PageHero } from "@/components/page-shell";
 import { Copy, TrendingUp, TrendingDown, Users, Wallet, Percent, Award, Lock, Calculator, FileDown, Printer } from "lucide-react";
 import { Link, useNavigate } from "@tanstack/react-router";
@@ -211,7 +211,11 @@ function CopyTradingPage() {
               <Lock className="h-4 w-4" />
               <span>يجب تسجيل الدخول لاختيار متداول أو طلب نسخ الصفقات.</span>
             </div>
-            <Link to="/auth" className="rounded-lg bg-gold px-3 py-1.5 font-semibold text-background hover:bg-gold/90">
+      <Link
+        to="/auth"
+        search={{ redirect: "/copy-trading" } as never}
+        className="rounded-lg bg-gold px-3 py-1.5 font-semibold text-background hover:bg-gold/90"
+      >
               تسجيل الدخول
             </Link>
           </div>
@@ -485,7 +489,7 @@ function TraderCard({ trader, isAuthed }: { trader: Trader; isAuthed: boolean })
         onClick={() => {
           if (!isAuthed) {
             toast.error("سجّل الدخول أولاً لطلب نسخ الصفقات.");
-            navigate({ to: "/auth" });
+            navigate({ to: "/auth", search: { redirect: `/copy-trading?trader=${trader.id}` } as never });
             return;
           }
           toast.success(`تم إرسال طلب نسخ صفقات ${trader.name}.`);
