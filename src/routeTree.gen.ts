@@ -15,7 +15,6 @@ import { Route as RiskRouteImport } from './routes/risk'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PortfoliosRouteImport } from './routes/portfolios'
-import { Route as PerformanceRouteImport } from './routes/performance'
 import { Route as MarketsRouteImport } from './routes/markets'
 import { Route as LegalRouteImport } from './routes/legal'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
@@ -105,11 +104,6 @@ const PrivacyRoute = PrivacyRouteImport.update({
 const PortfoliosRoute = PortfoliosRouteImport.update({
   id: '/portfolios',
   path: '/portfolios',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PerformanceRoute = PerformanceRouteImport.update({
-  id: '/performance',
-  path: '/performance',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MarketsRoute = MarketsRouteImport.update({
@@ -463,7 +457,6 @@ export interface FileRoutesByFullPath {
   '/forgot-password': typeof ForgotPasswordRoute
   '/legal': typeof LegalRoute
   '/markets': typeof MarketsRouteWithChildren
-  '/performance': typeof PerformanceRoute
   '/portfolios': typeof PortfoliosRoute
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -530,7 +523,6 @@ export interface FileRoutesByTo {
   '/forgot-password': typeof ForgotPasswordRoute
   '/legal': typeof LegalRoute
   '/markets': typeof MarketsRouteWithChildren
-  '/performance': typeof PerformanceRoute
   '/portfolios': typeof PortfoliosRoute
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -599,7 +591,6 @@ export interface FileRoutesById {
   '/forgot-password': typeof ForgotPasswordRoute
   '/legal': typeof LegalRoute
   '/markets': typeof MarketsRouteWithChildren
-  '/performance': typeof PerformanceRoute
   '/portfolios': typeof PortfoliosRoute
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -669,7 +660,6 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/legal'
     | '/markets'
-    | '/performance'
     | '/portfolios'
     | '/privacy'
     | '/reset-password'
@@ -736,7 +726,6 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/legal'
     | '/markets'
-    | '/performance'
     | '/portfolios'
     | '/privacy'
     | '/reset-password'
@@ -804,7 +793,6 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/legal'
     | '/markets'
-    | '/performance'
     | '/portfolios'
     | '/privacy'
     | '/reset-password'
@@ -874,7 +862,6 @@ export interface RootRouteChildren {
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   LegalRoute: typeof LegalRoute
   MarketsRoute: typeof MarketsRouteWithChildren
-  PerformanceRoute: typeof PerformanceRoute
   PortfoliosRoute: typeof PortfoliosRoute
   PrivacyRoute: typeof PrivacyRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
@@ -926,13 +913,6 @@ declare module '@tanstack/react-router' {
       path: '/portfolios'
       fullPath: '/portfolios'
       preLoaderRoute: typeof PortfoliosRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/performance': {
-      id: '/performance'
-      path: '/performance'
-      fullPath: '/performance'
-      preLoaderRoute: typeof PerformanceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/markets': {
@@ -1513,7 +1493,6 @@ const rootRouteChildren: RootRouteChildren = {
   ForgotPasswordRoute: ForgotPasswordRoute,
   LegalRoute: LegalRoute,
   MarketsRoute: MarketsRouteWithChildren,
-  PerformanceRoute: PerformanceRoute,
   PortfoliosRoute: PortfoliosRoute,
   PrivacyRoute: PrivacyRoute,
   ResetPasswordRoute: ResetPasswordRoute,
