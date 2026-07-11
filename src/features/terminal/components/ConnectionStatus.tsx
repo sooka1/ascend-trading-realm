@@ -1,5 +1,4 @@
-import { useEffect, useRef, useState } from "react";
-import { toast } from "sonner";
+import { useEffect, useState } from "react";
 import { Wifi, WifiOff, Loader2, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getMarketDataProvider } from "../adapters/market-data";
@@ -15,20 +14,10 @@ const META: Record<Status, { label: string; className: string; Icon: typeof Wifi
 
 export function ConnectionStatusBadge() {
   const [status, setStatus] = useState<Status>("idle");
-  const prev = useRef<Status>("idle");
 
   useEffect(() => {
     const p = getMarketDataProvider();
-    const unsub = p.onStatus((s) => {
-      setStatus(s);
-      // Announce meaningful transitions only.
-      if (prev.current === "open" && (s === "closed" || s === "error")) {
-        toast.warning("انقطع اتصال البيانات المباشرة", { description: "جارٍ إعادة المحاولة تلقائياً…" });
-      } else if (prev.current !== "open" && s === "open" && prev.current !== "idle") {
-        toast.success("عاد الاتصال المباشر");
-      }
-      prev.current = s;
-    });
+    const unsub = p.onStatus(setStatus);
     return () => unsub();
   }, []);
 
