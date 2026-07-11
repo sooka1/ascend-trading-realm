@@ -127,6 +127,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "HK Investment Management — Professional Portfolio Management" },
       {
+        name: "google-site-verification",
+        content: "YVyWqXIuzwvX8za5RUQKDEnXp6kCUjSamY_YyOS5GIE",
+      },
+      {
         name: "description",
         content:
           "Professionally managed investment portfolios across Forex, Gold, Commodities, Indices and Stocks. Disciplined risk management, transparent reporting, secure client portal.",
