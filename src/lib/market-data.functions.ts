@@ -49,6 +49,10 @@ export const fetchLiveQuotes = createServerFn({ method: "POST" })
     try {
       const res = await fetch(url);
       const body = await res.json();
+      // Twelve Data returns { code: 429, status: "error", message } when rate-limited.
+      if (body && typeof body === "object" && (body as { code?: number }).code === 429) {
+        return { quotes: [], error: "rate_limited" };
+      }
       // Response is keyed by symbol when multiple, or a single object when one.
       const single = data.symbols.length === 1;
       const quotes: LiveQuote[] = [];
