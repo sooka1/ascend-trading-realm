@@ -100,8 +100,8 @@ const SORT_LABEL: Record<SortKey, string> = {
 
 // last-month return derived same way as buildHistory's last entry
 function lastMonthReturn(t: Trader) {
-  const base = seeded(t.seed, 24, -4, 12);
-  const boost = seeded(t.seed, 123, 0, 1) > 0.85 ? seeded(t.seed, 223, 4, 8) : 0;
+  const base = seeded(t.seed, 24, 4, 20);
+  const boost = seeded(t.seed, 123, 0, 1) > 0.6 ? seeded(t.seed, 223, 8, 18) : seeded(t.seed, 223, 2, 6);
   return Number((base + boost).toFixed(2));
 }
 
@@ -119,9 +119,9 @@ function buildHistory(t: Trader) {
   for (let i = 23; i >= 0; i--) {
     const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
     const label = d.toLocaleDateString("ar", { month: "short", year: "2-digit" });
-    const base = seeded(t.seed, i + 1, -4, 12); // -4% to +12%
+    const base = seeded(t.seed, i + 1, 4, 20); // -4% to +12%
     // occasional stronger months
-    const boost = seeded(t.seed, i + 100, 0, 1) > 0.85 ? seeded(t.seed, i + 200, 4, 8) : 0;
+    const boost = seeded(t.seed, i + 100, 0, 1) > 0.6 ? seeded(t.seed, i + 200, 8, 18) : seeded(t.seed, i + 200, 2, 6);
     const pct = Number((base + boost).toFixed(2));
     months.push({ label, pct });
   }
@@ -148,8 +148,8 @@ function rangeReturn(t: Trader, from: string, to: string): number {
     const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
     const ym = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
     if (ym < from || ym > to) continue;
-    const base = seeded(t.seed, i + 1, -4, 12);
-    const boost = seeded(t.seed, i + 100, 0, 1) > 0.85 ? seeded(t.seed, i + 200, 4, 8) : 0;
+    const base = seeded(t.seed, i + 1, 4, 20);
+    const boost = seeded(t.seed, i + 100, 0, 1) > 0.6 ? seeded(t.seed, i + 200, 8, 18) : seeded(t.seed, i + 200, 2, 6);
     const pct = base + boost;
     factor *= 1 + pct / 100;
     count++;
@@ -179,7 +179,7 @@ function CopyTradingPage() {
   const asset = (ASSET_KEYS as string[]).includes(search.asset) ? (search.asset as Asset | "all") : "all";
   const risk = (RISK_KEYS as string[]).includes(search.risk) ? (search.risk as Risk | "all") : "all";
   const sort = (SORT_KEYS as string[]).includes(search.sort) ? (search.sort as SortKey) : "return";
-  const minReturn = Math.max(-10, Math.min(15, search.minReturn));
+  const minReturn = Math.max(0, Math.min(40, search.minReturn));
   const maxDeposit = Math.max(500, Math.min(5000, search.maxDeposit));
 
   const patchSearch = (patch: Partial<CopySearch>) =>
@@ -347,7 +347,7 @@ function CopyTradingPage() {
               <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
                 أدنى عائد آخر شهر: {minReturn}%
               </span>
-              <input type="range" min={-10} max={15} step={1} value={minReturn}
+              <input type="range" min={0} max={40} step={1} value={minReturn}
                 onChange={(e) => setMinReturn(Number(e.target.value))}
                 className="mt-2 w-full accent-[color:var(--color-gold,#d4af37)]" />
             </label>
