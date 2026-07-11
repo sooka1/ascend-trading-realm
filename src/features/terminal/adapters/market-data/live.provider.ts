@@ -18,6 +18,15 @@ const SPREAD_BP: Record<string, number> = {
   XAUUSD: 0.00015, XAGUSD: 0.0005, EURUSD: 0.00008, GBPUSD: 0.0001, USDJPY: 0.00008,
   BTCUSD: 0.0002, ETHUSD: 0.0003, US500: 0.0003, NAS100: 0.0003, WTI: 0.0004,
 };
+// Per-tick volatility (fraction of price) used to synthesise realistic
+// intra-poll movement between real Twelve Data updates. Tuned per asset class.
+const TICK_VOL: Record<string, number> = {
+  XAUUSD: 0.00012, XAGUSD: 0.0003, WTI: 0.0004,
+  EURUSD: 0.00006, GBPUSD: 0.00008, USDJPY: 0.00006, USDCHF: 0.00007,
+  AUDUSD: 0.00008, NZDUSD: 0.00009, USDCAD: 0.00007,
+  US500: 0.00015, NAS100: 0.0002, US30: 0.00012, GER40: 0.00018, UK100: 0.00012,
+};
+const DEFAULT_TICK_VOL = 0.0001;
 
 function isBinance(sym: string) { return sym in BINANCE_MAP; }
 function toQuote(sym: string, price: number, changePct = 0): Quote {
@@ -31,6 +40,11 @@ export function createLiveProvider(): MarketDataProvider {
   const statusSubs = new Set<(s: ConnectionStatus) => void>();
   let status: ConnectionStatus = "connecting";
   const lastPrice = new Map<string, number>();
+  // Latest synthetic mid used to build ticks between real polls. Reset when a
+  // real quote lands so drift never diverges from the real market.
+  const syntheticPrice = new Map<string, number>();
+  const anchorPrice = new Map<string, number>();
+  const changePct = new Map<string, number>();
 
   function setStatus(s: ConnectionStatus) { status = s; statusSubs.forEach((cb) => cb(s)); }
 
@@ -139,6 +153,36 @@ export function createLiveProvider(): MarketDataProvider {
     }
   }
 
+  // ============ Synthetic tick loop (non-Binance symbols) ============
+  // Random-walk mean-reverting to the last real price so the chart feels
+  // alive between 60s polls without drifting away from reality.
+  let tickTimer: ReturnType<typeof setInterval> | null = null;
+  function ensureTickLoop() {
+    if (tickTimer) return;
+    tickTimer = setInterval(() => {
+      for (const sym of quoteSubs.keys()) {
+        if (isBinance(sym)) continue;
+        const anchor = anchorPrice.get(sym);
+        if (!anchor) continue;
+        const prev = syntheticPrice.get(sym) ?? anchor;
+        const vol = TICK_VOL[sym] ?? DEFAULT_TICK_VOL;
+        // Ornstein–Uhlenbeck-ish: pull back to anchor + gaussian-ish noise.
+        const pull = (anchor - prev) * 0.05;
+        const noise = (Math.random() + Math.random() + Math.random() - 1.5) * anchor * vol;
+        const next = prev + pull + noise;
+        syntheticPrice.set(sym, next);
+        lastPrice.set(sym, next);
+        const q = toQuote(sym, next, changePct.get(sym) ?? 0);
+        quoteSubs.get(sym)?.forEach((cb) => cb(q));
+        emitCandleUpdate(sym, next);
+      }
+    }, 700);
+  }
+  function stopTickLoopIfIdle() {
+    const anyNonBinance = [...quoteSubs.keys()].some((s) => !isBinance(s));
+    if (!anyNonBinance && tickTimer) { clearInterval(tickTimer); tickTimer = null; }
+  }
+
   // ============ Twelve Data polling for FX/metals/indices ============
   let pollTimer: ReturnType<typeof setInterval> | null = null;
   let pollDelayMs = 60_000; // Free tier: 8 credits/min. Each symbol = 1 credit per call.
@@ -162,10 +206,14 @@ export function createLiveProvider(): MarketDataProvider {
           setStatus("open");
           for (const q of res.quotes) {
             lastPrice.set(q.symbol, q.price);
+            anchorPrice.set(q.symbol, q.price);
+            syntheticPrice.set(q.symbol, q.price);
+            changePct.set(q.symbol, q.changePct ?? 0);
             const quote = toQuote(q.symbol, q.price, q.changePct ?? 0);
             quoteSubs.get(q.symbol)?.forEach((cb) => cb(quote));
             emitCandleUpdate(q.symbol, q.price);
           }
+          ensureTickLoop();
         }
       } catch {
         setStatus("error");
@@ -202,7 +250,8 @@ export function createLiveProvider(): MarketDataProvider {
       }
       ensureBinanceWs();
       ensurePolling();
-      return () => { list.forEach((u) => u()); ensureBinanceWs(); ensurePolling(); };
+      ensureTickLoop();
+      return () => { list.forEach((u) => u()); ensureBinanceWs(); ensurePolling(); stopTickLoopIfIdle(); };
     },
     async getCandles(symbol, tf, count = 300) {
       if (isBinance(symbol)) {
@@ -217,7 +266,14 @@ export function createLiveProvider(): MarketDataProvider {
         }));
       }
       const res = await fetchLiveCandles({ data: { symbol, tf, count } });
-      return res.candles as Candle[];
+      const candles = res.candles as Candle[];
+      if (candles.length > 0) {
+        const last = candles[candles.length - 1];
+        anchorPrice.set(symbol, last.close);
+        syntheticPrice.set(symbol, last.close);
+        lastPrice.set(symbol, last.close);
+      }
+      return candles;
     },
     onCandle(symbol, tf, cb) {
       const key = `${symbol}|${tf}`;
