@@ -686,14 +686,48 @@ function PriceButton({
         <span>{label}</span>
         {badge && <span className="rounded bg-white/10 px-1 py-0.5 font-mono font-semibold text-foreground">{badge}</span>}
       </div>
-      <div className={`font-mono text-base font-bold tabular-nums ${priceCls}`}>
-        <FlashPrice value={value} flash={flash} inheritColor />
+      <div className={`font-mono font-bold tabular-nums leading-none ${priceCls}`}>
+        <FlashPriceBase value={value} flash={flash} inheritColor render={renderPriceParts} />
       </div>
     </button>
   );
 }
 
 function FlashPrice({ value, flash, inheritColor = false }: { value: string; flash: number; inheritColor?: boolean }) {
+  return <FlashPriceBase value={value} flash={flash} inheritColor={inheritColor} />;
+}
+
+function renderPriceParts(value: string) {
+  const dot = value.indexOf(".");
+  if (dot === -1) {
+    return <span className="text-lg">{value}</span>;
+  }
+  const head = value.slice(0, dot);
+  const frac = value.slice(dot + 1);
+  // Split fractional: emphasize the first 2 (big pips), shrink the rest.
+  const bigFrac = frac.slice(0, 2);
+  const smallFrac = frac.slice(2);
+  return (
+    <span className="inline-flex items-baseline">
+      <span className="text-sm opacity-75">{head}</span>
+      <span className="mx-[1px] text-sm opacity-60">.</span>
+      <span className="text-xl">{bigFrac}</span>
+      {smallFrac && <span className="text-[10px] opacity-75">{smallFrac}</span>}
+    </span>
+  );
+}
+
+function FlashPriceBase({
+  value,
+  flash,
+  inheritColor = false,
+  render,
+}: {
+  value: string;
+  flash: number;
+  inheritColor?: boolean;
+  render?: (v: string) => React.ReactNode;
+}) {
   const [tone, setTone] = useState<"up" | "down" | null>(null);
   const lastRef = useRef(value);
   useEffect(() => {
@@ -707,7 +741,7 @@ function FlashPrice({ value, flash, inheritColor = false }: { value: string; fla
   const bg = tone === "up" ? "bg-emerald-400/10" : tone === "down" ? "bg-red-400/10" : "";
   return (
     <span className={`inline-block rounded px-1 font-mono tabular-nums transition-colors ${baseColor} ${bg}`}>
-      {value}
+      {render ? render(value) : value}
     </span>
   );
 }
