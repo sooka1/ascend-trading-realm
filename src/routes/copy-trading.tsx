@@ -18,12 +18,17 @@ export const Route = createFileRoute("/copy-trading")({
   component: CopyTradingPage,
 });
 
+type Asset = "forex" | "crypto" | "metals" | "indices" | "stocks" | "energy" | "commodities";
+type Risk = "low" | "medium" | "high";
+
 type Trader = {
   id: string;
   name: string;
   country: string;
   flag: string;
   strategy: string;
+  asset: Asset;
+  risk: Risk;
   minDeposit: number;
   profitShare: number; // % taken by trader
   followers: number;
@@ -32,15 +37,42 @@ type Trader = {
 };
 
 const TRADERS: Trader[] = [
-  { id: "sw", name: "Sebastian Weber", country: "ألمانيا", flag: "🇩🇪", strategy: "DAX & مؤشرات أوروبية", minDeposit: 500, profitShare: 20, followers: 1284, winRate: 68, seed: 11 },
-  { id: "ln", name: "Lucas Nakamura", country: "اليابان", flag: "🇯🇵", strategy: "فوركس آسيوي — Swing", minDeposit: 750, profitShare: 22, followers: 2145, winRate: 71, seed: 23 },
-  { id: "ap", name: "Alessandro Prati", country: "إيطاليا", flag: "🇮🇹", strategy: "ذهب ومعادن", minDeposit: 1000, profitShare: 25, followers: 968, winRate: 64, seed: 37 },
-  { id: "or", name: "Olivia Reynolds", country: "المملكة المتحدة", flag: "🇬🇧", strategy: "GBP/USD — Scalping", minDeposit: 1500, profitShare: 25, followers: 1732, winRate: 66, seed: 51 },
-  { id: "mk", name: "Mateo Kovač", country: "كرواتيا", flag: "🇭🇷", strategy: "عقود نفط وطاقة", minDeposit: 2000, profitShare: 28, followers: 612, winRate: 62, seed: 67 },
-  { id: "et", name: "Elena Tavares", country: "البرتغال", flag: "🇵🇹", strategy: "أسهم أمريكية — Growth", minDeposit: 2500, profitShare: 28, followers: 1420, winRate: 69, seed: 79 },
-  { id: "hj", name: "Henrik Johansson", country: "السويد", flag: "🇸🇪", strategy: "كريبتو — BTC/ETH", minDeposit: 3000, profitShare: 30, followers: 3208, winRate: 73, seed: 89 },
-  { id: "rd", name: "Rafael Duarte", country: "البرازيل", flag: "🇧🇷", strategy: "سلع زراعية", minDeposit: 5000, profitShare: 30, followers: 845, winRate: 65, seed: 103 },
+  { id: "sw", name: "Sebastian Weber", country: "ألمانيا", flag: "🇩🇪", strategy: "DAX & مؤشرات أوروبية", asset: "indices", risk: "medium", minDeposit: 500, profitShare: 20, followers: 1284, winRate: 68, seed: 11 },
+  { id: "ln", name: "Lucas Nakamura", country: "اليابان", flag: "🇯🇵", strategy: "فوركس آسيوي — Swing", asset: "forex", risk: "low", minDeposit: 750, profitShare: 22, followers: 2145, winRate: 71, seed: 23 },
+  { id: "ap", name: "Alessandro Prati", country: "إيطاليا", flag: "🇮🇹", strategy: "ذهب ومعادن", asset: "metals", risk: "low", minDeposit: 1000, profitShare: 25, followers: 968, winRate: 64, seed: 37 },
+  { id: "or", name: "Olivia Reynolds", country: "المملكة المتحدة", flag: "🇬🇧", strategy: "GBP/USD — Scalping", asset: "forex", risk: "high", minDeposit: 1500, profitShare: 25, followers: 1732, winRate: 66, seed: 51 },
+  { id: "mk", name: "Mateo Kovač", country: "كرواتيا", flag: "🇭🇷", strategy: "عقود نفط وطاقة", asset: "energy", risk: "high", minDeposit: 2000, profitShare: 28, followers: 612, winRate: 62, seed: 67 },
+  { id: "et", name: "Elena Tavares", country: "البرتغال", flag: "🇵🇹", strategy: "أسهم أمريكية — Growth", asset: "stocks", risk: "medium", minDeposit: 2500, profitShare: 28, followers: 1420, winRate: 69, seed: 79 },
+  { id: "hj", name: "Henrik Johansson", country: "السويد", flag: "🇸🇪", strategy: "كريبتو — BTC/ETH", asset: "crypto", risk: "high", minDeposit: 3000, profitShare: 30, followers: 3208, winRate: 73, seed: 89 },
+  { id: "rd", name: "Rafael Duarte", country: "البرازيل", flag: "🇧🇷", strategy: "سلع زراعية", asset: "commodities", risk: "medium", minDeposit: 5000, profitShare: 30, followers: 845, winRate: 65, seed: 103 },
 ];
+
+const ASSET_LABEL: Record<Asset, string> = {
+  forex: "فوركس",
+  crypto: "كريبتو",
+  metals: "معادن",
+  indices: "مؤشرات",
+  stocks: "أسهم",
+  energy: "طاقة",
+  commodities: "سلع",
+};
+const RISK_LABEL: Record<Risk, string> = { low: "منخفضة", medium: "متوسطة", high: "مرتفعة" };
+
+type SortKey = "return" | "min-asc" | "min-desc" | "followers" | "winRate";
+const SORT_LABEL: Record<SortKey, string> = {
+  return: "عائد آخر شهر (الأعلى)",
+  "min-asc": "الحد الأدنى (تصاعدي)",
+  "min-desc": "الحد الأدنى (تنازلي)",
+  followers: "الأكثر متابعة",
+  winRate: "نسبة النجاح",
+};
+
+// last-month return derived same way as buildHistory's last entry
+function lastMonthReturn(t: Trader) {
+  const base = seeded(t.seed, 24, -4, 12);
+  const boost = seeded(t.seed, 123, 0, 1) > 0.85 ? seeded(t.seed, 223, 4, 8) : 0;
+  return Number((base + boost).toFixed(2));
+}
 
 // deterministic pseudo-random in a bounded range
 function seeded(seed: number, i: number, min: number, max: number) {
@@ -69,6 +101,36 @@ const fmtMoney = (n: number) => new Intl.NumberFormat("en-US").format(n);
 
 function CopyTradingPage() {
   const { user, loading } = useAuth();
+  const [asset, setAsset] = useState<Asset | "all">("all");
+  const [risk, setRisk] = useState<Risk | "all">("all");
+  const [minReturn, setMinReturn] = useState<number>(-10);
+  const [maxDeposit, setMaxDeposit] = useState<number>(5000);
+  const [sort, setSort] = useState<SortKey>("return");
+
+  const filtered = useMemo(() => {
+    const rows = TRADERS.map((t) => ({ t, ret: lastMonthReturn(t) }))
+      .filter(({ t, ret }) =>
+        (asset === "all" || t.asset === asset) &&
+        (risk === "all" || t.risk === risk) &&
+        ret >= minReturn &&
+        t.minDeposit <= maxDeposit
+      );
+    rows.sort((a, b) => {
+      switch (sort) {
+        case "return": return b.ret - a.ret;
+        case "min-asc": return a.t.minDeposit - b.t.minDeposit;
+        case "min-desc": return b.t.minDeposit - a.t.minDeposit;
+        case "followers": return b.t.followers - a.t.followers;
+        case "winRate": return b.t.winRate - a.t.winRate;
+      }
+    });
+    return rows.map((r) => r.t);
+  }, [asset, risk, minReturn, maxDeposit, sort]);
+
+  const resetFilters = () => {
+    setAsset("all"); setRisk("all"); setMinReturn(-10); setMaxDeposit(5000); setSort("return");
+  };
+
   return (
     <PageShell>
       <PageHero
@@ -90,17 +152,67 @@ function CopyTradingPage() {
         </div>
       )}
       <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-2">
-          {TRADERS.map((t) => (
-            <TraderCard key={t.id} trader={t} isAuthed={!!user} />
-          ))}
+        <div className="glass mb-6 rounded-2xl p-4 md:p-5">
+          <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-5">
+            <FilterSelect label="الأصل" value={asset} onChange={(v) => setAsset(v as Asset | "all")}
+              options={[["all", "الكل"], ...(Object.entries(ASSET_LABEL) as [string, string][])]} />
+            <FilterSelect label="المخاطر" value={risk} onChange={(v) => setRisk(v as Risk | "all")}
+              options={[["all", "الكل"], ...(Object.entries(RISK_LABEL) as [string, string][])]} />
+            <label className="block">
+              <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                أدنى عائد آخر شهر: {minReturn}%
+              </span>
+              <input type="range" min={-10} max={15} step={1} value={minReturn}
+                onChange={(e) => setMinReturn(Number(e.target.value))}
+                className="mt-2 w-full accent-[color:var(--color-gold,#d4af37)]" />
+            </label>
+            <label className="block">
+              <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                حد أدنى للإيداع: ≤ ${fmtMoney(maxDeposit)}
+              </span>
+              <input type="range" min={500} max={5000} step={250} value={maxDeposit}
+                onChange={(e) => setMaxDeposit(Number(e.target.value))}
+                className="mt-2 w-full accent-[color:var(--color-gold,#d4af37)]" />
+            </label>
+            <FilterSelect label="الفرز" value={sort} onChange={(v) => setSort(v as SortKey)}
+              options={Object.entries(SORT_LABEL) as [string, string][]} />
+          </div>
+          <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
+            <span>عرض {filtered.length} من {TRADERS.length} متداول</span>
+            <button onClick={resetFilters} className="rounded-md border border-white/10 px-2 py-1 hover:border-gold/40 hover:text-foreground">
+              إعادة تعيين
+            </button>
+          </div>
         </div>
+        {filtered.length === 0 ? (
+          <div className="glass rounded-2xl p-10 text-center text-sm text-muted-foreground">
+            لا يوجد متداولون مطابقون. جرّب تخفيف الفلاتر.
+          </div>
+        ) : (
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-2">
+            {filtered.map((t) => (
+              <TraderCard key={t.id} trader={t} isAuthed={!!user} />
+            ))}
+          </div>
+        )}
         <p className="mt-10 text-center text-xs text-muted-foreground">
           العوائد المعروضة هي نتائج تاريخية تقريبية لأغراض العرض ولا تشكّل ضماناً لأي أرباح مستقبلية. الأداء الماضي لا يُعدّ مؤشراً على النتائج القادمة.
         </p>
       </section>
       <CopyCalculator />
     </PageShell>
+  );
+}
+
+function FilterSelect({ label, value, onChange, options }: { label: string; value: string; onChange: (v: string) => void; options: [string, string][] }) {
+  return (
+    <label className="block">
+      <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">{label}</span>
+      <select value={value} onChange={(e) => onChange(e.target.value)}
+        className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm outline-none focus:border-gold/50">
+        {options.map(([v, l]) => <option key={v} value={v} className="bg-background">{l}</option>)}
+      </select>
+    </label>
   );
 }
 
