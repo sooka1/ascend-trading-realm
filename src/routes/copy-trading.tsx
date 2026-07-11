@@ -301,6 +301,20 @@ function CopyCalculator() {
   const [amountStr, setAmountStr] = useState<string>("1000");
   const [months, setMonths] = useState<number>(6);
 
+  // Pre-select trader from ?trader=<id> (e.g., after post-login redirect).
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const p = new URLSearchParams(window.location.search);
+    const id = p.get("trader");
+    if (id && TRADERS.some((t) => t.id === id)) {
+      setTraderId(id);
+      // Scroll the calculator into view so the selection is visible.
+      requestAnimationFrame(() => {
+        document.getElementById("copy-calculator")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    }
+  }, []);
+
   const trader = TRADERS.find((t) => t.id === traderId)!;
   const history = useMemo(() => buildHistory(trader), [trader]);
   const avgMonthly = useMemo(() => history.reduce((s, m) => s + m.pct, 0) / history.length, [history]);
