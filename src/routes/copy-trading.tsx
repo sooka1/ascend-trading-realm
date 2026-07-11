@@ -319,11 +319,50 @@ function CopyTradingPage() {
             لا يوجد متداولون مطابقون. جرّب تخفيف الفلاتر.
           </div>
         ) : (
-          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-2">
-            {filtered.map((t) => (
-              <TraderCard key={t.id} trader={t} isAuthed={!!user} />
-            ))}
-          </div>
+          <>
+            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-2">
+              {paginated.map((t) => (
+                <TraderCard key={t.id} trader={t} isAuthed={!!user} />
+              ))}
+            </div>
+            <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/10 bg-card/40 px-4 py-3 text-xs">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <span className="font-mono uppercase tracking-widest">لكل صفحة:</span>
+                {PER_PAGE_OPTIONS.map((n) => (
+                  <button
+                    key={n}
+                    onClick={() => setPerPage(n)}
+                    className={`rounded-md border px-2 py-1 font-mono tabular-nums transition ${
+                      perPage === n
+                        ? "border-gold/50 bg-gold/10 text-gold"
+                        : "border-white/10 hover:border-gold/40 hover:text-foreground"
+                    }`}
+                  >
+                    {n}
+                  </button>
+                ))}
+              </div>
+              <div className="font-mono tabular-nums text-muted-foreground">
+                صفحة {safePage} من {totalPages} · {filtered.length} نتيجة
+              </div>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => setPage(safePage - 1)}
+                  disabled={safePage <= 1}
+                  className="inline-flex items-center gap-1 rounded-md border border-white/10 px-2 py-1 hover:border-gold/40 hover:text-foreground disabled:opacity-40"
+                >
+                  <ChevronRight className="h-3.5 w-3.5" /> السابق
+                </button>
+                <button
+                  onClick={() => setPage(safePage + 1)}
+                  disabled={safePage >= totalPages}
+                  className="inline-flex items-center gap-1 rounded-md border border-white/10 px-2 py-1 hover:border-gold/40 hover:text-foreground disabled:opacity-40"
+                >
+                  التالي <ChevronLeft className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            </div>
+          </>
         )}
         <p className="mt-10 text-center text-xs text-muted-foreground">
           العوائد المعروضة هي نتائج تاريخية تقريبية لأغراض العرض ولا تشكّل ضماناً لأي أرباح مستقبلية. الأداء الماضي لا يُعدّ مؤشراً على النتائج القادمة.
