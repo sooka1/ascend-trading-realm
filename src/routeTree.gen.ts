@@ -10,7 +10,6 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TermsRouteImport } from './routes/terms'
-import { Route as SolutionsRouteImport } from './routes/solutions'
 import { Route as RiskRouteImport } from './routes/risk'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as PrivacyRouteImport } from './routes/privacy'
@@ -22,6 +21,7 @@ import { Route as FaqRouteImport } from './routes/faq'
 import { Route as EducationRouteImport } from './routes/education'
 import { Route as CopyTradingRouteImport } from './routes/copy-trading'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as CompetitionsRouteImport } from './routes/competitions'
 import { Route as BrandRouteImport } from './routes/brand'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AboutRouteImport } from './routes/about'
@@ -82,11 +82,6 @@ const TermsRoute = TermsRouteImport.update({
   path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SolutionsRoute = SolutionsRouteImport.update({
-  id: '/solutions',
-  path: '/solutions',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const RiskRoute = RiskRouteImport.update({
   id: '/risk',
   path: '/risk',
@@ -140,6 +135,11 @@ const CopyTradingRoute = CopyTradingRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompetitionsRoute = CompetitionsRouteImport.update({
+  id: '/competitions',
+  path: '/competitions',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BrandRoute = BrandRouteImport.update({
@@ -457,6 +457,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
   '/brand': typeof BrandRoute
+  '/competitions': typeof CompetitionsRoute
   '/contact': typeof ContactRoute
   '/copy-trading': typeof CopyTradingRoute
   '/education': typeof EducationRoute
@@ -468,7 +469,6 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/risk': typeof RiskRoute
-  '/solutions': typeof SolutionsRoute
   '/terms': typeof TermsRoute
   '/app': typeof AuthenticatedAppRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -524,6 +524,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
   '/brand': typeof BrandRoute
+  '/competitions': typeof CompetitionsRoute
   '/contact': typeof ContactRoute
   '/copy-trading': typeof CopyTradingRoute
   '/education': typeof EducationRoute
@@ -535,7 +536,6 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/risk': typeof RiskRoute
-  '/solutions': typeof SolutionsRoute
   '/terms': typeof TermsRoute
   '/app': typeof AuthenticatedAppRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
@@ -593,6 +593,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
   '/brand': typeof BrandRoute
+  '/competitions': typeof CompetitionsRoute
   '/contact': typeof ContactRoute
   '/copy-trading': typeof CopyTradingRoute
   '/education': typeof EducationRoute
@@ -604,7 +605,6 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/risk': typeof RiskRoute
-  '/solutions': typeof SolutionsRoute
   '/terms': typeof TermsRoute
   '/_authenticated/_admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
@@ -663,6 +663,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/auth'
     | '/brand'
+    | '/competitions'
     | '/contact'
     | '/copy-trading'
     | '/education'
@@ -674,7 +675,6 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/reset-password'
     | '/risk'
-    | '/solutions'
     | '/terms'
     | '/app'
     | '/dashboard'
@@ -730,6 +730,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/auth'
     | '/brand'
+    | '/competitions'
     | '/contact'
     | '/copy-trading'
     | '/education'
@@ -741,7 +742,6 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/reset-password'
     | '/risk'
-    | '/solutions'
     | '/terms'
     | '/app'
     | '/dashboard'
@@ -798,6 +798,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/auth'
     | '/brand'
+    | '/competitions'
     | '/contact'
     | '/copy-trading'
     | '/education'
@@ -809,7 +810,6 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/reset-password'
     | '/risk'
-    | '/solutions'
     | '/terms'
     | '/_authenticated/_admin'
     | '/_authenticated/app'
@@ -868,6 +868,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AuthRoute: typeof AuthRoute
   BrandRoute: typeof BrandRoute
+  CompetitionsRoute: typeof CompetitionsRoute
   ContactRoute: typeof ContactRoute
   CopyTradingRoute: typeof CopyTradingRoute
   EducationRoute: typeof EducationRoute
@@ -879,7 +880,6 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   RiskRoute: typeof RiskRoute
-  SolutionsRoute: typeof SolutionsRoute
   TermsRoute: typeof TermsRoute
   ApiPublicWebhooksBinancePayRoute: typeof ApiPublicWebhooksBinancePayRoute
 }
@@ -891,13 +891,6 @@ declare module '@tanstack/react-router' {
       path: '/terms'
       fullPath: '/terms'
       preLoaderRoute: typeof TermsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/solutions': {
-      id: '/solutions'
-      path: '/solutions'
-      fullPath: '/solutions'
-      preLoaderRoute: typeof SolutionsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/risk': {
@@ -975,6 +968,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/competitions': {
+      id: '/competitions'
+      path: '/competitions'
+      fullPath: '/competitions'
+      preLoaderRoute: typeof CompetitionsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/brand': {
@@ -1507,6 +1507,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   AuthRoute: AuthRoute,
   BrandRoute: BrandRoute,
+  CompetitionsRoute: CompetitionsRoute,
   ContactRoute: ContactRoute,
   CopyTradingRoute: CopyTradingRoute,
   EducationRoute: EducationRoute,
@@ -1518,7 +1519,6 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   RiskRoute: RiskRoute,
-  SolutionsRoute: SolutionsRoute,
   TermsRoute: TermsRoute,
   ApiPublicWebhooksBinancePayRoute: ApiPublicWebhooksBinancePayRoute,
 }

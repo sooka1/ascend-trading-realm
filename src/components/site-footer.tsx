@@ -7,7 +7,7 @@ const COLS = [
   {
     title: "footer.col.solutions",
     links: [
-      { label: "nav.solutions", to: "/solutions" },
+      { label: "nav.competitions", to: "/competitions" },
       { label: "nav.portfolios", to: "/portfolios" },
       { label: "nav.copytrading", to: "/copy-trading" },
       { label: "nav.risk", to: "/risk" },

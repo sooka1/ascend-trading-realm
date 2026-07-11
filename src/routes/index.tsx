@@ -239,7 +239,7 @@ function Hero({ c }: { c: LandingContent }) {
               <Link to="/contact">{c.hero.ctaAdvisor}</Link>
             </Button>
             <Button asChild size="lg" variant="ghost">
-              <Link to="/solutions">{c.hero.ctaLearn}</Link>
+              <Link to="/competitions">{c.hero.ctaLearn}</Link>
             </Button>
           </div>
           <dl className="mt-14 grid max-w-lg grid-cols-3 gap-3 text-sm">
