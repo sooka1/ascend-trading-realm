@@ -1,0 +1,452 @@
+{
+  "gold": {
+    "symbol": "XAUUSD",
+    "name": "Gold",
+    "category": "Commodity",
+    "title": "Trade Gold Spot (XAU/USD) with CFDs | HKEX Invest",
+    "description": "Access the global gold market. Trade XAU/USD with competitive spreads and flexible leverage. Learn about gold's role as a safe-haven asset and hedge.",
+    "intro": "Gold (XAU/USD) is a precious metal long valued as a store of value and safe-haven asset. Its price is influenced by global economic data, central bank policies, and geopolitical events, making it a key component of many trading strategies.",
+    "overview": "Gold is one of the world's most traded commodities, known for its high liquidity and deep market. It is often traded against the US Dollar (XAU/USD). Participants range from central banks and large institutional investors managing reserves to individual retail traders speculating on price movements or hedging against inflation and currency devaluation. The market is primarily driven by investment demand, jewellery consumption, and industrial applications. Because it often moves inversely to the US dollar and stock markets during times of uncertainty, it's a popular asset for portfolio diversification. Its global nature ensures active trading across all major time zones.",
+    "highlights": [
+      "Trade on gold's price movements without owning the physical metal.",
+      "Access deep liquidity from a globally traded precious metal market.",
+      "Use leverage to gain significant exposure with a smaller initial capital.",
+      "Go long or short to trade on both rising and falling markets."
+    ],
+    "why": [
+      "Hedge against inflation and economic uncertainty with a traditional safe-haven asset.",
+      "Diversify your portfolio with an asset that often has low correlation to equities.",
+      "Speculate on price fluctuations driven by global monetary policy and geopolitical events."
+    ],
+    "tradingHours": "Sunday 22:00 - Friday 21:00 UTC, with a daily break from 21:00 - 22:00 UTC.",
+    "volatility": "Typically exhibits lower volatility than equities but can see sharp spikes during crises.",
+    "risk": "Gold prices are subject to market fluctuations influenced by interest rates, currency strength, and geopolitical instability. Leveraged trading increases potential losses. Past performance is not indicative of future results, and you could lose more than your initial deposit.",
+    "faq": [
+      {
+        "q": "What does XAU/USD mean?",
+        "a": "XAU is the currency code for one troy ounce of gold, while USD represents the US Dollar. The XAU/USD pair shows how many US dollars are needed to purchase one ounce of gold. It is the most common way to quote the spot gold price globally."
+      },
+      {
+        "q": "What major factors influence the price of gold?",
+        "a": "Key drivers include US interest rates, the strength of the US Dollar, global inflation rates, central bank gold reserves policies, and geopolitical tensions. As a safe-haven asset, its demand often increases during times of market uncertainty, which can drive up its price."
+      },
+      {
+        "q": "Is trading gold the same as buying physical gold?",
+        "a": "No. Trading gold CFDs allows you to speculate on its price movements without taking physical delivery of the metal. This method offers leverage and the ability to go long or short, but it also involves different risks compared to owning physical bullion."
+      },
+      {
+        "q": "Why is gold considered a 'safe-haven' asset?",
+        "a": "Gold has historically maintained its value or increased in value during periods of economic or political instability. Investors often flock to gold when other assets like stocks or currencies are declining, seeking to preserve capital, which gives it its safe-haven reputation."
+      },
+      {
+        "q": "How does the US Dollar affect the price of gold?",
+        "a": "Gold is typically priced in US dollars. Therefore, a weaker dollar generally makes gold cheaper for holders of other currencies, potentially increasing demand and pushing the price up. Conversely, a stronger dollar can make gold more expensive, potentially decreasing demand."
+      }
+    ]
+  },
+  "silver": {
+    "symbol": "XAGUSD",
+    "name": "Silver",
+    "category": "Commodity",
+    "title": "Trade Silver Spot (XAG/USD) Online | HKEX Invest",
+    "description": "Trade the silver market (XAG/USD) with contracts for difference. Capitalise on silver's price movements, driven by industrial demand and investment flows.",
+    "intro": "Silver (XAG/USD) is a precious metal with a dual role as both an industrial commodity and a financial asset. Its price is influenced by manufacturing demand, particularly in tech and green energy, as well as investor sentiment, similar to gold.",
+    "overview": "Often called 'gold's volatile cousin', the silver market (XAG/USD) is known for its significant price swings, which can present unique trading opportunities. While smaller than the gold market, it still offers substantial liquidity. Traders include industrial users hedging costs, institutional investors, and retail speculators attracted by its lower price point. Its price is closely tied to the global economy due to its industrial applications, from electronics to solar panels. At the same time, it also acts as a safe-haven asset, though it tends to be more correlated with economic cycles than gold.",
+    "highlights": [
+      "Trade a versatile metal with both industrial and investment demand.",
+      "Experience potentially higher volatility compared to gold for more opportunities.",
+      "Enjoy the benefits of a highly liquid, globally traded commodity.",
+      "Benefit from a lower margin requirement compared to other precious metals."
+    ],
+    "why": [
+      "Gain exposure to both industrial growth cycles and precious metals investment trends.",
+      "Trade on a market known for higher volatility and significant price movements.",
+      "Diversify a precious metals strategy beyond holding only gold-related assets."
+    ],
+    "tradingHours": "Sunday 22:00 - Friday 21:00 UTC, with a daily break from 21:00 - 22:00 UTC.",
+    "volatility": "Historically more volatile than gold, with larger percentage price swings.",
+    "risk": "Silver's price can be highly volatile due to its smaller market size and dual role. It is subject to shifts in industrial demand and investor sentiment. Leveraged trading can magnify both profits and losses, which may exceed your initial deposit.",
+    "faq": [
+      {
+        "q": "What does XAG/USD represent?",
+        "a": "XAG is the currency symbol for one troy ounce of silver, and USD is the US Dollar. The XAG/USD pair indicates the price of one ounce of silver in US dollars. This is the standard quotation for spot silver in financial markets worldwide."
+      },
+      {
+        "q": "Why is silver more volatile than gold?",
+        "a": "The silver market is smaller and less liquid than the gold market. This means that smaller-volume trades can have a larger impact on its price. Additionally, its price is influenced by fluctuating industrial demand, which adds another layer of volatility."
+      },
+      {
+        "q": "What is the gold-silver ratio?",
+        "a": "The gold-silver ratio is a measure of how many ounces of silver are needed to buy one ounce of gold. Traders often monitor this ratio. A high ratio may suggest silver is undervalued relative to gold, while a low ratio may suggest the opposite."
+      },
+      {
+        "q": "What industries are major consumers of silver?",
+        "a": "Silver is crucial in electronics, including smartphones and computers. It is also a key component in solar panels, medical instruments, and water purification systems. This industrial demand significantly influences its price, distinguishing it from gold."
+      },
+      {
+        "q": "Does silver also act as a safe-haven asset?",
+        "a": "Yes, silver does have safe-haven qualities, and its price often rises during economic uncertainty. However, because of its significant industrial use, its price can also be negatively affected during economic downturns, making its safe-haven status less consistent than gold's."
+      }
+    ]
+  },
+  "btc": {
+    "symbol": "BTCUSD",
+    "name": "Bitcoin",
+    "category": "Cryptocurrency",
+    "title": "Trade Bitcoin (BTC/USD) CFDs 24/7 | HKEX Invest",
+    "description": "Speculate on Bitcoin's price movements against the US dollar. Trade BTC/USD CFDs with leverage and access the crypto market without needing a wallet.",
+    "intro": "Bitcoin (BTC) is the first and most well-known decentralised digital currency. Traded against the US Dollar (BTC/USD), its price is driven by a unique combination of factors, including adoption rates, regulatory news, market sentiment, and macroeconomic trends.",
+    "overview": "The Bitcoin market is a global, 24/7 phenomenon known for its high volatility and significant price movements, attracting retail speculators and large institutional investors. Unlike traditional assets, BTC is not controlled by a central bank. Its supply is finite, capped at 21 million coins, a feature that proponents argue gives it 'digital gold' properties as a hedge against inflation. Market liquidity can vary, but it is generally the most liquid cryptocurrency. Trading is driven by news about technological developments, institutional adoption, regulatory changes in major economies, and the broader risk sentiment in financial markets, making it a highly dynamic asset.",
+    "highlights": [
+      "Trade the world's leading cryptocurrency without a digital wallet.",
+      "Access the market 24/7, trading on your schedule.",
+      "Go long or short to speculate on both rising and falling prices.",
+      "Use leverage to amplify your exposure to Bitcoin's price movements."
+    ],
+    "why": [
+      "Gain exposure to the fast-growing asset class of digital currencies.",
+      "Trade on an asset known for its high volatility and large price swings.",
+      "Speculate on a decentralised asset operating outside of traditional financial systems."
+    ],
+    "tradingHours": "24 hours a day, 7 days a week, with brief maintenance windows.",
+    "volatility": "Extremely high volatility, with the potential for rapid and large price changes.",
+    "risk": "Cryptocurrencies like Bitcoin are extremely volatile and subject to rapid price changes from regulatory shifts, security breaches, and market sentiment. Leveraged CFD trading is high-risk and losses can exceed deposits. This is a speculative asset with a high-risk profile.",
+    "faq": [
+      {
+        "q": "What is Bitcoin (BTC)?",
+        "a": "Bitcoin is a decentralized digital currency, created in 2009, that operates on a peer-to-peer network called a blockchain. It allows for secure transactions without a central authority like a bank. Its total supply is algorithmically limited to 21 million coins."
+      },
+      {
+        "q": "Do I own actual Bitcoin when trading BTC/USD CFDs?",
+        "a": "No. When you trade Bitcoin CFDs (Contracts for Difference), you are speculating on the price movement of BTC/USD. You do not own the underlying Bitcoin, so you don't need a digital wallet or have to worry about the security of holding the asset."
+      },
+      {
+        "q": "What is the 'halving' and how does it affect Bitcoin's price?",
+        "a": "The Bitcoin 'halving' is an event that occurs approximately every four years, where the reward for mining new blocks is cut in half. This reduces the rate at which new bitcoins are created, making the supply more scarce. Historically, halving events have been associated with subsequent price increases."
+      },
+      {
+        "q": "Why is Bitcoin so volatile?",
+        "a": "Bitcoin's volatility stems from several factors: it is a relatively new asset class, its value is based heavily on speculation and sentiment, the market is subject to regulatory news, and it is sensitive to security concerns. This combination results in frequent and significant price swings."
+      },
+      {
+        "q": "How is institutional adoption affecting Bitcoin?",
+        "a": "Increased adoption by corporations, hedge funds, and asset managers can enhance Bitcoin's legitimacy and increase demand, potentially driving up its price. It also contributes to greater market liquidity, though it can also tie Bitcoin's price more closely to traditional financial market trends."
+      }
+    ]
+  },
+  "eth": {
+    "symbol": "ETHUSD",
+    "name": "Ethereum",
+    "category": "Cryptocurrency",
+    "title": "Trade Ethereum (ETH/USD) CFDs Online | HKEX Invest",
+    "description": "Trade Ethereum (ETH/USD), the second-largest cryptocurrency by market cap. Speculate on price movements driven by DeFi, NFTs, and smart contract adoption.",
+    "intro": "Ethereum is more than just a cryptocurrency; it's a decentralised global software platform powered by its native coin, Ether (ETH). Traded as ETH/USD, its value is intrinsically linked to the utility and growth of its smart contract ecosystem.",
+    "overview": "As the second-largest cryptocurrency, Ethereum offers a distinct value proposition from Bitcoin. Its blockchain supports 'smart contracts' and 'decentralised applications' (dApps), forming the backbone of emerging sectors like Decentralised Finance (DeFi) and Non-Fungible Tokens (NFTs). This utility-driven demand is a key driver of Ether's value. The ETH/USD market is highly liquid and trades 24/7, attracting developers, venture capitalists, and traders. Price movements are often influenced by network upgrades, gas fees (transaction costs), competition from other smart contract platforms, and the overall sentiment in the broader crypto and tech markets.",
+    "highlights": [
+      "Speculate on a leading cryptocurrency with real-world application utility.",
+      "Trade on a market driven by tech trends like DeFi and NFTs.",
+      "Access the crypto market around the clock, seven days a week.",
+      "Go long or short on ETH/USD without needing a crypto wallet."
+    ],
+    "why": [
+      "Invest in the technology powering the next wave of decentralised applications.",
+      "Trade an asset with different value drivers compared to Bitcoin.",
+      "Capitalise on the high volatility inherent in the cryptocurrency markets."
+    ],
+    "tradingHours": "24 hours a day, 7 days a week, with brief maintenance windows.",
+    "volatility": "Very high volatility, influenced by tech developments and market sentiment.",
+    "risk": "Ethereum's value is tied to its network's adoption and technological success, which carries risks. Like other cryptocurrencies, it is extremely volatile. Trading CFDs on ETH/USD with leverage can lead to rapid losses that may exceed your initial investment.",
+    "faq": [
+      {
+        "q": "What is the difference between Ethereum and Ether (ETH)?",
+        "a": "Ethereum refers to the decentralized blockchain platform itself. Ether (ETH) is the native cryptocurrency used to power the network, pay for transaction fees (known as 'gas'), and act as collateral in the DeFi ecosystem. When you trade ETH/USD, you are trading the currency, Ether."
+      },
+      {
+        "q": "What are 'smart contracts' on Ethereum?",
+        "a": "Smart contracts are self-executing contracts with the terms of the agreement directly written into code. They run on the Ethereum blockchain, automatically executing transactions when specific conditions are met. This technology is fundamental to dApps, DeFi, and NFTs."
+      },
+      {
+        "q": "What was the 'Merge'?",
+        "a": "The 'Merge' was a major technical upgrade to the Ethereum network in 2022. It transitioned Ethereum's consensus mechanism to 'Proof-of-Stake', significantly reducing the network's energy consumption and changing how new Ether is issued, which has long-term implications for its supply."
+      },
+      {
+        "q": "How does DeFi and NFTs affect ETH's price?",
+        "a": "DeFi (Decentralized Finance) and NFTs (Non-Fungible Tokens) are largely built on Ethereum. Growth in these sectors increases demand for ETH to pay transaction fees and interact with applications. This utility-driven demand is a significant factor in ETH's price valuation."
+      },
+      {
+        "q": "Is trading ETH riskier than trading BTC?",
+        "a": "Both are high-risk, volatile assets. ETH's value is closely tied to the success of its ecosystem and faces competition from other 'Ethereum killer' blockchains. This introduces different risk factors compared to Bitcoin, which is viewed more as a store of value."
+      }
+    ]
+  },
+  "eurusd": {
+    "symbol": "EURUSD",
+    "name": "Euro vs. US Dollar",
+    "category": "Forex",
+    "title": "Trade EUR/USD - The World's Most Traded Forex Pair | HKEX Invest",
+    "description": "Trade the EUR/USD currency pair, the most liquid forex market in the world. Speculate on the exchange rate between the Euro and the US Dollar.",
+    "intro": "The EUR/USD is the world's most heavily traded currency pair, representing the exchange rate between the Euro and the US Dollar. Its price reflects the relative economic health and monetary policies of the Eurozone and the United States.",
+    "overview": "As the most liquid financial market globally, the EUR/USD pair offers exceptionally tight spreads and massive trading volume. It is traded by central banks, multinational corporations, institutional investors, and retail traders. Price movements are primarily influenced by interest rate decisions from the European Central Bank (ECB) and the US Federal Reserve (Fed). Economic indicators like GDP growth, inflation rates, and employment data from both regions are watched closely by market participants. Due to its deep liquidity, the pair is an excellent bellwether for global economic sentiment and risk appetite, making it a cornerstone of forex trading strategies.",
+    "highlights": [
+      "Trade the most liquid financial instrument in the world.",
+      "Benefit from consistently tight spreads due to high trading volume.",
+      "Access a market with clear drivers from major economic news.",
+      "Trade 24/5, capitalizing on opportunities across global sessions."
+    ],
+    "why": [
+      "Speculate on the monetary policies of the world's two largest economies.",
+      "Access unparalleled liquidity, ensuring smooth entry and exit from trades.",
+      "Utilize a wealth of available analysis and economic data to inform trades."
+    ],
+    "tradingHours": "Sunday 21:00 - Friday 21:00 UTC.",
+    "volatility": "Generally lower volatility compared to other pairs, but can spike during news.",
+    "risk": "Forex rates are influenced by many factors, including interest rates, inflation, and political events. Negative market movements can occur rapidly. Trading with leverage can amplify losses, which can exceed the funds in your account. Past performance offers no guarantee of future results.",
+    "faq": [
+      {
+        "q": "What does the EUR/USD price quote mean?",
+        "a": "The EUR/USD quote indicates how many US dollars (the quote currency) are needed to buy one Euro (the base currency). If the EUR/USD price is 1.08, it means you need 1.08 US dollars to purchase 1 Euro."
+      },
+      {
+        "q": "What are the best times to trade EUR/USD?",
+        "a": "The most active time for trading EUR/USD is typically during the overlap of the London and New York trading sessions (approximately 12:00 to 16:00 UTC). This period generally has the highest liquidity and trading volume, often leading to tighter spreads."
+      },
+      {
+        "q": "What is a 'pip' in EUR/USD trading?",
+        "a": "A 'pip' (percentage in point) is the smallest price move in a currency pair. For EUR/USD, one pip is a change in the fourth decimal place (0.0001). For example, a move from 1.0850 to 1.0851 is a one-pip move."
+      },
+      {
+        "q": "How do interest rates affect the EUR/USD pair?",
+        "a": "Higher interest rates in a region tend to attract foreign investment, increasing demand for that currency. If the US Federal Reserve raises rates while the ECB holds them steady, the USD may strengthen against the EUR, causing the EUR/USD pair to fall."
+      },
+      {
+        "q": "Why is EUR/USD so popular among traders?",
+        "a": "Its popularity stems from its massive liquidity, which results in tight spreads and low transaction costs. Furthermore, the abundance of readily available economic news and analysis from both the Eurozone and the US makes it easier for traders to form strategies."
+      }
+    ]
+  },
+  "gbpusd": {
+    "symbol": "GBPUSD",
+    "name": "British Pound vs. US Dollar",
+    "category": "Forex",
+    "title": "Trade GBP/USD - A Major Forex Pair Online | HKEX Invest",
+    "description": "Trade the 'Cable', the GBP/USD currency pair. Speculate on the exchange rate between the British Pound and US Dollar, driven by key economic data.",
+    "intro": "Known as 'The Cable', the GBP/USD pair represents the exchange rate between the British Pound Sterling and the US Dollar. It is one of the world's oldest and most traded currency pairs, known for its distinct volatility and character.",
+    "overview": "The GBP/USD is a major currency pair with deep liquidity and significant daily trading volume. Its traders range from international businesses to hedge funds and individual speculators. The pair's value is heavily influenced by interest rate differentials set by the Bank of England (BoE) and the US Federal Reserve. Key economic releases from both the UK and US, such as inflation (CPI), retail sales, and employment figures, are significant drivers of price action. Historically, the GBP/USD tends to be more volatile than EUR/USD, offering wider price swings that can present both opportunities and risks. Political developments in the UK also play a crucial role.",
+    "highlights": [
+      "Trade one of the world's original and most popular currency pairs.",
+      "Capitalise on its characteristically higher volatility for trading opportunities.",
+      "Access a highly liquid market with significant daily trading volumes.",
+      "Stay informed with frequent economic news from the UK and US."
+    ],
+    "why": [
+      "Speculate on the economic policies of the Bank of England and US Fed.",
+      "Engage with a market known for strong trends and significant price moves.",
+      "Diversify your forex trading with a major pair other than EUR/USD."
+    ],
+    "tradingHours": "Sunday 21:00 - Friday 21:00 UTC.",
+    "volatility": "Higher than EUR/USD, often exhibiting larger and faster price swings.",
+    "risk": "Exchange rates like GBP/USD are subject to economic data, central bank policy, and political events. The pair's higher volatility can lead to rapid price changes. Using leverage magnifies this risk, and losses may exceed your initial deposit.",
+    "faq": [
+      {
+        "q": "Why is GBP/USD called 'The Cable'?",
+        "a": "The nickname originates from the mid-19th century when the exchange rate between the pound and the dollar was transmitted via a large steel cable laid under the Atlantic Ocean. The name has stuck in the forex market ever since."
+      },
+      {
+        "q": "What are the main drivers of the GBP/USD price?",
+        "a": "The primary drivers are the monetary policies of the Bank of England (BoE) and the US Federal Reserve. Key economic indicators like GDP, inflation (CPI), and employment reports from both countries are also highly influential."
+      },
+      {
+        "q": "How does the London session affect GBP/USD?",
+        "a": "The London trading session is the most important for the British Pound. Liquidity and volatility for GBP/USD are typically at their highest during these hours (approx. 07:00-16:00 UTC) as UK and European markets are most active, and it overlaps with the US session."
+      },
+      {
+        "q": "Is GBP/USD more volatile than other major pairs?",
+        "a": "Historically, GBP/USD tends to exhibit higher volatility than pairs like EUR/USD. This means it can experience larger price swings in a shorter amount of time, which can present greater trading opportunities but also carries increased risk."
+      },
+      {
+        "q": "How do political events in the UK impact 'Cable'?",
+        "a": "The GBP is highly sensitive to UK political developments. Events such as general elections, leadership changes, or major policy shifts like Brexit can introduce significant uncertainty and volatility into the GBP/USD pair as investors adjust their views on the UK economy's future."
+      }
+    ]
+  },
+  "usdjpy": {
+    "symbol": "USDJPY",
+    "name": "US Dollar vs. Japanese Yen",
+    "category": "Forex",
+    "title": "Trade USD/JPY - A Key Safe-Haven Currency Pair | HKEX Invest",
+    "description": "Trade the USD/JPY forex pair, a barometer of global risk sentiment. Speculate on the relationship between the US Dollar and the safe-haven Japanese Yen.",
+    "intro": "The USD/JPY currency pair pits the US Dollar against the Japanese Yen. It is the second most traded pair globally and is often seen as a key indicator of investor risk appetite, given the Yen's traditional safe-haven status.",
+    "overview": "USD/JPY is an extremely liquid forex pair, second only to EUR/USD in trading volume. This market attracts a vast array of participants, including Japanese exporters, international investors, and speculators. A key driver is the stark difference in monetary policy between the US Federal Reserve and the Bank of Japan (BoJ), which has historically maintained ultra-low interest rates. Consequently, the pair is highly sensitive to changes in US interest rates and bond yields. During times of global market stress, investors often flee to the perceived safety of the Japanese Yen, causing USD/JPY to fall.",
+    "highlights": [
+      "Trade the second most liquid currency pair in the world.",
+      "Gain insights into global risk sentiment through the pair's movements.",
+      "Capitalise on trends driven by diverging central bank monetary policies.",
+      "Access a market that is highly active during Asian trading hours."
+    ],
+    "why": [
+      "Speculate on one of the clearest 'risk-on' versus 'risk-off' indicators.",
+      "Trade a pair heavily influenced by US Treasury yields and interest rate differentials.",
+      "Benefit from high liquidity and extensive media coverage and analysis."
+    ],
+    "tradingHours": "Sunday 21:00 - Friday 21:00 UTC.",
+    "volatility": "Moderate volatility, but highly sensitive to risk sentiment and central bank news.",
+    "risk": "The USD/JPY pair is sensitive to shifts in global risk sentiment and central bank policy divergence. Unforeseen actions by the Bank of Japan or government interventions can cause sudden, sharp movements. Leverage can significantly amplify losses if the market moves against you.",
+    "faq": [
+      {
+        "q": "What does the USD/JPY price represent?",
+        "a": "The USD/JPY quote shows how many Japanese Yen (the quote currency) are needed to purchase one US Dollar (the base currency). If the price is 150.00, it means 150 Japanese Yen are required to buy 1 US Dollar."
+      },
+      {
+        "q": "Why is the Japanese Yen considered a 'safe haven'?",
+        "a": "Japan has a long history as the world's largest creditor nation with a stable current account surplus. During global crises, Japanese investors tend to repatriate funds, increasing demand for the Yen and strengthening it."
+      },
+      {
+        "q": "How does the Bank of Japan (BoJ) influence USD/JPY?",
+        "a": "The BoJ's ultra-loose monetary policy, involving low or negative interest rates, strongly influences the Yen. Any hints of policy change can cause massive volatility. The BoJ has also been known to intervene directly in the currency market to weaken the Yen if it strengthens too quickly."
+      },
+      {
+        "q": "What is a 'carry trade' in the context of USD/JPY?",
+        "a": "A carry trade involves borrowing a currency with a low interest rate (like JPY) to buy a currency with a higher interest rate (like USD). Traders aim to profit from the interest rate differential. This is a popular strategy in USD/JPY when US rates are high."
+      },
+      {
+        "q": "When is the best time to trade USD/JPY?",
+        "a": "The pair is most active during the Asian trading session when the Tokyo market is open (approx. 00:00-09:00 UTC). Volatility also picks up during the US session, especially when important US economic data is released, creating another active period for traders."
+      }
+    ]
+  },
+  "us30": {
+    "symbol": "US30",
+    "name": "Wall Street 30",
+    "category": "Index",
+    "title": "Trade the US30 Index, Based on the Dow Jones | HKEX Invest",
+    "description": "Trade the US30 index, which tracks the performance of 30 large, publicly-owned US companies. Speculate on the direction of the broader US stock market.",
+    "intro": "The US30 index, based on the Dow Jones Industrial Average (DJIA), is a price-weighted index that represents 30 of the most prominent blue-chip companies in the United States. It serves as a key barometer for the health of the US economy.",
+    "overview": "As one of the oldest and most-watched stock market indices in the world, the US30 provides a snapshot of the performance of a select group of established US industrial and consumer giants. Traders and investors use it to gauge overall market sentiment and to gain exposure to the American economy. Its price is influenced by the quarterly earnings reports of its constituent companies, US economic data like employment and GDP, and Federal Reserve monetary policy. Because it is price-weighted, companies with higher share prices have a greater impact on the index's value. The market is highly liquid.",
+    "highlights": [
+      "Gain exposure to 30 of America's leading blue-chip companies.",
+      "Trade an index that is a key indicator of US economic health.",
+      "Go long or short to trade on both bullish and bearish market sentiment.",
+      "Access a highly liquid market with tight spreads during US hours."
+    ],
+    "why": [
+      "Take a view on the overall direction of the US stock market.",
+      "Trade a well-known index driven by major corporate and economic news.",
+      "Diversify your portfolio by gaining exposure to the US equity market."
+    ],
+    "tradingHours": "Sunday 22:00 - Friday 20:15 UTC, with a daily break from 20:15 - 20:30 UTC.",
+    "volatility": "Moderate volatility, reflecting the blended performance of 30 large-cap stocks.",
+    "risk": "Index values are subject to market-wide risks, including economic downturns, interest rate changes, and geopolitical events. Leveraged CFD trading on indices can result in losses exceeding your deposit. Past performance is not a reliable indicator of future results.",
+    "faq": [
+      {
+        "q": "What is the US30 Index?",
+        "a": "The US30 is a stock market index that tracks the performance of 30 large, well-established, and publicly-owned companies based in the United States. It's based on the Dow Jones Industrial Average (DJIA) and is one of the most followed indices in the world."
+      },
+      {
+        "q": "How is US30 different from the NAS100 or S&P 500?",
+        "a": "The US30 is price-weighted and contains only 30 'blue-chip' stocks, giving higher-priced stocks more influence. The NAS100 is tech-heavy and market-cap weighted. The S&P 500 is much broader, containing 500 companies, and is also market-cap weighted, providing a more comprehensive view."
+      },
+      {
+        "q": "What kind of companies are in the US30?",
+        "a": "The index includes established leaders from various sectors, excluding transportation and utilities. It features household names in finance, technology, healthcare, retail, and consumer goods, representing a cross-section of the mature US economy."
+      },
+      {
+        "q": "What does 'price-weighted' mean?",
+        "a": "In a price-weighted index like the US30, stocks with a higher share price have a greater impact on the index's value, regardless of the company's overall size or market capitalization. A $1 move in any component stock has the same effect on the index average."
+      },
+      {
+        "q": "How does Fed policy affect the US30?",
+        "a": "Federal Reserve policy, particularly on interest rates, has a major impact. Lower interest rates can stimulate the economy and boost corporate profits, often pushing stock prices higher. Conversely, raising rates to fight inflation can slow the economy and negatively affect the index."
+      }
+    ]
+  },
+  "nas100": {
+    "symbol": "NAS100",
+    "name": "US Tech 100",
+    "category": "Index",
+    "title": "Trade the NAS100 Index, Tracking Tech Giants | HKEX Invest",
+    "description": "Trade the NAS100, a market index of the 100 largest non-financial companies listed on the Nasdaq. Get exposure to the innovative technology sector.",
+    "intro": "The NAS100 index tracks the 100 largest and most active non-financial companies listed on the Nasdaq stock exchange. It is heavily weighted towards the technology sector, including software, hardware, and internet companies, making it a proxy for tech innovation.",
+    "overview": "The NAS100 is a globally recognized benchmark for the technology and growth stock sectors. Unlike the US30, it is a modified market-capitalization-weighted index, meaning larger companies have a greater impact on its value. It is home to the world's most influential technology giants. Traders are drawn to the NAS100 for its higher volatility compared to broader indices and its potential for strong trending moves. Its performance is highly sensitive to factors like technological breakthroughs, corporate earnings of its key components, consumer tech trends, and changes in interest rates, which heavily impact the valuations of growth-oriented companies.",
+    "highlights": [
+      "Gain focused exposure to the world's leading technology and growth companies.",
+      "Trade an index known for higher volatility and strong trends.",
+      "Speculate on the performance of innovators in software, AI, and biotech.",
+      "Use leverage to trade on the direction of the US tech sector."
+    ],
+    "why": [
+      "Take a position on the future of technology and innovation.",
+      "Access a market dominated by some of the world's largest companies.",
+      "Trade an index with a different composition and risk profile from the US30."
+    ],
+    "tradingHours": "Sunday 22:00 - Friday 20:15 UTC, with a daily break from 20:15 - 20:30 UTC.",
+    "volatility": "Higher volatility than broader indices, driven by the tech sector.",
+    "risk": "This index has a high concentration in the technology sector, making it vulnerable to sector-specific downturns and regulatory changes. Its growth stocks are sensitive to interest rate hikes. Leveraged trading is high-risk and losses can exceed initial deposits.",
+    "faq": [
+      {
+        "q": "What is the NAS100 index?",
+        "a": "The NAS100 is a stock market index representing the performance of the 100 largest non-financial companies listed on the Nasdaq Stock Market. It is heavily concentrated in the technology sector, but also includes companies from retail, healthcare, and biotechnology."
+      },
+      {
+        "q": "Why are financial companies excluded from the NAS100?",
+        "a": "The index was designed to differentiate itself from other broad market indices by focusing on growth-oriented, non-financial companies. Financial companies have different business models and are subject to different regulations, so they are tracked in separate Nasdaq indices."
+      },
+      {
+        "q": "What does 'market-capitalization-weighted' mean?",
+        "a": "In a market-cap-weighted index, companies with a larger total market value have a proportionally larger impact on the index's movement. This means giants like Apple or Microsoft heavily influence the NAS100's direction."
+      },
+      {
+        "q": "How do interest rates impact the NAS100?",
+        "a": "Tech and growth stocks, which dominate the NAS100, are particularly sensitive to interest rates. Their valuations are often based on future earnings potential. Higher interest rates make those future earnings less valuable in today's terms, which can put downward pressure on the index."
+      },
+      {
+        "q": "Is NAS100 a good indicator of the overall market?",
+        "a": "While it's a critical barometer for the technology sector and growth stocks, it's not a complete picture of the US economy. Broader indices like the S&P 500 provide a more comprehensive view by including sectors like finance, utilities, and energy."
+      }
+    ]
+  },
+  "oil": {
+    "symbol": "WTI",
+    "name": "US Crude Oil",
+    "category": "Commodity",
+    "title": "Trade Crude Oil (WTI) CFDs with HKEX Invest",
+    "description": "Trade West Texas Intermediate (WTI) Crude Oil, a major global oil benchmark. Speculate on oil price movements driven by supply, demand, and geopolitics.",
+    "intro": "West Texas Intermediate (WTI) crude oil is a high-quality light, sweet crude oil and a primary global benchmark for oil prices. Its price is a crucial indicator for global economic health, influenced by supply dynamics, global demand, and geopolitical events.",
+    "overview": "The crude oil market is one of the most active and liquid commodity markets globally. WTI, specifically, is a key benchmark for oil consumed in North America. Its price is determined by a complex interplay of factors. Supply is influenced by OPEC+ production decisions, US shale oil output, and weekly inventory reports. Demand is tied to global economic growth, transportation needs, and manufacturing activity. Geopolitical tensions, particularly in the Middle East, can cause significant price volatility. The market is traded by a diverse group, including oil producers, airlines, governments, and speculators.",
+    "highlights": [
+      "Trade a key commodity that influences the entire global economy.",
+      "Speculate on price moves driven by OPEC decisions and geopolitical news.",
+      "Access one of the world's most liquid and active commodity markets.",
+      "Go long or short to trade on both rising and falling oil prices."
+    ],
+    "why": [
+      "Take a position on one of the most important drivers of global economic activity.",
+      "Trade an asset known for its sensitivity to geopolitical events and supply disruptions.",
+      "Diversify your portfolio with exposure to the critical energy sector."
+    ],
+    "tradingHours": "Sunday 22:00 - Friday 21:00 UTC.",
+    "volatility": "High volatility, highly susceptible to geopolitical news and supply/demand reports.",
+    "risk": "Oil prices are extremely volatile and can be affected by political instability in producing nations, OPEC decisions, and changes in global demand. Leveraged trading can result in significant losses that may exceed your initial deposit. Prices can gap on major news.",
+    "faq": [
+      {
+        "q": "What is WTI Crude Oil?",
+        "a": "WTI stands for West Texas Intermediate, a high-quality grade of crude oil extracted in the United States. It serves as a major benchmark for oil pricing, particularly in North America. Its price is quoted as the cost per barrel and is a key indicator for energy markets."
+      },
+      {
+        "q": "What is the difference between WTI and Brent Crude?",
+        "a": "WTI is sourced from US oil fields, while Brent is sourced from the North Sea. Brent is the primary benchmark for oil traded in Europe, Africa, and the Middle East. While their prices are highly correlated, regional supply and demand factors can cause a price spread between the two."
+      },
+      {
+        "q": "What is OPEC and how does it affect oil prices?",
+        "a": "OPEC (Organization of the Petroleum Exporting Countries) is a cartel of major oil-producing nations. Along with allies like Russia (forming OPEC+), they coordinate on oil production levels to manage global supply. Their decisions to cut or increase output have a powerful impact on oil prices."
+      },
+      {
+        "q": "How do weekly inventory reports impact the oil price?",
+        "a": "The U.S. Energy Information Administration (EIA) releases a weekly report on domestic crude oil inventories. A larger-than-expected build in inventories can signal weak demand, potentially pushing prices down. A larger-than-expected draw suggests strong demand, which can push prices up."
+      },
+      {
+        "q": "Why is oil priced in US dollars?",
+        "a": "The US dollar is the standard currency for most global commodity trading, a practice established decades ago. This means that a change in the value of the US dollar can affect the price of oil. A weaker dollar can make oil cheaper for other nations, potentially boosting demand."
+      }
+    ]
+  }
+}
