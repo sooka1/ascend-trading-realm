@@ -1,7 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { BookOpen, Calculator, ExternalLink, GraduationCap, Globe2, PlayCircle, Video } from "lucide-react";
+import { useMemo, useState } from "react";
+import { BookOpen, Brain, Calculator, ExternalLink, GraduationCap, Globe2, LineChart, PlayCircle, Search, Video } from "lucide-react";
 import { PageShell, PageHero } from "@/components/page-shell";
 import { usePage } from "@/lib/i18n";
+import { EDU_VIDEOS, type EduVideo } from "@/lib/education-videos";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 export const Route = createFileRoute("/education")({
   head: () => ({
@@ -48,6 +52,136 @@ function Education() {
         <ForeignCoursesSection />
       </section>
     </PageShell>
+  );
+}
+
+function VideoLibrarySection() {
+  const [topic, setTopic] = useState<"all" | "strategy" | "psychology">("all");
+  const [q, setQ] = useState("");
+  const [page, setPage] = useState(1);
+  const PER = 24;
+
+  const filtered = useMemo(() => {
+    const needle = q.trim().toLowerCase();
+    return EDU_VIDEOS.filter((v) => {
+      if (topic !== "all" && v.topic !== topic) return false;
+      if (!needle) return true;
+      return v.title.toLowerCase().includes(needle) || v.channel.toLowerCase().includes(needle);
+    });
+  }, [topic, q]);
+
+  const pages = Math.max(1, Math.ceil(filtered.length / PER));
+  const current = Math.min(page, pages);
+  const slice = filtered.slice((current - 1) * PER, current * PER);
+
+  const stratCount = EDU_VIDEOS.filter((v) => v.topic === "strategy").length;
+  const psychCount = EDU_VIDEOS.filter((v) => v.topic === "psychology").length;
+
+  return (
+    <section className="mx-auto max-w-7xl px-4 pb-24 sm:px-6 lg:px-8">
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <div className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-widest text-gold">
+            <Video className="h-3.5 w-3.5" /> مكتبة الفيديو
+          </div>
+          <h2 className="mt-2 font-display text-2xl font-semibold sm:text-3xl">
+            {EDU_VIDEOS.length} فيديو <span className="text-gradient">أجنبي</span> في الاستراتيجية وعلم النفس
+          </h2>
+          <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
+            مكتبة مختارة من أشهر قنوات التداول العالمية — {stratCount} فيديو استراتيجية و {psychCount} فيديو علم نفس. كل رابط يفتح نتائج يوتيوب الرسمية للفيديو.
+          </p>
+        </div>
+      </div>
+
+      <div className="mb-5 flex flex-wrap items-center gap-2">
+        <div className="flex overflow-hidden rounded-full border border-white/10">
+          {([
+            ["all", "الكل", null],
+            ["strategy", "استراتيجية", LineChart],
+            ["psychology", "علم النفس", Brain],
+          ] as const).map(([k, label, Icon]) => (
+            <button
+              key={k}
+              onClick={() => { setTopic(k); setPage(1); }}
+              className={`inline-flex items-center gap-1.5 px-4 py-1.5 text-xs transition ${
+                topic === k ? "bg-gold text-background" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {Icon ? <Icon className="h-3.5 w-3.5" /> : null}
+              {label}
+            </button>
+          ))}
+        </div>
+        <div className="relative flex-1 min-w-[220px]">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="ابحث عن عنوان أو قناة…"
+            value={q}
+            onChange={(e) => { setQ(e.target.value); setPage(1); }}
+            className="pl-9"
+          />
+        </div>
+        <div className="text-xs text-muted-foreground">
+          {filtered.length} نتيجة
+        </div>
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {slice.map((v) => (
+          <VideoCard key={v.id} v={v} />
+        ))}
+      </div>
+
+      <div className="mt-8 flex items-center justify-center gap-2">
+        <Button variant="outline" size="sm" disabled={current <= 1} onClick={() => setPage(current - 1)}>
+          السابق
+        </Button>
+        <span className="text-xs text-muted-foreground">
+          صفحة {current} / {pages}
+        </span>
+        <Button variant="outline" size="sm" disabled={current >= pages} onClick={() => setPage(current + 1)}>
+          التالي
+        </Button>
+      </div>
+    </section>
+  );
+}
+
+function VideoCard({ v }: { v: EduVideo }) {
+  const topicStyle =
+    v.topic === "strategy"
+      ? "border-bull/40 bg-bull/10 text-bull"
+      : "border-violet-400/40 bg-violet-400/10 text-violet-200";
+  const TopicIcon = v.topic === "strategy" ? LineChart : Brain;
+  return (
+    <a
+      href={v.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      onClick={(e) => {
+        e.preventDefault();
+        window.open(v.url, "_blank", "noopener,noreferrer") ||
+          (window.top ? (window.top.location.href = v.url) : (window.location.href = v.url));
+      }}
+      className="glass group flex flex-col rounded-2xl p-4 transition hover:border-gold/40"
+    >
+      <div className="flex items-center justify-between gap-2">
+        <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] ${topicStyle}`}>
+          <TopicIcon className="h-3 w-3" />
+          {v.topic === "strategy" ? "استراتيجية" : "علم النفس"}
+        </span>
+        <span className="text-[10px] text-muted-foreground">{v.minutes} د</span>
+      </div>
+      <h3 className="mt-3 line-clamp-2 font-display text-sm font-semibold group-hover:text-gold">
+        {v.title}
+      </h3>
+      <div className="mt-auto flex items-center justify-between pt-3">
+        <span className="text-[11px] uppercase tracking-widest text-muted-foreground">{v.channel}</span>
+        <span className="inline-flex items-center gap-1 text-[11px] text-gold/90 group-hover:text-gold">
+          مشاهدة <ExternalLink className="h-3 w-3" />
+        </span>
+      </div>
+    </a>
   );
 }
 
