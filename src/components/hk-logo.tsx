@@ -1,19 +1,5 @@
 import { cn } from "@/lib/utils";
-
-function HKMark({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 64 64" className={className} aria-hidden>
-      <rect width="64" height="64" rx="8" fill="#0a1e3f" />
-      {/* H */}
-      <rect x="12" y="16" width="5" height="32" fill="#ffffff" />
-      <rect x="26" y="16" width="5" height="32" fill="#ffffff" />
-      <rect x="12" y="29.5" width="19" height="5" fill="#ffffff" />
-      {/* K */}
-      <rect x="37" y="16" width="5" height="32" fill="#ffffff" />
-      <polygon points="55,16 48,16 42,30 42,34 48,48 55,48 46,32" fill="#ffffff" />
-    </svg>
-  );
-}
+import logoSrc from "@/assets/brand/svg/hk-icon-white.svg";
 
 interface HKLogoProps {
   className?: string;
@@ -33,8 +19,14 @@ export function HKLogo({ className, showWordmark = true, size = "md", variant = 
           className,
         )}
       >
-        <span className={cn("relative shrink-0", dim)} aria-label="HK Investment Management">
-          <HKMark className={cn("relative", dim)} />
+        <span className={cn("relative shrink-0", dim)}>
+          <img
+            src={logoSrc}
+            alt="HK Investment Management"
+            className={cn("relative object-contain", dim)}
+            width={64}
+            height={64}
+          />
         </span>
         {showWordmark && (
           <span className={cn("leading-none tracking-tight", text)}>
@@ -46,8 +38,14 @@ export function HKLogo({ className, showWordmark = true, size = "md", variant = 
   }
   return (
     <span className={cn("inline-flex items-center gap-2.5 font-display font-bold", className)}>
-      <span className={cn("relative shrink-0", dim)} aria-label="HK Investment Management">
-        <HKMark className={cn("relative", dim)} />
+      <span className={cn("relative shrink-0", dim)}>
+        <img
+          src={logoSrc}
+          alt="HK Investment Management"
+          className={cn("relative object-contain", dim)}
+          width={64}
+          height={64}
+        />
       </span>
       {showWordmark && (
         <span className={cn("leading-none tracking-tight", text)}>
