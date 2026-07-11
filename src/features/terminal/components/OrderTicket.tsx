@@ -8,6 +8,7 @@ import { getBroker } from "../adapters/broker";
 import { estimateMargin, estimatedPnl, riskReward, validateOrder } from "../services/risk-engine";
 import type { Instrument } from "../services/risk-engine";
 import { useQueryClient } from "@tanstack/react-query";
+import { formatAssetPrice, formatUsd } from "../lib/format";
 
 type OrderType = "market" | "limit" | "stop" | "stop_limit";
 
@@ -74,11 +75,11 @@ export function OrderTicket({ instrument, bid, ask, balance, leverage }: {
       <div className="grid grid-cols-2 gap-2">
         <div className="min-w-0 rounded-md border border-white/10 bg-white/[0.02] p-2 text-start">
           <div className="text-xs font-medium leading-tight text-white/50">Bid</div>
-          <div className="truncate font-mono text-sm font-semibold leading-tight tabular-nums text-red-400" dir="ltr">{bid.toFixed(instrument.price_precision)}</div>
+          <div className="truncate font-mono text-sm font-semibold leading-tight tabular-nums text-red-400" dir="ltr">{formatAssetPrice(instrument.symbol, bid, instrument.price_precision)}</div>
         </div>
         <div className="min-w-0 rounded-md border border-white/10 bg-white/[0.02] p-2 text-start">
           <div className="text-xs font-medium leading-tight text-white/50">Ask</div>
-          <div className="truncate font-mono text-sm font-semibold leading-tight tabular-nums text-emerald-400" dir="ltr">{ask.toFixed(instrument.price_precision)}</div>
+          <div className="truncate font-mono text-sm font-semibold leading-tight tabular-nums text-emerald-400" dir="ltr">{formatAssetPrice(instrument.symbol, ask, instrument.price_precision)}</div>
         </div>
       </div>
 
@@ -112,21 +113,21 @@ export function OrderTicket({ instrument, bid, ask, balance, leverage }: {
       </div>
 
       <div className="space-y-1 rounded-md border border-white/10 bg-white/[0.02] p-2">
-        <Row label="الهامش المطلوب" value={`$${marginBuy.toFixed(2)}`} />
+        <Row label="الهامش المطلوب" value={formatUsd(marginBuy)} />
         <Row label="R/R (شراء)" value={rrBuy ? `1 : ${rrBuy.toFixed(2)}` : "—"} />
         <Row label="R/R (بيع)" value={rrSell ? `1 : ${rrSell.toFixed(2)}` : "—"} />
-        <Row label="ربح متوقع" value={estProfitBuy !== null ? `$${estProfitBuy.toFixed(2)}` : "—"} valueClass="text-emerald-400" />
-        <Row label="خسارة متوقعة" value={estLossBuy !== null ? `$${estLossBuy.toFixed(2)}` : "—"} valueClass="text-red-400" />
+        <Row label="ربح متوقع" value={estProfitBuy !== null ? formatUsd(estProfitBuy) : "—"} valueClass="text-emerald-400" />
+        <Row label="خسارة متوقعة" value={estLossBuy !== null ? formatUsd(estLossBuy) : "—"} valueClass="text-red-400" />
       </div>
 
       <div className="grid grid-cols-2 gap-2">
         <Button onClick={() => submit("sell")} disabled={busy} className="flex h-10 min-w-0 items-center justify-center gap-1.5 overflow-hidden whitespace-nowrap bg-red-500 px-2 text-white hover:bg-red-600">
           <span className="shrink-0 text-xs font-semibold leading-none">بيع</span>
-          <span dir="ltr" className="truncate font-mono text-xs font-semibold leading-none tabular-nums opacity-95">{bid.toFixed(instrument.price_precision)}</span>
+          <span dir="ltr" className="truncate font-mono text-xs font-semibold leading-none tabular-nums opacity-95">{formatAssetPrice(instrument.symbol, bid, instrument.price_precision)}</span>
         </Button>
         <Button onClick={() => submit("buy")} disabled={busy} className="flex h-10 min-w-0 items-center justify-center gap-1.5 overflow-hidden whitespace-nowrap bg-emerald-500 px-2 text-white hover:bg-emerald-600">
           <span className="shrink-0 text-xs font-semibold leading-none">شراء</span>
-          <span dir="ltr" className="truncate font-mono text-xs font-semibold leading-none tabular-nums opacity-95">{ask.toFixed(instrument.price_precision)}</span>
+          <span dir="ltr" className="truncate font-mono text-xs font-semibold leading-none tabular-nums opacity-95">{formatAssetPrice(instrument.symbol, ask, instrument.price_precision)}</span>
         </Button>
       </div>
     </div>
