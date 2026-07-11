@@ -3,6 +3,11 @@ import { useEffect, useState } from "react";
 import { PageShell, PageHero } from "@/components/page-shell";
 import { Trophy, Timer, Users, Wallet, Target, Medal, CheckCircle2, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
+import { subscribeCompetition } from "@/lib/actions.functions";
+import { useAuth } from "@/hooks/use-auth";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/competitions")({
   head: () => ({
