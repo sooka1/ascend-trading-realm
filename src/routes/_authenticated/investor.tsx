@@ -819,6 +819,17 @@ function InvestorPortal() {
                   )}
                 </div>
               )}
+              <Field label="Transaction Hash (TxID) — مطلوب">
+                <Input
+                  name="reference"
+                  required
+                  maxLength={120}
+                  placeholder={depositMethod === "usdt_trc20" ? "hash المعاملة (64 خانة hex)" : "رقم مرجع Binance Pay"}
+                  dir="ltr"
+                  className="font-mono text-xs"
+                />
+              </Field>
+              <p className="text-[11px] text-muted-foreground">ألصق TxID الخاص بتحويلك — لن يُقبل الإيداع بدونه، وسيُستخدم للتحقق من المعاملة على الشبكة.</p>
               <Field label="صورة إثبات التحويل (مطلوب)">
                 <Input name="receipt" type="file" required accept="image/png,image/jpeg,image/webp" className="file:mr-2 file:rounded file:border-0 file:bg-white/10 file:px-2 file:py-1 file:text-xs file:text-foreground" />
               </Field>
