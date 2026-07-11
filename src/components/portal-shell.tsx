@@ -23,6 +23,9 @@ import {
   Menu,
   Users as UsersIcon,
   Package as PackageIcon,
+  Trophy,
+  Copy,
+  GraduationCap,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useMemo, useState, type ReactNode } from "react";
@@ -54,6 +57,9 @@ const NAV: NavItem[] = [
   { to: "/portal/mfa", icon: ShieldCheck, label: "الأمان والمصادقة", group: "account" },
   { to: "/portal/settings", icon: Settings, label: "الإعدادات", group: "account" },
   { to: "/portal/downloads", icon: Download, label: "التنزيلات", group: "account" },
+  { to: "/competitions", icon: Trophy, label: "المسابقات", group: "explore" },
+  { to: "/copy-trading", icon: Copy, label: "نسخ الصفقات", group: "explore" },
+  { to: "/education", icon: GraduationCap, label: "الأكاديمية", group: "explore" },
 ];
 
 const GROUP_LABELS: Record<string, string> = {
@@ -61,6 +67,7 @@ const GROUP_LABELS: Record<string, string> = {
   reports: "التقارير والمستندات",
   engagement: "الأنشطة والاتصال",
   account: "الحساب",
+  explore: "استكشف",
 };
 
 export function PortalShell({
