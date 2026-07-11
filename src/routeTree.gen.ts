@@ -20,6 +20,7 @@ import { Route as LegalRouteImport } from './routes/legal'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as EducationRouteImport } from './routes/education'
+import { Route as CopyTradingRouteImport } from './routes/copy-trading'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as BrandRouteImport } from './routes/brand'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -129,6 +130,11 @@ const FaqRoute = FaqRouteImport.update({
 const EducationRoute = EducationRouteImport.update({
   id: '/education',
   path: '/education',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CopyTradingRoute = CopyTradingRouteImport.update({
+  id: '/copy-trading',
+  path: '/copy-trading',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -452,6 +458,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/brand': typeof BrandRoute
   '/contact': typeof ContactRoute
+  '/copy-trading': typeof CopyTradingRoute
   '/education': typeof EducationRoute
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
@@ -518,6 +525,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/brand': typeof BrandRoute
   '/contact': typeof ContactRoute
+  '/copy-trading': typeof CopyTradingRoute
   '/education': typeof EducationRoute
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
@@ -586,6 +594,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/brand': typeof BrandRoute
   '/contact': typeof ContactRoute
+  '/copy-trading': typeof CopyTradingRoute
   '/education': typeof EducationRoute
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
@@ -655,6 +664,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/brand'
     | '/contact'
+    | '/copy-trading'
     | '/education'
     | '/faq'
     | '/forgot-password'
@@ -721,6 +731,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/brand'
     | '/contact'
+    | '/copy-trading'
     | '/education'
     | '/faq'
     | '/forgot-password'
@@ -788,6 +799,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/brand'
     | '/contact'
+    | '/copy-trading'
     | '/education'
     | '/faq'
     | '/forgot-password'
@@ -857,6 +869,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   BrandRoute: typeof BrandRoute
   ContactRoute: typeof ContactRoute
+  CopyTradingRoute: typeof CopyTradingRoute
   EducationRoute: typeof EducationRoute
   FaqRoute: typeof FaqRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
@@ -948,6 +961,13 @@ declare module '@tanstack/react-router' {
       path: '/education'
       fullPath: '/education'
       preLoaderRoute: typeof EducationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/copy-trading': {
+      id: '/copy-trading'
+      path: '/copy-trading'
+      fullPath: '/copy-trading'
+      preLoaderRoute: typeof CopyTradingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -1488,6 +1508,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   BrandRoute: BrandRoute,
   ContactRoute: ContactRoute,
+  CopyTradingRoute: CopyTradingRoute,
   EducationRoute: EducationRoute,
   FaqRoute: FaqRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
