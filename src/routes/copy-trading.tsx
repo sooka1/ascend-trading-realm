@@ -754,7 +754,7 @@ function HistoryChart({ data }: { data: { label: string; pct: number }[] }) {
           const h = (Math.abs(m.pct) / max) * 100;
           const up = m.pct >= 0;
           return (
-            <div key={i} className="group relative flex flex-1 flex-col items-center justify-end">
+            <div key={i} className="group relative flex h-full flex-1 flex-col items-center justify-end">
               <div
                 className={`w-full rounded-sm transition ${up ? "bg-emerald-400/70 group-hover:bg-emerald-400" : "bg-red-400/70 group-hover:bg-red-400"}`}
                 style={{ height: `${Math.max(h, 4)}%` }}
