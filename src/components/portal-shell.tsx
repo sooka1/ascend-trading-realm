@@ -77,8 +77,8 @@ export function PortalShell({
   actions,
   children,
 }: {
-  eyebrow: string;
-  title: string;
+  eyebrow?: string;
+  title?: string;
   subtitle?: string;
   actions?: ReactNode;
   children: ReactNode;
@@ -136,6 +136,13 @@ export function PortalShell({
     [pathname],
   );
   const ActiveIcon = activeNav.icon;
+
+  // Unify header with the sidebar: derive eyebrow/title from the active nav
+  // item unless the page explicitly overrides them.
+  const activeGroupLabel = GROUP_LABELS[activeNav.group ?? "misc"] ?? "";
+  const derivedEyebrow = eyebrow ?? activeGroupLabel;
+  const derivedTitle = title ?? activeNav.label;
+  const isPortalHome = activeNav.to === "/portal";
 
   const NavList = ({ onNavigate }: { onNavigate?: () => void }) => (
     <nav className="space-y-5">
@@ -241,8 +248,26 @@ export function PortalShell({
               </div>
               <div className="flex flex-wrap items-end justify-between gap-4">
                 <div className="min-w-0">
-                  <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-gold/80">{eyebrow}</p>
-                  <h1 className="mt-2 font-display text-2xl font-semibold sm:text-3xl md:text-4xl">{title}</h1>
+                  <nav
+                    aria-label="مسار التنقّل"
+                    className="mb-2 flex flex-wrap items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground"
+                  >
+                    <Link to="/portal" className="transition hover:text-gold">
+                      Investor Portal
+                    </Link>
+                    {!isPortalHome && (
+                      <>
+                        <span aria-hidden className="text-muted-foreground/50">/</span>
+                        <span className="text-muted-foreground/80">{activeGroupLabel}</span>
+                        <span aria-hidden className="text-muted-foreground/50">/</span>
+                        <span aria-current="page" className="text-gold">
+                          {activeNav.label}
+                        </span>
+                      </>
+                    )}
+                  </nav>
+                  <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-gold/80">{derivedEyebrow}</p>
+                  <h1 className="mt-2 font-display text-2xl font-semibold sm:text-3xl md:text-4xl">{derivedTitle}</h1>
                   {subtitle && <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{subtitle}</p>}
                 </div>
                 {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
