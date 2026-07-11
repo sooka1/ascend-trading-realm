@@ -51,6 +51,7 @@ function Education() {
         </div>
         <ForeignCoursesSection />
       </section>
+      <VideoLibrarySection />
     </PageShell>
   );
 }
