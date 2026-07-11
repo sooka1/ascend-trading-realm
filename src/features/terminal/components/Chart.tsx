@@ -6,6 +6,7 @@ import type { Candle, Timeframe } from "../adapters/market-data/types";
 import { Minus, Slash, Square, TrendingUp, Trash2, MousePointer2, Activity, LineChart as LineIcon, Waves, BarChart3, Undo2, Redo2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ema, bollinger, rsi as rsiCalc, macd as macdCalc } from "../lib/indicators";
+import { supabase } from "@/integrations/supabase/client";
 
 type DrawTool = "none" | "trend" | "hline" | "rect" | "fib";
 type Anchor = { time: number; price: number };
@@ -53,6 +54,7 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
   const indicatorSeriesRef = useRef<Record<string, ISeriesApi<"Line"> | ISeriesApi<"Area"> | null>>({});
   const candlesRef = useRef<Candle[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const loadedForSymbolRef = useRef<string | null>(null);
   const dragRef = useRef<null | {
     id: string;
     handle: "a" | "b" | "move" | "price";
@@ -247,6 +249,43 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
 
   // History (undo/redo) helpers.
   useEffect(() => { drawingsRef.current = drawings; }, [drawings]);
+
+  // Load persisted drawings for this symbol.
+  useEffect(() => {
+    let cancelled = false;
+    loadedForSymbolRef.current = null;
+    setDrawings([]); setPast([]); setFuture([]); setSelectedId(null);
+    (async () => {
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) { loadedForSymbolRef.current = symbol; return; }
+      const { data } = await supabase
+        .from("chart_drawings")
+        .select("drawings")
+        .eq("user_id", userData.user.id)
+        .eq("symbol", symbol)
+        .maybeSingle();
+      if (cancelled) return;
+      if (data?.drawings && Array.isArray(data.drawings)) setDrawings(data.drawings as Drawing[]);
+      loadedForSymbolRef.current = symbol;
+    })();
+    return () => { cancelled = true; };
+  }, [symbol]);
+
+  // Persist drawings (debounced) whenever they change after initial load.
+  useEffect(() => {
+    if (loadedForSymbolRef.current !== symbol) return;
+    const t = window.setTimeout(async () => {
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) return;
+      await supabase.from("chart_drawings").upsert(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        { user_id: userData.user.id, symbol, drawings: drawings as any },
+        { onConflict: "user_id,symbol" },
+      );
+    }, 500);
+    return () => window.clearTimeout(t);
+  }, [drawings, symbol]);
+
   const commit = useCallback(() => {
     setPast((p) => [...p, drawingsRef.current]);
     setFuture([]);
