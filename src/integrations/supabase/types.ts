@@ -122,6 +122,232 @@ export type Database = {
         }
         Relationships: []
       }
+      copy_audit_log: {
+        Row: {
+          actor_id: string | null
+          created_at: string
+          event: string
+          id: string
+          payload: Json
+          target_user_id: string | null
+        }
+        Insert: {
+          actor_id?: string | null
+          created_at?: string
+          event: string
+          id?: string
+          payload?: Json
+          target_user_id?: string | null
+        }
+        Update: {
+          actor_id?: string | null
+          created_at?: string
+          event?: string
+          id?: string
+          payload?: Json
+          target_user_id?: string | null
+        }
+        Relationships: []
+      }
+      copy_master_trades: {
+        Row: {
+          closed_at: string | null
+          created_at: string
+          entry_price: number
+          exit_price: number | null
+          id: string
+          master_id: string
+          opened_at: string
+          pnl_pct: number | null
+          side: string
+          status: string
+          symbol: string
+          updated_at: string
+          volume: number
+        }
+        Insert: {
+          closed_at?: string | null
+          created_at?: string
+          entry_price: number
+          exit_price?: number | null
+          id?: string
+          master_id: string
+          opened_at?: string
+          pnl_pct?: number | null
+          side: string
+          status?: string
+          symbol: string
+          updated_at?: string
+          volume: number
+        }
+        Update: {
+          closed_at?: string | null
+          created_at?: string
+          entry_price?: number
+          exit_price?: number | null
+          id?: string
+          master_id?: string
+          opened_at?: string
+          pnl_pct?: number | null
+          side?: string
+          status?: string
+          symbol?: string
+          updated_at?: string
+          volume?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "copy_master_trades_master_id_fkey"
+            columns: ["master_id"]
+            isOneToOne: false
+            referencedRelation: "copy_masters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      copy_masters: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          id: string
+          is_active: boolean
+          min_capital: number
+          name: string
+          performance_fee_pct: number
+          risk_level: string
+          total_return_pct: number
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          min_capital?: number
+          name: string
+          performance_fee_pct?: number
+          risk_level?: string
+          total_return_pct?: number
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          min_capital?: number
+          name?: string
+          performance_fee_pct?: number
+          risk_level?: string
+          total_return_pct?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      copy_subscriptions: {
+        Row: {
+          allocated_amount: number
+          closed_at: string | null
+          copy_ratio: number
+          created_at: string
+          currency: string
+          id: string
+          master_id: string
+          started_at: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          allocated_amount: number
+          closed_at?: string | null
+          copy_ratio?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          master_id: string
+          started_at?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          allocated_amount?: number
+          closed_at?: string | null
+          copy_ratio?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          master_id?: string
+          started_at?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "copy_subscriptions_master_id_fkey"
+            columns: ["master_id"]
+            isOneToOne: false
+            referencedRelation: "copy_masters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      copy_trade_fills: {
+        Row: {
+          allocated_amount: number
+          created_at: string
+          id: string
+          master_trade_id: string
+          pnl: number
+          status: string
+          subscription_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          allocated_amount: number
+          created_at?: string
+          id?: string
+          master_trade_id: string
+          pnl?: number
+          status?: string
+          subscription_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          allocated_amount?: number
+          created_at?: string
+          id?: string
+          master_trade_id?: string
+          pnl?: number
+          status?: string
+          subscription_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "copy_trade_fills_master_trade_id_fkey"
+            columns: ["master_trade_id"]
+            isOneToOne: false
+            referencedRelation: "copy_master_trades"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "copy_trade_fills_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "copy_subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       deposits: {
         Row: {
           amount: number
@@ -1571,6 +1797,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_adjust_balance: {
+        Args: { _delta: number; _reason: string; _user_id: string }
+        Returns: Json
+      }
+      close_master_trade: {
+        Args: { _exit_price: number; _trade_id: string }
+        Returns: Json
+      }
       distribute_weekly_profits: { Args: never; Returns: number }
       email_has_role: {
         Args: { _email: string; _role: Database["public"]["Enums"]["app_role"] }
@@ -1603,6 +1837,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      subscribe_to_master: {
+        Args: { _amount: number; _master_id: string }
+        Returns: Json
       }
     }
     Enums: {
