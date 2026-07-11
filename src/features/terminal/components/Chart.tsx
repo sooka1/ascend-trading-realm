@@ -642,21 +642,31 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
         <div className="my-0.5 h-px w-full bg-white/10" />
         <button
           type="button"
-          title="تراجع (Ctrl+Z)"
+          title={`تراجع (Ctrl+Z) — ${past.length} خطوة متاحة`}
           disabled={past.length === 0}
           onClick={undo}
-          className="flex h-7 w-7 items-center justify-center rounded text-white/70 transition hover:bg-white/10 hover:text-white disabled:opacity-30 disabled:hover:bg-transparent"
+          className="relative flex h-7 w-7 items-center justify-center rounded text-white/70 transition hover:bg-white/10 hover:text-white disabled:opacity-30 disabled:hover:bg-transparent"
         >
           <Undo2 className="h-3.5 w-3.5" />
+          {past.length > 0 && (
+            <span className="pointer-events-none absolute -top-1 -right-1 min-w-[14px] rounded-full bg-gold px-1 text-[9px] font-bold leading-[14px] text-black">
+              {past.length > 99 ? "99+" : past.length}
+            </span>
+          )}
         </button>
         <button
           type="button"
-          title="إعادة (Ctrl+Shift+Z)"
+          title={`إعادة (Ctrl+Shift+Z) — ${future.length} خطوة متاحة`}
           disabled={future.length === 0}
           onClick={redo}
-          className="flex h-7 w-7 items-center justify-center rounded text-white/70 transition hover:bg-white/10 hover:text-white disabled:opacity-30 disabled:hover:bg-transparent"
+          className="relative flex h-7 w-7 items-center justify-center rounded text-white/70 transition hover:bg-white/10 hover:text-white disabled:opacity-30 disabled:hover:bg-transparent"
         >
           <Redo2 className="h-3.5 w-3.5" />
+          {future.length > 0 && (
+            <span className="pointer-events-none absolute -top-1 -right-1 min-w-[14px] rounded-full bg-gold px-1 text-[9px] font-bold leading-[14px] text-black">
+              {future.length > 99 ? "99+" : future.length}
+            </span>
+          )}
         </button>
         <div className="my-0.5 h-px w-full bg-white/10" />
         <button
