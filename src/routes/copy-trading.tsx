@@ -100,8 +100,8 @@ const SORT_LABEL: Record<SortKey, string> = {
 
 // last-month return derived same way as buildHistory's last entry
 function lastMonthReturn(t: Trader) {
-  const base = seeded(t.seed, 24, -4, 12);
-  const boost = seeded(t.seed, 123, 0, 1) > 0.85 ? seeded(t.seed, 223, 4, 8) : 0;
+  const base = seeded(t.seed, 24, 4, 20);
+  const boost = seeded(t.seed, 123, 0, 1) > 0.6 ? seeded(t.seed, 223, 8, 18) : seeded(t.seed, 223, 2, 6);
   return Number((base + boost).toFixed(2));
 }
 
@@ -119,9 +119,9 @@ function buildHistory(t: Trader) {
   for (let i = 23; i >= 0; i--) {
     const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
     const label = d.toLocaleDateString("ar", { month: "short", year: "2-digit" });
-    const base = seeded(t.seed, i + 1, -4, 12); // -4% to +12%
+    const base = seeded(t.seed, i + 1, 4, 20); // -4% to +12%
     // occasional stronger months
-    const boost = seeded(t.seed, i + 100, 0, 1) > 0.85 ? seeded(t.seed, i + 200, 4, 8) : 0;
+    const boost = seeded(t.seed, i + 100, 0, 1) > 0.6 ? seeded(t.seed, i + 200, 8, 18) : seeded(t.seed, i + 200, 2, 6);
     const pct = Number((base + boost).toFixed(2));
     months.push({ label, pct });
   }
@@ -148,8 +148,8 @@ function rangeReturn(t: Trader, from: string, to: string): number {
     const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
     const ym = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
     if (ym < from || ym > to) continue;
-    const base = seeded(t.seed, i + 1, -4, 12);
-    const boost = seeded(t.seed, i + 100, 0, 1) > 0.85 ? seeded(t.seed, i + 200, 4, 8) : 0;
+    const base = seeded(t.seed, i + 1, 4, 20);
+    const boost = seeded(t.seed, i + 100, 0, 1) > 0.6 ? seeded(t.seed, i + 200, 8, 18) : seeded(t.seed, i + 200, 2, 6);
     const pct = base + boost;
     factor *= 1 + pct / 100;
     count++;
