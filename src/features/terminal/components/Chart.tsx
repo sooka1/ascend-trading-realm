@@ -985,11 +985,27 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
                     </span>
                     <button onClick={() => go(1)} disabled={filteredHitLog.length === 0}
                       className="rounded border border-white/10 px-2 py-0.5 text-white/70 hover:bg-white/10 disabled:opacity-40">التالي</button>
+                    <button
+                      onClick={() => {
+                        setFocusedHit(null); setSelectedHit(null);
+                        try { window.localStorage.removeItem(FOCUSED_HIT_KEY); } catch { /* noop */ }
+                      }}
+                      disabled={!focusedHit}
+                      className="rounded border border-white/10 px-2 py-0.5 text-white/70 hover:bg-white/10 disabled:opacity-40"
+                    >
+                      إلغاء التركيز
+                    </button>
                   </div>
                 );
               })()}
             </div>
-            <div className="max-h-[60vh] overflow-auto">
+            <div
+              ref={logScrollRef}
+              onScroll={(e) => {
+                try { window.localStorage.setItem(LOG_SCROLL_KEY, String((e.currentTarget as HTMLDivElement).scrollTop)); } catch { /* noop */ }
+              }}
+              className="max-h-[60vh] overflow-auto"
+            >
               {filteredHitLog.length === 0 ? (
                 <div className="py-8 text-center text-[11px] text-white/40">{hitLog.length === 0 ? "لا يوجد تنبيهات بعد" : "لا توجد نتائج مطابقة"}</div>
               ) : (
