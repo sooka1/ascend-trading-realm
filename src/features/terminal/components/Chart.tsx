@@ -931,6 +931,27 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
                 placeholder="بحث بالأداة أو السعر…"
                 className="flex-1 min-w-[120px] rounded border border-white/10 bg-slate-900 px-2 py-1 text-white/80 placeholder:text-white/30" />
               <span className="text-white/40">{filteredHitLog.length}/{hitLog.length}</span>
+              {(() => {
+                const idx = focusedHit ? filteredHitLog.findIndex((h) => h.key === focusedHit.key && h.at === focusedHit.at) : -1;
+                const go = (dir: -1 | 1) => {
+                  if (filteredHitLog.length === 0) return;
+                  const base = idx === -1 ? (dir === 1 ? -1 : filteredHitLog.length) : idx;
+                  const next = (base + dir + filteredHitLog.length) % filteredHitLog.length;
+                  const h = filteredHitLog[next];
+                  setFocusedHit(h); setSelectedHit(h);
+                };
+                return (
+                  <div className="ms-auto flex items-center gap-1">
+                    <button onClick={() => go(-1)} disabled={filteredHitLog.length === 0}
+                      className="rounded border border-white/10 px-2 py-0.5 text-white/70 hover:bg-white/10 disabled:opacity-40">السابق</button>
+                    <span className="min-w-[3rem] text-center font-mono text-white/60">
+                      {idx === -1 ? "-" : idx + 1}/{filteredHitLog.length}
+                    </span>
+                    <button onClick={() => go(1)} disabled={filteredHitLog.length === 0}
+                      className="rounded border border-white/10 px-2 py-0.5 text-white/70 hover:bg-white/10 disabled:opacity-40">التالي</button>
+                  </div>
+                );
+              })()}
             </div>
             <div className="max-h-[60vh] overflow-auto">
               {filteredHitLog.length === 0 ? (
