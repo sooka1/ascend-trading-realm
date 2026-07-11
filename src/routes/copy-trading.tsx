@@ -88,6 +88,21 @@ const TRADERS: Trader[] = [
   { id: "vb", name: "Valentina Bianchi", country: "الأرجنتين", flag: "🇦🇷", strategy: "فضة ومعادن ثمينة", asset: "metals", risk: "medium", minDeposit: 950, profitShare: 24, followers: 1156, winRate: 68, seed: 211 },
   { id: "hp", name: "Hassan Al-Rashid", country: "قطر", flag: "🇶🇦", strategy: "كريبتو — Altcoins", asset: "crypto", risk: "high", minDeposit: 2200, profitShare: 30, followers: 2890, winRate: 71, seed: 223 },
   { id: "ml", name: "Margaux Laurent", country: "فرنسا", flag: "🇫🇷", strategy: "EUR/USD — Day Trade", asset: "forex", risk: "medium", minDeposit: 850, profitShare: 22, followers: 1687, winRate: 69, seed: 233 },
+  { id: "an", name: "Amir Nazari", country: "إيران", flag: "🇮🇷", strategy: "ذهب — Micro Lots", asset: "metals", risk: "low", minDeposit: 50, profitShare: 15, followers: 4820, winRate: 66, seed: 241 },
+  { id: "tl", name: "Tariq Lahlou", country: "المغرب", flag: "🇲🇦", strategy: "EUR/USD — Micro", asset: "forex", risk: "low", minDeposit: 60, profitShare: 15, followers: 3915, winRate: 65, seed: 251 },
+  { id: "zk", name: "Zineb Kadiri", country: "الجزائر", flag: "🇩🇿", strategy: "فوركس — Scalping خفيف", asset: "forex", risk: "medium", minDeposit: 70, profitShare: 16, followers: 3210, winRate: 67, seed: 257 },
+  { id: "os", name: "Omar Siddiqui", country: "باكستان", flag: "🇵🇰", strategy: "كريبتو — Spot صغير", asset: "crypto", risk: "medium", minDeposit: 80, profitShare: 18, followers: 5140, winRate: 68, seed: 263 },
+  { id: "rv", name: "Ravi Verma", country: "الهند", flag: "🇮🇳", strategy: "مؤشرات — NIFTY", asset: "indices", risk: "low", minDeposit: 90, profitShare: 18, followers: 6280, winRate: 70, seed: 269 },
+  { id: "bh", name: "Bilal Hariri", country: "تونس", flag: "🇹🇳", strategy: "ذهب — Intraday صغير", asset: "metals", risk: "low", minDeposit: 100, profitShare: 18, followers: 2870, winRate: 66, seed: 277 },
+  { id: "ay", name: "Ayşe Yılmaz", country: "تركيا", flag: "🇹🇷", strategy: "USD/TRY — Swing", asset: "forex", risk: "medium", minDeposit: 120, profitShare: 20, followers: 3560, winRate: 68, seed: 283 },
+  { id: "sn", name: "Somchai Niran", country: "تايلاند", flag: "🇹🇭", strategy: "مؤشرات آسيوية — Micro", asset: "indices", risk: "low", minDeposit: 150, profitShare: 20, followers: 2140, winRate: 67, seed: 293 },
+  { id: "ek", name: "Emeka Kalu", country: "غانا", flag: "🇬🇭", strategy: "سلع — Cocoa Micro", asset: "commodities", risk: "medium", minDeposit: 180, profitShare: 20, followers: 1290, winRate: 65, seed: 307 },
+  { id: "lp", name: "Linh Pham", country: "فيتنام", flag: "🇻🇳", strategy: "كريبتو — DCA", asset: "crypto", risk: "medium", minDeposit: 200, profitShare: 22, followers: 3480, winRate: 69, seed: 311 },
+  { id: "gm", name: "Gabriel Moreno", country: "المكسيك", flag: "🇲🇽", strategy: "USD/MXN — Swing", asset: "forex", risk: "medium", minDeposit: 250, profitShare: 22, followers: 1965, winRate: 68, seed: 317 },
+  { id: "iw", name: "Isabela Wangari", country: "كينيا", flag: "🇰🇪", strategy: "ذهب — Position", asset: "metals", risk: "low", minDeposit: 300, profitShare: 22, followers: 1180, winRate: 67, seed: 331 },
+  { id: "pk", name: "Pavel Kraus", country: "التشيك", flag: "🇨🇿", strategy: "DAX — Day Trade", asset: "indices", risk: "medium", minDeposit: 350, profitShare: 24, followers: 1420, winRate: 69, seed: 337 },
+  { id: "ho", name: "Hana Okonkwo", country: "جنوب أفريقيا", flag: "🇿🇦", strategy: "سلع — البلاتين", asset: "commodities", risk: "medium", minDeposit: 400, profitShare: 24, followers: 980, winRate: 66, seed: 347 },
+  { id: "vt", name: "Viktor Tarasov", country: "أوكرانيا", flag: "🇺🇦", strategy: "كريبتو — Momentum", asset: "crypto", risk: "high", minDeposit: 450, profitShare: 26, followers: 2340, winRate: 70, seed: 353 },
 ];
 
 const ASSET_LABEL: Record<Asset, string> = {
