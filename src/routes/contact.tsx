@@ -149,17 +149,17 @@ function Contact() {
             </div>
             <iframe
               title="HKEX Hong Kong HQ map"
-              src="https://www.google.com/maps?q=Two+Exchange+Square,+8+Connaught+Place,+Central,+Hong+Kong&output=embed"
+              src="https://www.google.com/maps?q=Two+International+Finance+Centre,+8+Finance+Street,+Central,+Hong+Kong&output=embed"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
               className="block h-64 w-full border-0"
             />
             <div className="flex items-center justify-between gap-2 border-t border-white/5 p-4">
               <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                22.2847°N · 114.1577°E
+                  22.2851°N · 114.1592°E
               </span>
               <a
-                href="https://www.google.com/maps/dir/?api=1&destination=Two+Exchange+Square,+8+Connaught+Place,+Central,+Hong+Kong"
+                href="https://www.google.com/maps/dir/?api=1&destination=Two+International+Finance+Centre,+8+Finance+Street,+Central,+Hong+Kong"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 rounded-md border border-gold/30 bg-gold/10 px-3 py-1.5 text-xs font-medium text-gold hover:bg-gold/20"
