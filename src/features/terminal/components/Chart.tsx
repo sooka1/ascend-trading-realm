@@ -3,7 +3,7 @@ import { CandlestickSeries, LineSeries, AreaSeries, BarSeries, createChart } fro
 import type { IChartApi, ISeriesApi, Time } from "lightweight-charts";
 import { getMarketDataProvider } from "../adapters/market-data";
 import type { Candle, Timeframe } from "../adapters/market-data/types";
-import { Minus, Slash, Square, TrendingUp, Trash2, MousePointer2, Activity, LineChart as LineIcon, Waves, BarChart3, Undo2, Redo2, Magnet } from "lucide-react";
+import { Minus, Slash, Square, TrendingUp, Trash2, MousePointer2, Activity, LineChart as LineIcon, Waves, BarChart3, Undo2, Redo2, Magnet, Settings2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ema, bollinger, rsi as rsiCalc, macd as macdCalc } from "../lib/indicators";
 import { supabase } from "@/integrations/supabase/client";
@@ -33,6 +33,18 @@ const FIB_COLORS = ["#94a3b8", "#f59e0b", "#f97316", "#eab308", "#22c55e", "#06b
 type ChartType = "candles" | "line" | "area" | "bars";
 type Indicators = { ema9: boolean; ema21: boolean; ema50: boolean; bb: boolean; rsi: boolean; macd: boolean };
 const DEFAULT_INDICATORS: Indicators = { ema9: false, ema21: false, ema50: false, bb: false, rsi: false, macd: false };
+type IndicatorSettings = {
+  ema9: number; ema21: number; ema50: number;
+  bbPeriod: number; bbStd: number;
+  rsi: number;
+  macdFast: number; macdSlow: number; macdSignal: number;
+};
+const DEFAULT_INDICATOR_SETTINGS: IndicatorSettings = {
+  ema9: 9, ema21: 21, ema50: 50,
+  bbPeriod: 20, bbStd: 2,
+  rsi: 14,
+  macdFast: 12, macdSlow: 26, macdSignal: 9,
+};
 
 function heikinAshi(src: Candle[]): Candle[] {
   const out: Candle[] = [];
@@ -62,6 +74,8 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
   const [future, setFuture] = useState<Drawing[][]>([]);
   const drawingsRef = useRef<Drawing[]>([]);
   const [indicators, setIndicators] = useState<Indicators>(DEFAULT_INDICATORS);
+  const [indSettings, setIndSettings] = useState<IndicatorSettings>(DEFAULT_INDICATOR_SETTINGS);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const indicatorSeriesRef = useRef<Record<string, ISeriesApi<"Line"> | ISeriesApi<"Area"> | null>>({});
   const candlesRef = useRef<Candle[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -170,11 +184,11 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
     };
 
     // Main pane overlays
-    indicators.ema9 ? applyLine("ema9", ema(closes, 9), "#f59e0b") : drop("ema9");
-    indicators.ema21 ? applyLine("ema21", ema(closes, 21), "#38bdf8") : drop("ema21");
-    indicators.ema50 ? applyLine("ema50", ema(closes, 50), "#a78bfa") : drop("ema50");
+    indicators.ema9 ? applyLine("ema9", ema(closes, indSettings.ema9), "#f59e0b") : drop("ema9");
+    indicators.ema21 ? applyLine("ema21", ema(closes, indSettings.ema21), "#38bdf8") : drop("ema21");
+    indicators.ema50 ? applyLine("ema50", ema(closes, indSettings.ema50), "#a78bfa") : drop("ema50");
     if (indicators.bb) {
-      const bb = bollinger(closes, 20, 2);
+      const bb = bollinger(closes, indSettings.bbPeriod, indSettings.bbStd);
       applyLine("bbUpper", bb.upper, "rgba(245,197,66,0.55)");
       applyLine("bbMid", bb.mid, "rgba(245,197,66,0.35)");
       applyLine("bbLower", bb.lower, "rgba(245,197,66,0.55)");
@@ -182,20 +196,20 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
 
     // Sub-pane: RSI (pane 1)
     if (indicators.rsi) {
-      applyLine("rsi", rsiCalc(closes, 14), "#22d3ee", 1);
+      applyLine("rsi", rsiCalc(closes, indSettings.rsi), "#22d3ee", 1);
       applyLine("rsi70", closes.map(() => 70), "rgba(239,68,68,0.4)", 1);
       applyLine("rsi30", closes.map(() => 30), "rgba(34,197,94,0.4)", 1);
     } else { drop("rsi"); drop("rsi70"); drop("rsi30"); }
 
     // Sub-pane: MACD (pane 2)
     if (indicators.macd) {
-      const m = macdCalc(closes);
+      const m = macdCalc(closes, indSettings.macdFast, indSettings.macdSlow, indSettings.macdSignal);
       const paneIdx = indicators.rsi ? 2 : 1;
       applyLine("macdLine", m.line, "#60a5fa", paneIdx);
       applyLine("macdSignal", m.signal, "#f97316", paneIdx);
       applyLine("macdHist", m.hist, "rgba(148,163,184,0.6)", paneIdx);
     } else { drop("macdLine"); drop("macdSignal"); drop("macdHist"); }
-  }, [indicators]);
+  }, [indicators, indSettings]);
 
   useEffect(() => { recomputeIndicators(); }, [recomputeIndicators]);
 
@@ -428,12 +442,12 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
   ];
 
   const indicatorToggles: { key: keyof Indicators; label: string; icon: typeof Activity; color: string }[] = [
-    { key: "ema9", label: "EMA 9", icon: LineIcon, color: "#f59e0b" },
-    { key: "ema21", label: "EMA 21", icon: LineIcon, color: "#38bdf8" },
-    { key: "ema50", label: "EMA 50", icon: LineIcon, color: "#a78bfa" },
-    { key: "bb", label: "Bollinger", icon: Waves, color: "#F5C542" },
-    { key: "rsi", label: "RSI 14", icon: Activity, color: "#22d3ee" },
-    { key: "macd", label: "MACD", icon: BarChart3, color: "#60a5fa" },
+    { key: "ema9", label: `EMA ${indSettings.ema9}`, icon: LineIcon, color: "#f59e0b" },
+    { key: "ema21", label: `EMA ${indSettings.ema21}`, icon: LineIcon, color: "#38bdf8" },
+    { key: "ema50", label: `EMA ${indSettings.ema50}`, icon: LineIcon, color: "#a78bfa" },
+    { key: "bb", label: `BB ${indSettings.bbPeriod}/${indSettings.bbStd}`, icon: Waves, color: "#F5C542" },
+    { key: "rsi", label: `RSI ${indSettings.rsi}`, icon: Activity, color: "#22d3ee" },
+    { key: "macd", label: `MACD ${indSettings.macdFast}/${indSettings.macdSlow}/${indSettings.macdSignal}`, icon: BarChart3, color: "#60a5fa" },
   ];
 
   return (
@@ -669,7 +683,7 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
           $
         </button>
       </div>
-      <div className="absolute right-2 top-2 z-10 flex flex-wrap gap-1 rounded-md border border-white/10 bg-black/60 p-1 backdrop-blur">
+      <div className="absolute right-2 top-2 z-10 flex flex-wrap items-center gap-1 rounded-md border border-white/10 bg-black/60 p-1 backdrop-blur">
         {indicatorToggles.map((it) => {
           const active = indicators[it.key];
           const Icon = it.icon;
@@ -689,7 +703,60 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
             </button>
           );
         })}
+        <button
+          type="button"
+          title="إعدادات المؤشرات"
+          onClick={() => setSettingsOpen((v) => !v)}
+          className={cn(
+            "flex h-5 w-5 items-center justify-center rounded text-white/60 transition hover:bg-white/10 hover:text-white",
+            settingsOpen && "bg-white/10 text-white",
+          )}
+        >
+          <Settings2 className="h-3 w-3" />
+        </button>
       </div>
+      {settingsOpen && (
+        <div className="absolute right-2 top-11 z-20 w-64 rounded-md border border-white/10 bg-black/85 p-3 shadow-xl backdrop-blur">
+          <div className="mb-2 flex items-center justify-between text-[11px] font-semibold text-white/80">
+            <span>إعدادات المؤشرات</span>
+            <button
+              type="button"
+              onClick={() => setIndSettings(DEFAULT_INDICATOR_SETTINGS)}
+              className="text-[10px] font-normal text-white/50 hover:text-white"
+            >
+              استعادة الافتراضي
+            </button>
+          </div>
+          {([
+            ["ema9", "EMA سريع", 1, 500, 1],
+            ["ema21", "EMA متوسط", 1, 500, 1],
+            ["ema50", "EMA طويل", 1, 500, 1],
+            ["bbPeriod", "BB Period", 2, 200, 1],
+            ["bbStd", "BB StdDev", 0.5, 5, 0.1],
+            ["rsi", "RSI Period", 2, 100, 1],
+            ["macdFast", "MACD Fast", 1, 100, 1],
+            ["macdSlow", "MACD Slow", 1, 200, 1],
+            ["macdSignal", "MACD Signal", 1, 100, 1],
+          ] as [keyof IndicatorSettings, string, number, number, number][]).map(([k, label, min, max, step]) => (
+            <label key={k} className="mb-1.5 flex items-center justify-between gap-2 text-[10px] text-white/60">
+              <span>{label}</span>
+              <input
+                type="number"
+                min={min}
+                max={max}
+                step={step}
+                value={indSettings[k]}
+                onChange={(e) => {
+                  const v = Number(e.target.value);
+                  if (!Number.isFinite(v)) return;
+                  setIndSettings((s) => ({ ...s, [k]: Math.min(max, Math.max(min, v)) }));
+                }}
+                className="h-6 w-16 rounded border border-white/10 bg-white/5 px-1.5 text-right text-white outline-none focus:border-gold/50"
+              />
+            </label>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
