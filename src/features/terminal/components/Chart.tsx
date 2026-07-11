@@ -121,22 +121,7 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
     const t = window.setTimeout(() => setRehydrateHighlight(false), 2000);
     return () => window.clearTimeout(t);
   }, [rehydrateHighlight]);
-  // If the focused row isn't in the filtered result set, fall back to the first match.
-  useEffect(() => {
-    if (!focusedHit) return;
-    if (filteredHitLog.length === 0) return;
-    const stillThere = filteredHitLog.some((h) => h.key === focusedHit.key && h.at === focusedHit.at);
-    if (!stillThere) {
-      setFocusedHit(filteredHitLog[0]);
-      setSelectedHit(filteredHitLog[0]);
-    }
-  }, [logKind, logSide, logQuery, hitLog]); // eslint-disable-line react-hooks/exhaustive-deps
   const focusedRowRef = useRef<HTMLTableRowElement | null>(null);
-  useEffect(() => {
-    if (logOpen && focusedRowRef.current) {
-      focusedRowRef.current.scrollIntoView({ block: "center", behavior: "smooth" });
-    }
-  }, [logOpen, focusedHit]);
   const [logOpen, setLogOpen] = useState(false);
   const LOG_FILTERS_KEY = "hk.tpsl.logFilters.v1";
   const [logKind, setLogKind] = useState<"all" | "TP" | "SL">(() => {
