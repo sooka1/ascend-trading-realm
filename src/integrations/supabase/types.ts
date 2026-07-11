@@ -575,6 +575,7 @@ export type Database = {
         Row: {
           condition: string
           created_at: string
+          enabled: boolean
           id: string
           symbol: string
           target_price: number
@@ -585,6 +586,7 @@ export type Database = {
         Insert: {
           condition: string
           created_at?: string
+          enabled?: boolean
           id?: string
           symbol: string
           target_price: number
@@ -595,6 +597,7 @@ export type Database = {
         Update: {
           condition?: string
           created_at?: string
+          enabled?: boolean
           id?: string
           symbol?: string
           target_price?: number
