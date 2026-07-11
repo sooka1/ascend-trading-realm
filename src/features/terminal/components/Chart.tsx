@@ -74,6 +74,8 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
   const [future, setFuture] = useState<Drawing[][]>([]);
   const drawingsRef = useRef<Drawing[]>([]);
   const [indicators, setIndicators] = useState<Indicators>(DEFAULT_INDICATORS);
+  const [indSettings, setIndSettings] = useState<IndicatorSettings>(DEFAULT_INDICATOR_SETTINGS);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const indicatorSeriesRef = useRef<Record<string, ISeriesApi<"Line"> | ISeriesApi<"Area"> | null>>({});
   const candlesRef = useRef<Candle[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
