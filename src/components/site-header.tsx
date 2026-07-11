@@ -63,8 +63,8 @@ export function SiteHeader() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 border-b border-black/10 bg-primary/95 text-primary-foreground backdrop-blur-xl",
-        "[&_a]:text-primary-foreground [&_button]:text-primary-foreground",
+        "sticky top-0 z-50 border-b border-white/15 bg-primary/95 text-white backdrop-blur-xl",
+        "[&_a]:text-white [&_button]:text-white",
         "transition-transform duration-300 will-change-transform",
         hidden ? "-translate-y-full" : "translate-y-0",
       )}
@@ -79,8 +79,8 @@ export function SiteHeader() {
             <Link
               key={item.to}
               to={item.to}
-              className="rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground"
-              activeProps={{ className: "text-foreground bg-white/5" }}
+              className="rounded-md px-3 py-2 text-sm text-white/85 transition-colors hover:bg-white/15 hover:text-white"
+              activeProps={{ className: "text-white bg-white/15" }}
             >
               {t(item.key)}
             </Link>
