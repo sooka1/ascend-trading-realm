@@ -442,12 +442,12 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
   ];
 
   const indicatorToggles: { key: keyof Indicators; label: string; icon: typeof Activity; color: string }[] = [
-    { key: "ema9", label: "EMA 9", icon: LineIcon, color: "#f59e0b" },
-    { key: "ema21", label: "EMA 21", icon: LineIcon, color: "#38bdf8" },
-    { key: "ema50", label: "EMA 50", icon: LineIcon, color: "#a78bfa" },
-    { key: "bb", label: "Bollinger", icon: Waves, color: "#F5C542" },
-    { key: "rsi", label: "RSI 14", icon: Activity, color: "#22d3ee" },
-    { key: "macd", label: "MACD", icon: BarChart3, color: "#60a5fa" },
+    { key: "ema9", label: `EMA ${indSettings.ema9}`, icon: LineIcon, color: "#f59e0b" },
+    { key: "ema21", label: `EMA ${indSettings.ema21}`, icon: LineIcon, color: "#38bdf8" },
+    { key: "ema50", label: `EMA ${indSettings.ema50}`, icon: LineIcon, color: "#a78bfa" },
+    { key: "bb", label: `BB ${indSettings.bbPeriod}/${indSettings.bbStd}`, icon: Waves, color: "#F5C542" },
+    { key: "rsi", label: `RSI ${indSettings.rsi}`, icon: Activity, color: "#22d3ee" },
+    { key: "macd", label: `MACD ${indSettings.macdFast}/${indSettings.macdSlow}/${indSettings.macdSignal}`, icon: BarChart3, color: "#60a5fa" },
   ];
 
   return (
