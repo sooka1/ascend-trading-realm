@@ -265,11 +265,13 @@ export function createLiveProvider(): MarketDataProvider {
         const url = `https://api.binance.com/api/v3/klines?symbol=${BINANCE_MAP[symbol].toUpperCase()}&interval=${BINANCE_INTERVAL[tf]}&limit=${Math.min(count, 1000)}`;
         const res = await fetch(url);
         const rows: unknown[][] = await res.json();
-        return rows.map((r) => ({
+        const out: Candle[] = rows.map((r) => ({
           time: Math.floor(Number(r[0]) / 1000),
           open: Number(r[1]), high: Number(r[2]), low: Number(r[3]), close: Number(r[4]),
           volume: Number(r[5]),
         }));
+        if (out.length > 0) liveCandle.set(`${symbol}|${tf}`, { ...out[out.length - 1] });
+        return out;
       }
       const res = await fetchLiveCandles({ data: { symbol, tf, count } });
       const candles = res.candles as Candle[];
