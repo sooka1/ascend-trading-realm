@@ -15,6 +15,11 @@ type CopySearch = {
   perPage: number;
   trader: string;
   redirect: string;
+  asset: string;
+  risk: string;
+  minReturn: number;
+  maxDeposit: number;
+  sort: string;
 };
 
 const searchSchema = z.object({
@@ -22,6 +27,11 @@ const searchSchema = z.object({
   perPage: fallback(z.number().int(), 4).default(4),
   trader: fallback(z.string(), "").default(""),
   redirect: fallback(z.string(), "").default(""),
+  asset: fallback(z.string(), "all").default("all"),
+  risk: fallback(z.string(), "all").default("all"),
+  minReturn: fallback(z.number(), -10).default(-10),
+  maxDeposit: fallback(z.number().int(), 5000).default(5000),
+  sort: fallback(z.string(), "return").default("return"),
 });
 
 const PER_PAGE_OPTIONS = [2, 4, 6, 8] as const;
