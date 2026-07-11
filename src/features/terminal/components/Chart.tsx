@@ -184,6 +184,15 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
       focusedRowRef.current.scrollIntoView({ block: "center", behavior: "smooth" });
     }
   }, [logOpen, focusedHit]);
+  useEffect(() => {
+    if (!logOpen) return;
+    const el = logScrollRef.current;
+    if (!el) return;
+    try {
+      const v = Number(window.localStorage.getItem(LOG_SCROLL_KEY) ?? 0);
+      if (Number.isFinite(v)) requestAnimationFrame(() => { el.scrollTop = v; });
+    } catch { /* noop */ }
+  }, [logOpen]);
   const [showRiskLines, setShowRiskLines] = useState<boolean>(() => {
     try {
       if (typeof window === "undefined") return true;
