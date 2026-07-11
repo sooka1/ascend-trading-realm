@@ -452,6 +452,7 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
       >
         {drawings.map((d) => {
           const isSel = selectedId === d.id;
+          const st = resolveStyle(d);
           const selectable: React.SVGAttributes<SVGElement> = {
             style: { pointerEvents: tool === "none" ? "all" : "none", cursor: tool === "none" ? "move" : undefined },
           };
@@ -461,9 +462,9 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
             return (
               <g key={d.id} onPointerDown={(e) => startDrag(e, d, "price")}>
                 <line x1={0} x2={width} y1={y - 6} y2={y - 6 + 12} stroke="transparent" strokeWidth={12} {...selectable} />
-                <line x1={0} x2={width} y1={y} y2={y} stroke="#F5C542" strokeWidth={isSel ? 2 : 1.25} strokeDasharray="4 3" />
-                <text x={6} y={y - 4} fill="#F5C542" fontSize={11}>{d.price.toFixed(precision)}</text>
-                {isSel && <circle cx={width / 2} cy={y} r={5} fill="#0f172a" stroke="#F5C542" strokeWidth={2} style={{ pointerEvents: "all", cursor: "ns-resize" }} />}
+                <line x1={0} x2={width} y1={y} y2={y} stroke={st.color} strokeOpacity={st.opacity} strokeWidth={isSel ? st.width + 0.75 : st.width} strokeDasharray="4 3" />
+                <text x={6} y={y - 4} fill={st.color} fillOpacity={st.opacity} fontSize={11}>{d.price.toFixed(precision)}</text>
+                {isSel && <circle cx={width / 2} cy={y} r={5} fill="#0f172a" stroke={st.color} strokeWidth={2} style={{ pointerEvents: "all", cursor: "ns-resize" }} />}
               </g>
             );
           }
@@ -471,10 +472,10 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
           if (!pa || !pb) return null;
           const handles = isSel && (
             <>
-              <circle cx={pa.x} cy={pa.y} r={5} fill="#0f172a" stroke="#F5C542" strokeWidth={2}
+              <circle cx={pa.x} cy={pa.y} r={5} fill="#0f172a" stroke={st.color} strokeWidth={2}
                 style={{ pointerEvents: "all", cursor: "grab" }}
                 onPointerDown={(e) => startDrag(e, d, "a")} />
-              <circle cx={pb.x} cy={pb.y} r={5} fill="#0f172a" stroke="#F5C542" strokeWidth={2}
+              <circle cx={pb.x} cy={pb.y} r={5} fill="#0f172a" stroke={st.color} strokeWidth={2}
                 style={{ pointerEvents: "all", cursor: "grab" }}
                 onPointerDown={(e) => startDrag(e, d, "b")} />
             </>
@@ -482,7 +483,7 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
           if (d.type === "trend") return (
             <g key={d.id} onPointerDown={(e) => startDrag(e, d, "move")}>
               <line x1={pa.x} y1={pa.y} x2={pb.x} y2={pb.y} stroke="transparent" strokeWidth={12} {...selectable} />
-              <line x1={pa.x} y1={pa.y} x2={pb.x} y2={pb.y} stroke={isSel ? "#F5C542" : "#60a5fa"} strokeWidth={isSel ? 2 : 1.5} />
+              <line x1={pa.x} y1={pa.y} x2={pb.x} y2={pb.y} stroke={st.color} strokeOpacity={st.opacity} strokeWidth={isSel ? st.width + 0.75 : st.width} />
               {handles}
             </g>
           );
@@ -491,7 +492,7 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
             const w = Math.abs(pb.x - pa.x), h = Math.abs(pb.y - pa.y);
             return (
               <g key={d.id} onPointerDown={(e) => startDrag(e, d, "move")}>
-                <rect x={x} y={y} width={w} height={h} fill="rgba(96,165,250,0.12)" stroke={isSel ? "#F5C542" : "#60a5fa"} strokeWidth={isSel ? 2 : 1} {...selectable} />
+                <rect x={x} y={y} width={w} height={h} fill={st.color} fillOpacity={st.opacity * 0.15} stroke={st.color} strokeOpacity={st.opacity} strokeWidth={isSel ? st.width + 0.5 : st.width} {...selectable} />
                 {handles}
               </g>
             );
@@ -506,8 +507,8 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
                 if (y == null) return null;
                 return (
                   <g key={lvl}>
-                    <line x1={x1} x2={width} y1={y} y2={y} stroke={FIB_COLORS[i]} strokeWidth={isSel ? 1.5 : 1} strokeOpacity={0.8} strokeDasharray="3 3" {...selectable} />
-                    <text x={x2 + 4} y={y - 2} fill={FIB_COLORS[i]} fontSize={10}>{lvl.toFixed(3)} · {price.toFixed(precision)}</text>
+                    <line x1={x1} x2={width} y1={y} y2={y} stroke={d.style?.color ?? FIB_COLORS[i]} strokeWidth={isSel ? st.width : Math.max(1, st.width - 0.5)} strokeOpacity={0.8 * st.opacity} strokeDasharray="3 3" {...selectable} />
+                    <text x={x2 + 4} y={y - 2} fill={d.style?.color ?? FIB_COLORS[i]} fillOpacity={st.opacity} fontSize={10}>{lvl.toFixed(3)} · {price.toFixed(precision)}</text>
                   </g>
                 );
               })}
