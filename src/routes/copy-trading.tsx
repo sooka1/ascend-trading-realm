@@ -1,14 +1,33 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { PageShell, PageHero } from "@/components/page-shell";
-import { Copy, TrendingUp, TrendingDown, Users, Wallet, Percent, Award, Lock, Calculator, FileDown, Printer } from "lucide-react";
+import { Copy, TrendingUp, TrendingDown, Users, Wallet, Percent, Award, Lock, Calculator, FileDown, Printer, ChevronRight, ChevronLeft } from "lucide-react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { requestCopyTrader } from "@/lib/actions.functions";
+import { zodValidator, fallback } from "@tanstack/zod-adapter";
+import { z } from "zod";
+
+type CopySearch = {
+  page: number;
+  perPage: number;
+  trader: string;
+  redirect: string;
+};
+
+const searchSchema = z.object({
+  page: fallback(z.number().int(), 1).default(1),
+  perPage: fallback(z.number().int(), 4).default(4),
+  trader: fallback(z.string(), "").default(""),
+  redirect: fallback(z.string(), "").default(""),
+});
+
+const PER_PAGE_OPTIONS = [2, 4, 6, 8] as const;
 
 export const Route = createFileRoute("/copy-trading")({
+  validateSearch: zodValidator(searchSchema),
   head: () => ({
     meta: [
       { title: "نسخ الصفقات — HK Investment Management" },
@@ -103,6 +122,12 @@ const fmtMoney = (n: number) => new Intl.NumberFormat("en-US").format(n);
 
 function CopyTradingPage() {
   const { user, loading } = useAuth();
+  const search = Route.useSearch();
+  const navigate = useNavigate({ from: "/copy-trading" });
+  const page = Math.max(1, search.page);
+  const perPage = PER_PAGE_OPTIONS.includes(search.perPage as (typeof PER_PAGE_OPTIONS)[number])
+    ? search.perPage
+    : 4;
   const [asset, setAsset] = useState<Asset | "all">("all");
   const [risk, setRisk] = useState<Risk | "all">("all");
   const [minReturn, setMinReturn] = useState<number>(-10);
@@ -128,6 +153,29 @@ function CopyTradingPage() {
     });
     return rows.map((r) => r.t);
   }, [asset, risk, minReturn, maxDeposit, sort]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
+  const safePage = Math.min(page, totalPages);
+  const paginated = useMemo(
+    () => filtered.slice((safePage - 1) * perPage, safePage * perPage),
+    [filtered, safePage, perPage],
+  );
+
+  // Reset to page 1 when filters change.
+  useEffect(() => {
+    if (search.page !== 1) navigate({ search: (p: CopySearch) => ({ ...p, page: 1 }), replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [asset, risk, minReturn, maxDeposit, sort]);
+
+  // Clamp page if it overshoots after filtering.
+  useEffect(() => {
+    if (search.page > totalPages) navigate({ search: (p: CopySearch) => ({ ...p, page: totalPages }), replace: true });
+  }, [totalPages, search.page, navigate]);
+
+  const setPage = (n: number) =>
+    navigate({ search: (p: CopySearch) => ({ ...p, page: Math.max(1, Math.min(totalPages, n)) }) });
+  const setPerPage = (n: number) =>
+    navigate({ search: (p: CopySearch) => ({ ...p, perPage: n, page: 1 }) });
 
   const resetFilters = () => {
     setAsset("all"); setRisk("all"); setMinReturn(-10); setMaxDeposit(5000); setSort("return");
@@ -271,11 +319,50 @@ function CopyTradingPage() {
             لا يوجد متداولون مطابقون. جرّب تخفيف الفلاتر.
           </div>
         ) : (
-          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-2">
-            {filtered.map((t) => (
-              <TraderCard key={t.id} trader={t} isAuthed={!!user} />
-            ))}
-          </div>
+          <>
+            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-2">
+              {paginated.map((t) => (
+                <TraderCard key={t.id} trader={t} isAuthed={!!user} />
+              ))}
+            </div>
+            <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/10 bg-card/40 px-4 py-3 text-xs">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <span className="font-mono uppercase tracking-widest">لكل صفحة:</span>
+                {PER_PAGE_OPTIONS.map((n) => (
+                  <button
+                    key={n}
+                    onClick={() => setPerPage(n)}
+                    className={`rounded-md border px-2 py-1 font-mono tabular-nums transition ${
+                      perPage === n
+                        ? "border-gold/50 bg-gold/10 text-gold"
+                        : "border-white/10 hover:border-gold/40 hover:text-foreground"
+                    }`}
+                  >
+                    {n}
+                  </button>
+                ))}
+              </div>
+              <div className="font-mono tabular-nums text-muted-foreground">
+                صفحة {safePage} من {totalPages} · {filtered.length} نتيجة
+              </div>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => setPage(safePage - 1)}
+                  disabled={safePage <= 1}
+                  className="inline-flex items-center gap-1 rounded-md border border-white/10 px-2 py-1 hover:border-gold/40 hover:text-foreground disabled:opacity-40"
+                >
+                  <ChevronRight className="h-3.5 w-3.5" /> السابق
+                </button>
+                <button
+                  onClick={() => setPage(safePage + 1)}
+                  disabled={safePage >= totalPages}
+                  className="inline-flex items-center gap-1 rounded-md border border-white/10 px-2 py-1 hover:border-gold/40 hover:text-foreground disabled:opacity-40"
+                >
+                  التالي <ChevronLeft className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            </div>
+          </>
         )}
         <p className="mt-10 text-center text-xs text-muted-foreground">
           العوائد المعروضة هي نتائج تاريخية تقريبية لأغراض العرض ولا تشكّل ضماناً لأي أرباح مستقبلية. الأداء الماضي لا يُعدّ مؤشراً على النتائج القادمة.
