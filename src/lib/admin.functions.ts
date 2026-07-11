@@ -708,7 +708,7 @@ export const decideKycAdmin = createServerFn({ method: "POST" })
       try {
         const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
         await sendTemplateEmail("kyc-status", row.email, {
-          templateData: { status: data.decision, name: row.display_name, notes: data.notes ?? undefined },
+          templateData: { status: data.decision, reason: data.notes ?? undefined },
           idempotencyKey: `kyc-${data.decision}-${row.id}`,
         });
       } catch (e) {
