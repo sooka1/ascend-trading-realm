@@ -112,6 +112,16 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
       }
     } catch { /* noop */ }
   }, [focusedHit]);
+  // Briefly highlight the rehydrated row so the user sees where they left off.
+  const [rehydrateHighlight, setRehydrateHighlight] = useState<boolean>(() => {
+    try { return !!window.localStorage.getItem(FOCUSED_HIT_KEY); } catch { return false; }
+  });
+  useEffect(() => {
+    if (!rehydrateHighlight) return;
+    const t = window.setTimeout(() => setRehydrateHighlight(false), 2000);
+    return () => window.clearTimeout(t);
+  }, [rehydrateHighlight]);
+  const focusedRowRef = useRef<HTMLTableRowElement | null>(null);
   const [logOpen, setLogOpen] = useState(false);
   const LOG_FILTERS_KEY = "hk.tpsl.logFilters.v1";
   const [logKind, setLogKind] = useState<"all" | "TP" | "SL">(() => {
@@ -157,6 +167,21 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
       String(h.entry).includes(q)
     );
   });
+  // If the focused row isn't in the filtered result set, fall back to the first match.
+  useEffect(() => {
+    if (!focusedHit) return;
+    if (filteredHitLog.length === 0) return;
+    const stillThere = filteredHitLog.some((h) => h.key === focusedHit.key && h.at === focusedHit.at);
+    if (!stillThere) {
+      setFocusedHit(filteredHitLog[0]);
+      setSelectedHit(filteredHitLog[0]);
+    }
+  }, [logKind, logSide, logQuery, hitLog]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (logOpen && focusedRowRef.current) {
+      focusedRowRef.current.scrollIntoView({ block: "center", behavior: "smooth" });
+    }
+  }, [logOpen, focusedHit]);
   const [showRiskLines, setShowRiskLines] = useState<boolean>(() => {
     try {
       if (typeof window === "undefined") return true;
@@ -970,12 +995,17 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
                   </thead>
                   <tbody>
                     {filteredHitLog.map((h) => (
+                      (() => {
+                        const isFocused = !!focusedHit && focusedHit.key === h.key && focusedHit.at === h.at;
+                        return (
                       <tr
                         key={h.key + ":" + h.at}
+                        ref={isFocused ? focusedRowRef : undefined}
                         onClick={() => { setFocusedHit(h); setSelectedHit(h); setLogOpen(false); }}
                         className={cn(
                           "cursor-pointer border-t border-white/[0.04] hover:bg-white/5",
-                          focusedHit && focusedHit.key === h.key && focusedHit.at === h.at && "bg-white/10",
+                          isFocused && "bg-white/10",
+                          isFocused && rehydrateHighlight && "animate-pulse ring-2 ring-amber-400/70",
                         )}
                       >
                         <td className="px-2 py-2 font-mono text-white/70">{new Date(h.at).toLocaleString("en-GB")}</td>
@@ -985,6 +1015,8 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
                         <td className="px-2 py-2 font-mono">{h.price.toFixed(precision)}</td>
                         <td className="px-2 py-2 text-white/70">{h.result}</td>
                       </tr>
+                        );
+                      })()
                     ))}
                   </tbody>
                 </table>
