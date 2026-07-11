@@ -354,6 +354,52 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
     };
   }, [focusedTrade, symbol, chartType, timeframe, precision]);
 
+  // Draw entry + hit price lines when a TP/SL log row is focused.
+  useEffect(() => {
+    const series = seriesRef.current;
+    const chart = chartRef.current;
+    if (!series) return;
+    for (const pl of hitFocusLinesRef.current) {
+      try { (series as any).removePriceLine(pl); } catch { /* noop */ }
+    }
+    hitFocusLinesRef.current = [];
+    if (!focusedHit || focusedHit.symbol !== symbol) return;
+    const isBuy = focusedHit.side === "buy";
+    const entryColor = isBuy ? "#22c55e" : "#ef4444";
+    const hitColor = focusedHit.kind === "TP" ? "#10b981" : "#f43f5e";
+    try {
+      hitFocusLinesRef.current.push((series as any).createPriceLine({
+        price: focusedHit.entry, color: entryColor, lineWidth: 2, lineStyle: 1,
+        axisLabelVisible: true, title: `📌 ${isBuy ? "BUY" : "SELL"} @ ${focusedHit.entry.toFixed(precision)}`,
+      }));
+    } catch { /* noop */ }
+    try {
+      hitFocusLinesRef.current.push((series as any).createPriceLine({
+        price: focusedHit.price, color: hitColor, lineWidth: 2, lineStyle: 0,
+        axisLabelVisible: true, title: `⚡ ${focusedHit.kind} HIT @ ${focusedHit.price.toFixed(precision)}`,
+      }));
+    } catch { /* noop */ }
+    if (chart) {
+      try {
+        const t = Math.floor(focusedHit.at / 1000) as unknown as Time;
+        chart.timeScale().scrollToPosition(0, false);
+        const x = chart.timeScale().timeToCoordinate(t);
+        if (x != null) {
+          const bar = chart.timeScale().coordinateToLogical(x);
+          if (bar != null) chart.timeScale().setVisibleLogicalRange({ from: bar - 30, to: bar + 30 });
+        }
+      } catch { /* noop */ }
+    }
+    return () => {
+      const s = seriesRef.current;
+      if (!s) return;
+      for (const pl of hitFocusLinesRef.current) {
+        try { (s as any).removePriceLine(pl); } catch { /* noop */ }
+      }
+      hitFocusLinesRef.current = [];
+    };
+  }, [focusedHit, symbol, chartType, timeframe, precision]);
+
   // Add / remove and refresh indicator series based on toggles.
   const recomputeIndicators = useCallback(() => {
     const chart = chartRef.current;
