@@ -90,6 +90,28 @@ export function createLiveProvider(): MarketDataProvider {
     return out;
   }
 
+  // Align a historical series' tail with the current bucket for the given
+  // timeframe so live tick updates extend the last bar seamlessly (no gap,
+  // no overlap) when the user switches timeframes.
+  function alignTail(candles: Candle[], tf: Timeframe): Candle[] {
+    if (candles.length === 0) return candles;
+    const step = TF_SEC[tf];
+    const nowBucket = Math.floor(Date.now() / 1000 / step) * step;
+    const last = candles[candles.length - 1];
+    // Drop any bar whose bucket is ahead of "now" (clock skew / provider quirk).
+    while (candles.length > 0 && candles[candles.length - 1].time > nowBucket) {
+      candles.pop();
+    }
+    const tail = candles[candles.length - 1] ?? last;
+    if (tail.time === nowBucket) return candles; // in-progress bar already present
+    // Historical tail is a closed bar. Append a fresh in-progress bar at the
+    // current bucket so live ticks build directly on top without a gap.
+    candles.push({
+      time: nowBucket, open: tail.close, high: tail.close, low: tail.close, close: tail.close,
+    });
+    return candles;
+  }
+
   function setStatus(s: ConnectionStatus) { status = s; statusSubs.forEach((cb) => cb(s)); }
 
   // ============ Binance WebSocket for crypto (real-time) ============
@@ -316,6 +338,7 @@ export function createLiveProvider(): MarketDataProvider {
           })).filter((c) => isFinite(c.close));
         } catch { /* fall through to synth */ }
         if (out.length === 0) out = synthHistory(symbol, tf, count);
+        out = alignTail(out, tf);
         const last = out[out.length - 1];
         anchorPrice.set(symbol, last.close);
         syntheticPrice.set(symbol, last.close);
@@ -326,6 +349,7 @@ export function createLiveProvider(): MarketDataProvider {
       const res = await fetchLiveCandles({ data: { symbol, tf, count } });
       let candles = res.candles as Candle[];
       if (!candles || candles.length === 0) candles = synthHistory(symbol, tf, count);
+      candles = alignTail(candles, tf);
       const last = candles[candles.length - 1];
       anchorPrice.set(symbol, last.close);
       syntheticPrice.set(symbol, last.close);
