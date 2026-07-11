@@ -57,8 +57,8 @@ const text = {
   lineHeight: '1.5',
   margin: '0 0 25px',
 }
-const button = {
-  backgroundColor: '#000000',
+const button = { border: '1px solid #E31B23',
+  backgroundColor: '#0B1220',
   color: '#ffffff',
   fontSize: '14px',
   borderRadius: '8px',
