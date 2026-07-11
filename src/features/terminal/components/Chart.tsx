@@ -625,11 +625,22 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
       <div ref={ref} className="h-full w-full" />
       {showRiskLines && hitLog.length > 0 && (
         <div className="absolute top-2 left-2 z-10 flex max-w-[260px] flex-col gap-1 text-[10px]" dir="ltr">
-          <div className="pointer-events-auto flex items-center justify-between rounded-md border border-white/10 bg-black/70 px-2 py-1 backdrop-blur-md">
+          <div className="pointer-events-auto flex items-center gap-2 rounded-md border border-white/10 bg-black/70 px-2 py-1 backdrop-blur-md">
             <span className="font-semibold text-white/70">TP/SL Executions</span>
             <button
               type="button"
-              onClick={() => { setHitLog([]); hitDedupeRef.current.clear(); setSelectedHit(null); }}
+              onClick={() => setLogOpen(true)}
+              className="ms-auto rounded px-1.5 py-0.5 text-[9px] text-white/60 hover:bg-white/10 hover:text-white"
+            >
+              Log ({hitLog.length})
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setHitLog([]); saveAlertLog([]);
+                hitDedupeRef.current.clear(); saveSeen(hitDedupeRef.current);
+                setSelectedHit(null);
+              }}
               className="rounded px-1.5 py-0.5 text-[9px] text-white/60 hover:bg-white/10 hover:text-white"
             >
               Clear
@@ -644,7 +655,8 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
                 "pointer-events-auto text-left rounded-md border px-2 py-1 backdrop-blur-md shadow-lg transition hover:brightness-125",
                 h.kind === "TP"
                   ? "border-emerald-400/40 bg-emerald-500/10 text-emerald-200"
-                  : "border-rose-400/40 bg-rose-500/10 text-rose-200"
+                  : "border-rose-400/40 bg-rose-500/10 text-rose-200",
+                flashKey?.key === h.key && "animate-pulse ring-2 ring-amber-400/70",
               )}
             >
               <span className="font-semibold">⚡ {h.kind} HIT</span>
