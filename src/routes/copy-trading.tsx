@@ -128,6 +128,40 @@ function buildHistory(t: Trader) {
   return months;
 }
 
+// Returns the 24 available months as YYYY-MM keys (oldest → newest).
+function availableMonths(): string[] {
+  const now = new Date();
+  const out: string[] = [];
+  for (let i = 23; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    out.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`);
+  }
+  return out;
+}
+
+// Compounded return % for a trader across [from, to] inclusive (YYYY-MM strings).
+function rangeReturn(t: Trader, from: string, to: string): number {
+  const now = new Date();
+  let factor = 1;
+  let count = 0;
+  for (let i = 23; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const ym = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+    if (ym < from || ym > to) continue;
+    const base = seeded(t.seed, i + 1, -4, 12);
+    const boost = seeded(t.seed, i + 100, 0, 1) > 0.85 ? seeded(t.seed, i + 200, 4, 8) : 0;
+    const pct = base + boost;
+    factor *= 1 + pct / 100;
+    count++;
+  }
+  return count === 0 ? 0 : Number(((factor - 1) * 100).toFixed(2));
+}
+
+function formatMonthAr(ym: string) {
+  const [y, m] = ym.split("-").map(Number);
+  return new Date(y, m - 1, 1).toLocaleDateString("ar", { month: "long", year: "numeric" });
+}
+
 const fmtMoney = (n: number) => new Intl.NumberFormat("en-US").format(n);
 
 function CopyTradingPage() {
