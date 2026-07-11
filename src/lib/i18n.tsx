@@ -15,7 +15,7 @@ type Dict = Record<string, string>;
 export const DICTS: Record<Lang, Dict> = {
   ar: {
     "nav.platform": "المنصة",
-    "nav.solutions": "الحلول",
+    "nav.competitions": "المسابقات",
     "nav.portfolios": "المحافظ",
     "nav.copytrading": "نسخ الصفقات",
     "nav.risk": "إدارة المخاطر",
@@ -206,7 +206,7 @@ export const DICTS: Record<Lang, Dict> = {
     },
   en: {
     "nav.platform": "Platform",
-    "nav.solutions": "Solutions",
+    "nav.competitions": "Competitions",
     "nav.portfolios": "Portfolios",
     "nav.copytrading": "Copy Trading",
     "nav.risk": "Risk",
@@ -391,7 +391,7 @@ export const DICTS: Record<Lang, Dict> = {
     },
   fr: {
     "nav.platform": "Plateforme",
-    "nav.solutions": "Solutions",
+    "nav.competitions": "Concours",
     "nav.portfolios": "Portefeuilles",
     "nav.copytrading": "Copy Trading",
     "nav.risk": "Gestion des risques",
@@ -576,7 +576,7 @@ export const DICTS: Record<Lang, Dict> = {
     },
   es: {
     "nav.platform": "Plataforma",
-    "nav.solutions": "Soluciones",
+    "nav.competitions": "Concursos",
     "nav.portfolios": "Carteras",
     "nav.copytrading": "Copiar Operaciones",
     "nav.risk": "Gestión de riesgos",
@@ -761,7 +761,7 @@ export const DICTS: Record<Lang, Dict> = {
     },
   tr: {
     "nav.platform": "Platform",
-    "nav.solutions": "Çözümler",
+    "nav.competitions": "Yarışmalar",
     "nav.portfolios": "Portföyler",
     "nav.copytrading": "Kopya Ticaret",
     "nav.risk": "Risk Yönetimi",
