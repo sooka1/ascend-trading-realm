@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import logoSrc from "@/assets/hk-logo.png";
+import logoSrc from "@/assets/brand/svg/hk-icon-white.svg";
 
 interface HKLogoProps {
   className?: string;
@@ -20,18 +20,10 @@ export function HKLogo({ className, showWordmark = true, size = "md", variant = 
         )}
       >
         <span className={cn("relative shrink-0", dim)}>
-          <span
-            className="absolute inset-0 rounded-full bg-[var(--gradient-brand)] opacity-90"
-            aria-hidden
-          />
-          <span
-            className="absolute inset-[2px] rounded-full bg-[color:var(--background)]"
-            aria-hidden
-          />
           <img
             src={logoSrc}
             alt="HK Investment Management"
-            className={cn("relative rounded-full object-contain p-[3px]", dim)}
+            className={cn("relative object-contain", dim)}
             width={64}
             height={64}
           />
@@ -47,12 +39,10 @@ export function HKLogo({ className, showWordmark = true, size = "md", variant = 
   return (
     <span className={cn("inline-flex items-center gap-2.5 font-display font-bold", className)}>
       <span className={cn("relative shrink-0", dim)}>
-        <span className="absolute inset-0 rounded-xl bg-[var(--gradient-brand-soft)] blur-md" aria-hidden />
-        <span className="absolute inset-0 rounded-xl ring-1 ring-white/10" aria-hidden />
         <img
           src={logoSrc}
           alt="HK Investment Management"
-          className={cn("relative rounded-xl object-contain", dim)}
+          className={cn("relative object-contain", dim)}
           width={64}
           height={64}
         />
