@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Bitcoin, DollarSign, Flame, Layers, LineChart, Medal } from "lucide-react";
 import { PageShell, PageHero } from "@/components/page-shell";
 import { MarketTicker } from "@/components/market-ticker";
+import { MarketBoard } from "@/components/market-board";
 import { usePage } from "@/lib/i18n";
 
 export const Route = createFileRoute("/markets")({
@@ -27,6 +28,7 @@ function Markets() {
         subtitle={p.hero.subtitle}
       />
       <MarketTicker />
+      <MarketBoard />
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {p.groups.map((g, i) => {
