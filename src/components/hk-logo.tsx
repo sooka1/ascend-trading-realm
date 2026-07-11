@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import logoAsset from "@/assets/brand/hk-logo.svg.asset.json";
+import logoAsset from "@/assets/brand/hkex-logo.png.asset.json";
 const logoSrc = logoAsset.url;
 
 interface HKLogoProps {
@@ -9,8 +9,8 @@ interface HKLogoProps {
   variant?: "default" | "chip";
 }
 
-export function HKLogo({ className, showWordmark = true, size = "md", variant = "default" }: HKLogoProps) {
-  const dim = size === "sm" ? "h-8 w-8" : size === "lg" ? "h-12 w-12" : "h-9 w-9";
+export function HKLogo({ className, showWordmark = false, size = "md", variant = "default" }: HKLogoProps) {
+  const dim = size === "sm" ? "h-8 w-28" : size === "lg" ? "h-14 w-48" : "h-10 w-36";
   const text = size === "sm" ? "text-sm" : size === "lg" ? "text-2xl" : "text-lg";
   if (variant === "chip") {
     return (
