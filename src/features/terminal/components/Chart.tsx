@@ -184,11 +184,11 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
     };
 
     // Main pane overlays
-    indicators.ema9 ? applyLine("ema9", ema(closes, 9), "#f59e0b") : drop("ema9");
-    indicators.ema21 ? applyLine("ema21", ema(closes, 21), "#38bdf8") : drop("ema21");
-    indicators.ema50 ? applyLine("ema50", ema(closes, 50), "#a78bfa") : drop("ema50");
+    indicators.ema9 ? applyLine("ema9", ema(closes, indSettings.ema9), "#f59e0b") : drop("ema9");
+    indicators.ema21 ? applyLine("ema21", ema(closes, indSettings.ema21), "#38bdf8") : drop("ema21");
+    indicators.ema50 ? applyLine("ema50", ema(closes, indSettings.ema50), "#a78bfa") : drop("ema50");
     if (indicators.bb) {
-      const bb = bollinger(closes, 20, 2);
+      const bb = bollinger(closes, indSettings.bbPeriod, indSettings.bbStd);
       applyLine("bbUpper", bb.upper, "rgba(245,197,66,0.55)");
       applyLine("bbMid", bb.mid, "rgba(245,197,66,0.35)");
       applyLine("bbLower", bb.lower, "rgba(245,197,66,0.55)");
@@ -196,20 +196,20 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
 
     // Sub-pane: RSI (pane 1)
     if (indicators.rsi) {
-      applyLine("rsi", rsiCalc(closes, 14), "#22d3ee", 1);
+      applyLine("rsi", rsiCalc(closes, indSettings.rsi), "#22d3ee", 1);
       applyLine("rsi70", closes.map(() => 70), "rgba(239,68,68,0.4)", 1);
       applyLine("rsi30", closes.map(() => 30), "rgba(34,197,94,0.4)", 1);
     } else { drop("rsi"); drop("rsi70"); drop("rsi30"); }
 
     // Sub-pane: MACD (pane 2)
     if (indicators.macd) {
-      const m = macdCalc(closes);
+      const m = macdCalc(closes, indSettings.macdFast, indSettings.macdSlow, indSettings.macdSignal);
       const paneIdx = indicators.rsi ? 2 : 1;
       applyLine("macdLine", m.line, "#60a5fa", paneIdx);
       applyLine("macdSignal", m.signal, "#f97316", paneIdx);
       applyLine("macdHist", m.hist, "rgba(148,163,184,0.6)", paneIdx);
     } else { drop("macdLine"); drop("macdSignal"); drop("macdHist"); }
-  }, [indicators]);
+  }, [indicators, indSettings]);
 
   useEffect(() => { recomputeIndicators(); }, [recomputeIndicators]);
 
