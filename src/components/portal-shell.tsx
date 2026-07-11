@@ -42,8 +42,11 @@ const NAV: NavItem[] = [
   { to: "/portal", icon: LayoutDashboard, label: "لوحة القيادة", group: "overview" },
   { to: "/portal/portfolio", icon: Wallet, label: "المحفظة", group: "overview" },
   { to: "/portal/accounts", icon: Landmark, label: "الاشتراكات", group: "overview" },
+  { to: "/competitions", icon: Trophy, label: "المسابقات", group: "trading" },
+  { to: "/copy-trading", icon: Copy, label: "نسخ الصفقات", group: "trading" },
+  { to: "/investor", icon: PackageIcon, label: "الباقات والعروض", group: "trading" },
+  { to: "/education", icon: GraduationCap, label: "الأكاديمية", group: "trading" },
   { to: "/portal/statements", icon: FileText, label: "الكشوف", group: "reports" },
-  { to: "/investor", icon: PackageIcon, label: "الباقات والعروض", group: "reports" },
   { to: "/portal/transactions", icon: Receipt, label: "سجل العمليات", group: "reports" },
   { to: "/portal/performance", icon: LineChart, label: "تقارير الأداء", group: "reports" },
   { to: "/portal/documents", icon: FolderOpen, label: "المستندات", group: "reports" },
@@ -57,17 +60,14 @@ const NAV: NavItem[] = [
   { to: "/portal/mfa", icon: ShieldCheck, label: "الأمان والمصادقة", group: "account" },
   { to: "/portal/settings", icon: Settings, label: "الإعدادات", group: "account" },
   { to: "/portal/downloads", icon: Download, label: "التنزيلات", group: "account" },
-  { to: "/competitions", icon: Trophy, label: "المسابقات", group: "explore" },
-  { to: "/copy-trading", icon: Copy, label: "نسخ الصفقات", group: "explore" },
-  { to: "/education", icon: GraduationCap, label: "الأكاديمية", group: "explore" },
 ];
 
 const GROUP_LABELS: Record<string, string> = {
   overview: "نظرة عامة",
+  trading: "التداول والاستثمار",
   reports: "التقارير والمستندات",
   engagement: "الأنشطة والاتصال",
   account: "الحساب",
-  explore: "استكشف",
 };
 
 export function PortalShell({
