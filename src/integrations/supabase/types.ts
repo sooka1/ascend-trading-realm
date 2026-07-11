@@ -104,6 +104,7 @@ export type Database = {
           reviewed_at: string | null
           reviewed_by: string | null
           status: string
+          tx_hash: string | null
           updated_at: string
           user_id: string
         }
@@ -118,6 +119,7 @@ export type Database = {
           reviewed_at?: string | null
           reviewed_by?: string | null
           status?: string
+          tx_hash?: string | null
           updated_at?: string
           user_id: string
         }
@@ -132,6 +134,7 @@ export type Database = {
           reviewed_at?: string | null
           reviewed_by?: string | null
           status?: string
+          tx_hash?: string | null
           updated_at?: string
           user_id?: string
         }
