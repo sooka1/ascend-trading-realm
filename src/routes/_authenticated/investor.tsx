@@ -468,6 +468,17 @@ function InvestorPortal() {
     const parsed = withdrawSchema.safeParse(Object.fromEntries(fd));
     if (!parsed.success) return toast.error(parsed.error.issues[0].message);
     if (parsed.data.amount > balance) return toast.error("المبلغ يتجاوز الرصيد المتاح");
+    // Require KYC verification before any withdrawal
+    const { data: prof } = await supabase
+      .from("profiles")
+      .select("verification_status")
+      .eq("id", uid)
+      .maybeSingle();
+    if (prof?.verification_status !== "verified") {
+      toast.error("يجب توثيق الحساب (KYC) قبل تنفيذ عمليات السحب");
+      router.navigate({ to: "/portal/profile" });
+      return;
+    }
     // Network-specific destination validation
     const rule = ADDRESS_RULES[withdrawMethod];
     if (!rule.regex.test(parsed.data.destination)) return toast.error(rule.label);
