@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowDownRight, ArrowUpRight, Circle, RotateCw } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight, Circle, RotateCw, Star, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useServerFn } from "@tanstack/react-start";
 import { getQuotes } from "@/lib/quotes.functions";
 import { MarketDetailDialog, type DetailInstrument } from "@/components/market-detail-dialog";
+import { useWatchlist } from "@/hooks/use-watchlist";
 
 type Category = "all" | "crypto" | "fx" | "metals" | "indices" | "stocks" | "energy";
 
@@ -122,6 +123,7 @@ export function MarketBoard() {
   const [manualRetryToken, setManualRetryToken] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
   const fetchQuotes = useServerFn(getQuotes);
+  const { list: watchlist, has: inWatchlist, remove: removeWatch } = useWatchlist();
 
   useEffect(() => {
     let cancelled = false;
@@ -309,11 +311,18 @@ export function MarketBoard() {
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return rows.filter((r) => {
-      if (category !== "all" && r.category !== category) return false;
+      if (category === "watchlist") {
+        if (!watchlist.includes(r.symbol)) return false;
+      } else if (category !== "all" && r.category !== category) return false;
       if (!q) return true;
       return r.symbol.toLowerCase().includes(q) || r.name.toLowerCase().includes(q);
     });
-  }, [rows, category, query]);
+  }, [rows, category, query, watchlist]);
+
+  const watchRows = useMemo(
+    () => watchlist.map((s) => rows.find((r) => r.symbol === s)).filter((r): r is Row => !!r),
+    [watchlist, rows],
+  );
 
   const selectedItem: DetailInstrument | null = useMemo(() => {
     if (!selected) return null;
@@ -358,7 +367,63 @@ export function MarketBoard() {
             {c.label}
           </button>
         ))}
+        <button
+          onClick={() => setCategory("watchlist")}
+          className={cn(
+            "inline-flex items-center gap-1 rounded-full border px-3 py-1 text-xs transition",
+            category === "watchlist"
+              ? "border-gold/60 bg-gold/10 text-foreground"
+              : "border-white/10 text-muted-foreground hover:text-foreground",
+          )}
+        >
+          <Star className={cn("h-3 w-3", category === "watchlist" && "fill-current text-gold")} />
+          المفضلة {watchlist.length > 0 && <span className="tabular-nums">({watchlist.length})</span>}
+        </button>
       </div>
+
+      {watchRows.length > 0 && (
+        <div className="mb-4">
+          <div className="mb-1.5 flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-muted-foreground">
+            <Star className="h-3 w-3 fill-current text-gold" /> قائمة سريعة
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {watchRows.map((r) => {
+              const up = r.change >= 0;
+              return (
+                <div
+                  key={r.symbol}
+                  className={cn(
+                    "glass group inline-flex items-center gap-2 rounded-full border border-white/10 px-3 py-1 text-xs transition hover:border-gold/40",
+                    r.flashing === "up" && "bg-bull/10",
+                    r.flashing === "down" && "bg-bear/10",
+                  )}
+                >
+                  <button
+                    type="button"
+                    onClick={() => setSelected(r.symbol)}
+                    className="inline-flex items-center gap-2"
+                  >
+                    <span className="font-display font-semibold">{r.symbol}</span>
+                    <span className="tabular-nums">{fmt(r.price)}</span>
+                    <span className={cn("inline-flex items-center gap-0.5 rounded-md px-1.5 py-0.5 tabular-nums", up ? "bg-bull/10 text-bull" : "bg-bear/10 text-bear")}>
+                      {up ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
+                      {up ? "+" : ""}{r.change.toFixed(2)}%
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => removeWatch(r.symbol)}
+                    className="text-muted-foreground/60 hover:text-bear"
+                    aria-label={`إزالة ${r.symbol} من المفضلة`}
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       <div className="glass overflow-hidden rounded-2xl">
         <div className="grid grid-cols-12 gap-2 border-b border-white/5 bg-white/[0.02] px-4 py-2 text-[11px] uppercase tracking-wider text-muted-foreground">
