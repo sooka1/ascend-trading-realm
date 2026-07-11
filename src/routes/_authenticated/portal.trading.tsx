@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels";
+import { Group as PanelGroup, Panel, Separator as PanelResizeHandle } from "react-resizable-panels";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -76,7 +76,7 @@ function TradingTerminal() {
   return (
     <PortalShell eyebrow="بوابة المتداول" title="منصة التداول" subtitle="بيانات حيّة وتنفيذ فوري">
       <div className="h-[calc(100vh-16rem)] min-h-[600px] w-full rounded-xl border border-white/10 bg-slate-950/60 overflow-hidden">
-        <PanelGroup direction="horizontal">
+        <PanelGroup orientation="horizontal" className="flex h-full w-full">
           {/* LEFT: order ticket + account */}
           <Panel defaultSize={22} minSize={16}>
             <div className="flex h-full flex-col border-l border-white/10">
@@ -101,7 +101,7 @@ function TradingTerminal() {
 
           {/* CENTER: chart + bottom tabs */}
           <Panel defaultSize={56} minSize={30}>
-            <PanelGroup direction="vertical">
+            <PanelGroup orientation="vertical" className="flex h-full w-full flex-col">
               <Panel defaultSize={65} minSize={30}>
                 <div className="flex h-full flex-col">
                   <div className="flex items-center gap-2 px-3 py-2 border-b border-white/10 flex-wrap">
