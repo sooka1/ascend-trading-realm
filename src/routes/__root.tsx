@@ -166,6 +166,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
     scripts: [
       {
+        async: true,
+        src: "https://www.googletagmanager.com/gtag/js?id=G-CDJ9CTFNFL",
+      },
+      {
+        children:
+          "window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}window.gtag=gtag;gtag('js',new Date());gtag('config','G-CDJ9CTFNFL',{send_page_view:false});",
+      },
+      {
         type: "application/ld+json",
         children: JSON.stringify({
           "@context": "https://schema.org",
@@ -222,6 +230,18 @@ function RootComponent() {
       router.invalidate();
       queryClient.invalidateQueries();
     });
+    // GA4 SPA page_view tracking — fire on initial load and every route change.
+    const sendPageView = () => {
+      const g = (window as any).gtag;
+      if (typeof g !== "function") return;
+      g("event", "page_view", {
+        page_path: window.location.pathname + window.location.search,
+        page_location: window.location.href,
+        page_title: document.title,
+      });
+    };
+    sendPageView();
+    const unsubGa = router.subscribe("onResolved", sendPageView);
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {
       if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
       if (event !== "SIGNED_OUT") {
@@ -235,7 +255,10 @@ function RootComponent() {
         router.invalidate();
       }
     });
-    return () => sub.subscription.unsubscribe();
+    return () => {
+      sub.subscription.unsubscribe();
+      unsubGa();
+    };
   }, [router, queryClient]);
 
   return (
