@@ -46,6 +46,7 @@ const NAV: NavItem[] = [
 
   { to: "/admin/finance", icon: Wallet, label: "طلبات مالية", group: "operations", enabled: true },
   { to: "/admin/subscriptions", icon: CreditCard, label: "الاشتراكات", group: "operations", enabled: true },
+  { to: "/admin/portfolio-manager", icon: Landmark, label: "إدارة المحافظ", group: "operations", enabled: true },
   { to: "/admin/copy-trading", icon: Copy, label: "نسخ الصفقات", group: "operations", enabled: true },
   { to: "/admin/invoices", icon: FileText, label: "الفواتير", group: "operations", enabled: true },
   { to: "/admin/payments", icon: Wallet, label: "المدفوعات", group: "operations", enabled: true },
