@@ -60,7 +60,7 @@ function heikinAshi(src: Candle[]): Candle[] {
   return out;
 }
 
-export type PositionMarker = { id: string; symbol: string; side: "buy" | "sell"; entry_price: number | string; volume: number | string };
+export type PositionMarker = { id: string; symbol: string; side: "buy" | "sell"; entry_price: number | string; volume: number | string; take_profit?: number | string | null; stop_loss?: number | string | null };
 export function TerminalChart({ symbol, timeframe, chartType, precision, positions = [] }: { symbol: string; timeframe: Timeframe; chartType: ChartType; precision: number; positions?: PositionMarker[] }) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const ref = useRef<HTMLDivElement>(null);
@@ -187,6 +187,26 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
         });
         priceLinesRef.current.push(line);
       } catch { /* noop */ }
+      const tp = p.take_profit == null ? NaN : Number(p.take_profit);
+      if (Number.isFinite(tp)) {
+        try {
+          const line = (series as any).createPriceLine({
+            price: tp, color: "#10b981", lineWidth: 1, lineStyle: 2,
+            axisLabelVisible: true, title: `TP ${tp.toFixed(precision)}`,
+          });
+          priceLinesRef.current.push(line);
+        } catch { /* noop */ }
+      }
+      const sl = p.stop_loss == null ? NaN : Number(p.stop_loss);
+      if (Number.isFinite(sl)) {
+        try {
+          const line = (series as any).createPriceLine({
+            price: sl, color: "#f43f5e", lineWidth: 1, lineStyle: 2,
+            axisLabelVisible: true, title: `SL ${sl.toFixed(precision)}`,
+          });
+          priceLinesRef.current.push(line);
+        } catch { /* noop */ }
+      }
     }
     return () => {
       const s = seriesRef.current;
