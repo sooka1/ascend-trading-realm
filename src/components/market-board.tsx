@@ -84,7 +84,10 @@ const WS_MAX_ATTEMPTS = 8;
 const WS_BASE_BACKOFF_MS = 1_000;
 const WS_MAX_BACKOFF_MS = 30_000;
 
-type WsStatus = "connecting" | "connected" | "reconnecting" | "disconnected";
+// Unified feed status shared by the crypto WebSocket and the traditional-
+// markets poller so the UI shows the same loading/error surface for both.
+type FeedStatus = "connecting" | "connected" | "reconnecting" | "disconnected";
+type WsStatus = FeedStatus;
 
 // Binance uses USDT pairs; treat them as USD equivalents for the board.
 const BINANCE_STREAM: Record<string, string> = {
@@ -118,9 +121,12 @@ export function MarketBoard() {
   const [category, setCategory] = useState<Category>("all");
   const [query, setQuery] = useState("");
   const [live, setLive] = useState(false);
-  const [wsStatus, setWsStatus] = useState<WsStatus>("connecting");
+  const [wsStatus, setWsStatus] = useState<FeedStatus>("connecting");
   const [wsAttempt, setWsAttempt] = useState(0);
   const [manualRetryToken, setManualRetryToken] = useState(0);
+  const [pollStatus, setPollStatus] = useState<FeedStatus>("connecting");
+  const [pollAttempt, setPollAttempt] = useState(0);
+  const [pollRetryToken, setPollRetryToken] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
   const fetchQuotes = useServerFn(getQuotes);
   const { list: watchlist, has: inWatchlist, remove: removeWatch } = useWatchlist();
@@ -128,6 +134,7 @@ export function MarketBoard() {
   useEffect(() => {
     let cancelled = false;
     let timer: ReturnType<typeof setTimeout> | null = null;
+    let attempt = 0;
 
     const load = async () => {
       try {
@@ -157,17 +164,33 @@ export function MarketBoard() {
           }),
         );
         setLive(true);
+        attempt = 0;
+        setPollAttempt(0);
+        setPollStatus("connected");
         // clear flash after animation
         setTimeout(() => {
           if (!cancelled) setRows((rs) => rs.map((r) => ({ ...r, flashing: null })));
         }, 700);
+        if (!cancelled) timer = setTimeout(load, NON_CRYPTO_POLL_MS);
       } catch (e) {
         console.warn("[market-board] fetch failed", e);
         setLive(false);
-      } finally {
-        if (!cancelled) timer = setTimeout(load, NON_CRYPTO_POLL_MS);
+        if (cancelled) return;
+        attempt += 1;
+        setPollAttempt(attempt);
+        if (attempt > WS_MAX_ATTEMPTS) {
+          setPollStatus("disconnected");
+          return; // stop until manual retry
+        }
+        setPollStatus("reconnecting");
+        const raw = WS_BASE_BACKOFF_MS * 2 ** (attempt - 1);
+        const capped = Math.min(raw, WS_MAX_BACKOFF_MS);
+        const jittered = capped * (0.8 + Math.random() * 0.4);
+        timer = setTimeout(load, jittered);
       }
     };
+    setPollStatus("connecting");
+    setPollAttempt(0);
     void load();
 
     const onVis = () => {
@@ -185,7 +208,7 @@ export function MarketBoard() {
       if (timer) clearTimeout(timer);
       document.removeEventListener("visibilitychange", onVis);
     };
-  }, [fetchQuotes]);
+  }, [fetchQuotes, pollRetryToken]);
 
   // Real-time crypto stream over Binance WebSocket — no polling, ticks push.
   // Auto-reconnects with capped exponential backoff and pauses when the tab
@@ -343,7 +366,8 @@ export function MarketBoard() {
     <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <WsStatusBadge status={wsStatus} attempt={wsAttempt} onRetry={() => setManualRetryToken((v) => v + 1)} />
+          <FeedStatusBadge label="عملات رقمية" status={wsStatus} attempt={wsAttempt} onRetry={() => setManualRetryToken((v) => v + 1)} />
+          <FeedStatusBadge label="أسواق تقليدية" status={pollStatus} attempt={pollAttempt} onRetry={() => setPollRetryToken((v) => v + 1)} />
           <h2 className="font-display text-xl font-semibold">شاشة الأسواق الحيّة</h2>
         </div>
         <input
@@ -468,39 +492,36 @@ export function MarketBoard() {
           </ul>
         )}
       </div>
-      {wsStatus === "reconnecting" && (
-        <div className="mt-3 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-2 text-xs text-amber-200">
-          انقطع الاتصال المباشر مع بورصة العملات الرقمية. جارٍ إعادة المحاولة… ({wsAttempt}/{WS_MAX_ATTEMPTS})
-        </div>
-      )}
-      {wsStatus === "disconnected" && (
-        <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-bear/30 bg-bear/10 px-4 py-2 text-xs text-bear">
-          <span>تعذّر الاتصال المباشر بعد {WS_MAX_ATTEMPTS} محاولات. الأسعار المعروضة هي آخر قيمة مستلمة.</span>
-          <button
-            onClick={() => setManualRetryToken((v) => v + 1)}
-            className="inline-flex items-center gap-1 rounded-md border border-bear/40 px-2 py-1 font-medium hover:bg-bear/20"
-          >
-            <RotateCw className="h-3 w-3" /> إعادة المحاولة
-          </button>
-        </div>
-      )}
+      <FeedStatusBanner
+        label="بث العملات الرقمية"
+        status={wsStatus}
+        attempt={wsAttempt}
+        onRetry={() => setManualRetryToken((v) => v + 1)}
+      />
+      <FeedStatusBanner
+        label="مزوّد الأسواق التقليدية"
+        status={pollStatus}
+        attempt={pollAttempt}
+        onRetry={() => setPollRetryToken((v) => v + 1)}
+      />
       <p className="mt-3 text-[11px] text-muted-foreground/70">تحديث تلقائي كل {POLL_MS / 1000} ثوانٍ. الأسعار للاسترشاد فقط.</p>
       <MarketDetailDialog item={selectedItem} open={!!selected} onOpenChange={(v) => !v && setSelected(null)} />
     </section>
   );
 }
 
-function WsStatusBadge({ status, attempt, onRetry }: { status: WsStatus; attempt: number; onRetry: () => void }) {
+function FeedStatusBadge({ label, status, attempt, onRetry }: { label: string; status: FeedStatus; attempt: number; onRetry: () => void }) {
   const map = {
-    connecting:   { label: "جارٍ الاتصال…",              cls: "border-white/10 text-muted-foreground",     dot: "fill-muted-foreground animate-pulse" },
-    connected:    { label: "مباشر",                       cls: "border-bull/40 bg-bull/10 text-bull",       dot: "fill-bull text-bull animate-pulse" },
-    reconnecting: { label: `إعادة اتصال (${attempt}/${WS_MAX_ATTEMPTS})`, cls: "border-amber-500/40 bg-amber-500/10 text-amber-200", dot: "fill-amber-300 animate-pulse" },
-    disconnected: { label: "غير متصل",                    cls: "border-bear/40 bg-bear/10 text-bear",       dot: "fill-bear" },
+    connecting:   { text: "جارٍ الاتصال…",                              cls: "border-white/10 text-muted-foreground",              dot: "fill-muted-foreground animate-pulse" },
+    connected:    { text: "مباشر",                                       cls: "border-bull/40 bg-bull/10 text-bull",                dot: "fill-bull text-bull animate-pulse" },
+    reconnecting: { text: `إعادة اتصال (${attempt}/${WS_MAX_ATTEMPTS})`, cls: "border-amber-500/40 bg-amber-500/10 text-amber-200", dot: "fill-amber-300 animate-pulse" },
+    disconnected: { text: "غير متصل",                                    cls: "border-bear/40 bg-bear/10 text-bear",                dot: "fill-bear" },
   }[status];
   return (
     <span className={cn("inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs", map.cls)}>
       <Circle className={cn("h-2 w-2", map.dot)} />
-      {map.label}
+      <span className="text-muted-foreground/80">{label}:</span>
+      <span>{map.text}</span>
       {status === "disconnected" && (
         <button onClick={onRetry} className="ml-1 inline-flex items-center gap-1 rounded-md border border-bear/40 px-1.5 py-0.5 text-[10px] hover:bg-bear/20" aria-label="إعادة المحاولة">
           <RotateCw className="h-3 w-3" />
@@ -508,4 +529,28 @@ function WsStatusBadge({ status, attempt, onRetry }: { status: WsStatus; attempt
       )}
     </span>
   );
+}
+
+function FeedStatusBanner({ label, status, attempt, onRetry }: { label: string; status: FeedStatus; attempt: number; onRetry: () => void }) {
+  if (status === "reconnecting") {
+    return (
+      <div className="mt-3 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-2 text-xs text-amber-200">
+        انقطع {label}. جارٍ إعادة المحاولة… ({attempt}/{WS_MAX_ATTEMPTS})
+      </div>
+    );
+  }
+  if (status === "disconnected") {
+    return (
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-bear/30 bg-bear/10 px-4 py-2 text-xs text-bear">
+        <span>تعذّر الاتصال بـ{label} بعد {WS_MAX_ATTEMPTS} محاولات. الأسعار المعروضة هي آخر قيمة مستلمة.</span>
+        <button
+          onClick={onRetry}
+          className="inline-flex items-center gap-1 rounded-md border border-bear/40 px-2 py-1 font-medium hover:bg-bear/20"
+        >
+          <RotateCw className="h-3 w-3" /> إعادة المحاولة
+        </button>
+      </div>
+    );
+  }
+  return null;
 }
