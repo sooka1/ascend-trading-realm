@@ -242,6 +242,60 @@ export type Database = {
         }
         Relationships: []
       }
+      instruments: {
+        Row: {
+          base_currency: string | null
+          category: string
+          contract_size: number
+          created_at: string
+          display_name: string
+          id: string
+          is_active: boolean
+          lot_step: number
+          margin_rate: number
+          max_lot: number
+          min_lot: number
+          pip_size: number
+          price_precision: number
+          quote_currency: string | null
+          symbol: string
+        }
+        Insert: {
+          base_currency?: string | null
+          category: string
+          contract_size?: number
+          created_at?: string
+          display_name: string
+          id?: string
+          is_active?: boolean
+          lot_step?: number
+          margin_rate?: number
+          max_lot?: number
+          min_lot?: number
+          pip_size?: number
+          price_precision?: number
+          quote_currency?: string | null
+          symbol: string
+        }
+        Update: {
+          base_currency?: string | null
+          category?: string
+          contract_size?: number
+          created_at?: string
+          display_name?: string
+          id?: string
+          is_active?: boolean
+          lot_step?: number
+          margin_rate?: number
+          max_lot?: number
+          min_lot?: number
+          pip_size?: number
+          price_precision?: number
+          quote_currency?: string | null
+          symbol?: string
+        }
+        Relationships: []
+      }
       investment_requests: {
         Row: {
           capital_range: Database["public"]["Enums"]["capital_range"]
@@ -486,6 +540,39 @@ export type Database = {
           name?: string
           strategy?: string
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      price_alerts: {
+        Row: {
+          condition: string
+          created_at: string
+          id: string
+          symbol: string
+          target_price: number
+          triggered: boolean
+          triggered_at: string | null
+          user_id: string
+        }
+        Insert: {
+          condition: string
+          created_at?: string
+          id?: string
+          symbol: string
+          target_price: number
+          triggered?: boolean
+          triggered_at?: string | null
+          user_id: string
+        }
+        Update: {
+          condition?: string
+          created_at?: string
+          id?: string
+          symbol?: string
+          target_price?: number
+          triggered?: boolean
+          triggered_at?: string | null
           user_id?: string
         }
         Relationships: []
@@ -953,6 +1040,237 @@ export type Database = {
           },
         ]
       }
+      trading_accounts: {
+        Row: {
+          balance: number
+          created_at: string
+          currency: string
+          id: string
+          leverage: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          balance?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          leverage?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          balance?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          leverage?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      trading_audit_log: {
+        Row: {
+          created_at: string
+          event: string
+          id: string
+          payload: Json | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event: string
+          id?: string
+          payload?: Json | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event?: string
+          id?: string
+          payload?: Json | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      trading_history: {
+        Row: {
+          account_id: string
+          close_price: number
+          closed_at: string
+          commission: number
+          entry_price: number
+          id: string
+          opened_at: string
+          profit: number
+          side: string
+          swap: number
+          symbol: string
+          user_id: string
+          volume: number
+        }
+        Insert: {
+          account_id: string
+          close_price: number
+          closed_at?: string
+          commission?: number
+          entry_price: number
+          id?: string
+          opened_at: string
+          profit: number
+          side: string
+          swap?: number
+          symbol: string
+          user_id: string
+          volume: number
+        }
+        Update: {
+          account_id?: string
+          close_price?: number
+          closed_at?: string
+          commission?: number
+          entry_price?: number
+          id?: string
+          opened_at?: string
+          profit?: number
+          side?: string
+          swap?: number
+          symbol?: string
+          user_id?: string
+          volume?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trading_history_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "trading_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trading_orders: {
+        Row: {
+          account_id: string
+          created_at: string
+          filled_at: string | null
+          filled_price: number | null
+          id: string
+          order_type: string
+          price: number | null
+          side: string
+          status: string
+          stop_loss: number | null
+          stop_price: number | null
+          symbol: string
+          take_profit: number | null
+          updated_at: string
+          user_id: string
+          volume: number
+        }
+        Insert: {
+          account_id: string
+          created_at?: string
+          filled_at?: string | null
+          filled_price?: number | null
+          id?: string
+          order_type: string
+          price?: number | null
+          side: string
+          status?: string
+          stop_loss?: number | null
+          stop_price?: number | null
+          symbol: string
+          take_profit?: number | null
+          updated_at?: string
+          user_id: string
+          volume: number
+        }
+        Update: {
+          account_id?: string
+          created_at?: string
+          filled_at?: string | null
+          filled_price?: number | null
+          id?: string
+          order_type?: string
+          price?: number | null
+          side?: string
+          status?: string
+          stop_loss?: number | null
+          stop_price?: number | null
+          symbol?: string
+          take_profit?: number | null
+          updated_at?: string
+          user_id?: string
+          volume?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trading_orders_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "trading_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trading_positions: {
+        Row: {
+          account_id: string
+          commission: number
+          entry_price: number
+          id: string
+          opened_at: string
+          side: string
+          stop_loss: number | null
+          swap: number
+          symbol: string
+          take_profit: number | null
+          updated_at: string
+          user_id: string
+          volume: number
+        }
+        Insert: {
+          account_id: string
+          commission?: number
+          entry_price: number
+          id?: string
+          opened_at?: string
+          side: string
+          stop_loss?: number | null
+          swap?: number
+          symbol: string
+          take_profit?: number | null
+          updated_at?: string
+          user_id: string
+          volume: number
+        }
+        Update: {
+          account_id?: string
+          commission?: number
+          entry_price?: number
+          id?: string
+          opened_at?: string
+          side?: string
+          stop_loss?: number | null
+          swap?: number
+          symbol?: string
+          take_profit?: number | null
+          updated_at?: string
+          user_id?: string
+          volume?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trading_positions_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "trading_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       transactions: {
         Row: {
           created_at: string
@@ -1020,6 +1338,62 @@ export type Database = {
           created_at?: string
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      watchlist_items: {
+        Row: {
+          created_at: string
+          id: string
+          sort_order: number
+          symbol: string
+          user_id: string
+          watchlist_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          sort_order?: number
+          symbol: string
+          user_id: string
+          watchlist_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          sort_order?: number
+          symbol?: string
+          user_id?: string
+          watchlist_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "watchlist_items_watchlist_id_fkey"
+            columns: ["watchlist_id"]
+            isOneToOne: false
+            referencedRelation: "watchlists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      watchlists: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
           user_id?: string
         }
         Relationships: []
