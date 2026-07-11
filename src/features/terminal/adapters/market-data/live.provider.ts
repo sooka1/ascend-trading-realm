@@ -141,6 +141,7 @@ export function createLiveProvider(): MarketDataProvider {
 
   // ============ Twelve Data polling for FX/metals/indices ============
   let pollTimer: ReturnType<typeof setInterval> | null = null;
+  let pollDelayMs = 60_000; // Free tier: 8 credits/min. Each symbol = 1 credit per call.
   function ensurePolling() {
     const tdSyms = [...quoteSubs.keys()].filter((s) => !isBinance(s));
     if (tdSyms.length === 0) { if (pollTimer) { clearInterval(pollTimer); pollTimer = null; } return; }
@@ -150,19 +151,32 @@ export function createLiveProvider(): MarketDataProvider {
       if (symbols.length === 0) return;
       try {
         const res = await fetchLiveQuotes({ data: { symbols } });
-        setStatus("open");
-        for (const q of res.quotes) {
-          lastPrice.set(q.symbol, q.price);
-          const quote = toQuote(q.symbol, q.price, q.changePct ?? 0);
-          quoteSubs.get(q.symbol)?.forEach((cb) => cb(quote));
-          emitCandleUpdate(q.symbol, q.price);
+        if (res.error === "rate_limited") {
+          // Back off to 90s and retry; keep last-known prices visible.
+          pollDelayMs = 90_000;
+          reschedule();
+          return;
         }
-      } catch (e) {
+        if (res.quotes.length > 0) {
+          pollDelayMs = 60_000; // recover normal cadence
+          setStatus("open");
+          for (const q of res.quotes) {
+            lastPrice.set(q.symbol, q.price);
+            const quote = toQuote(q.symbol, q.price, q.changePct ?? 0);
+            quoteSubs.get(q.symbol)?.forEach((cb) => cb(quote));
+            emitCandleUpdate(q.symbol, q.price);
+          }
+        }
+      } catch {
         setStatus("error");
       }
     };
+    const reschedule = () => {
+      if (pollTimer) clearInterval(pollTimer);
+      pollTimer = setInterval(poll, pollDelayMs);
+    };
     poll();
-    pollTimer = setInterval(poll, 10_000); // ~6/min → within 8/min free-tier
+    reschedule();
   }
 
   return {
