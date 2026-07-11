@@ -686,7 +686,7 @@ function PriceButton({
         <span>{label}</span>
         {badge && <span className="rounded bg-white/10 px-1 py-0.5 font-mono font-semibold text-foreground">{badge}</span>}
       </div>
-      <div className={`font-mono text-base font-bold tabular-nums ${priceCls}`}>
+      <div className={`font-mono font-bold tabular-nums leading-none ${priceCls}`}>
         <FlashPrice value={value} flash={flash} inheritColor />
       </div>
     </button>
