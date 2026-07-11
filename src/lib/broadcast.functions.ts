@@ -10,7 +10,7 @@ export const broadcastNotification = createServerFn({ method: "POST" })
     if (title.length > 200) throw new Error("العنوان طويل جدًا");
     const body = (data?.body ?? "").trim();
     if (body.length > 2000) throw new Error("النص طويل جدًا");
-    return { title, body };
+    return { title, body, sendEmail: (data as any)?.sendEmail !== false };
   })
   .handler(async ({ data, context }) => {
     const { data: isSuper } = await context.supabase.rpc("has_role", {
@@ -78,6 +78,43 @@ export const broadcastNotification = createServerFn({ method: "POST" })
         }
       } catch {
         // Push failures should not roll back the DB notifications.
+      }
+
+      // Send the same-branded email to every registered user's inbox.
+      if (data.sendEmail) {
+        try {
+          const { sendTemplateEmail } = await import(
+            "@/lib/email-templates/send-email"
+          );
+          let page = 1;
+          const perPage = 200;
+          for (;;) {
+            const { data: list, error } =
+              await supabaseAdmin.auth.admin.listUsers({ page, perPage });
+            if (error) break;
+            const users = list?.users ?? [];
+            if (users.length === 0) break;
+            await Promise.allSettled(
+              users
+                .filter((u) => !!u.email)
+                .map((u) =>
+                  sendTemplateEmail("broadcast", u.email!, {
+                    templateData: {
+                      title: data.title,
+                      body: data.body || undefined,
+                      ctaLabel: "Open HKEX Invest",
+                      ctaUrl: "https://hkexinvest.com/app",
+                    },
+                    idempotencyKey: `broadcast-${logId}-${u.id}`,
+                  }),
+                ),
+            );
+            if (users.length < perPage) break;
+            page += 1;
+          }
+        } catch {
+          // Email failures should not roll back the DB notifications.
+        }
       }
 
       return { sent };
