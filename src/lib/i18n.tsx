@@ -16,7 +16,7 @@ export const DICTS: Record<Lang, Dict> = {
   ar: {
     "nav.platform": "المنصة",
     "nav.competitions": "المسابقات",
-    "nav.portfolios": "المحافظ",
+    "nav.portfolios": "باقات الاستثمار",
     "nav.copytrading": "نسخ الصفقات",
     "nav.risk": "إدارة المخاطر",
     "nav.faq": "الأسئلة الشائعة",
