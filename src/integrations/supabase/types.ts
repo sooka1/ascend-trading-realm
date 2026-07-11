@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      chart_drawings: {
+        Row: {
+          created_at: string
+          drawings: Json
+          id: string
+          symbol: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          drawings?: Json
+          id?: string
+          symbol: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          drawings?: Json
+          id?: string
+          symbol?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       competition_trades: {
         Row: {
           closed_at: string | null
