@@ -3,7 +3,7 @@ import { CandlestickSeries, LineSeries, AreaSeries, BarSeries, createChart } fro
 import type { IChartApi, ISeriesApi, Time } from "lightweight-charts";
 import { getMarketDataProvider } from "../adapters/market-data";
 import type { Candle, Timeframe } from "../adapters/market-data/types";
-import { Minus, Slash, Square, TrendingUp, Trash2, MousePointer2, Activity, LineChart as LineIcon, Waves, BarChart3, Undo2, Redo2 } from "lucide-react";
+import { Minus, Slash, Square, TrendingUp, Trash2, MousePointer2, Activity, LineChart as LineIcon, Waves, BarChart3, Undo2, Redo2, Magnet } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ema, bollinger, rsi as rsiCalc, macd as macdCalc } from "../lib/indicators";
 import { supabase } from "@/integrations/supabase/client";
@@ -55,6 +55,9 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
   const candlesRef = useRef<Candle[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const loadedForSymbolRef = useRef<string | null>(null);
+  // Snapping: attach drawing anchors to nearest candle time and nearest OHLC price.
+  const [snapEnabled, setSnapEnabled] = useState(true);
+  const [snapPrice, setSnapPrice] = useState(true);
   const dragRef = useRef<null | {
     id: string;
     handle: "a" | "b" | "move" | "price";
@@ -222,11 +225,33 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
     return { time: Number(time), price: Number(price) };
   }, []);
 
+  // Snap anchor to nearest candle time and nearest OHLC price of that candle.
+  const snapAnchor = useCallback((a: Anchor): Anchor => {
+    if (!snapEnabled) return a;
+    const bars = candlesRef.current;
+    if (!bars.length) return a;
+    let lo = 0, hi = bars.length - 1, idx = 0;
+    while (lo <= hi) {
+      const mid = (lo + hi) >> 1;
+      if (bars[mid].time <= a.time) { idx = mid; lo = mid + 1; } else { hi = mid - 1; }
+    }
+    const next = bars[Math.min(idx + 1, bars.length - 1)];
+    const cur = bars[idx];
+    const nearest = Math.abs(a.time - cur.time) <= Math.abs(next.time - a.time) ? cur : next;
+    let price = a.price;
+    if (snapPrice) {
+      const candidates = [nearest.open, nearest.high, nearest.low, nearest.close];
+      price = candidates.reduce((best, v) => Math.abs(v - a.price) < Math.abs(best - a.price) ? v : best, candidates[0]);
+    }
+    return { time: nearest.time, price };
+  }, [snapEnabled, snapPrice]);
+
   // Global drag handling for selected drawing.
   useEffect(() => {
     const onMove = (e: PointerEvent) => {
       const drag = dragRef.current; if (!drag) return;
-      const cur = posFromNative(e); if (!cur) return;
+      const raw = posFromNative(e); if (!raw) return;
+      const cur = snapAnchor(raw);
       setDrawings((prev) => prev.map((d) => {
         if (d.id !== drag.id) return d;
         const snap = drag.snapshot;
@@ -236,8 +261,8 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
         if (drag.handle === "a") return { ...snap, a: cur };
         if (drag.handle === "b") return { ...snap, b: cur };
         // move: shift by delta in data-space.
-        const dt = cur.time - drag.origin.time;
-        const dp = cur.price - drag.origin.price;
+        const dt = raw.time - drag.origin.time;
+        const dp = raw.price - drag.origin.price;
         return { ...snap, a: { time: snap.a.time + dt, price: snap.a.price + dp }, b: { time: snap.b.time + dt, price: snap.b.price + dp } };
       }));
     };
@@ -245,7 +270,7 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
     window.addEventListener("pointermove", onMove);
     window.addEventListener("pointerup", onUp);
     return () => { window.removeEventListener("pointermove", onMove); window.removeEventListener("pointerup", onUp); };
-  }, [posFromNative]);
+  }, [posFromNative, snapAnchor]);
 
   // History (undo/redo) helpers.
   useEffect(() => { drawingsRef.current = drawings; }, [drawings]);
@@ -348,7 +373,8 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
 
   const onOverlayClick = (e: React.MouseEvent) => {
     if (tool === "none") { setSelectedId(null); return; }
-    const p = posFromEvent(e);
+    const raw = posFromEvent(e);
+    const p = raw ? snapAnchor(raw) : null;
     if (!p) return;
     const id = Math.random().toString(36).slice(2);
     if (tool === "hline") {
@@ -406,7 +432,11 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
         ref={svgRef}
         className={cn("absolute inset-0", tool !== "none" ? "pointer-events-auto cursor-crosshair" : "pointer-events-none")}
         onClick={onOverlayClick}
-        onMouseMove={(e) => tool !== "none" && setHover(posFromEvent(e))}
+        onMouseMove={(e) => {
+          if (tool === "none") return;
+          const raw = posFromEvent(e);
+          setHover(raw ? snapAnchor(raw) : null);
+        }}
         onMouseLeave={() => setHover(null)}
       >
         {drawings.map((d) => {
