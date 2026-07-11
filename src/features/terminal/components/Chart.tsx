@@ -112,6 +112,15 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
       }
     } catch { /* noop */ }
   }, [focusedHit]);
+  // Briefly highlight the rehydrated row so the user sees where they left off.
+  const [rehydrateHighlight, setRehydrateHighlight] = useState<boolean>(() => {
+    try { return !!window.localStorage.getItem(FOCUSED_HIT_KEY); } catch { return false; }
+  });
+  useEffect(() => {
+    if (!rehydrateHighlight) return;
+    const t = window.setTimeout(() => setRehydrateHighlight(false), 2000);
+    return () => window.clearTimeout(t);
+  }, [rehydrateHighlight]);
   const [logOpen, setLogOpen] = useState(false);
   const LOG_FILTERS_KEY = "hk.tpsl.logFilters.v1";
   const [logKind, setLogKind] = useState<"all" | "TP" | "SL">(() => {
