@@ -6,7 +6,7 @@ import { getQuotes } from "@/lib/quotes.functions";
 import { MarketDetailDialog, type DetailInstrument } from "@/components/market-detail-dialog";
 import { useWatchlist } from "@/hooks/use-watchlist";
 
-type Category = "all" | "crypto" | "fx" | "metals" | "indices" | "stocks" | "energy";
+type Category = "all" | "watchlist" | "crypto" | "fx" | "metals" | "indices" | "stocks" | "energy";
 
 type Item = {
   symbol: string;
