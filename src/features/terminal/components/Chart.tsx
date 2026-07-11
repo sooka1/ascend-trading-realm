@@ -249,6 +249,42 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
 
   // History (undo/redo) helpers.
   useEffect(() => { drawingsRef.current = drawings; }, [drawings]);
+
+  // Load persisted drawings for this symbol.
+  useEffect(() => {
+    let cancelled = false;
+    loadedForSymbolRef.current = null;
+    setDrawings([]); setPast([]); setFuture([]); setSelectedId(null);
+    (async () => {
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) { loadedForSymbolRef.current = symbol; return; }
+      const { data } = await supabase
+        .from("chart_drawings")
+        .select("drawings")
+        .eq("user_id", userData.user.id)
+        .eq("symbol", symbol)
+        .maybeSingle();
+      if (cancelled) return;
+      if (data?.drawings && Array.isArray(data.drawings)) setDrawings(data.drawings as Drawing[]);
+      loadedForSymbolRef.current = symbol;
+    })();
+    return () => { cancelled = true; };
+  }, [symbol]);
+
+  // Persist drawings (debounced) whenever they change after initial load.
+  useEffect(() => {
+    if (loadedForSymbolRef.current !== symbol) return;
+    const t = window.setTimeout(async () => {
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) return;
+      await supabase.from("chart_drawings").upsert(
+        { user_id: userData.user.id, symbol, drawings: drawings as unknown as object },
+        { onConflict: "user_id,symbol" },
+      );
+    }, 500);
+    return () => window.clearTimeout(t);
+  }, [drawings, symbol]);
+
   const commit = useCallback(() => {
     setPast((p) => [...p, drawingsRef.current]);
     setFuture([]);
