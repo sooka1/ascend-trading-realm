@@ -145,13 +145,16 @@ export function PortalShell({
   const isPortalHome = activeNav.to === "/portal";
 
   const NavList = ({ onNavigate }: { onNavigate?: () => void }) => (
-    <nav className="space-y-5">
+    <nav className="space-y-6">
       {groups.map((g) => (
         <div key={g}>
-          <p className="mb-1.5 px-2 font-mono text-[9px] uppercase tracking-[0.2em] text-muted-foreground">
-            {GROUP_LABELS[g] ?? g}
-          </p>
-          <ul className="space-y-0.5">
+          <div className="mb-2 flex items-center gap-2 px-2">
+            <span aria-hidden className="h-px flex-1 bg-gradient-to-l from-white/10 to-transparent" />
+            <p className="font-mono text-[9px] uppercase tracking-[0.22em] text-muted-foreground/80">
+              {GROUP_LABELS[g] ?? g}
+            </p>
+          </div>
+          <ul className="space-y-1">
             {NAV.filter((n) => (n.group ?? "misc") === g).map((n) => {
               const active = isNavActive(n.to);
               return (
@@ -162,15 +165,22 @@ export function PortalShell({
                     aria-current={active ? "page" : undefined}
                     data-active={active ? "true" : "false"}
                     data-testid={`portal-nav-${n.to.replace(/^\/portal\/?/, "") || "home"}`}
-                    className={`nav-item group relative flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
+                    className={`nav-item group relative flex min-h-11 items-center gap-3 rounded-lg px-2.5 py-2.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
                       active
                         ? "nav-item-active border border-gold/40 bg-gold/[0.12] text-foreground shadow-[inset_2px_0_0_theme(colors.amber.400)] font-medium"
-                        : "text-muted-foreground hover:bg-white/[0.03] hover:text-foreground"
+                        : "border border-transparent text-muted-foreground hover:border-white/10 hover:bg-white/[0.04] hover:text-foreground"
                     }`}
                   >
-                    <n.icon
-                      className={`h-5 w-5 shrink-0 ${active ? "text-gold" : "text-muted-foreground group-hover:text-gold"}`}
-                    />
+                    <span
+                      aria-hidden
+                      className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border transition-colors ${
+                        active
+                          ? "border-gold/40 bg-gold/[0.14] text-gold shadow-[0_0_10px_theme(colors.amber.400/0.25)]"
+                          : "border-white/10 bg-white/[0.03] text-muted-foreground group-hover:border-gold/30 group-hover:bg-gold/[0.06] group-hover:text-gold"
+                      }`}
+                    >
+                      <n.icon className="h-4 w-4" strokeWidth={active ? 2.25 : 1.75} />
+                    </span>
                     <span className="truncate">{n.label}</span>
                     {active && <span className="sr-only"> (الصفحة الحالية)</span>}
                     {active && (
