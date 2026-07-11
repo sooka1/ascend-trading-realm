@@ -128,6 +128,40 @@ function buildHistory(t: Trader) {
   return months;
 }
 
+// Returns the 24 available months as YYYY-MM keys (oldest → newest).
+function availableMonths(): string[] {
+  const now = new Date();
+  const out: string[] = [];
+  for (let i = 23; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    out.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`);
+  }
+  return out;
+}
+
+// Compounded return % for a trader across [from, to] inclusive (YYYY-MM strings).
+function rangeReturn(t: Trader, from: string, to: string): number {
+  const now = new Date();
+  let factor = 1;
+  let count = 0;
+  for (let i = 23; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const ym = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+    if (ym < from || ym > to) continue;
+    const base = seeded(t.seed, i + 1, -4, 12);
+    const boost = seeded(t.seed, i + 100, 0, 1) > 0.85 ? seeded(t.seed, i + 200, 4, 8) : 0;
+    const pct = base + boost;
+    factor *= 1 + pct / 100;
+    count++;
+  }
+  return count === 0 ? 0 : Number(((factor - 1) * 100).toFixed(2));
+}
+
+function formatMonthAr(ym: string) {
+  const [y, m] = ym.split("-").map(Number);
+  return new Date(y, m - 1, 1).toLocaleDateString("ar", { month: "long", year: "numeric" });
+}
+
 const fmtMoney = (n: number) => new Intl.NumberFormat("en-US").format(n);
 
 function CopyTradingPage() {
@@ -206,13 +240,19 @@ function CopyTradingPage() {
       }),
     });
 
-  const monthLabel = new Date().toLocaleDateString("ar", { month: "long", year: "numeric" });
+  // Export month range (from/to as YYYY-MM). Defaults: last 12 months.
+  const months = useMemo(() => availableMonths(), []);
+  const [fromYM, setFromYM] = useState<string>(months[12]);
+  const [toYM, setToYM] = useState<string>(months[months.length - 1]);
+  const rangeFrom = fromYM <= toYM ? fromYM : toYM;
+  const rangeTo = fromYM <= toYM ? toYM : fromYM;
+  const rangeLabel = `${formatMonthAr(rangeFrom)} → ${formatMonthAr(rangeTo)}`;
 
   const exportCsv = () => {
-    const headers = ["الاسم", "الدولة", "الأصل", "المخاطر", "عائد آخر شهر %", "حد أدنى للإيداع", "حصة المتداول %", "نسبة النجاح %", "المتابعون"];
+    const headers = ["الاسم", "الدولة", "الأصل", "المخاطر", `عائد الفترة % (${rangeFrom}→${rangeTo})`, "حد أدنى للإيداع", "حصة المتداول %", "نسبة النجاح %", "المتابعون"];
     const rows = filtered.map((t) => [
       t.name, t.country, ASSET_LABEL[t.asset], RISK_LABEL[t.risk],
-      lastMonthReturn(t).toFixed(2), t.minDeposit, t.profitShare, t.winRate, t.followers,
+      rangeReturn(t, rangeFrom, rangeTo).toFixed(2), t.minDeposit, t.profitShare, t.winRate, t.followers,
     ]);
     const escape = (v: string | number) => {
       const s = String(v);
@@ -223,14 +263,14 @@ function CopyTradingPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `copy-trading-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.download = `copy-trading-${rangeFrom}_${rangeTo}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   };
 
   const exportPdf = () => {
     const rowsHtml = filtered.map((t) => {
-      const ret = lastMonthReturn(t);
+      const ret = rangeReturn(t, rangeFrom, rangeTo);
       const tone = ret >= 0 ? "#059669" : "#dc2626";
       return `<tr>
         <td>${t.flag} ${t.name}</td>
@@ -244,7 +284,7 @@ function CopyTradingPage() {
         <td>${fmtMoney(t.followers)}</td>
       </tr>`;
     }).join("");
-    const html = `<!doctype html><html dir="rtl" lang="ar"><head><meta charset="utf-8"><title>تقرير نسخ الصفقات — ${monthLabel}</title>
+    const html = `<!doctype html><html dir="rtl" lang="ar"><head><meta charset="utf-8"><title>تقرير نسخ الصفقات — ${rangeLabel}</title>
       <style>
         *{box-sizing:border-box}
         body{font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial;padding:24px;color:#111}
@@ -256,11 +296,11 @@ function CopyTradingPage() {
         tr:nth-child(even) td{background:#fafafa}
         .foot{margin-top:16px;font-size:10px;color:#888}
       </style></head><body>
-      <h1>تقرير نسخ الصفقات الشهري</h1>
-      <div class="sub">الفترة: ${monthLabel} · عدد المتداولين: ${filtered.length}</div>
+      <h1>تقرير نسخ الصفقات</h1>
+      <div class="sub">الفترة: ${rangeLabel} · عدد المتداولين: ${filtered.length}</div>
       <table><thead><tr>
         <th>المتداول</th><th>الدولة</th><th>الأصل</th><th>المخاطر</th>
-        <th>عائد آخر شهر</th><th>حد أدنى</th><th>حصة المتداول</th><th>نسبة النجاح</th><th>المتابعون</th>
+        <th>عائد الفترة</th><th>حد أدنى</th><th>حصة المتداول</th><th>نسبة النجاح</th><th>المتابعون</th>
       </tr></thead><tbody>${rowsHtml}</tbody></table>
       <div class="foot">تقرير آلي — الأداء الماضي لا يشكّل ضماناً لأي نتائج مستقبلية.</div>
       <script>window.onload=()=>{window.focus();window.print();}<\/script>
@@ -325,6 +365,28 @@ function CopyTradingPage() {
           <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
             <span>عرض {filtered.length} من {TRADERS.length} متداول</span>
             <div className="flex items-center gap-2">
+              <label className="inline-flex items-center gap-1">
+                <span className="font-mono uppercase tracking-widest">من</span>
+                <input
+                  type="month"
+                  min={months[0]}
+                  max={months[months.length - 1]}
+                  value={fromYM}
+                  onChange={(e) => setFromYM(e.target.value || months[0])}
+                  className="rounded-md border border-white/10 bg-white/5 px-2 py-1 text-foreground outline-none focus:border-gold/50"
+                />
+              </label>
+              <label className="inline-flex items-center gap-1">
+                <span className="font-mono uppercase tracking-widest">إلى</span>
+                <input
+                  type="month"
+                  min={months[0]}
+                  max={months[months.length - 1]}
+                  value={toYM}
+                  onChange={(e) => setToYM(e.target.value || months[months.length - 1])}
+                  className="rounded-md border border-white/10 bg-white/5 px-2 py-1 text-foreground outline-none focus:border-gold/50"
+                />
+              </label>
               <button onClick={exportCsv} disabled={filtered.length === 0}
                 className="inline-flex items-center gap-1 rounded-md border border-white/10 px-2 py-1 hover:border-gold/40 hover:text-foreground disabled:opacity-40">
                 <FileDown className="h-3.5 w-3.5" /> CSV
