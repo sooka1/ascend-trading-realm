@@ -120,11 +120,13 @@ export function OrderTicket({ instrument, bid, ask, balance, leverage }: {
       </div>
 
       <div className="grid grid-cols-2 gap-2">
-        <Button onClick={() => submit("sell")} disabled={busy} className="h-10 bg-red-500 hover:bg-red-600 text-white font-bold">
-          بيع <span className="font-mono text-xs mr-1">{bid.toFixed(instrument.price_precision)}</span>
+        <Button onClick={() => submit("sell")} disabled={busy} className="flex h-12 flex-col items-center justify-center gap-0.5 bg-red-500 px-2 font-bold leading-none text-white hover:bg-red-600">
+          <span className="text-sm">بيع</span>
+          <span className="font-mono text-[11px] opacity-90">{bid.toFixed(instrument.price_precision)}</span>
         </Button>
-        <Button onClick={() => submit("buy")} disabled={busy} className="h-10 bg-emerald-500 hover:bg-emerald-600 text-white font-bold">
-          شراء <span className="font-mono text-xs mr-1">{ask.toFixed(instrument.price_precision)}</span>
+        <Button onClick={() => submit("buy")} disabled={busy} className="flex h-12 flex-col items-center justify-center gap-0.5 bg-emerald-500 px-2 font-bold leading-none text-white hover:bg-emerald-600">
+          <span className="text-sm">شراء</span>
+          <span className="font-mono text-[11px] opacity-90">{ask.toFixed(instrument.price_precision)}</span>
         </Button>
       </div>
     </div>
