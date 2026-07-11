@@ -5,6 +5,8 @@ import { Copy, TrendingUp, TrendingDown, Users, Wallet, Percent, Award, Lock, Ca
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
+import { requestCopyTrader } from "@/lib/actions.functions";
 
 export const Route = createFileRoute("/copy-trading")({
   head: () => ({
@@ -435,6 +437,8 @@ function ResultCard({ label, value, sub, positive }: { label: string; value: str
 function TraderCard({ trader, isAuthed }: { trader: Trader; isAuthed: boolean }) {
   const history = useMemo(() => buildHistory(trader), [trader]);
   const navigate = useNavigate();
+  const submitCopy = useServerFn(requestCopyTrader);
+  const [submitting, setSubmitting] = useState(false);
   const lastMonth = history[history.length - 1];
   const total = useMemo(() => history.reduce((s, m) => s + m.pct, 0), [history]);
   const positiveMonths = history.filter((m) => m.pct > 0).length;
@@ -500,13 +504,29 @@ function TraderCard({ trader, isAuthed }: { trader: Trader; isAuthed: boolean })
       </div>
 
       <button
-        onClick={() => {
+        disabled={submitting}
+        onClick={async () => {
           if (!isAuthed) {
             toast.error("سجّل الدخول أولاً لطلب نسخ الصفقات.");
             navigate({ to: "/auth", search: { redirect: `/copy-trading?trader=${trader.id}` } as never });
             return;
           }
-          toast.success(`تم إرسال طلب نسخ صفقات ${trader.name}.`);
+          setSubmitting(true);
+          try {
+            // Server-side guard: rejects unauthenticated callers with 401.
+            await submitCopy({ data: { traderId: trader.id } });
+            toast.success(`تم إرسال طلب نسخ صفقات ${trader.name}.`);
+          } catch (err) {
+            const msg = err instanceof Error ? err.message : "";
+            if (/unauthor/i.test(msg) || /401/.test(msg)) {
+              toast.error("انتهت الجلسة. سجّل الدخول مجدداً.");
+              navigate({ to: "/auth", search: { redirect: `/copy-trading?trader=${trader.id}` } as never });
+            } else {
+              toast.error("تعذّر إرسال الطلب. حاول لاحقاً.");
+            }
+          } finally {
+            setSubmitting(false);
+          }
         }}
         className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-gold/40 bg-gold/10 px-4 py-2.5 text-sm font-semibold text-gold transition hover:bg-gold/20"
       >
