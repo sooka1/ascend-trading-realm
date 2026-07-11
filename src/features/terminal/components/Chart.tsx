@@ -88,10 +88,12 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
   const candlesRef = useRef<Candle[]>([]);
   const priceLinesRef = useRef<any[]>([]);
   const focusLinesRef = useRef<any[]>([]);
+  const hitFocusLinesRef = useRef<any[]>([]);
   const hitDedupeRef = useRef<Set<string>>(new Set());
   type HitLog = AlertEntry;
   const [hitLog, setHitLog] = useState<HitLog[]>(() => loadAlertLog());
   const [selectedHit, setSelectedHit] = useState<HitLog | null>(null);
+  const [focusedHit, setFocusedHit] = useState<HitLog | null>(null);
   const [logOpen, setLogOpen] = useState(false);
   const [logKind, setLogKind] = useState<"all" | "TP" | "SL">("all");
   const [logSide, setLogSide] = useState<"all" | "buy" | "sell">("all");
