@@ -55,6 +55,7 @@ import { Route as AuthenticatedAppPortfolioRouteImport } from './routes/_authent
 import { Route as AuthenticatedAppActivityRouteImport } from './routes/_authenticated/app.activity'
 import { Route as AuthenticatedAdminAdminIndexRouteImport } from './routes/_authenticated/_admin/admin.index'
 import { Route as ApiPublicWebhooksBinancePayRouteImport } from './routes/api/public/webhooks/binance-pay'
+import { Route as AuthenticatedCompetitionsIdTradeRouteImport } from './routes/_authenticated/competitions.$id.trade'
 import { Route as AuthenticatedAdminAdminUsersRouteImport } from './routes/_authenticated/_admin/admin.users'
 import { Route as AuthenticatedAdminAdminUserRolesRouteImport } from './routes/_authenticated/_admin/admin.user-roles'
 import { Route as AuthenticatedAdminAdminSupportRouteImport } from './routes/_authenticated/_admin/admin.support'
@@ -325,6 +326,12 @@ const ApiPublicWebhooksBinancePayRoute =
     path: '/api/public/webhooks/binance-pay',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AuthenticatedCompetitionsIdTradeRoute =
+  AuthenticatedCompetitionsIdTradeRouteImport.update({
+    id: '/competitions/$id/trade',
+    path: '/competitions/$id/trade',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminAdminUsersRoute =
   AuthenticatedAdminAdminUsersRouteImport.update({
     id: '/admin/users',
@@ -516,6 +523,7 @@ export interface FileRoutesByFullPath {
   '/admin/support': typeof AuthenticatedAdminAdminSupportRoute
   '/admin/user-roles': typeof AuthenticatedAdminAdminUserRolesRoute
   '/admin/users': typeof AuthenticatedAdminAdminUsersRoute
+  '/competitions/$id/trade': typeof AuthenticatedCompetitionsIdTradeRoute
   '/api/public/webhooks/binance-pay': typeof ApiPublicWebhooksBinancePayRoute
   '/admin/': typeof AuthenticatedAdminAdminIndexRoute
 }
@@ -583,6 +591,7 @@ export interface FileRoutesByTo {
   '/admin/support': typeof AuthenticatedAdminAdminSupportRoute
   '/admin/user-roles': typeof AuthenticatedAdminAdminUserRolesRoute
   '/admin/users': typeof AuthenticatedAdminAdminUsersRoute
+  '/competitions/$id/trade': typeof AuthenticatedCompetitionsIdTradeRoute
   '/api/public/webhooks/binance-pay': typeof ApiPublicWebhooksBinancePayRoute
   '/admin': typeof AuthenticatedAdminAdminIndexRoute
 }
@@ -653,6 +662,7 @@ export interface FileRoutesById {
   '/_authenticated/_admin/admin/support': typeof AuthenticatedAdminAdminSupportRoute
   '/_authenticated/_admin/admin/user-roles': typeof AuthenticatedAdminAdminUserRolesRoute
   '/_authenticated/_admin/admin/users': typeof AuthenticatedAdminAdminUsersRoute
+  '/_authenticated/competitions/$id/trade': typeof AuthenticatedCompetitionsIdTradeRoute
   '/api/public/webhooks/binance-pay': typeof ApiPublicWebhooksBinancePayRoute
   '/_authenticated/_admin/admin/': typeof AuthenticatedAdminAdminIndexRoute
 }
@@ -722,6 +732,7 @@ export interface FileRouteTypes {
     | '/admin/support'
     | '/admin/user-roles'
     | '/admin/users'
+    | '/competitions/$id/trade'
     | '/api/public/webhooks/binance-pay'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
@@ -789,6 +800,7 @@ export interface FileRouteTypes {
     | '/admin/support'
     | '/admin/user-roles'
     | '/admin/users'
+    | '/competitions/$id/trade'
     | '/api/public/webhooks/binance-pay'
     | '/admin'
   id:
@@ -858,6 +870,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_admin/admin/support'
     | '/_authenticated/_admin/admin/user-roles'
     | '/_authenticated/_admin/admin/users'
+    | '/_authenticated/competitions/$id/trade'
     | '/api/public/webhooks/binance-pay'
     | '/_authenticated/_admin/admin/'
   fileRoutesById: FileRoutesById
@@ -1208,6 +1221,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicWebhooksBinancePayRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/competitions/$id/trade': {
+      id: '/_authenticated/competitions/$id/trade'
+      path: '/competitions/$id/trade'
+      fullPath: '/competitions/$id/trade'
+      preLoaderRoute: typeof AuthenticatedCompetitionsIdTradeRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/_admin/admin/users': {
       id: '/_authenticated/_admin/admin/users'
       path: '/admin/users'
@@ -1460,6 +1480,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPortalTransactionsRoute: typeof AuthenticatedPortalTransactionsRoute
   AuthenticatedPortalUpdatesRoute: typeof AuthenticatedPortalUpdatesRoute
   AuthenticatedPortalIndexRoute: typeof AuthenticatedPortalIndexRoute
+  AuthenticatedCompetitionsIdTradeRoute: typeof AuthenticatedCompetitionsIdTradeRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -1485,6 +1506,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPortalTransactionsRoute: AuthenticatedPortalTransactionsRoute,
   AuthenticatedPortalUpdatesRoute: AuthenticatedPortalUpdatesRoute,
   AuthenticatedPortalIndexRoute: AuthenticatedPortalIndexRoute,
+  AuthenticatedCompetitionsIdTradeRoute: AuthenticatedCompetitionsIdTradeRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
