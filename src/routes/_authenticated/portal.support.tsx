@@ -8,6 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { LifeBuoy, Plus, Send } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
+import { useServerFn } from "@tanstack/react-start";
+import { sendSupportInquiry } from "@/lib/support-inquiry.functions";
 import {
   ensureMyKeypair,
   encryptFor,
@@ -54,6 +56,14 @@ const newTicketSchema = z.object({
 
 function SupportPage() {
   const [uid, setUid] = useState<string | null>(null);
+  const [userEmail, setUserEmail] = useState<string>("");
+  const [feedback, setFeedback] = useState<{ kind: "complaint" | "suggestion"; subject: string; message: string }>({
+    kind: "complaint",
+    subject: "",
+    message: "",
+  });
+  const [sendingFb, setSendingFb] = useState(false);
+  const sendInquiry = useServerFn(sendSupportInquiry);
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [selected, setSelected] = useState<Ticket | null>(null);
   const [messages, setMessages] = useState<TicketMessage[]>([]);
@@ -69,6 +79,7 @@ function SupportPage() {
       const { data: u } = await supabase.auth.getUser();
       const id = u.user?.id ?? null;
       setUid(id);
+      setUserEmail(u.user?.email ?? "");
       if (id) {
         const kp = await ensureMyKeypair(id);
         setMySk(kp.secretKey);
@@ -78,6 +89,36 @@ function SupportPage() {
       await loadTickets();
     })();
   }, []);
+
+  async function submitFeedback() {
+    if (!feedback.message.trim() || feedback.message.trim().length < 5) {
+      toast.error("اكتب رسالة أطول");
+      return;
+    }
+    if (!userEmail) {
+      toast.error("بريدك الإلكتروني غير متوفر");
+      return;
+    }
+    setSendingFb(true);
+    try {
+      await sendInquiry({
+        data: {
+          kind: feedback.kind,
+          name: userEmail.split("@")[0],
+          email: userEmail,
+          subject: feedback.subject || undefined,
+          message: feedback.message.trim(),
+          source: "portal/support",
+        },
+      });
+      toast.success("تم إرسال رسالتك للدعم الفني");
+      setFeedback({ kind: "complaint", subject: "", message: "" });
+    } catch (e: any) {
+      toast.error(e?.message ?? "تعذّر الإرسال");
+    } finally {
+      setSendingFb(false);
+    }
+  }
 
   async function loadTickets() {
     const { data, error } = await supabase
@@ -153,6 +194,41 @@ function SupportPage() {
         </Button>
       }
     >
+      <div className="mb-6">
+        <PortalCard title="شكوى أو مقترح للدعم الفني" icon={LifeBuoy}>
+          <p className="mb-3 text-xs text-muted-foreground">
+            أرسل شكواك أو مقترحك مباشرة إلى فريق الدعم الفني.
+          </p>
+          <div className="grid gap-3 md:grid-cols-2">
+            <select
+              value={feedback.kind}
+              onChange={(e) => setFeedback((f) => ({ ...f, kind: e.target.value as "complaint" | "suggestion" }))}
+              className="rounded-md border border-white/10 bg-white/[0.02] px-3 py-2 text-sm"
+            >
+              <option value="complaint">شكوى</option>
+              <option value="suggestion">مقترح</option>
+            </select>
+            <Input
+              placeholder="الموضوع (اختياري)"
+              value={feedback.subject}
+              onChange={(e) => setFeedback((f) => ({ ...f, subject: e.target.value }))}
+            />
+          </div>
+          <Textarea
+            className="mt-3 min-h-[110px]"
+            placeholder="اكتب رسالتك…"
+            value={feedback.message}
+            onChange={(e) => setFeedback((f) => ({ ...f, message: e.target.value }))}
+          />
+          <div className="mt-3 flex justify-end">
+            <Button size="sm" onClick={submitFeedback} disabled={sendingFb}>
+              <Send className="me-1.5 h-3.5 w-3.5" />
+              {sendingFb ? "جارٍ الإرسال…" : "إرسال للدعم"}
+            </Button>
+          </div>
+        </PortalCard>
+      </div>
+
       {creating && (
         <div className="mb-6">
           <PortalCard title="فتح تذكرة جديدة" icon={LifeBuoy}>
