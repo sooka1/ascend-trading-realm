@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import { ArrowDownRight, ArrowUpRight, Circle, AlertTriangle, Loader2, RotateCw } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight, Circle, AlertTriangle, Loader2, RotateCw, Star } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import { PriceSparkline } from "@/components/price-sparkline";
+import { useWatchlist } from "@/hooks/use-watchlist";
 type DepthStatus = "loading" | "connected" | "reconnecting" | "error";
 
 // Warn the user when live ticks stall (network issue, market close, etc.).
@@ -184,6 +186,7 @@ export function MarketDetailDialog({
             <span className="text-gradient">{item.symbol}</span>
             <span className="text-sm font-normal text-muted-foreground">{item.name}</span>
             <StatusChip status={depthStatus} attempt={attempt} isBinance={!!item.binanceStream} />
+            <WatchlistToggle symbol={item.symbol} />
           </DialogTitle>
           <DialogDescription>آخر سعر، تغيّر 24س، وعمق السوق (أفضل الطلبات والعروض).</DialogDescription>
         </DialogHeader>
@@ -231,6 +234,14 @@ export function MarketDetailDialog({
             </div>
           </div>
         </div>
+
+        <PriceSparkline
+          symbol={item.symbol}
+          price={item.price}
+          changePct={item.change}
+          binanceStream={item.binanceStream}
+          className="mt-3"
+        />
 
         {depthStatus === "loading" && !hasDepth ? (
           <div className="mt-2 grid gap-3 sm:grid-cols-2">
@@ -379,6 +390,28 @@ function Row({ label, value }: { label: string; value: string }) {
       <span className="text-muted-foreground">{label}</span>
       <span className="tabular-nums">{value}</span>
     </div>
+  );
+}
+
+function WatchlistToggle({ symbol }: { symbol: string }) {
+  const { has, toggle } = useWatchlist();
+  const active = has(symbol);
+  return (
+    <button
+      type="button"
+      onClick={() => toggle(symbol)}
+      className={cn(
+        "inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] transition",
+        active
+          ? "border-gold/60 bg-gold/10 text-gold"
+          : "border-white/10 text-muted-foreground hover:text-foreground",
+      )}
+      aria-pressed={active}
+      aria-label={active ? "إزالة من المفضلة" : "إضافة إلى المفضلة"}
+    >
+      <Star className={cn("h-3 w-3", active && "fill-current")} />
+      {active ? "في المفضلة" : "إضافة للمفضلة"}
+    </button>
   );
 }
 
