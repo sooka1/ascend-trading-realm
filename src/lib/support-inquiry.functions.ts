@@ -15,7 +15,7 @@ export const sendSupportInquiry = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     // Kept inside handler so it never ships to the client bundle.
     const SUPPORT_INBOX =
-      process.env.SUPPORT_INBOX_EMAIL || "hassan.muorad@gmail.com";
+      process.env.SUPPORT_INBOX_EMAIL || "support@hkexinvest.com";
     const { sendTemplateEmail } = await import(
       "@/lib/email-templates/send-email"
     );
