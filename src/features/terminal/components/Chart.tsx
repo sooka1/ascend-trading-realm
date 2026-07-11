@@ -60,7 +60,8 @@ function heikinAshi(src: Candle[]): Candle[] {
   return out;
 }
 
-export function TerminalChart({ symbol, timeframe, chartType, precision }: { symbol: string; timeframe: Timeframe; chartType: ChartType; precision: number }) {
+export type PositionMarker = { id: string; symbol: string; side: "buy" | "sell"; entry_price: number | string; volume: number | string };
+export function TerminalChart({ symbol, timeframe, chartType, precision, positions = [] }: { symbol: string; timeframe: Timeframe; chartType: ChartType; precision: number; positions?: PositionMarker[] }) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const ref = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
@@ -78,6 +79,7 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
   const [settingsOpen, setSettingsOpen] = useState(false);
   const indicatorSeriesRef = useRef<Record<string, ISeriesApi<"Line"> | ISeriesApi<"Area"> | null>>({});
   const candlesRef = useRef<Candle[]>([]);
+  const priceLinesRef = useRef<any[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const loadedForSymbolRef = useRef<string | null>(null);
   // Snapping: attach drawing anchors to nearest candle time and nearest OHLC price.
@@ -158,6 +160,43 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
 
     return () => { disposed = true; unsub(); };
   }, [symbol, timeframe, chartType, precision, indicators]);
+
+  // Draw entry-price lines for open positions on the current symbol.
+  useEffect(() => {
+    const series = seriesRef.current;
+    if (!series) return;
+    // Clear previous
+    for (const pl of priceLinesRef.current) {
+      try { (series as any).removePriceLine(pl); } catch { /* noop */ }
+    }
+    priceLinesRef.current = [];
+    const mine = positions.filter((p) => p.symbol === symbol);
+    for (const p of mine) {
+      const isBuy = p.side === "buy";
+      const color = isBuy ? "#22c55e" : "#ef4444";
+      const price = Number(p.entry_price);
+      if (!Number.isFinite(price)) continue;
+      try {
+        const line = (series as any).createPriceLine({
+          price,
+          color,
+          lineWidth: 2,
+          lineStyle: 0,
+          axisLabelVisible: true,
+          title: `${isBuy ? "BUY" : "SELL"} ${Number(p.volume).toFixed(2)}`,
+        });
+        priceLinesRef.current.push(line);
+      } catch { /* noop */ }
+    }
+    return () => {
+      const s = seriesRef.current;
+      if (!s) return;
+      for (const pl of priceLinesRef.current) {
+        try { (s as any).removePriceLine(pl); } catch { /* noop */ }
+      }
+      priceLinesRef.current = [];
+    };
+  }, [positions, symbol, chartType, timeframe, precision]);
 
   // Add / remove and refresh indicator series based on toggles.
   const recomputeIndicators = useCallback(() => {
