@@ -84,8 +84,10 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
   const priceLinesRef = useRef<any[]>([]);
   const focusLinesRef = useRef<any[]>([]);
   const hitDedupeRef = useRef<Set<string>>(new Set());
-  type HitLog = { key: string; posId: string; kind: "TP" | "SL"; side: "buy" | "sell"; price: number; at: number };
+  type HitLog = { key: string; posId: string; symbol: string; kind: "TP" | "SL"; side: "buy" | "sell"; price: number; entry: number; volume: number; at: number };
   const [hitLog, setHitLog] = useState<HitLog[]>([]);
+  const [selectedHit, setSelectedHit] = useState<HitLog | null>(null);
+  const [showRiskLines, setShowRiskLines] = useState(true);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const loadedForSymbolRef = useRef<string | null>(null);
   // Snapping: attach drawing anchors to nearest candle time and nearest OHLC price.
@@ -206,12 +208,12 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
         (isBuy ? (mp as number) >= tp : (mp as number) <= tp);
       if (tpHit && !hitDedupeRef.current.has(tpKey)) {
         hitDedupeRef.current.add(tpKey);
-        setHitLog((L) => [{ key: tpKey + ":" + Date.now(), posId: p.id, kind: "TP" as const, side: p.side, price: tp, at: Date.now() }, ...L].slice(0, 8));
+        setHitLog((L) => [{ key: tpKey + ":" + Date.now(), posId: p.id, symbol, kind: "TP" as const, side: p.side, price: tp, entry: price, volume: vol, at: Date.now() }, ...L].slice(0, 8));
         toast.success(`⚡ ${symbol} — تم بلوغ جني الأرباح`, {
           description: `${p.side.toUpperCase()} · TP @ ${tp.toFixed(precision)}`,
         });
       }
-      if (Number.isFinite(tp)) {
+      if (Number.isFinite(tp) && showRiskLines) {
         try {
           const line = (series as any).createPriceLine({
             price: tp, color: tpHit ? "#34d399" : "#10b981", lineWidth: tpHit ? 3 : 1, lineStyle: tpHit ? 0 : 2,
@@ -226,12 +228,12 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
         (isBuy ? (mp as number) <= sl : (mp as number) >= sl);
       if (slHit && !hitDedupeRef.current.has(slKey)) {
         hitDedupeRef.current.add(slKey);
-        setHitLog((L) => [{ key: slKey + ":" + Date.now(), posId: p.id, kind: "SL" as const, side: p.side, price: sl, at: Date.now() }, ...L].slice(0, 8));
+        setHitLog((L) => [{ key: slKey + ":" + Date.now(), posId: p.id, symbol, kind: "SL" as const, side: p.side, price: sl, entry: price, volume: vol, at: Date.now() }, ...L].slice(0, 8));
         toast.error(`⚡ ${symbol} — تم بلوغ وقف الخسارة`, {
           description: `${p.side.toUpperCase()} · SL @ ${sl.toFixed(precision)}`,
         });
       }
-      if (Number.isFinite(sl)) {
+      if (Number.isFinite(sl) && showRiskLines) {
         try {
           const line = (series as any).createPriceLine({
             price: sl, color: slHit ? "#fb7185" : "#f43f5e", lineWidth: slHit ? 3 : 1, lineStyle: slHit ? 0 : 2,
@@ -255,7 +257,7 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
       }
       priceLinesRef.current = [];
     };
-  }, [positions, symbol, chartType, timeframe, precision, bid, ask, contractSize]);
+  }, [positions, symbol, chartType, timeframe, precision, bid, ask, contractSize, showRiskLines]);
 
   // Draw entry/close lines for a focused historical trade on this symbol.
   useEffect(() => {
@@ -593,12 +595,25 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
   return (
     <div ref={wrapRef} className="relative h-full w-full">
       <div ref={ref} className="h-full w-full" />
-      {hitLog.length > 0 && (
-        <div className="pointer-events-none absolute top-2 left-2 z-10 flex max-w-[240px] flex-col gap-1 text-[10px]" dir="ltr">
+      {showRiskLines && hitLog.length > 0 && (
+        <div className="absolute top-2 left-2 z-10 flex max-w-[260px] flex-col gap-1 text-[10px]" dir="ltr">
+          <div className="pointer-events-auto flex items-center justify-between rounded-md border border-white/10 bg-black/70 px-2 py-1 backdrop-blur-md">
+            <span className="font-semibold text-white/70">TP/SL Executions</span>
+            <button
+              type="button"
+              onClick={() => { setHitLog([]); hitDedupeRef.current.clear(); setSelectedHit(null); }}
+              className="rounded px-1.5 py-0.5 text-[9px] text-white/60 hover:bg-white/10 hover:text-white"
+            >
+              Clear
+            </button>
+          </div>
           {hitLog.slice(0, 4).map((h) => (
-            <div key={h.key}
+            <button
+              type="button"
+              key={h.key}
+              onClick={() => setSelectedHit(h)}
               className={cn(
-                "pointer-events-auto rounded-md border px-2 py-1 backdrop-blur-md shadow-lg",
+                "pointer-events-auto text-left rounded-md border px-2 py-1 backdrop-blur-md shadow-lg transition hover:brightness-125",
                 h.kind === "TP"
                   ? "border-emerald-400/40 bg-emerald-500/10 text-emerald-200"
                   : "border-rose-400/40 bg-rose-500/10 text-rose-200"
@@ -611,10 +626,41 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
               <span className="font-mono">{h.price.toFixed(precision)}</span>
               <span className="mx-1 opacity-60">·</span>
               <span className="opacity-70">{new Date(h.at).toLocaleTimeString("en-GB")}</span>
-            </div>
+            </button>
           ))}
         </div>
       )}
+      {selectedHit && (
+        <div className="absolute top-2 right-2 z-20 w-56 rounded-md border border-white/10 bg-black/85 p-3 text-[11px] shadow-xl backdrop-blur" dir="rtl">
+          <div className="mb-2 flex items-center justify-between">
+            <span className={cn("font-semibold", selectedHit.kind === "TP" ? "text-emerald-300" : "text-rose-300")}>
+              ⚡ {selectedHit.kind} HIT
+            </span>
+            <button
+              type="button"
+              onClick={() => setSelectedHit(null)}
+              className="rounded px-1.5 py-0.5 text-[10px] text-white/60 hover:bg-white/10 hover:text-white"
+            >
+              إغلاق
+            </button>
+          </div>
+          <div className="space-y-1 text-white/80">
+            <div className="flex justify-between"><span className="text-white/50">الأداة</span><span className="font-mono">{selectedHit.symbol}</span></div>
+            <div className="flex justify-between"><span className="text-white/50">الاتجاه</span><span className={cn("uppercase", selectedHit.side === "buy" ? "text-emerald-300" : "text-rose-300")}>{selectedHit.side}</span></div>
+            <div className="flex justify-between"><span className="text-white/50">الحجم</span><span className="font-mono">{selectedHit.volume.toFixed(2)}</span></div>
+            <div className="flex justify-between"><span className="text-white/50">الدخول</span><span className="font-mono">{selectedHit.entry.toFixed(precision)}</span></div>
+            <div className="flex justify-between"><span className="text-white/50">سعر {selectedHit.kind}</span><span className="font-mono">{selectedHit.price.toFixed(precision)}</span></div>
+            <div className="flex justify-between"><span className="text-white/50">الوقت</span><span className="font-mono">{new Date(selectedHit.at).toLocaleString("en-GB")}</span></div>
+          </div>
+        </div>
+      )}
+      {/* Legend */}
+      <div className="pointer-events-none absolute bottom-2 left-2 z-10 flex items-center gap-3 rounded-md border border-white/10 bg-black/60 px-2 py-1 text-[9px] text-white/70 backdrop-blur-md" dir="ltr">
+        <span className="inline-flex items-center gap-1"><span className="inline-block h-0.5 w-4 border-t-2 border-dashed border-emerald-400" />TP</span>
+        <span className="inline-flex items-center gap-1"><span className="inline-block h-0.5 w-4 border-t-2 border-dashed border-rose-400" />SL</span>
+        <span className="inline-flex items-center gap-1"><span className="inline-block h-0.5 w-4 bg-emerald-400" />TP HIT</span>
+        <span className="inline-flex items-center gap-1"><span className="inline-block h-0.5 w-4 bg-rose-400" />SL HIT</span>
+      </div>
       <svg
         ref={svgRef}
         className={cn("absolute inset-0", tool !== "none" ? "pointer-events-auto cursor-crosshair" : "pointer-events-none")}
@@ -899,6 +945,15 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
               استعادة الافتراضي
             </button>
           </div>
+          <label className="mb-2 flex items-center justify-between gap-2 rounded border border-white/10 bg-white/[0.03] px-2 py-1 text-[10px] text-white/80">
+            <span>عرض خطوط TP/SL ووسم HIT</span>
+            <input
+              type="checkbox"
+              checked={showRiskLines}
+              onChange={(e) => setShowRiskLines(e.target.checked)}
+              className="h-3.5 w-3.5 accent-amber-400"
+            />
+          </label>
           {([
             ["ema9", "EMA سريع", 1, 500, 1],
             ["ema21", "EMA متوسط", 1, 500, 1],
