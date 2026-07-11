@@ -95,9 +95,19 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
   const [selectedHit, setSelectedHit] = useState<HitLog | null>(null);
   const [focusedHit, setFocusedHit] = useState<HitLog | null>(null);
   const [logOpen, setLogOpen] = useState(false);
-  const [logKind, setLogKind] = useState<"all" | "TP" | "SL">("all");
-  const [logSide, setLogSide] = useState<"all" | "buy" | "sell">("all");
-  const [logQuery, setLogQuery] = useState("");
+  const LOG_FILTERS_KEY = "hk.tpsl.logFilters.v1";
+  const [logKind, setLogKind] = useState<"all" | "TP" | "SL">(() => {
+    try { return (JSON.parse(window.localStorage.getItem(LOG_FILTERS_KEY) || "{}").kind ?? "all") as "all" | "TP" | "SL"; } catch { return "all"; }
+  });
+  const [logSide, setLogSide] = useState<"all" | "buy" | "sell">(() => {
+    try { return (JSON.parse(window.localStorage.getItem(LOG_FILTERS_KEY) || "{}").side ?? "all") as "all" | "buy" | "sell"; } catch { return "all"; }
+  });
+  const [logQuery, setLogQuery] = useState<string>(() => {
+    try { return String(JSON.parse(window.localStorage.getItem(LOG_FILTERS_KEY) || "{}").q ?? ""); } catch { return ""; }
+  });
+  useEffect(() => {
+    try { window.localStorage.setItem(LOG_FILTERS_KEY, JSON.stringify({ kind: logKind, side: logSide, q: logQuery })); } catch { /* noop */ }
+  }, [logKind, logSide, logQuery]);
   const filteredHitLog = hitLog.filter((h) => {
     if (logKind !== "all" && h.kind !== logKind) return false;
     if (logSide !== "all" && h.side !== logSide) return false;
