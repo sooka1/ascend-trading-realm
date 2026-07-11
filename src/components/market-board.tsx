@@ -403,8 +403,44 @@ export function MarketBoard() {
           </ul>
         )}
       </div>
+      {wsStatus === "reconnecting" && (
+        <div className="mt-3 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-2 text-xs text-amber-200">
+          انقطع الاتصال المباشر مع بورصة العملات الرقمية. جارٍ إعادة المحاولة… ({wsAttempt}/{WS_MAX_ATTEMPTS})
+        </div>
+      )}
+      {wsStatus === "disconnected" && (
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-bear/30 bg-bear/10 px-4 py-2 text-xs text-bear">
+          <span>تعذّر الاتصال المباشر بعد {WS_MAX_ATTEMPTS} محاولات. الأسعار المعروضة هي آخر قيمة مستلمة.</span>
+          <button
+            onClick={() => setManualRetryToken((v) => v + 1)}
+            className="inline-flex items-center gap-1 rounded-md border border-bear/40 px-2 py-1 font-medium hover:bg-bear/20"
+          >
+            <RotateCw className="h-3 w-3" /> إعادة المحاولة
+          </button>
+        </div>
+      )}
       <p className="mt-3 text-[11px] text-muted-foreground/70">تحديث تلقائي كل {POLL_MS / 1000} ثوانٍ. الأسعار للاسترشاد فقط.</p>
       <MarketDetailDialog item={selectedItem} open={!!selected} onOpenChange={(v) => !v && setSelected(null)} />
     </section>
+  );
+}
+
+function WsStatusBadge({ status, attempt, onRetry }: { status: WsStatus; attempt: number; onRetry: () => void }) {
+  const map = {
+    connecting:   { label: "جارٍ الاتصال…",              cls: "border-white/10 text-muted-foreground",     dot: "fill-muted-foreground animate-pulse" },
+    connected:    { label: "مباشر",                       cls: "border-bull/40 bg-bull/10 text-bull",       dot: "fill-bull text-bull animate-pulse" },
+    reconnecting: { label: `إعادة اتصال (${attempt}/${WS_MAX_ATTEMPTS})`, cls: "border-amber-500/40 bg-amber-500/10 text-amber-200", dot: "fill-amber-300 animate-pulse" },
+    disconnected: { label: "غير متصل",                    cls: "border-bear/40 bg-bear/10 text-bear",       dot: "fill-bear" },
+  }[status];
+  return (
+    <span className={cn("inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs", map.cls)}>
+      <Circle className={cn("h-2 w-2", map.dot)} />
+      {map.label}
+      {status === "disconnected" && (
+        <button onClick={onRetry} className="ml-1 inline-flex items-center gap-1 rounded-md border border-bear/40 px-1.5 py-0.5 text-[10px] hover:bg-bear/20" aria-label="إعادة المحاولة">
+          <RotateCw className="h-3 w-3" />
+        </button>
+      )}
+    </span>
   );
 }
