@@ -41,6 +41,16 @@ function Auth() {
   });
   const navigate = useNavigate();
 
+  // Capture ?redirect=<path> so we can bounce back after login.
+  // Only same-origin relative paths are accepted; ignore anything else.
+  function readRedirectTarget(): string | null {
+    if (typeof window === "undefined") return null;
+    const raw = new URLSearchParams(window.location.search).get("redirect");
+    if (!raw) return null;
+    if (!raw.startsWith("/") || raw.startsWith("//")) return null;
+    return raw;
+  }
+
   // Capture ?ref=CODE from the URL (persists across register/login toggle)
   const [refCode, setRefCode] = useState<string>("");
   useEffect(() => {
@@ -62,6 +72,11 @@ function Auth() {
 
   // Route super_admin → /admin, everyone else → /dashboard.
   async function goPostLogin(userId: string) {
+    const redirectTo = readRedirectTarget();
+    if (redirectTo) {
+      navigate({ to: redirectTo, replace: true });
+      return;
+    }
     try {
       const { data } = await supabase
         .from("user_roles")
