@@ -278,7 +278,8 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
       const { data: userData } = await supabase.auth.getUser();
       if (!userData.user) return;
       await supabase.from("chart_drawings").upsert(
-        { user_id: userData.user.id, symbol, drawings: drawings as unknown as object },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        { user_id: userData.user.id, symbol, drawings: drawings as any },
         { onConflict: "user_id,symbol" },
       );
     }, 500);
