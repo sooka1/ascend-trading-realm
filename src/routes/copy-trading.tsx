@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { PageShell, PageHero } from "@/components/page-shell";
-import { Copy, TrendingUp, TrendingDown, Users, Wallet, Percent, Award, Lock } from "lucide-react";
+import { Copy, TrendingUp, TrendingDown, Users, Wallet, Percent, Award, Lock, Calculator } from "lucide-react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
@@ -99,7 +99,130 @@ function CopyTradingPage() {
           العوائد المعروضة هي نتائج تاريخية تقريبية لأغراض العرض ولا تشكّل ضماناً لأي أرباح مستقبلية. الأداء الماضي لا يُعدّ مؤشراً على النتائج القادمة.
         </p>
       </section>
+      <CopyCalculator />
     </PageShell>
+  );
+}
+
+function CopyCalculator() {
+  const [traderId, setTraderId] = useState<string>(TRADERS[0].id);
+  const [amountStr, setAmountStr] = useState<string>("1000");
+  const [months, setMonths] = useState<number>(6);
+
+  const trader = TRADERS.find((t) => t.id === traderId)!;
+  const history = useMemo(() => buildHistory(trader), [trader]);
+  const avgMonthly = useMemo(() => history.reduce((s, m) => s + m.pct, 0) / history.length, [history]);
+
+  const amount = Math.max(0, Math.min(1_000_000, Number(amountStr) || 0));
+  const belowMin = amount > 0 && amount < trader.minDeposit;
+
+  const { grossProfit, traderCut, netProfit, finalBalance } = useMemo(() => {
+    // Compound monthly at avg return
+    const r = avgMonthly / 100;
+    const final = amount * Math.pow(1 + r, months);
+    const gross = final - amount;
+    const cut = gross > 0 ? gross * (trader.profitShare / 100) : 0;
+    const net = gross - cut;
+    return { grossProfit: gross, traderCut: cut, netProfit: net, finalBalance: amount + net };
+  }, [amount, months, avgMonthly, trader.profitShare]);
+
+  const fmt = (n: number) => new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 }).format(n);
+
+  return (
+    <section className="mx-auto max-w-4xl px-4 pb-16 sm:px-6 lg:px-8">
+      <div className="glass-strong rounded-3xl p-6 md:p-8">
+        <div className="flex items-center gap-2 text-gold">
+          <Calculator className="h-5 w-5" />
+          <h2 className="font-display text-xl font-bold sm:text-2xl">حاسبة نسخ الصفقات</h2>
+        </div>
+        <p className="mt-1 text-sm text-muted-foreground">
+          احسب المبلغ المتوقّع نسخه والأرباح التقديرية بناءً على متوسّط الأداء التاريخي للمتداول.
+        </p>
+
+        <div className="mt-5 grid gap-4 md:grid-cols-3">
+          <label className="block">
+            <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">المتداول</span>
+            <select
+              value={traderId}
+              onChange={(e) => setTraderId(e.target.value)}
+              className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm outline-none focus:border-gold/50"
+            >
+              {TRADERS.map((t) => (
+                <option key={t.id} value={t.id} className="bg-background">
+                  {t.flag} {t.name}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="block">
+            <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">المبلغ (USD)</span>
+            <input
+              type="number"
+              inputMode="decimal"
+              min={0}
+              max={1_000_000}
+              value={amountStr}
+              onChange={(e) => setAmountStr(e.target.value.slice(0, 10))}
+              className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 font-mono text-sm tabular-nums outline-none focus:border-gold/50"
+              placeholder="1000"
+            />
+          </label>
+
+          <label className="block">
+            <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+              المدة (أشهر): {months}
+            </span>
+            <input
+              type="range"
+              min={1}
+              max={24}
+              value={months}
+              onChange={(e) => setMonths(Number(e.target.value))}
+              className="mt-3 w-full accent-[color:var(--color-gold,#d4af37)]"
+            />
+            <div className="mt-1 flex justify-between font-mono text-[9px] text-muted-foreground">
+              <span>1</span>
+              <span>12</span>
+              <span>24</span>
+            </div>
+          </label>
+        </div>
+
+        {belowMin && (
+          <p className="mt-3 rounded-lg border border-amber-400/40 bg-amber-400/10 px-3 py-2 text-xs text-amber-300">
+            الحد الأدنى لنسخ صفقات {trader.name} هو ${fmt(trader.minDeposit)}.
+          </p>
+        )}
+
+        <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <ResultCard label="المبلغ المنسوخ" value={`$${fmt(amount)}`} />
+          <ResultCard label="متوسط العائد الشهري" value={`${avgMonthly >= 0 ? "+" : ""}${avgMonthly.toFixed(2)}%`} positive={avgMonthly >= 0} />
+          <ResultCard label="حصة المتداول" value={`-$${fmt(traderCut)}`} sub={`${trader.profitShare}%`} />
+          <ResultCard label="صافي أرباحك" value={`${netProfit >= 0 ? "+" : ""}$${fmt(netProfit)}`} positive={netProfit >= 0} />
+        </div>
+
+        <div className="mt-4 flex items-center justify-between rounded-xl border border-gold/30 bg-gold/[0.06] px-4 py-3">
+          <span className="text-sm text-muted-foreground">الرصيد المتوقع بعد {months} شهر</span>
+          <span className="font-display text-2xl font-bold tabular-nums text-gold">${fmt(finalBalance)}</span>
+        </div>
+
+        <p className="mt-3 text-[11px] text-muted-foreground">
+          * تقديرات مبنية على متوسط الأداء التاريخي وليست ضماناً لأي عائد مستقبلي. إجمالي الربح قبل الحصة: ${fmt(grossProfit)}.
+        </p>
+      </div>
+    </section>
+  );
+}
+
+function ResultCard({ label, value, sub, positive }: { label: string; value: string; sub?: string; positive?: boolean }) {
+  const tone = positive === undefined ? "text-foreground" : positive ? "text-emerald-400" : "text-red-400";
+  return (
+    <div className="rounded-xl border border-white/10 bg-card/40 px-4 py-3">
+      <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">{label}</p>
+      <p className={`mt-1 font-display text-lg font-semibold tabular-nums ${tone}`}>{value}</p>
+      {sub && <p className="mt-0.5 font-mono text-[9px] text-muted-foreground">{sub}</p>}
+    </div>
   );
 }
 
