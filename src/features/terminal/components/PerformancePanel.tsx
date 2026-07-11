@@ -11,13 +11,13 @@ type Trade = {
 };
 
 export function PerformancePanel({ history }: { history: Trade[] }) {
-  const [range, setRange] = useState<"7d" | "30d" | "all">("30d");
+  const [rangeSel, setRangeSel] = useState<"7d" | "30d" | "all">("30d");
   const filtered = useMemo(() => {
-    if (range === "all") return history;
-    const days = range === "7d" ? 7 : 30;
+    if (rangeSel === "all") return history;
+    const days = rangeSel === "7d" ? 7 : 30;
     const cutoff = Date.now() - days * 24 * 60 * 60 * 1000;
     return history.filter((h) => new Date(h.closed_at).getTime() >= cutoff);
-  }, [history, range]);
+  }, [history, rangeSel]);
   const profits = useMemo(() => filtered.map((h) => Number(h.profit) + Number(h.swap ?? 0) - Number(h.commission ?? 0)), [filtered]);
   const m = useMemo(() => performanceMetrics(profits), [profits]);
 
@@ -46,7 +46,7 @@ export function PerformancePanel({ history }: { history: Trade[] }) {
     <div className="flex h-full flex-col gap-3 p-3 text-xs overflow-auto">
       <div className="flex items-center justify-between gap-2">
         <div className="text-[11px] text-white/50">
-          {filtered.length} صفقة · نطاق {range === "7d" ? "آخر 7 أيام" : range === "30d" ? "آخر 30 يومًا" : "كل الوقت"}
+          {filtered.length} صفقة · نطاق {rangeSel === "7d" ? "آخر 7 أيام" : rangeSel === "30d" ? "آخر 30 يومًا" : "كل الوقت"}
         </div>
         <div className="inline-flex overflow-hidden rounded-md border border-white/10 text-[11px]">
           {([
@@ -57,8 +57,8 @@ export function PerformancePanel({ history }: { history: Trade[] }) {
             <button
               key={id}
               type="button"
-              onClick={() => setRange(id)}
-              className={`px-2 py-1 transition ${range === id ? "bg-gold/20 text-gold" : "text-white/60 hover:bg-white/5"}`}
+              onClick={() => setRangeSel(id)}
+              className={`px-2 py-1 transition ${rangeSel === id ? "bg-gold/20 text-gold" : "text-white/60 hover:bg-white/5"}`}
             >
               {label}
             </button>
