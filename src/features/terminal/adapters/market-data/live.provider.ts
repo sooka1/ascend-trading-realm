@@ -2,19 +2,51 @@ import type { Candle, ConnectionStatus, MarketDataProvider, Quote, Timeframe } f
 import { fetchLiveCandles, fetchLiveQuotes } from "@/lib/market-data.functions";
 
 // Symbols routed to Binance WebSocket (free, no key, real-time).
+// The map is hydrated at runtime from Binance /api/v3/exchangeInfo so every
+// spot pair against USDT/USDC/FDUSD is tradeable without a hard-coded list.
+// A short bootstrap set keeps the top majors resolvable before the fetch
+// completes on a cold page load.
 const BINANCE_MAP: Record<string, string> = {
   BTCUSD: "btcusdt", ETHUSD: "ethusdt", BNBUSD: "bnbusdt", SOLUSD: "solusdt",
-  XRPUSD: "xrpusdt", ADAUSD: "adausdt", DOGEUSD: "dogeusdt", TRXUSD: "trxusdt",
-  AVAXUSD: "avaxusdt", DOTUSD: "dotusdt", LINKUSD: "linkusdt", MATICUSD: "maticusdt",
-  LTCUSD: "ltcusdt", BCHUSD: "bchusdt", ATOMUSD: "atomusdt", NEARUSD: "nearusdt",
-  APTUSD: "aptusdt", SUIUSD: "suiusdt", ARBUSD: "arbusdt", OPUSD: "opusdt",
-  INJUSD: "injusdt", TIAUSD: "tiausdt", SEIUSD: "seiusdt", IMXUSD: "imxusdt",
-  FILUSD: "filusdt", ICPUSD: "icpusdt", AAVEUSD: "aaveusdt", MKRUSD: "mkrusdt",
-  LDOUSD: "ldousdt", RUNEUSD: "runeusdt", ETCUSD: "etcusdt", XMRUSD: "xmrusdt",
-  XLMUSD: "xlmusdt", ALGOUSD: "algousdt", HBARUSD: "hbarusdt", VETUSD: "vetusdt",
-  EGLDUSD: "egldusdt", ORDIUSD: "ordiusdt", PEPEUSD: "pepeusdt", SHIBUSD: "shibusdt",
-  FLOKIUSD: "flokiusdt", BONKUSD: "bonkusdt",
 };
+// Quote assets we accept, in preference order. First match wins per base.
+const BINANCE_QUOTE_PREF = ["USDT", "FDUSD", "USDC"] as const;
+let exchangeInfoPromise: Promise<void> | null = null;
+function loadBinanceExchangeInfo(): Promise<void> {
+  if (exchangeInfoPromise) return exchangeInfoPromise;
+  exchangeInfoPromise = (async () => {
+    try {
+      const res = await fetch("https://api.binance.com/api/v3/exchangeInfo");
+      const body = await res.json() as {
+        symbols?: Array<{ symbol: string; status: string; baseAsset: string; quoteAsset: string; isSpotTradingAllowed?: boolean }>;
+      };
+      const rows = body?.symbols ?? [];
+      // Pick the best quote per base asset following BINANCE_QUOTE_PREF.
+      const bestQuote = new Map<string, string>();
+      for (const r of rows) {
+        if (r.status !== "TRADING" || r.isSpotTradingAllowed === false) continue;
+        const idx = BINANCE_QUOTE_PREF.indexOf(r.quoteAsset as typeof BINANCE_QUOTE_PREF[number]);
+        if (idx < 0) continue;
+        const cur = bestQuote.get(r.baseAsset);
+        const curIdx = cur ? BINANCE_QUOTE_PREF.indexOf(cur as typeof BINANCE_QUOTE_PREF[number]) : 999;
+        if (idx < curIdx) bestQuote.set(r.baseAsset, r.quoteAsset);
+      }
+      for (const [base, quote] of bestQuote) {
+        const internal = `${base}USD`;
+        // Never override an existing explicit mapping.
+        if (!(internal in BINANCE_MAP)) {
+          BINANCE_MAP[internal] = `${base}${quote}`.toLowerCase();
+        }
+      }
+    } catch {
+      // Cold fallback: keep the bootstrap map only.
+    }
+  })();
+  return exchangeInfoPromise;
+}
+// Kick off immediately at module load so the first UI interactions see a
+// hydrated map. Non-blocking; failures fall back to the bootstrap entries.
+if (typeof window !== "undefined") { void loadBinanceExchangeInfo(); }
 const BINANCE_INTERVAL: Record<Timeframe, string> = {
   "1m": "1m", "5m": "5m", "15m": "15m", "30m": "30m",
   "1h": "1h", "4h": "4h", "1d": "1d", "1w": "1w", "1M": "1M",
@@ -121,6 +153,16 @@ export function createLiveProvider(): MarketDataProvider {
   }
 
   function setStatus(s: ConnectionStatus) { status = s; statusSubs.forEach((cb) => cb(s)); }
+
+  // After exchangeInfo lands, sweep any already-subscribed symbols that
+  // now match a Binance pair and route them through the WebSocket.
+  void loadBinanceExchangeInfo().then(() => {
+    let added = false;
+    for (const sym of quoteSubs.keys()) {
+      if (isBinance(sym) && !binanceSymbols.has(sym)) { binanceSymbols.add(sym); added = true; }
+    }
+    if (added) ensureBinanceWs();
+  });
 
   // ============ Binance WebSocket for crypto (real-time) ============
   let binanceWs: WebSocket | null = null;
