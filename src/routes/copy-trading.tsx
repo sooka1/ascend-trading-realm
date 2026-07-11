@@ -10,6 +10,13 @@ import { requestCopyTrader } from "@/lib/actions.functions";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { z } from "zod";
 
+type CopySearch = {
+  page: number;
+  perPage: number;
+  trader: string;
+  redirect: string;
+};
+
 const searchSchema = z.object({
   page: fallback(z.number().int(), 1).default(1),
   perPage: fallback(z.number().int(), 4).default(4),
@@ -156,17 +163,19 @@ function CopyTradingPage() {
 
   // Reset to page 1 when filters change.
   useEffect(() => {
-    if (search.page !== 1) navigate({ search: (p) => ({ ...p, page: 1 }), replace: true });
+    if (search.page !== 1) navigate({ search: (p: CopySearch) => ({ ...p, page: 1 }), replace: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [asset, risk, minReturn, maxDeposit, sort]);
 
   // Clamp page if it overshoots after filtering.
   useEffect(() => {
-    if (search.page > totalPages) navigate({ search: (p) => ({ ...p, page: totalPages }), replace: true });
+    if (search.page > totalPages) navigate({ search: (p: CopySearch) => ({ ...p, page: totalPages }), replace: true });
   }, [totalPages, search.page, navigate]);
 
-  const setPage = (n: number) => navigate({ search: (p) => ({ ...p, page: Math.max(1, Math.min(totalPages, n)) }) });
-  const setPerPage = (n: number) => navigate({ search: (p) => ({ ...p, perPage: n, page: 1 }) });
+  const setPage = (n: number) =>
+    navigate({ search: (p: CopySearch) => ({ ...p, page: Math.max(1, Math.min(totalPages, n)) }) });
+  const setPerPage = (n: number) =>
+    navigate({ search: (p: CopySearch) => ({ ...p, perPage: n, page: 1 }) });
 
   const resetFilters = () => {
     setAsset("all"); setRisk("all"); setMinReturn(-10); setMaxDeposit(5000); setSort("return");
