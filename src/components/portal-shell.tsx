@@ -26,6 +26,7 @@ import {
   Trophy,
   Copy,
   GraduationCap,
+  CandlestickChart,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useMemo, useState, type ReactNode } from "react";
@@ -42,6 +43,7 @@ const NAV: NavItem[] = [
   { to: "/portal", icon: LayoutDashboard, label: "لوحة القيادة", group: "overview" },
   { to: "/portal/portfolio", icon: Wallet, label: "المحفظة", group: "overview" },
   { to: "/portal/accounts", icon: Landmark, label: "الاشتراكات", group: "overview" },
+  { to: "/portal/trading", icon: CandlestickChart, label: "منصة التداول", group: "trading" },
   { to: "/competitions", icon: Trophy, label: "المسابقات", group: "trading" },
   { to: "/copy-trading", icon: Copy, label: "نسخ الصفقات", group: "trading" },
   { to: "/investor", icon: PackageIcon, label: "الباقات والعروض", group: "trading" },
