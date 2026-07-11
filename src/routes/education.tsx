@@ -515,3 +515,156 @@ function ForeignCoursesSection() {
     </div>
   );
 }
+
+// -----------------------------------------------------------------------------
+// Calculators: Margin, Pip Value, Swap
+// -----------------------------------------------------------------------------
+
+const FX_PAIRS: { symbol: string; price: number; contract: number; pipSize: number; quote: string; swapLong: number; swapShort: number }[] = [
+  { symbol: "EUR/USD", price: 1.0850, contract: 100000, pipSize: 0.0001, quote: "USD", swapLong: -0.75, swapShort: 0.25 },
+  { symbol: "GBP/USD", price: 1.2700, contract: 100000, pipSize: 0.0001, quote: "USD", swapLong: -0.90, swapShort: 0.30 },
+  { symbol: "USD/JPY", price: 155.20, contract: 100000, pipSize: 0.01,   quote: "JPY", swapLong: 1.20, swapShort: -2.10 },
+  { symbol: "AUD/USD", price: 0.6600, contract: 100000, pipSize: 0.0001, quote: "USD", swapLong: -0.55, swapShort: 0.10 },
+  { symbol: "USD/CAD", price: 1.3650, contract: 100000, pipSize: 0.0001, quote: "CAD", swapLong: 0.40, swapShort: -1.30 },
+  { symbol: "XAU/USD", price: 2380.0, contract: 100,    pipSize: 0.01,   quote: "USD", swapLong: -3.50, swapShort: 1.20 },
+];
+
+function num(v: string, d = 0): number {
+  const n = parseFloat(v);
+  return Number.isFinite(n) ? n : d;
+}
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <label className="block">
+      <span className="mb-1 block text-xs text-muted-foreground">{label}</span>
+      {children}
+    </label>
+  );
+}
+
+function ResultRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-center justify-between border-t border-white/5 py-2 text-sm">
+      <span className="text-muted-foreground">{label}</span>
+      <span className="font-mono font-semibold text-gold">{value}</span>
+    </div>
+  );
+}
+
+function MarginCalc() {
+  const [sym, setSym] = useState(FX_PAIRS[0].symbol);
+  const [lots, setLots] = useState("1");
+  const [leverage, setLeverage] = useState("100");
+  const p = FX_PAIRS.find((x) => x.symbol === sym)!;
+  const notional = num(lots) * p.contract * p.price;
+  const margin = leverage ? notional / num(leverage, 1) : 0;
+  return (
+    <div className="glass rounded-2xl p-5">
+      <h3 className="font-display text-base font-semibold">حاسبة الهامش</h3>
+      <p className="mt-1 text-xs text-muted-foreground">احسب الهامش المطلوب لفتح صفقة.</p>
+      <div className="mt-4 grid gap-3 sm:grid-cols-3">
+        <Field label="الأداة">
+          <select value={sym} onChange={(e) => setSym(e.target.value)} className="w-full rounded-md border border-white/10 bg-transparent p-2 text-sm">
+            {FX_PAIRS.map((x) => <option key={x.symbol} value={x.symbol}>{x.symbol}</option>)}
+          </select>
+        </Field>
+        <Field label="الحجم (لوت)"><Input value={lots} onChange={(e) => setLots(e.target.value)} inputMode="decimal" /></Field>
+        <Field label="الرافعة (1:X)"><Input value={leverage} onChange={(e) => setLeverage(e.target.value)} inputMode="numeric" /></Field>
+      </div>
+      <div className="mt-4">
+        <ResultRow label="القيمة الاسمية" value={`${notional.toLocaleString(undefined, { maximumFractionDigits: 2 })} ${p.quote}`} />
+        <ResultRow label="الهامش المطلوب" value={`${margin.toLocaleString(undefined, { maximumFractionDigits: 2 })} ${p.quote}`} />
+      </div>
+    </div>
+  );
+}
+
+function PipCalc() {
+  const [sym, setSym] = useState(FX_PAIRS[0].symbol);
+  const [lots, setLots] = useState("1");
+  const p = FX_PAIRS.find((x) => x.symbol === sym)!;
+  // Pip value in quote currency
+  const pipQuote = p.pipSize * p.contract * num(lots);
+  // Convert to USD (approx): if quote is USD, same; else divide by pair price when USD is base (e.g. USD/JPY)
+  const pipUsd = p.quote === "USD" ? pipQuote : pipQuote / p.price;
+  return (
+    <div className="glass rounded-2xl p-5">
+      <h3 className="font-display text-base font-semibold">حاسبة قيمة النقطة</h3>
+      <p className="mt-1 text-xs text-muted-foreground">قيمة النقطة (Pip) بحسب حجم الصفقة.</p>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <Field label="الأداة">
+          <select value={sym} onChange={(e) => setSym(e.target.value)} className="w-full rounded-md border border-white/10 bg-transparent p-2 text-sm">
+            {FX_PAIRS.map((x) => <option key={x.symbol} value={x.symbol}>{x.symbol}</option>)}
+          </select>
+        </Field>
+        <Field label="الحجم (لوت)"><Input value={lots} onChange={(e) => setLots(e.target.value)} inputMode="decimal" /></Field>
+      </div>
+      <div className="mt-4">
+        <ResultRow label={`قيمة النقطة (${p.quote})`} value={`${pipQuote.toLocaleString(undefined, { maximumFractionDigits: 2 })} ${p.quote}`} />
+        <ResultRow label="قيمة النقطة (USD)" value={`$${pipUsd.toLocaleString(undefined, { maximumFractionDigits: 2 })}`} />
+      </div>
+    </div>
+  );
+}
+
+function SwapCalc() {
+  const [sym, setSym] = useState(FX_PAIRS[0].symbol);
+  const [lots, setLots] = useState("1");
+  const [side, setSide] = useState<"long" | "short">("long");
+  const [nights, setNights] = useState("1");
+  const p = FX_PAIRS.find((x) => x.symbol === sym)!;
+  const rate = side === "long" ? p.swapLong : p.swapShort;
+  const pipQuote = p.pipSize * p.contract * num(lots);
+  const pipUsd = p.quote === "USD" ? pipQuote : pipQuote / p.price;
+  const daily = rate * pipUsd; // points × pip value ≈ USD/day
+  const total = daily * num(nights);
+  return (
+    <div className="glass rounded-2xl p-5">
+      <h3 className="font-display text-base font-semibold">حاسبة السواب (المبيت)</h3>
+      <p className="mt-1 text-xs text-muted-foreground">تقدير رسوم/عوائد التبييت لكل ليلة.</p>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <Field label="الأداة">
+          <select value={sym} onChange={(e) => setSym(e.target.value)} className="w-full rounded-md border border-white/10 bg-transparent p-2 text-sm">
+            {FX_PAIRS.map((x) => <option key={x.symbol} value={x.symbol}>{x.symbol}</option>)}
+          </select>
+        </Field>
+        <Field label="الاتجاه">
+          <select value={side} onChange={(e) => setSide(e.target.value as "long" | "short")} className="w-full rounded-md border border-white/10 bg-transparent p-2 text-sm">
+            <option value="long">شراء (Long)</option>
+            <option value="short">بيع (Short)</option>
+          </select>
+        </Field>
+        <Field label="الحجم (لوت)"><Input value={lots} onChange={(e) => setLots(e.target.value)} inputMode="decimal" /></Field>
+        <Field label="عدد الليالي"><Input value={nights} onChange={(e) => setNights(e.target.value)} inputMode="numeric" /></Field>
+      </div>
+      <div className="mt-4">
+        <ResultRow label="نقاط السواب / ليلة" value={rate.toFixed(2)} />
+        <ResultRow label="سواب يومي (USD)" value={`${daily >= 0 ? "+" : ""}${daily.toFixed(2)}`} />
+        <ResultRow label="إجمالي السواب (USD)" value={`${total >= 0 ? "+" : ""}${total.toFixed(2)}`} />
+      </div>
+    </div>
+  );
+}
+
+function CalculatorsSection() {
+  return (
+    <section className="mx-auto max-w-7xl px-4 pb-20 sm:px-6 lg:px-8">
+      <div className="mb-6 flex items-end justify-between gap-4">
+        <div>
+          <h2 className="font-display text-2xl font-semibold">حاسبات التداول</h2>
+          <p className="mt-1 text-sm text-muted-foreground">الهامش، قيمة النقطة، والسواب — تقديرية بأسعار توضيحية.</p>
+        </div>
+        <Calculator className="h-6 w-6 text-gold" />
+      </div>
+      <div className="grid gap-4 lg:grid-cols-3">
+        <MarginCalc />
+        <PipCalc />
+        <SwapCalc />
+      </div>
+      <p className="mt-4 text-[11px] text-muted-foreground/70">
+        القيم إرشادية فقط وتعتمد على أسعار سوق توضيحية؛ راجع منصة التداول لأرقام حقيقية.
+      </p>
+    </section>
+  );
+}
