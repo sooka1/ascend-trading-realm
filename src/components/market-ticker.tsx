@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useServerFn } from "@tanstack/react-start";
+import { getQuotes } from "@/lib/quotes.functions";
 
 type Row = { symbol: string; name: string; price: number; change: number };
 
@@ -22,37 +24,31 @@ const FEED: { symbol: string; name: string; yahoo: string; fallback: { price: nu
 
 const SEED: Row[] = FEED.map((f) => ({ symbol: f.symbol, name: f.name, ...f.fallback }));
 
-async function fetchQuote(yahooSym: string): Promise<{ price: number; change: number } | null> {
-  // Yahoo Finance chart endpoint — public, CORS-friendly, no auth required.
-  try {
-    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(yahooSym)}?interval=1d&range=1d`;
-    const res = await fetch(url);
-    if (!res.ok) return null;
-    const json = await res.json();
-    const meta = json?.chart?.result?.[0]?.meta;
-    if (!meta) return null;
-    const price = Number(meta.regularMarketPrice);
-    const prev = Number(meta.chartPreviousClose ?? meta.previousClose);
-    if (!isFinite(price) || !isFinite(prev) || prev === 0) return null;
-    const change = ((price - prev) / prev) * 100;
-    return { price, change };
-  } catch {
-    return null;
-  }
-}
-
 export function MarketTicker() {
   const [rows, setRows] = useState(SEED);
+  const fetchQuotes = useServerFn(getQuotes);
   useEffect(() => {
     let cancelled = false;
     const load = async () => {
-      const results = await Promise.all(
-        FEED.map(async (f) => {
-          const q = await fetchQuote(f.yahoo);
-          return { symbol: f.symbol, name: f.name, price: q?.price ?? f.fallback.price, change: q?.change ?? f.fallback.change };
-        }),
-      );
-      if (!cancelled) setRows(results);
+      try {
+        const { quotes } = await fetchQuotes({ data: { symbols: FEED.map((f) => f.yahoo) } });
+        if (cancelled) return;
+        const byYahoo = new Map(quotes.map((q) => [q.symbol, q]));
+        setRows(
+          FEED.map((f) => {
+            const q = byYahoo.get(f.yahoo);
+            const ok = q && q.source !== "fallback";
+            return {
+              symbol: f.symbol,
+              name: f.name,
+              price: ok ? q!.price : f.fallback.price,
+              change: ok ? q!.change : f.fallback.change,
+            };
+          }),
+        );
+      } catch (e) {
+        console.warn("[market-ticker] quote fetch failed", e);
+      }
     };
     void load();
     const id = setInterval(load, 30_000);
@@ -60,7 +56,7 @@ export function MarketTicker() {
       cancelled = true;
       clearInterval(id);
     };
-  }, []);
+  }, [fetchQuotes]);
 
   const loop = [...rows, ...rows];
   return (
