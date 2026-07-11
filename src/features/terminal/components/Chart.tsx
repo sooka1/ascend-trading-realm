@@ -804,6 +804,40 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
                 >
                   تصدير CSV
                 </button>
+                <button
+                  disabled={filteredHitLog.length === 0}
+                  onClick={() => {
+                    const header = ["at_iso","symbol","kind","side","entry","price","volume","result","pos_id"];
+                    const escHtml = (v: unknown) => String(v ?? "").replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]!));
+                    const rows = filteredHitLog.map((h) => `<tr>${[
+                      new Date(h.at).toISOString(), h.symbol, h.kind, h.side,
+                      h.entry, h.price, h.volume, h.result, h.posId,
+                    ].map((v) => `<td>${escHtml(v)}</td>`).join("")}</tr>`).join("");
+                    const html = `\uFEFF<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"/></head><body><table border="1"><thead><tr>${header.map((h) => `<th>${h}</th>`).join("")}</tr></thead><tbody>${rows}</tbody></table></body></html>`;
+                    const blob = new Blob([html], { type: "application/vnd.ms-excel;charset=utf-8" });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = `tp-sl-alerts-${new Date().toISOString().slice(0,10)}.xls`;
+                    document.body.appendChild(a); a.click(); a.remove();
+                    URL.revokeObjectURL(url);
+                  }}
+                  className="rounded border border-white/10 px-2 py-0.5 text-[10px] text-white/70 hover:bg-white/10 hover:text-white disabled:opacity-40"
+                >
+                  تصدير Excel
+                </button>
+                <button
+                  disabled={hitLog.length === 0}
+                  onClick={() => {
+                    if (!window.confirm("سيتم حذف كل تنبيهات TP/SL وتصفير منع التكرار. المتابعة؟")) return;
+                    setHitLog([]); saveAlertLog([]);
+                    hitDedupeRef.current.clear(); saveSeen(hitDedupeRef.current);
+                    setSelectedHit(null); setFocusedHit(null);
+                  }}
+                  className="rounded border border-rose-400/30 bg-rose-500/10 px-2 py-0.5 text-[10px] text-rose-200 hover:bg-rose-500/20 disabled:opacity-40"
+                >
+                  مسح السجل
+                </button>
                 <button onClick={() => setLogOpen(false)} className="rounded px-1.5 py-0.5 text-[10px] text-white/60 hover:bg-white/10 hover:text-white">إغلاق</button>
               </div>
             </div>
