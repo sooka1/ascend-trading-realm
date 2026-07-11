@@ -71,47 +71,47 @@ export function OrderTicket({ instrument, bid, ask, balance, leverage }: {
         </TabsList>
       </Tabs>
 
-      <div className="grid grid-cols-2 gap-2 text-[11px]">
+      <div className="grid grid-cols-2 gap-2">
         <div className="min-w-0 rounded-md border border-white/10 bg-white/[0.02] p-2 text-start">
-          <div className="text-white/50">Bid</div>
-          <div className="truncate font-mono text-sm text-red-400" dir="ltr">{bid.toFixed(instrument.price_precision)}</div>
+          <div className="text-xs font-medium leading-tight text-white/50">Bid</div>
+          <div className="truncate font-mono text-sm font-semibold leading-tight tabular-nums text-red-400" dir="ltr">{bid.toFixed(instrument.price_precision)}</div>
         </div>
         <div className="min-w-0 rounded-md border border-white/10 bg-white/[0.02] p-2 text-start">
-          <div className="text-white/50">Ask</div>
-          <div className="truncate font-mono text-sm text-emerald-400" dir="ltr">{ask.toFixed(instrument.price_precision)}</div>
+          <div className="text-xs font-medium leading-tight text-white/50">Ask</div>
+          <div className="truncate font-mono text-sm font-semibold leading-tight tabular-nums text-emerald-400" dir="ltr">{ask.toFixed(instrument.price_precision)}</div>
         </div>
       </div>
 
       <div className="text-start">
-        <Label className="text-[11px]">الحجم (Lot)</Label>
-        <Input dir="ltr" value={volume} onChange={(e) => setVolume(e.target.value)} className="mt-1 h-8 text-right font-mono" />
+        <Label className="text-xs font-medium leading-tight">الحجم (Lot)</Label>
+        <Input dir="ltr" value={volume} onChange={(e) => setVolume(e.target.value)} className="mt-1 h-8 text-right font-mono text-sm font-semibold tabular-nums" />
       </div>
 
       {orderType !== "market" && (
         <div className="text-start">
-          <Label className="text-[11px]">سعر التنفيذ</Label>
-          <Input dir="ltr" value={price} onChange={(e) => setPrice(e.target.value)} placeholder={String(ask.toFixed(instrument.price_precision))} className="mt-1 h-8 text-right font-mono" />
+          <Label className="text-xs font-medium leading-tight">سعر التنفيذ</Label>
+          <Input dir="ltr" value={price} onChange={(e) => setPrice(e.target.value)} placeholder={String(ask.toFixed(instrument.price_precision))} className="mt-1 h-8 text-right font-mono text-sm font-semibold tabular-nums" />
         </div>
       )}
       {orderType === "stop_limit" && (
         <div className="text-start">
-          <Label className="text-[11px]">Stop Price</Label>
-          <Input dir="ltr" value={stopPrice} onChange={(e) => setStopPrice(e.target.value)} className="mt-1 h-8 text-right font-mono" />
+          <Label className="text-xs font-medium leading-tight">Stop Price</Label>
+          <Input dir="ltr" value={stopPrice} onChange={(e) => setStopPrice(e.target.value)} className="mt-1 h-8 text-right font-mono text-sm font-semibold tabular-nums" />
         </div>
       )}
 
       <div className="grid grid-cols-2 gap-2">
         <div className="min-w-0 text-start">
-          <Label className="text-[11px]">جني الأرباح</Label>
-          <Input dir="ltr" value={tp} onChange={(e) => setTp(e.target.value)} className="mt-1 h-8 text-right font-mono" />
+          <Label className="text-xs font-medium leading-tight">جني الأرباح</Label>
+          <Input dir="ltr" value={tp} onChange={(e) => setTp(e.target.value)} className="mt-1 h-8 text-right font-mono text-sm font-semibold tabular-nums" />
         </div>
         <div className="min-w-0 text-start">
-          <Label className="text-[11px]">وقف الخسارة</Label>
-          <Input dir="ltr" value={sl} onChange={(e) => setSl(e.target.value)} className="mt-1 h-8 text-right font-mono" />
+          <Label className="text-xs font-medium leading-tight">وقف الخسارة</Label>
+          <Input dir="ltr" value={sl} onChange={(e) => setSl(e.target.value)} className="mt-1 h-8 text-right font-mono text-sm font-semibold tabular-nums" />
         </div>
       </div>
 
-      <div className="rounded-md border border-white/10 bg-white/[0.02] p-2 space-y-1 text-[11px]">
+      <div className="space-y-1 rounded-md border border-white/10 bg-white/[0.02] p-2">
         <Row label="الهامش المطلوب" value={`$${marginBuy.toFixed(2)}`} />
         <Row label="R/R (شراء)" value={rrBuy ? `1 : ${rrBuy.toFixed(2)}` : "—"} />
         <Row label="R/R (بيع)" value={rrSell ? `1 : ${rrSell.toFixed(2)}` : "—"} />
@@ -120,13 +120,13 @@ export function OrderTicket({ instrument, bid, ask, balance, leverage }: {
       </div>
 
       <div className="grid grid-cols-2 gap-2">
-        <Button onClick={() => submit("sell")} disabled={busy} className="flex h-12 min-w-0 flex-col items-center justify-center gap-0.5 overflow-hidden bg-red-500 px-2 font-bold leading-none text-white hover:bg-red-600">
-          <span className="text-sm">بيع</span>
-          <span className="truncate font-mono text-[11px] opacity-90" dir="ltr">{bid.toFixed(instrument.price_precision)}</span>
+        <Button onClick={() => submit("sell")} disabled={busy} className="flex h-12 min-w-0 flex-col items-center justify-center gap-0.5 overflow-hidden bg-red-500 leading-tight text-white hover:bg-red-600">
+          <span className="text-sm font-semibold">بيع</span>
+          <span className="truncate font-mono text-xs font-semibold tabular-nums opacity-90" dir="ltr">{bid.toFixed(instrument.price_precision)}</span>
         </Button>
-        <Button onClick={() => submit("buy")} disabled={busy} className="flex h-12 min-w-0 flex-col items-center justify-center gap-0.5 overflow-hidden bg-emerald-500 px-2 font-bold leading-none text-white hover:bg-emerald-600">
-          <span className="text-sm">شراء</span>
-          <span className="truncate font-mono text-[11px] opacity-90" dir="ltr">{ask.toFixed(instrument.price_precision)}</span>
+        <Button onClick={() => submit("buy")} disabled={busy} className="flex h-12 min-w-0 flex-col items-center justify-center gap-0.5 overflow-hidden bg-emerald-500 leading-tight text-white hover:bg-emerald-600">
+          <span className="text-sm font-semibold">شراء</span>
+          <span className="truncate font-mono text-xs font-semibold tabular-nums opacity-90" dir="ltr">{ask.toFixed(instrument.price_precision)}</span>
         </Button>
       </div>
     </div>
@@ -135,9 +135,9 @@ export function OrderTicket({ instrument, bid, ask, balance, leverage }: {
 
 function Row({ label, value, valueClass }: { label: string; value: string; valueClass?: string }) {
   return (
-    <div className="flex justify-between">
-      <span className="text-white/50">{label}</span>
-      <span className={`font-mono ${valueClass ?? "text-white/80"}`}>{value}</span>
+    <div className="flex items-center justify-between gap-2 leading-tight">
+      <span className="min-w-0 truncate text-xs font-medium text-white/50">{label}</span>
+      <span dir="ltr" className={`shrink-0 font-mono text-xs font-semibold tabular-nums ${valueClass ?? "text-white/80"}`}>{value}</span>
     </div>
   );
 }
