@@ -7,3 +7,5 @@ Disallow: /dashboard
 Disallow: /portal
 Disallow: /admin
 Disallow: /app
+
+Sitemap: https://www.hkexinvest.com/sitemap.xml
