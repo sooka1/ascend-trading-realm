@@ -157,7 +157,8 @@ const UI = {
 } as const;
 
 function AssetPage() {
-  const { asset: a, slug, lang } = Route.useLoaderData();
+  const data = Route.useLoaderData() as { asset: Asset; slug: string; lang: Lang };
+  const { asset: a, slug, lang } = data;
   const t = UI[lang];
   const dir = lang === "ar" ? "rtl" : "ltr";
   const related = SLUGS.filter((s) => s !== slug).slice(0, 6);
@@ -206,7 +207,7 @@ function AssetPage() {
             <div className="glass rounded-2xl p-6">
               <h2 className="font-display text-xl font-semibold">{t.why(a.name)}</h2>
               <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-                {a.why.map((w) => (
+                {a.why.map((w: string) => (
                   <li key={w} className="flex items-start gap-2">
                     <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-gold" />
                     <span>{w}</span>
@@ -217,7 +218,7 @@ function AssetPage() {
             <div className="glass rounded-2xl p-6">
               <h2 className="font-display text-xl font-semibold">{t.highlights}</h2>
               <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-                {a.highlights.map((h) => (
+                {a.highlights.map((h: string) => (
                   <li key={h} className="flex items-start gap-2">
                     <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-gold" />
                     <span>{h}</span>
@@ -245,7 +246,7 @@ function AssetPage() {
           <section className="mt-10">
             <h2 className="font-display text-2xl font-semibold">{t.faq}</h2>
             <div className="mt-4 space-y-3">
-              {a.faq.map((f) => (
+              {a.faq.map((f: FaqItem) => (
                 <details key={f.q} className="glass rounded-xl p-4">
                   <summary className="cursor-pointer font-medium text-foreground">{f.q}</summary>
                   <p className="mt-2 text-sm text-muted-foreground">{f.a}</p>
