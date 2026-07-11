@@ -223,9 +223,9 @@ export function PortalShell({
                     </span>
                   </div>
                   <SheetContent dir="rtl" side="right" className="w-[88vw] max-w-sm overflow-y-auto border-white/10 bg-card/95 p-5 backdrop-blur-xl">
-                    <SheetHeader>
-                      <SheetTitle className="ps-8 text-right font-mono text-[10px] uppercase tracking-[0.22em] text-gold/80">
-                        Investor Portal
+                    <SheetHeader className="pr-10">
+                      <SheetTitle className="text-right font-mono text-[10px] uppercase tracking-[0.22em] text-gold/80">
+                        بوابة المستثمر
                       </SheetTitle>
                     </SheetHeader>
                     <div className="mt-6 space-y-1">
