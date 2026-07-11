@@ -125,7 +125,7 @@ function TradingTerminal() {
                     </div>
                   </div>
                   <div className="flex-1 min-h-0">
-                    {selInst && <TerminalChart symbol={selected} timeframe={tf} chartType={chartType} precision={selInst.price_precision} positions={positions} />}
+                    {selInst && <TerminalChart symbol={selected} timeframe={tf} chartType={chartType} precision={selInst.price_precision} positions={positions} bid={bid} ask={ask} contractSize={selInst.contract_size} />}
                   </div>
                 </div>
               </Panel>
