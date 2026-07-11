@@ -976,7 +976,6 @@ export const getAccountingSummary = createServerFn({ method: "GET" })
       const k = monthKey((r as any).started_at ?? (r as any).created_at);
       const bucket = months.get(k);
       if (!bucket) continue;
-      bucket.revenue += Number((r as any).amount || 0);
       bucket.subscriptions += 1;
     }
     for (const r of deps.data ?? []) {
