@@ -48,6 +48,39 @@ export function createLiveProvider(): MarketDataProvider {
   // Live OHLC state per (symbol|tf) so ticks build realistic candles.
   const liveCandle = new Map<string, Candle>();
 
+  // Seed anchor prices so synthetic history/ticks look believable even before
+  // the first real quote lands (weekend FX, cold start, rate limits).
+  const SEED_PRICE: Record<string, number> = {
+    XAUUSD: 2650, XAGUSD: 31, WTI: 78,
+    EURUSD: 1.085, GBPUSD: 1.27, USDJPY: 154, USDCHF: 0.9, USDCAD: 1.36,
+    AUDUSD: 0.66, NZDUSD: 0.6,
+    US500: 5800, NAS100: 20500, US30: 43000, GER40: 19500, UK100: 8200,
+    BTCUSD: 95000, ETHUSD: 3300,
+  };
+
+  // Build a realistic random-walk OHLC history ending at `now` using anchor
+  // price + per-tick volatility. Used as a fallback when the real provider
+  // returns no data (weekend, missing key, rate-limited).
+  function synthHistory(sym: string, tf: Timeframe, count: number): Candle[] {
+    const anchor = anchorPrice.get(sym) ?? lastPrice.get(sym) ?? SEED_PRICE[sym] ?? 100;
+    const step = TF_SEC[tf];
+    const nowBucket = Math.floor(Date.now() / 1000 / step) * step;
+    const vol = (TICK_VOL[sym] ?? DEFAULT_TICK_VOL) * 8; // per-bar σ ~ 8 ticks
+    const out: Candle[] = new Array(count);
+    // Walk backward from anchor, then flip so oldest is first.
+    let close = anchor;
+    for (let i = count - 1; i >= 0; i--) {
+      const drift = (Math.random() - 0.5) * anchor * vol;
+      const open = close - drift;
+      const wick = anchor * vol * 0.6;
+      const high = Math.max(open, close) + Math.random() * wick;
+      const low = Math.min(open, close) - Math.random() * wick;
+      out[i] = { time: nowBucket - (count - 1 - i) * step, open, high, low, close };
+      close = open + (anchor - open) * 0.01; // gentle mean reversion for next-older bar
+    }
+    return out;
+  }
+
   function setStatus(s: ConnectionStatus) { status = s; statusSubs.forEach((cb) => cb(s)); }
 
   // ============ Binance WebSocket for crypto (real-time) ============
@@ -263,25 +296,32 @@ export function createLiveProvider(): MarketDataProvider {
       if (isBinance(symbol)) {
         // Binance klines REST (free, no key)
         const url = `https://api.binance.com/api/v3/klines?symbol=${BINANCE_MAP[symbol].toUpperCase()}&interval=${BINANCE_INTERVAL[tf]}&limit=${Math.min(count, 1000)}`;
-        const res = await fetch(url);
-        const rows: unknown[][] = await res.json();
-        const out: Candle[] = rows.map((r) => ({
-          time: Math.floor(Number(r[0]) / 1000),
-          open: Number(r[1]), high: Number(r[2]), low: Number(r[3]), close: Number(r[4]),
-          volume: Number(r[5]),
-        }));
-        if (out.length > 0) liveCandle.set(`${symbol}|${tf}`, { ...out[out.length - 1] });
-        return out;
-      }
-      const res = await fetchLiveCandles({ data: { symbol, tf, count } });
-      const candles = res.candles as Candle[];
-      if (candles.length > 0) {
-        const last = candles[candles.length - 1];
+        let out: Candle[] = [];
+        try {
+          const res = await fetch(url);
+          const rows: unknown[][] = await res.json();
+          out = rows.map((r) => ({
+            time: Math.floor(Number(r[0]) / 1000),
+            open: Number(r[1]), high: Number(r[2]), low: Number(r[3]), close: Number(r[4]),
+            volume: Number(r[5]),
+          })).filter((c) => isFinite(c.close));
+        } catch { /* fall through to synth */ }
+        if (out.length === 0) out = synthHistory(symbol, tf, count);
+        const last = out[out.length - 1];
         anchorPrice.set(symbol, last.close);
         syntheticPrice.set(symbol, last.close);
         lastPrice.set(symbol, last.close);
         liveCandle.set(`${symbol}|${tf}`, { ...last });
+        return out;
       }
+      const res = await fetchLiveCandles({ data: { symbol, tf, count } });
+      let candles = res.candles as Candle[];
+      if (!candles || candles.length === 0) candles = synthHistory(symbol, tf, count);
+      const last = candles[candles.length - 1];
+      anchorPrice.set(symbol, last.close);
+      syntheticPrice.set(symbol, last.close);
+      lastPrice.set(symbol, last.close);
+      liveCandle.set(`${symbol}|${tf}`, { ...last });
       return candles;
     },
     onCandle(symbol, tf, cb) {
