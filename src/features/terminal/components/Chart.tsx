@@ -10,11 +10,22 @@ import { supabase } from "@/integrations/supabase/client";
 
 type DrawTool = "none" | "trend" | "hline" | "rect" | "fib";
 type Anchor = { time: number; price: number };
+type DrawStyle = { color?: string; width?: number; opacity?: number };
 type Drawing =
-  | { id: string; type: "trend"; a: Anchor; b: Anchor }
-  | { id: string; type: "rect"; a: Anchor; b: Anchor }
-  | { id: string; type: "fib"; a: Anchor; b: Anchor }
-  | { id: string; type: "hline"; price: number };
+  | { id: string; type: "trend"; a: Anchor; b: Anchor; style?: DrawStyle }
+  | { id: string; type: "rect"; a: Anchor; b: Anchor; style?: DrawStyle }
+  | { id: string; type: "fib"; a: Anchor; b: Anchor; style?: DrawStyle }
+  | { id: string; type: "hline"; price: number; style?: DrawStyle };
+
+const DEFAULT_COLORS: Record<Exclude<DrawTool, "none">, string> = {
+  trend: "#60a5fa", hline: "#F5C542", rect: "#60a5fa", fib: "#94a3b8",
+};
+const PALETTE = ["#F5C542", "#60a5fa", "#22c55e", "#ef4444", "#a78bfa", "#f97316", "#e2e8f0"];
+const resolveStyle = (d: Drawing): { color: string; width: number; opacity: number } => ({
+  color: d.style?.color ?? DEFAULT_COLORS[d.type],
+  width: d.style?.width ?? (d.type === "hline" ? 1.25 : 1.5),
+  opacity: d.style?.opacity ?? 1,
+});
 
 const FIB_LEVELS = [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1];
 const FIB_COLORS = ["#94a3b8", "#f59e0b", "#f97316", "#eab308", "#22c55e", "#06b6d4", "#94a3b8"];
@@ -441,6 +452,7 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
       >
         {drawings.map((d) => {
           const isSel = selectedId === d.id;
+          const st = resolveStyle(d);
           const selectable: React.SVGAttributes<SVGElement> = {
             style: { pointerEvents: tool === "none" ? "all" : "none", cursor: tool === "none" ? "move" : undefined },
           };
@@ -450,9 +462,9 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
             return (
               <g key={d.id} onPointerDown={(e) => startDrag(e, d, "price")}>
                 <line x1={0} x2={width} y1={y - 6} y2={y - 6 + 12} stroke="transparent" strokeWidth={12} {...selectable} />
-                <line x1={0} x2={width} y1={y} y2={y} stroke="#F5C542" strokeWidth={isSel ? 2 : 1.25} strokeDasharray="4 3" />
-                <text x={6} y={y - 4} fill="#F5C542" fontSize={11}>{d.price.toFixed(precision)}</text>
-                {isSel && <circle cx={width / 2} cy={y} r={5} fill="#0f172a" stroke="#F5C542" strokeWidth={2} style={{ pointerEvents: "all", cursor: "ns-resize" }} />}
+                <line x1={0} x2={width} y1={y} y2={y} stroke={st.color} strokeOpacity={st.opacity} strokeWidth={isSel ? st.width + 0.75 : st.width} strokeDasharray="4 3" />
+                <text x={6} y={y - 4} fill={st.color} fillOpacity={st.opacity} fontSize={11}>{d.price.toFixed(precision)}</text>
+                {isSel && <circle cx={width / 2} cy={y} r={5} fill="#0f172a" stroke={st.color} strokeWidth={2} style={{ pointerEvents: "all", cursor: "ns-resize" }} />}
               </g>
             );
           }
@@ -460,10 +472,10 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
           if (!pa || !pb) return null;
           const handles = isSel && (
             <>
-              <circle cx={pa.x} cy={pa.y} r={5} fill="#0f172a" stroke="#F5C542" strokeWidth={2}
+              <circle cx={pa.x} cy={pa.y} r={5} fill="#0f172a" stroke={st.color} strokeWidth={2}
                 style={{ pointerEvents: "all", cursor: "grab" }}
                 onPointerDown={(e) => startDrag(e, d, "a")} />
-              <circle cx={pb.x} cy={pb.y} r={5} fill="#0f172a" stroke="#F5C542" strokeWidth={2}
+              <circle cx={pb.x} cy={pb.y} r={5} fill="#0f172a" stroke={st.color} strokeWidth={2}
                 style={{ pointerEvents: "all", cursor: "grab" }}
                 onPointerDown={(e) => startDrag(e, d, "b")} />
             </>
@@ -471,7 +483,7 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
           if (d.type === "trend") return (
             <g key={d.id} onPointerDown={(e) => startDrag(e, d, "move")}>
               <line x1={pa.x} y1={pa.y} x2={pb.x} y2={pb.y} stroke="transparent" strokeWidth={12} {...selectable} />
-              <line x1={pa.x} y1={pa.y} x2={pb.x} y2={pb.y} stroke={isSel ? "#F5C542" : "#60a5fa"} strokeWidth={isSel ? 2 : 1.5} />
+              <line x1={pa.x} y1={pa.y} x2={pb.x} y2={pb.y} stroke={st.color} strokeOpacity={st.opacity} strokeWidth={isSel ? st.width + 0.75 : st.width} />
               {handles}
             </g>
           );
@@ -480,7 +492,7 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
             const w = Math.abs(pb.x - pa.x), h = Math.abs(pb.y - pa.y);
             return (
               <g key={d.id} onPointerDown={(e) => startDrag(e, d, "move")}>
-                <rect x={x} y={y} width={w} height={h} fill="rgba(96,165,250,0.12)" stroke={isSel ? "#F5C542" : "#60a5fa"} strokeWidth={isSel ? 2 : 1} {...selectable} />
+                <rect x={x} y={y} width={w} height={h} fill={st.color} fillOpacity={st.opacity * 0.15} stroke={st.color} strokeOpacity={st.opacity} strokeWidth={isSel ? st.width + 0.5 : st.width} {...selectable} />
                 {handles}
               </g>
             );
@@ -495,8 +507,8 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
                 if (y == null) return null;
                 return (
                   <g key={lvl}>
-                    <line x1={x1} x2={width} y1={y} y2={y} stroke={FIB_COLORS[i]} strokeWidth={isSel ? 1.5 : 1} strokeOpacity={0.8} strokeDasharray="3 3" {...selectable} />
-                    <text x={x2 + 4} y={y - 2} fill={FIB_COLORS[i]} fontSize={10}>{lvl.toFixed(3)} · {price.toFixed(precision)}</text>
+                    <line x1={x1} x2={width} y1={y} y2={y} stroke={d.style?.color ?? FIB_COLORS[i]} strokeWidth={isSel ? st.width : Math.max(1, st.width - 0.5)} strokeOpacity={0.8 * st.opacity} strokeDasharray="3 3" {...selectable} />
+                    <text x={x2 + 4} y={y - 2} fill={d.style?.color ?? FIB_COLORS[i]} fillOpacity={st.opacity} fontSize={10}>{lvl.toFixed(3)} · {price.toFixed(precision)}</text>
                   </g>
                 );
               })}
@@ -521,6 +533,69 @@ export function TerminalChart({ symbol, timeframe, chartType, precision }: { sym
         })()}
         {void height}
       </svg>
+      {(() => {
+        if (!selectedId || tool !== "none") return null;
+        const d = drawings.find((x) => x.id === selectedId);
+        if (!d) return null;
+        let cx = 0, cy = 0;
+        if (d.type === "hline") {
+          const y = priceY(d.price); if (y == null) return null;
+          cx = width / 2; cy = y;
+        } else {
+          const pa = project(d.a), pb = project(d.b); if (!pa || !pb) return null;
+          cx = (pa.x + pb.x) / 2; cy = Math.min(pa.y, pb.y);
+        }
+        const st = resolveStyle(d);
+        const update = (patch: Partial<DrawStyle>) => {
+          setDrawings((prev) => prev.map((x) => x.id === d.id ? { ...x, style: { ...(x.style ?? {}), ...patch } } : x));
+        };
+        const left = Math.max(8, Math.min(width - 240, cx - 120));
+        const top = Math.max(8, cy - 74);
+        return (
+          <div
+            className="absolute z-20 flex items-center gap-2 rounded-md border border-white/10 bg-black/80 px-2 py-1.5 shadow-lg backdrop-blur"
+            style={{ left, top }}
+            onPointerDown={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-1">
+              {PALETTE.map((c) => (
+                <button
+                  key={c}
+                  type="button"
+                  onClick={() => { commit(); update({ color: c }); }}
+                  className={cn("h-4 w-4 rounded-full ring-1 ring-white/20 transition hover:scale-110", st.color === c && "ring-2 ring-white")}
+                  style={{ background: c }}
+                />
+              ))}
+            </div>
+            <div className="h-4 w-px bg-white/10" />
+            <label className="flex items-center gap-1 text-[10px] text-white/60">
+              سُمك
+              <input type="range" min={1} max={6} step={0.5} value={st.width}
+                onChange={(e) => update({ width: Number(e.target.value) })}
+                onPointerUp={() => commit()}
+                className="h-1 w-16 accent-gold" />
+              <span className="w-4 tabular-nums text-white/70">{st.width}</span>
+            </label>
+            <label className="flex items-center gap-1 text-[10px] text-white/60">
+              شفافية
+              <input type="range" min={0.1} max={1} step={0.05} value={st.opacity}
+                onChange={(e) => update({ opacity: Number(e.target.value) })}
+                onPointerUp={() => commit()}
+                className="h-1 w-16 accent-gold" />
+              <span className="w-6 tabular-nums text-white/70">{Math.round(st.opacity * 100)}%</span>
+            </label>
+            <button
+              type="button"
+              title="حذف"
+              onClick={() => { commit(); setDrawings((p) => p.filter((x) => x.id !== d.id)); setSelectedId(null); }}
+              className="ml-1 flex h-5 w-5 items-center justify-center rounded text-red-300 hover:bg-red-500/15"
+            >
+              <Trash2 className="h-3 w-3" />
+            </button>
+          </div>
+        );
+      })()}
       <div className="absolute left-2 top-2 z-10 flex flex-col gap-1 rounded-md border border-white/10 bg-black/60 p-1 backdrop-blur">
         {tools.map((t) => {
           const Icon = t.icon;
