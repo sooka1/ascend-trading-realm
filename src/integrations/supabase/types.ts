@@ -41,6 +41,36 @@ export type Database = {
         }
         Relationships: []
       }
+      competition_entries: {
+        Row: {
+          competition_id: string | null
+          created_at: string
+          currency: string
+          id: string
+          status: string
+          tier_fee: number
+          user_id: string
+        }
+        Insert: {
+          competition_id?: string | null
+          created_at?: string
+          currency?: string
+          id?: string
+          status?: string
+          tier_fee: number
+          user_id: string
+        }
+        Update: {
+          competition_id?: string | null
+          created_at?: string
+          currency?: string
+          id?: string
+          status?: string
+          tier_fee?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       competition_trades: {
         Row: {
           closed_at: string | null
