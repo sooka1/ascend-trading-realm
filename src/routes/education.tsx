@@ -304,6 +304,78 @@ function BookCard({ b }: { b: EduBook }) {
   );
 }
 
+function WebinarsSection() {
+  return (
+    <section className="mx-auto max-w-7xl px-4 pb-24 sm:px-6 lg:px-8">
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <div className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-widest text-gold">
+            <Radio className="h-3.5 w-3.5" /> ندوات مباشرة
+          </div>
+          <h2 className="mt-2 font-display text-2xl font-semibold sm:text-3xl">
+            ندوات <span className="text-gradient">تداول مباشرة</span> أسبوعياً
+          </h2>
+          <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
+            جلسات حيّة من كبرى المنصات العالمية — تحليل، تعليم، وجولات على المنصة. كل بطاقة تفتح صفحة الجدول الرسمية لدى المزوّد.
+          </p>
+        </div>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {EDU_WEBINARS.map((w) => (
+          <WebinarCard key={w.id} w={w} />
+        ))}
+      </div>
+
+      <p className="mt-4 text-[11px] text-muted-foreground/70">
+        الأوقات تقريبية بتوقيت جرينتش وقد تتغيّر — تحقّق من الصفحة الرسمية قبل الجلسة.
+      </p>
+    </section>
+  );
+}
+
+function WebinarCard({ w }: { w: EduWebinar }) {
+  return (
+    <a
+      href={w.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      onClick={(e) => {
+        e.preventDefault();
+        window.open(w.url, "_blank", "noopener,noreferrer") ||
+          (window.top ? (window.top.location.href = w.url) : (window.location.href = w.url));
+      }}
+      className="glass group flex flex-col rounded-2xl p-5 transition hover:border-gold/40"
+    >
+      <div className="flex items-center justify-between gap-2">
+        <span className="inline-flex items-center gap-1 rounded-full border border-bull/40 bg-bull/10 px-2 py-0.5 text-[10px] text-bull">
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-bull" /> مباشر
+        </span>
+        <span className="rounded-md border border-white/10 px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
+          {w.language}
+        </span>
+      </div>
+      <h3 className="mt-3 font-display text-base font-semibold group-hover:text-gold">{w.title}</h3>
+      <p className="mt-1 text-sm text-muted-foreground">{w.topic}</p>
+      <div className="mt-4 grid grid-cols-2 gap-2 text-[11px] text-muted-foreground">
+        <span className="inline-flex items-center gap-1.5">
+          <CalendarClock className="h-3.5 w-3.5 text-gold" /> {w.cadence}
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <Clock className="h-3.5 w-3.5 text-gold" /> {w.time}
+        </span>
+        <span className="col-span-2 truncate">{w.day}</span>
+      </div>
+      <div className="mt-4 flex items-center justify-between border-t border-white/5 pt-3">
+        <span className="text-[11px] uppercase tracking-widest text-muted-foreground">{w.host}</span>
+        <span className="inline-flex items-center gap-1 text-[11px] text-gold/90 group-hover:text-gold">
+          الانضمام <ExternalLink className="h-3 w-3" />
+        </span>
+      </div>
+    </a>
+  );
+}
+
 type ForeignCourse = {
   provider: string;
   title: string;
