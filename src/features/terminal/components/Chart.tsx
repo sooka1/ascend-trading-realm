@@ -93,7 +93,16 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
   const [hitLog, setHitLog] = useState<HitLog[]>(() => loadAlertLog());
   const [selectedHit, setSelectedHit] = useState<HitLog | null>(null);
   const [logOpen, setLogOpen] = useState(false);
-  const [showRiskLines, setShowRiskLines] = useState(true);
+  const [showRiskLines, setShowRiskLines] = useState<boolean>(() => {
+    try {
+      if (typeof window === "undefined") return true;
+      const v = window.localStorage.getItem("hk.chart.showRiskLines");
+      return v == null ? true : v === "1";
+    } catch { return true; }
+  });
+  useEffect(() => {
+    try { window.localStorage.setItem("hk.chart.showRiskLines", showRiskLines ? "1" : "0"); } catch { /* noop */ }
+  }, [showRiskLines]);
   const [alertSettings, setAlertSettings] = useState<AlertSettings>(() => loadAlertSettings());
   const [flashKey, setFlashKey] = useState<{ key: string; kind: "TP" | "SL" } | null>(null);
   // Restore persistent dedupe set on mount.
