@@ -12,7 +12,6 @@ import { PositionsTable } from "@/features/terminal/components/PositionsTable";
 import { PriceAlerts } from "@/features/terminal/components/PriceAlerts";
 import { EconomicCalendar } from "@/features/terminal/components/EconomicCalendar";
 import { PerformancePanel } from "@/features/terminal/components/PerformancePanel";
-import { ConnectionStatusBadge } from "@/features/terminal/components/ConnectionStatus";
 import { useAccount, useHistory, useInstruments, usePendingOrders, usePositions, useQuotes, useWatchlist } from "@/features/terminal/hooks/use-terminal-data";
 import type { Timeframe } from "@/features/terminal/adapters/market-data/types";
 
@@ -144,7 +143,12 @@ function TradingTerminal() {
                 <div className="flex h-full flex-col">
                   <div className="flex items-center gap-2 px-3 py-2 border-b border-white/10 flex-wrap">
                     <div className="font-semibold text-sm">{selected}</div>
-                    <ConnectionStatusBadge />
+                    <span
+                      title="سوق OTC خاص بالمنصة — الأسعار تتبع حركة السوق العالمي"
+                      className="inline-flex items-center gap-1 rounded-full border border-amber-400/30 bg-amber-400/10 px-2 py-0.5 text-[10px] font-semibold text-amber-200"
+                    >
+                      OTC
+                    </span>
                     <div className="flex gap-1 ml-2">
                       {TIMEFRAMES.map(t => (
                         <button key={t} onClick={() => setTf(t)}
