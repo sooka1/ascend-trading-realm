@@ -99,7 +99,7 @@ function Contact() {
         <div className="space-y-4">
           {[
             { icon: MapPin, title: p.hqT, body: p.hqB },
-            { icon: Mail, title: p.emailT, body: "hello@hkglobaltrading.com" },
+            { icon: Mail, title: p.emailT, body: "info@hkexinvest.com" },
             { icon: Phone, title: p.phoneT, body: "+44 20 4525 0000" },
           ].map((c) => (
             <div key={c.title} className="glass rounded-2xl p-6">
