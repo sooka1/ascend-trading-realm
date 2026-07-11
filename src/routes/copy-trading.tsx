@@ -207,7 +207,7 @@ function CopyTradingPage() {
   const risk = (RISK_KEYS as string[]).includes(search.risk) ? (search.risk as Risk | "all") : "all";
   const sort = (SORT_KEYS as string[]).includes(search.sort) ? (search.sort as SortKey) : "return";
   const minReturn = Math.max(0, Math.min(40, search.minReturn));
-  const maxDeposit = Math.max(500, Math.min(5000, search.maxDeposit));
+  const maxDeposit = Math.max(50, Math.min(5000, search.maxDeposit));
 
   const patchSearch = (patch: Partial<CopySearch>) =>
     navigate({ search: (p: CopySearch) => ({ ...p, ...patch, page: 1 }) });
@@ -382,7 +382,7 @@ function CopyTradingPage() {
               <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
                 حد أدنى للإيداع: ≤ ${fmtMoney(maxDeposit)}
               </span>
-              <input type="range" min={500} max={5000} step={250} value={maxDeposit}
+              <input type="range" min={50} max={5000} step={50} value={maxDeposit}
                 onChange={(e) => setMaxDeposit(Number(e.target.value))}
                 className="mt-2 w-full accent-[color:var(--color-gold,#d4af37)]" />
             </label>
