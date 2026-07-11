@@ -21,6 +21,7 @@ import { Route as FaqRouteImport } from './routes/faq'
 import { Route as EducationRouteImport } from './routes/education'
 import { Route as CopyTradingRouteImport } from './routes/copy-trading'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as CompetitionsRouteImport } from './routes/competitions'
 import { Route as BrandRouteImport } from './routes/brand'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AboutRouteImport } from './routes/about'
@@ -134,6 +135,11 @@ const CopyTradingRoute = CopyTradingRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompetitionsRoute = CompetitionsRouteImport.update({
+  id: '/competitions',
+  path: '/competitions',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BrandRoute = BrandRouteImport.update({
@@ -451,6 +457,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
   '/brand': typeof BrandRoute
+  '/competitions': typeof CompetitionsRoute
   '/contact': typeof ContactRoute
   '/copy-trading': typeof CopyTradingRoute
   '/education': typeof EducationRoute
@@ -517,6 +524,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
   '/brand': typeof BrandRoute
+  '/competitions': typeof CompetitionsRoute
   '/contact': typeof ContactRoute
   '/copy-trading': typeof CopyTradingRoute
   '/education': typeof EducationRoute
@@ -585,6 +593,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
   '/brand': typeof BrandRoute
+  '/competitions': typeof CompetitionsRoute
   '/contact': typeof ContactRoute
   '/copy-trading': typeof CopyTradingRoute
   '/education': typeof EducationRoute
@@ -654,6 +663,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/auth'
     | '/brand'
+    | '/competitions'
     | '/contact'
     | '/copy-trading'
     | '/education'
@@ -720,6 +730,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/auth'
     | '/brand'
+    | '/competitions'
     | '/contact'
     | '/copy-trading'
     | '/education'
@@ -787,6 +798,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/auth'
     | '/brand'
+    | '/competitions'
     | '/contact'
     | '/copy-trading'
     | '/education'
@@ -856,6 +868,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AuthRoute: typeof AuthRoute
   BrandRoute: typeof BrandRoute
+  CompetitionsRoute: typeof CompetitionsRoute
   ContactRoute: typeof ContactRoute
   CopyTradingRoute: typeof CopyTradingRoute
   EducationRoute: typeof EducationRoute
@@ -955,6 +968,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/competitions': {
+      id: '/competitions'
+      path: '/competitions'
+      fullPath: '/competitions'
+      preLoaderRoute: typeof CompetitionsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/brand': {
@@ -1487,6 +1507,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   AuthRoute: AuthRoute,
   BrandRoute: BrandRoute,
+  CompetitionsRoute: CompetitionsRoute,
   ContactRoute: ContactRoute,
   CopyTradingRoute: CopyTradingRoute,
   EducationRoute: EducationRoute,
