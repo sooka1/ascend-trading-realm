@@ -85,7 +85,7 @@ function CompetitionsPage() {
       // Atomic deduct + insert via SECURITY DEFINER RPC; prevents
       // double-click duplicates and race conditions on the wallet balance.
       const { error: rpcErr } = await supabase.rpc("enter_competition", {
-        _competition_id: competitionId ?? null,
+        _competition_id: competitionId ?? "",
         _tier_fee: fee,
       });
       if (rpcErr) {
