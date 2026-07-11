@@ -12,8 +12,8 @@ function pnl(side: "buy" | "sell", entry: number, exit: number, volume: number, 
   return (exit - entry) * dir * volume * contractSize;
 }
 
-async function audit(user_id: string, event: string, payload: Record<string, unknown>) {
-  try { await supabase.from("trading_audit_log").insert({ user_id, event, payload }); } catch { /* non-fatal */ }
+async function audit(user_id: string, event: string, payload: unknown) {
+  try { await supabase.from("trading_audit_log").insert({ user_id, event, payload: payload as never }); } catch { /* non-fatal */ }
 }
 
 export function createPaperBroker(): BrokerConnector {
