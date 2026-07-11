@@ -70,6 +70,23 @@ const CATEGORIES: { key: Category; label: string }[] = [
 ];
 
 const POLL_MS = 5_000;
+// Traditional-market providers (Yahoo/Stooq) have no free WebSocket feed —
+// crypto streams live via Binance WS below, and everything else refreshes
+// slower over the server-fn to avoid rate-limits.
+const NON_CRYPTO_POLL_MS = 15_000;
+
+// Binance uses USDT pairs; treat them as USD equivalents for the board.
+const BINANCE_STREAM: Record<string, string> = {
+  "BTC/USD": "btcusdt",
+  "ETH/USD": "ethusdt",
+  "SOL/USD": "solusdt",
+  "XRP/USD": "xrpusdt",
+  "ADA/USD": "adausdt",
+  "DOGE/USD": "dogeusdt",
+};
+const BINANCE_STREAM_TO_SYMBOL: Record<string, string> = Object.fromEntries(
+  Object.entries(BINANCE_STREAM).map(([k, v]) => [v, k]),
+);
 
 function fmt(v: number) {
   if (!isFinite(v) || v === 0) return "—";
@@ -98,11 +115,14 @@ export function MarketBoard() {
 
     const load = async () => {
       try {
-        const { quotes } = await fetchQuotes({ data: { symbols: FEED.map((f) => f.yahoo) } });
+        // Skip crypto — the WebSocket effect below streams it live.
+        const nonCrypto = FEED.filter((f) => f.category !== "crypto");
+        const { quotes } = await fetchQuotes({ data: { symbols: nonCrypto.map((f) => f.yahoo) } });
         if (cancelled) return;
         const byYahoo = new Map(quotes.map((q) => [q.symbol, q]));
         setRows((prev) =>
           FEED.map((f, idx) => {
+            if (f.category === "crypto") return prev[idx]; // owned by WS
             const q = byYahoo.get(f.yahoo);
             const ok = q && q.source !== "fallback";
             const nextPrice = ok ? q!.price : prev[idx]?.price ?? f.fallback.price;
@@ -129,7 +149,7 @@ export function MarketBoard() {
         console.warn("[market-board] fetch failed", e);
         setLive(false);
       } finally {
-        if (!cancelled) timer = setTimeout(load, POLL_MS);
+        if (!cancelled) timer = setTimeout(load, NON_CRYPTO_POLL_MS);
       }
     };
     void load();
@@ -150,6 +170,81 @@ export function MarketBoard() {
       document.removeEventListener("visibilitychange", onVis);
     };
   }, [fetchQuotes]);
+
+  // Real-time crypto stream over Binance WebSocket — no polling, ticks push.
+  // Auto-reconnects with exponential backoff and pauses when the tab is hidden.
+  useEffect(() => {
+    const streams = Object.values(BINANCE_STREAM).map((s) => `${s}@ticker`).join("/");
+    const url = `wss://stream.binance.com:9443/stream?streams=${streams}`;
+    let ws: WebSocket | null = null;
+    let closedByUs = false;
+    let backoff = 1_000;
+    let flashTimer: ReturnType<typeof setTimeout> | null = null;
+
+    const scheduleFlashClear = () => {
+      if (flashTimer) clearTimeout(flashTimer);
+      flashTimer = setTimeout(() => setRows((rs) => rs.map((r) => ({ ...r, flashing: null }))), 700);
+    };
+
+    const connect = () => {
+      try {
+        ws = new WebSocket(url);
+      } catch (e) {
+        console.warn("[market-board] ws init failed", e);
+        return;
+      }
+      ws.onopen = () => { backoff = 1_000; setLive(true); };
+      ws.onmessage = (ev) => {
+        try {
+          const msg = JSON.parse(ev.data as string);
+          const stream: string = msg?.stream ?? "";
+          const streamKey = stream.split("@")[0];
+          const sym = BINANCE_STREAM_TO_SYMBOL[streamKey];
+          if (!sym) return;
+          const d = msg.data;
+          const price = Number(d?.c);
+          const change = Number(d?.P);
+          if (!isFinite(price) || !isFinite(change)) return;
+          setRows((prev) =>
+            prev.map((r) => {
+              if (r.symbol !== sym) return r;
+              const flashing: Row["flashing"] = price > r.price ? "up" : price < r.price ? "down" : r.flashing;
+              return { ...r, price, change, updatedAt: Date.now(), flashing };
+            }),
+          );
+          scheduleFlashClear();
+        } catch {
+          /* ignore malformed frames */
+        }
+      };
+      ws.onclose = () => {
+        if (closedByUs) return;
+        setLive(false);
+        setTimeout(connect, backoff);
+        backoff = Math.min(backoff * 2, 30_000);
+      };
+      ws.onerror = () => { try { ws?.close(); } catch { /* noop */ } };
+    };
+    connect();
+
+    const onVis = () => {
+      if (document.visibilityState === "hidden") {
+        closedByUs = true;
+        try { ws?.close(); } catch { /* noop */ }
+      } else if (!ws || ws.readyState === WebSocket.CLOSED) {
+        closedByUs = false;
+        connect();
+      }
+    };
+    document.addEventListener("visibilitychange", onVis);
+
+    return () => {
+      closedByUs = true;
+      document.removeEventListener("visibilitychange", onVis);
+      if (flashTimer) clearTimeout(flashTimer);
+      try { ws?.close(); } catch { /* noop */ }
+    };
+  }, []);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
