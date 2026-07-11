@@ -37,17 +37,71 @@ export function createLiveProvider(): MarketDataProvider {
   // ============ Binance WebSocket for crypto (real-time) ============
   let binanceWs: WebSocket | null = null;
   const binanceSymbols = new Set<string>();
+  let reconnectAttempts = 0;
+  let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+  let heartbeatTimer: ReturnType<typeof setInterval> | null = null;
+  let lastMessageAt = 0;
+  const MAX_BACKOFF_MS = 30_000;
+  const STALE_MS = 60_000; // Binance sends ticker updates every ~1s; 60s silence = dead
+
+  function clearTimers() {
+    if (reconnectTimer) { clearTimeout(reconnectTimer); reconnectTimer = null; }
+    if (heartbeatTimer) { clearInterval(heartbeatTimer); heartbeatTimer = null; }
+  }
+
+  function scheduleReconnect() {
+    if (reconnectTimer) return;
+    if (binanceSymbols.size === 0) return;
+    // Exponential backoff with jitter: 1s, 2s, 4s, 8s, 16s, 30s (cap)
+    const base = Math.min(1000 * 2 ** reconnectAttempts, MAX_BACKOFF_MS);
+    const delay = base / 2 + Math.random() * (base / 2);
+    reconnectAttempts = Math.min(reconnectAttempts + 1, 6);
+    setStatus("connecting");
+    reconnectTimer = setTimeout(() => { reconnectTimer = null; ensureBinanceWs(); }, delay);
+  }
+
   function ensureBinanceWs() {
     if (typeof window === "undefined") return;
-    if (binanceSymbols.size === 0) { binanceWs?.close(); binanceWs = null; return; }
-    binanceWs?.close();
+    clearTimers();
+    // Close any prior socket without triggering our reconnect handler.
+    if (binanceWs) {
+      try { binanceWs.onclose = null; binanceWs.close(); } catch { /* ignore */ }
+      binanceWs = null;
+    }
+    if (binanceSymbols.size === 0) { setStatus("closed"); return; }
+
     const streams = [...binanceSymbols].map((s) => `${BINANCE_MAP[s]}@ticker`).join("/");
-    const ws = new WebSocket(`wss://stream.binance.com:9443/stream?streams=${streams}`);
+    let ws: WebSocket;
+    try {
+      ws = new WebSocket(`wss://stream.binance.com:9443/stream?streams=${streams}`);
+    } catch {
+      scheduleReconnect();
+      return;
+    }
     binanceWs = ws;
-    ws.onopen = () => setStatus("open");
-    ws.onerror = () => setStatus("error");
-    ws.onclose = () => { if (binanceWs === ws) setTimeout(ensureBinanceWs, 2000); };
+    setStatus("connecting");
+
+    ws.onopen = () => {
+      reconnectAttempts = 0;
+      lastMessageAt = Date.now();
+      setStatus("open");
+      // Watchdog: if no message arrives for STALE_MS, force reconnect.
+      heartbeatTimer = setInterval(() => {
+        if (Date.now() - lastMessageAt > STALE_MS) {
+          try { ws.close(); } catch { /* ignore */ }
+        }
+      }, 15_000);
+    };
+    ws.onerror = () => { setStatus("error"); };
+    ws.onclose = () => {
+      if (binanceWs !== ws) return; // superseded by a newer socket
+      clearTimers();
+      binanceWs = null;
+      setStatus("closed");
+      scheduleReconnect();
+    };
     ws.onmessage = (ev) => {
+      lastMessageAt = Date.now();
       try {
         const msg = JSON.parse(ev.data);
         const d = msg?.data; if (!d?.s) return;
@@ -60,6 +114,19 @@ export function createLiveProvider(): MarketDataProvider {
         emitCandleUpdate(internal, price);
       } catch { /* ignore */ }
     };
+  }
+
+  // Reconnect proactively when the tab becomes visible or the network returns.
+  if (typeof window !== "undefined") {
+    const kick = () => {
+      if (binanceSymbols.size === 0) return;
+      if (!binanceWs || binanceWs.readyState === WebSocket.CLOSED || binanceWs.readyState === WebSocket.CLOSING) {
+        reconnectAttempts = 0;
+        ensureBinanceWs();
+      }
+    };
+    window.addEventListener("online", kick);
+    document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") kick(); });
   }
 
   function emitCandleUpdate(sym: string, price: number) {
