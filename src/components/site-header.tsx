@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useT } from "@/lib/i18n";
 import { LanguageSwitcher } from "./language-switcher";
+import { ThemeToggle } from "./theme-toggle";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { LayoutDashboard, ShieldCheck } from "lucide-react";
@@ -89,6 +90,7 @@ export function SiteHeader() {
 
         <div className="hidden items-center gap-2 lg:flex">
           <LanguageSwitcher />
+          <ThemeToggle size="sm" />
           {user ? (
             <>
               <Button variant="ghost" asChild>
@@ -125,6 +127,7 @@ export function SiteHeader() {
 
         <div className="flex items-center gap-2 lg:hidden">
           <LanguageSwitcher compact />
+          <ThemeToggle size="sm" />
           <button
             className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-white/10"
             onClick={() => setOpen((v) => !v)}
