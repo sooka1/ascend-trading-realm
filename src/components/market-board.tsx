@@ -3,6 +3,7 @@ import { ArrowDownRight, ArrowUpRight, Circle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useServerFn } from "@tanstack/react-start";
 import { getQuotes } from "@/lib/quotes.functions";
+import { MarketDetailDialog, type DetailInstrument } from "@/components/market-detail-dialog";
 
 type Category = "all" | "crypto" | "fx" | "metals" | "indices" | "stocks" | "energy";
 
@@ -107,6 +108,7 @@ export function MarketBoard() {
   const [category, setCategory] = useState<Category>("all");
   const [query, setQuery] = useState("");
   const [live, setLive] = useState(false);
+  const [selected, setSelected] = useState<string | null>(null);
   const fetchQuotes = useServerFn(getQuotes);
 
   useEffect(() => {
@@ -255,6 +257,21 @@ export function MarketBoard() {
     });
   }, [rows, category, query]);
 
+  const selectedItem: DetailInstrument | null = useMemo(() => {
+    if (!selected) return null;
+    const r = rows.find((x) => x.symbol === selected);
+    if (!r) return null;
+    return {
+      symbol: r.symbol,
+      name: r.name,
+      category: r.category,
+      price: r.price,
+      change: r.change,
+      updatedAt: r.updatedAt,
+      binanceStream: BINANCE_STREAM[r.symbol],
+    };
+  }, [selected, rows]);
+
   return (
     <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
@@ -303,10 +320,14 @@ export function MarketBoard() {
             {filtered.map((r) => {
               const up = r.change >= 0;
               return (
-                <li
+              <li
                   key={r.symbol}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => setSelected(r.symbol)}
+                  onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSelected(r.symbol); } }}
                   className={cn(
-                    "grid grid-cols-12 items-center gap-2 px-4 py-3 text-sm transition-colors",
+                    "grid cursor-pointer grid-cols-12 items-center gap-2 px-4 py-3 text-sm transition-colors hover:bg-white/[0.03] focus:bg-white/[0.03] focus:outline-none",
                     r.flashing === "up" && "bg-bull/10",
                     r.flashing === "down" && "bg-bear/10",
                   )}
@@ -328,6 +349,7 @@ export function MarketBoard() {
         )}
       </div>
       <p className="mt-3 text-[11px] text-muted-foreground/70">تحديث تلقائي كل {POLL_MS / 1000} ثوانٍ. الأسعار للاسترشاد فقط.</p>
+      <MarketDetailDialog item={selectedItem} open={!!selected} onOpenChange={(v) => !v && setSelected(null)} />
     </section>
   );
 }
