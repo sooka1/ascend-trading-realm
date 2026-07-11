@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/competitions/$id/trade")({
   head: () => ({
@@ -61,6 +62,17 @@ type Position = {
   ts: number;
 };
 
+type ClosedTrade = {
+  id: string;
+  code: string;
+  side: "buy" | "sell";
+  lots: number;
+  entry: number;
+  exit: number;
+  pnl: number;
+  closedAt: number;
+};
+
 // Standard normal via Box–Muller
 function gauss() {
   const u = 1 - Math.random();
@@ -110,6 +122,7 @@ function CompetitionTradePage() {
   const [tpsl, setTpsl] = useState(false);
   const [priceAlert, setPriceAlert] = useState(false);
   const [watchOpen, setWatchOpen] = useState(true);
+  const [historyTab, setHistoryTab] = useState<"open" | "history">("open");
 
   const [prices, setPrices] = useState<PriceMap>(() =>
     Object.fromEntries(
@@ -117,7 +130,64 @@ function CompetitionTradePage() {
     ),
   );
   const [positions, setPositions] = useState<Position[]>([]);
-  const [balance, setBalance] = useState(START_BALANCE);
+  const [history, setHistory] = useState<ClosedTrade[]>([]);
+  const [loaded, setLoaded] = useState(false);
+
+  const balance = useMemo(
+    () => +(START_BALANCE + history.reduce((s, h) => s + h.pnl, 0)).toFixed(2),
+    [history],
+  );
+
+  // Load persisted trades on mount
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data: userRes } = await supabase.auth.getUser();
+      const uid = userRes.user?.id;
+      if (!uid) { setLoaded(true); return; }
+      const { data, error } = await supabase
+        .from("competition_trades")
+        .select("id, code, side, lots, entry, exit, pnl, status, opened_at, closed_at")
+        .eq("user_id", uid)
+        .eq("competition_id", id)
+        .order("opened_at", { ascending: false });
+      if (cancelled) return;
+      if (error) {
+        toast.error("تعذر تحميل الصفقات المحفوظة");
+        setLoaded(true);
+        return;
+      }
+      const open: Position[] = [];
+      const closed: ClosedTrade[] = [];
+      for (const r of data ?? []) {
+        if (r.status === "open") {
+          open.push({
+            id: r.id,
+            code: r.code,
+            side: r.side as "buy" | "sell",
+            lots: Number(r.lots),
+            entry: Number(r.entry),
+            ts: r.opened_at ? new Date(r.opened_at).getTime() : Date.now(),
+          });
+        } else {
+          closed.push({
+            id: r.id,
+            code: r.code,
+            side: r.side as "buy" | "sell",
+            lots: Number(r.lots),
+            entry: Number(r.entry),
+            exit: Number(r.exit ?? 0),
+            pnl: Number(r.pnl ?? 0),
+            closedAt: r.closed_at ? new Date(r.closed_at).getTime() : Date.now(),
+          });
+        }
+      }
+      setPositions(open);
+      setHistory(closed);
+      setLoaded(true);
+    })();
+    return () => { cancelled = true; };
+  }, [id]);
 
   // Live price simulator — GBM step every 450ms
   useEffect(() => {
@@ -161,7 +231,7 @@ function CompetitionTradePage() {
   const freeMargin = equity - usedMargin;
   const marginLevel = usedMargin > 0 ? (equity / usedMargin) * 100 : 0;
 
-  function placeOrder() {
+  async function placeOrder() {
     if (lots <= 0) {
       toast.error("أدخل حجمًا صالحًا");
       return;
@@ -171,13 +241,36 @@ function CompetitionTradePage() {
       toast.error("رأس مال حر غير كافٍ للهامش المطلوب");
       return;
     }
+    const { data: userRes } = await supabase.auth.getUser();
+    const uid = userRes.user?.id;
+    if (!uid) {
+      toast.error("يجب تسجيل الدخول");
+      return;
+    }
+    const { data, error } = await supabase
+      .from("competition_trades")
+      .insert({
+        user_id: uid,
+        competition_id: id,
+        code: active.code,
+        side,
+        lots,
+        entry,
+        status: "open",
+      })
+      .select("id, opened_at")
+      .single();
+    if (error || !data) {
+      toast.error("تعذر حفظ الصفقة");
+      return;
+    }
     const pos: Position = {
-      id: `${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      id: data.id,
       code: active.code,
       side,
       lots,
       entry,
-      ts: Date.now(),
+      ts: data.opened_at ? new Date(data.opened_at).getTime() : Date.now(),
     };
     setPositions((p) => [pos, ...p]);
     toast.success(
@@ -185,17 +278,35 @@ function CompetitionTradePage() {
     );
   }
 
-  function closePosition(posId: string) {
-    setPositions((prev) => {
-      const p = prev.find((x) => x.id === posId);
-      if (!p) return prev;
-      const pnl = pnlUsd(p, prices);
-      setBalance((b) => +(b + pnl).toFixed(2));
-      toast[pnl >= 0 ? "success" : "error"](
-        `أُغلقت ${p.code} — ${pnl >= 0 ? "ربح" : "خسارة"} $${fmt(Math.abs(pnl))}`,
-      );
-      return prev.filter((x) => x.id !== posId);
-    });
+  async function closePosition(posId: string) {
+    const p = positions.find((x) => x.id === posId);
+    if (!p) return;
+    const inst = INSTRUMENTS.find((i) => i.code === p.code)!;
+    const cur = prices[p.code]?.price ?? inst.initial;
+    const exit = p.side === "buy" ? bidOf(inst, cur) : askOf(inst, cur);
+    const pnl = +pnlUsd(p, prices).toFixed(2);
+    const closedAt = new Date();
+    const { error } = await supabase
+      .from("competition_trades")
+      .update({
+        status: "closed",
+        exit,
+        pnl,
+        closed_at: closedAt.toISOString(),
+      })
+      .eq("id", posId);
+    if (error) {
+      toast.error("تعذر إغلاق الصفقة");
+      return;
+    }
+    setPositions((prev) => prev.filter((x) => x.id !== posId));
+    setHistory((prev) => [
+      { id: posId, code: p.code, side: p.side, lots: p.lots, entry: p.entry, exit, pnl, closedAt: closedAt.getTime() },
+      ...prev,
+    ]);
+    toast[pnl >= 0 ? "success" : "error"](
+      `أُغلقت ${p.code} — ${pnl >= 0 ? "ربح" : "خسارة"} $${fmt(Math.abs(pnl))}`,
+    );
   }
 
   const tvSrc =
@@ -370,12 +481,34 @@ function CompetitionTradePage() {
           {/* Positions strip */}
           <div className="border-t border-white/5 bg-[#0a0f1e] max-h-[30%] overflow-y-auto">
             <div className="sticky top-0 flex items-center justify-between border-b border-white/5 bg-[#0a0f1e] px-3 py-1.5 text-[11px]">
-              <span className="font-semibold">الصفقات المفتوحة ({positions.length})</span>
-              <span className={`font-mono tabular-nums ${openPnL >= 0 ? "text-emerald-400" : "text-red-400"}`}>
-                إجمالي: {openPnL >= 0 ? "+" : ""}${fmt(openPnL)}
-              </span>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => setHistoryTab("open")}
+                  className={`rounded-md px-2 py-0.5 font-semibold ${historyTab === "open" ? "bg-white/10 text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                >
+                  المفتوحة ({positions.length})
+                </button>
+                <button
+                  onClick={() => setHistoryTab("history")}
+                  className={`rounded-md px-2 py-0.5 font-semibold ${historyTab === "history" ? "bg-white/10 text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                >
+                  السجل ({history.length})
+                </button>
+              </div>
+              {historyTab === "open" ? (
+                <span className={`font-mono tabular-nums ${openPnL >= 0 ? "text-emerald-400" : "text-red-400"}`}>
+                  إجمالي: {openPnL >= 0 ? "+" : ""}${fmt(openPnL)}
+                </span>
+              ) : (
+                <span className="font-mono tabular-nums text-muted-foreground">
+                  صافي: ${fmt(history.reduce((s, h) => s + h.pnl, 0))}
+                </span>
+              )}
             </div>
-            {positions.length === 0 ? (
+            {!loaded ? (
+              <div className="px-3 py-4 text-center text-[11px] text-muted-foreground">جارٍ التحميل…</div>
+            ) : historyTab === "open" ? (
+              positions.length === 0 ? (
               <div className="px-3 py-4 text-center text-[11px] text-muted-foreground">لا توجد صفقات مفتوحة</div>
             ) : (
               <table className="w-full text-[11px]">
@@ -415,6 +548,46 @@ function CompetitionTradePage() {
                           >
                             <XCircle className="h-3 w-3" /> إغلاق
                           </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+              )
+            ) : history.length === 0 ? (
+              <div className="px-3 py-4 text-center text-[11px] text-muted-foreground">لا يوجد سجل صفقات</div>
+            ) : (
+              <table className="w-full text-[11px]">
+                <thead className="text-muted-foreground">
+                  <tr className="border-b border-white/5">
+                    <th className="px-3 py-1.5 text-right font-normal">الأداة</th>
+                    <th className="px-3 py-1.5 text-right font-normal">الاتجاه</th>
+                    <th className="px-3 py-1.5 text-right font-normal">اللوت</th>
+                    <th className="px-3 py-1.5 text-right font-normal">الدخول</th>
+                    <th className="px-3 py-1.5 text-right font-normal">الإغلاق</th>
+                    <th className="px-3 py-1.5 text-right font-normal">الربح/الخسارة</th>
+                    <th className="px-3 py-1.5 text-right font-normal">التاريخ</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {history.map((h) => {
+                    const inst = INSTRUMENTS.find((i) => i.code === h.code);
+                    const d = inst?.digits ?? 2;
+                    return (
+                      <tr key={h.id} className="border-b border-white/5 hover:bg-white/[0.03]">
+                        <td className="px-3 py-1.5 font-semibold">{h.code}</td>
+                        <td className={`px-3 py-1.5 ${h.side === "buy" ? "text-emerald-400" : "text-red-400"}`}>
+                          {h.side === "buy" ? "شراء" : "بيع"}
+                        </td>
+                        <td className="px-3 py-1.5 font-mono tabular-nums">{h.lots}</td>
+                        <td className="px-3 py-1.5 font-mono tabular-nums">{fmt(h.entry, d)}</td>
+                        <td className="px-3 py-1.5 font-mono tabular-nums">{fmt(h.exit, d)}</td>
+                        <td className={`px-3 py-1.5 font-mono tabular-nums ${h.pnl >= 0 ? "text-emerald-400" : "text-red-400"}`}>
+                          {h.pnl >= 0 ? "+" : ""}${fmt(h.pnl)}
+                        </td>
+                        <td className="px-3 py-1.5 text-muted-foreground">
+                          {new Date(h.closedAt).toLocaleString("ar", { hour12: false })}
                         </td>
                       </tr>
                     );
