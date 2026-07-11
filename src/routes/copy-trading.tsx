@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { PageShell, PageHero } from "@/components/page-shell";
 import { Copy, TrendingUp, TrendingDown, Users, Wallet, Percent, Award, Lock, Calculator, FileDown, Printer } from "lucide-react";
 import { Link, useNavigate } from "@tanstack/react-router";
@@ -211,7 +211,11 @@ function CopyTradingPage() {
               <Lock className="h-4 w-4" />
               <span>يجب تسجيل الدخول لاختيار متداول أو طلب نسخ الصفقات.</span>
             </div>
-            <Link to="/auth" className="rounded-lg bg-gold px-3 py-1.5 font-semibold text-background hover:bg-gold/90">
+      <Link
+        to="/auth"
+        search={{ redirect: "/copy-trading" } as never}
+        className="rounded-lg bg-gold px-3 py-1.5 font-semibold text-background hover:bg-gold/90"
+      >
               تسجيل الدخول
             </Link>
           </div>
@@ -297,6 +301,20 @@ function CopyCalculator() {
   const [amountStr, setAmountStr] = useState<string>("1000");
   const [months, setMonths] = useState<number>(6);
 
+  // Pre-select trader from ?trader=<id> (e.g., after post-login redirect).
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const p = new URLSearchParams(window.location.search);
+    const id = p.get("trader");
+    if (id && TRADERS.some((t) => t.id === id)) {
+      setTraderId(id);
+      // Scroll the calculator into view so the selection is visible.
+      requestAnimationFrame(() => {
+        document.getElementById("copy-calculator")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    }
+  }, []);
+
   const trader = TRADERS.find((t) => t.id === traderId)!;
   const history = useMemo(() => buildHistory(trader), [trader]);
   const avgMonthly = useMemo(() => history.reduce((s, m) => s + m.pct, 0) / history.length, [history]);
@@ -317,7 +335,7 @@ function CopyCalculator() {
   const fmt = (n: number) => new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 }).format(n);
 
   return (
-    <section className="mx-auto max-w-4xl px-4 pb-16 sm:px-6 lg:px-8">
+    <section id="copy-calculator" className="mx-auto max-w-4xl px-4 pb-16 sm:px-6 lg:px-8">
       <div className="glass-strong rounded-3xl p-6 md:p-8">
         <div className="flex items-center gap-2 text-gold">
           <Calculator className="h-5 w-5" />
@@ -485,7 +503,7 @@ function TraderCard({ trader, isAuthed }: { trader: Trader; isAuthed: boolean })
         onClick={() => {
           if (!isAuthed) {
             toast.error("سجّل الدخول أولاً لطلب نسخ الصفقات.");
-            navigate({ to: "/auth" });
+            navigate({ to: "/auth", search: { redirect: `/copy-trading?trader=${trader.id}` } as never });
             return;
           }
           toast.success(`تم إرسال طلب نسخ صفقات ${trader.name}.`);
