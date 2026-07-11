@@ -45,6 +45,8 @@ export function createLiveProvider(): MarketDataProvider {
   const syntheticPrice = new Map<string, number>();
   const anchorPrice = new Map<string, number>();
   const changePct = new Map<string, number>();
+  // Live OHLC state per (symbol|tf) so ticks build realistic candles.
+  const liveCandle = new Map<string, Candle>();
 
   function setStatus(s: ConnectionStatus) { status = s; statusSubs.forEach((cb) => cb(s)); }
 
@@ -148,7 +150,11 @@ export function createLiveProvider(): MarketDataProvider {
       const [s, tf] = key.split("|") as [string, Timeframe];
       if (s !== sym) continue;
       const bucket = Math.floor(Date.now() / 1000 / TF_SEC[tf]) * TF_SEC[tf];
-      const c: Candle = { time: bucket, open: price, high: price, low: price, close: price };
+      const prev = liveCandle.get(key);
+      const c: Candle = prev && prev.time === bucket
+        ? { time: bucket, open: prev.open, high: Math.max(prev.high, price), low: Math.min(prev.low, price), close: price }
+        : { time: bucket, open: prev?.close ?? price, high: price, low: price, close: price };
+      liveCandle.set(key, c);
       subs.forEach((cb) => cb(c));
     }
   }
@@ -279,7 +285,10 @@ export function createLiveProvider(): MarketDataProvider {
       const key = `${symbol}|${tf}`;
       if (!candleSubs.has(key)) candleSubs.set(key, new Set());
       candleSubs.get(key)!.add(cb);
-      return () => candleSubs.get(key)?.delete(cb);
+      return () => {
+        candleSubs.get(key)?.delete(cb);
+        if (candleSubs.get(key)?.size === 0) { candleSubs.delete(key); liveCandle.delete(key); }
+      };
     },
   };
 }
