@@ -5,6 +5,14 @@ import { useServerFn } from "@tanstack/react-start";
 import { getQuotes } from "@/lib/quotes.functions";
 import { MarketDetailDialog, type DetailInstrument } from "@/components/market-detail-dialog";
 import { useWatchlist } from "@/hooks/use-watchlist";
+import {
+  createMarketFeed,
+  binanceTickerSource,
+  pollingSource,
+  FEED_MAX_ATTEMPTS,
+  type FeedStatus,
+  type SourceStatus,
+} from "@/lib/market-feed";
 
 type Category = "all" | "watchlist" | "crypto" | "fx" | "metals" | "indices" | "stocks" | "energy";
 
@@ -72,22 +80,11 @@ const CATEGORIES: { key: Category; label: string }[] = [
 ];
 
 const POLL_MS = 5_000;
-// Traditional-market providers (Yahoo/Stooq) have no free WebSocket feed —
-// crypto streams live via Binance WS below, and everything else refreshes
-// slower over the server-fn to avoid rate-limits.
+// Traditional-market providers have no free WebSocket feed — crypto streams
+// live via Binance WS; everything else refreshes slower via the server fn.
 const NON_CRYPTO_POLL_MS = 15_000;
-
-// WebSocket reconnect policy: capped exponential backoff with a bounded
-// number of automatic attempts. After the cap, we stop and require a
-// manual retry from the user so we don't spam Binance from broken tabs.
-const WS_MAX_ATTEMPTS = 8;
-const WS_BASE_BACKOFF_MS = 1_000;
-const WS_MAX_BACKOFF_MS = 30_000;
-
-// Unified feed status shared by the crypto WebSocket and the traditional-
-// markets poller so the UI shows the same loading/error surface for both.
-type FeedStatus = "connecting" | "connected" | "reconnecting" | "disconnected";
-type WsStatus = FeedStatus;
+const SOURCE_CRYPTO = "crypto";
+const SOURCE_TRADITIONAL = "traditional";
 
 // Binance uses USDT pairs; treat them as USD equivalents for the board.
 const BINANCE_STREAM: Record<string, string> = {
@@ -120,216 +117,69 @@ export function MarketBoard() {
   );
   const [category, setCategory] = useState<Category>("all");
   const [query, setQuery] = useState("");
-  const [live, setLive] = useState(false);
-  const [wsStatus, setWsStatus] = useState<FeedStatus>("connecting");
-  const [wsAttempt, setWsAttempt] = useState(0);
-  const [manualRetryToken, setManualRetryToken] = useState(0);
-  const [pollStatus, setPollStatus] = useState<FeedStatus>("connecting");
-  const [pollAttempt, setPollAttempt] = useState(0);
-  const [pollRetryToken, setPollRetryToken] = useState(0);
+  const [statuses, setStatuses] = useState<Record<string, SourceStatus>>({});
+  const feedRef = useRef<ReturnType<typeof createMarketFeed> | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
   const fetchQuotes = useServerFn(getQuotes);
   const { list: watchlist, has: inWatchlist, remove: removeWatch } = useWatchlist();
 
+  // Single feed engine wires every price source into one uniform stream.
+  // Sources push { symbol, price, change } ticks; the engine batches per
+  // frame and this effect applies them to `rows` identically for all.
   useEffect(() => {
-    let cancelled = false;
-    let timer: ReturnType<typeof setTimeout> | null = null;
-    let attempt = 0;
-
-    const load = async () => {
-      try {
-        // Skip crypto — the WebSocket effect below streams it live.
-        const nonCrypto = FEED.filter((f) => f.category !== "crypto");
-        const { quotes } = await fetchQuotes({ data: { symbols: nonCrypto.map((f) => f.yahoo) } });
-        if (cancelled) return;
-        const byYahoo = new Map(quotes.map((q) => [q.symbol, q]));
-        setRows((prev) =>
-          FEED.map((f, idx) => {
-            if (f.category === "crypto") return prev[idx]; // owned by WS
-            const q = byYahoo.get(f.yahoo);
-            const ok = q && q.source !== "fallback";
-            const nextPrice = ok ? q!.price : prev[idx]?.price ?? f.fallback.price;
-            const nextChange = ok ? q!.change : prev[idx]?.change ?? f.fallback.change;
-            const prevPrice = prev[idx]?.price ?? nextPrice;
-            const flashing: Row["flashing"] = nextPrice > prevPrice ? "up" : nextPrice < prevPrice ? "down" : null;
-            return {
-              symbol: f.symbol,
-              name: f.name,
-              category: f.category,
-              price: nextPrice,
-              change: nextChange,
-              updatedAt: q?.updatedAt ?? prev[idx]?.updatedAt ?? 0,
-              flashing,
-            };
-          }),
-        );
-        setLive(true);
-        attempt = 0;
-        setPollAttempt(0);
-        setPollStatus("connected");
-        // clear flash after animation
-        setTimeout(() => {
-          if (!cancelled) setRows((rs) => rs.map((r) => ({ ...r, flashing: null })));
-        }, 700);
-        if (!cancelled) timer = setTimeout(load, NON_CRYPTO_POLL_MS);
-      } catch (e) {
-        console.warn("[market-board] fetch failed", e);
-        setLive(false);
-        if (cancelled) return;
-        attempt += 1;
-        setPollAttempt(attempt);
-        if (attempt > WS_MAX_ATTEMPTS) {
-          setPollStatus("disconnected");
-          return; // stop until manual retry
-        }
-        setPollStatus("reconnecting");
-        const raw = WS_BASE_BACKOFF_MS * 2 ** (attempt - 1);
-        const capped = Math.min(raw, WS_MAX_BACKOFF_MS);
-        const jittered = capped * (0.8 + Math.random() * 0.4);
-        timer = setTimeout(load, jittered);
-      }
-    };
-    setPollStatus("connecting");
-    setPollAttempt(0);
-    void load();
-
-    const onVis = () => {
-      if (document.visibilityState === "hidden" && timer) {
-        clearTimeout(timer);
-        timer = null;
-      } else if (document.visibilityState === "visible" && !timer) {
-        void load();
-      }
-    };
-    document.addEventListener("visibilitychange", onVis);
-
-    return () => {
-      cancelled = true;
-      if (timer) clearTimeout(timer);
-      document.removeEventListener("visibilitychange", onVis);
-    };
-  }, [fetchQuotes, pollRetryToken]);
-
-  // Real-time crypto stream over Binance WebSocket — no polling, ticks push.
-  // Auto-reconnects with capped exponential backoff and pauses when the tab
-  // is hidden. Ticks are batched via rAF to avoid render thrash under load.
-  useEffect(() => {
-    const streams = Object.values(BINANCE_STREAM).map((s) => `${s}@ticker`).join("/");
-    const url = `wss://stream.binance.com:9443/stream?streams=${streams}`;
-    let ws: WebSocket | null = null;
-    let closedByUs = false;
-    let attempt = 0;
-    let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
     let flashTimer: ReturnType<typeof setTimeout> | null = null;
-
-    // Batch WS ticks: accumulate updates keyed by symbol and flush once per
-    // animation frame. Prevents jitter when many symbols tick at once.
-    const pending = new Map<string, { price: number; change: number }>();
-    let rafHandle: number | null = null;
-    const flush = () => {
-      rafHandle = null;
-      if (pending.size === 0) return;
-      const batch = new Map(pending);
-      pending.clear();
-      setRows((prev) =>
-        prev.map((r) => {
-          const upd = batch.get(r.symbol);
-          if (!upd) return r;
-          const flashing: Row["flashing"] = upd.price > r.price ? "up" : upd.price < r.price ? "down" : r.flashing;
-          return { ...r, price: upd.price, change: upd.change, updatedAt: Date.now(), flashing };
-        }),
-      );
-      scheduleFlashClear();
-    };
-    const schedule = () => {
-      if (rafHandle != null) return;
-      rafHandle = requestAnimationFrame(flush);
-    };
-
     const scheduleFlashClear = () => {
       if (flashTimer) clearTimeout(flashTimer);
       flashTimer = setTimeout(() => setRows((rs) => rs.map((r) => ({ ...r, flashing: null }))), 700);
     };
 
-    const connect = () => {
-      setWsStatus(attempt === 0 ? "connecting" : "reconnecting");
-      setWsAttempt(attempt);
-      try {
-        ws = new WebSocket(url);
-      } catch (e) {
-        console.warn("[market-board] ws init failed", e);
-        scheduleReconnect();
-        return;
-      }
-      ws.onopen = () => {
-        attempt = 0;
-        setWsAttempt(0);
-        setWsStatus("connected");
-        setLive(true);
-      };
-      ws.onmessage = (ev) => {
-        try {
-          const msg = JSON.parse(ev.data as string);
-          const stream: string = msg?.stream ?? "";
-          const streamKey = stream.split("@")[0];
-          const sym = BINANCE_STREAM_TO_SYMBOL[streamKey];
-          if (!sym) return;
-          const d = msg.data;
-          const price = Number(d?.c);
-          const change = Number(d?.P);
-          if (!isFinite(price) || !isFinite(change)) return;
-          pending.set(sym, { price, change });
-          schedule();
-        } catch {
-          /* ignore malformed frames */
-        }
-      };
-      ws.onclose = () => {
-        setLive(false);
-        if (closedByUs) return;
-        scheduleReconnect();
-      };
-      ws.onerror = () => { try { ws?.close(); } catch { /* noop */ } };
-    };
+    const feed = createMarketFeed([
+      binanceTickerSource({ id: SOURCE_CRYPTO, streams: BINANCE_STREAM }),
+      pollingSource({
+        id: SOURCE_TRADITIONAL,
+        intervalMs: NON_CRYPTO_POLL_MS,
+        fetch: async () => {
+          const nonCrypto = FEED.filter((f) => f.category !== "crypto");
+          const { quotes } = await fetchQuotes({ data: { symbols: nonCrypto.map((f) => f.yahoo) } });
+          const byYahoo = new Map(quotes.map((q) => [q.symbol, q]));
+          return nonCrypto
+            .map((f) => {
+              const q = byYahoo.get(f.yahoo);
+              if (!q || q.source === "fallback") return null;
+              return { symbol: f.symbol, price: q.price, change: q.change, updatedAt: q.updatedAt };
+            })
+            .filter((t): t is { symbol: string; price: number; change: number; updatedAt: number } => !!t);
+        },
+      }),
+    ]);
+    feedRef.current = feed;
 
-    const scheduleReconnect = () => {
-      attempt += 1;
-      setWsAttempt(attempt);
-      if (attempt > WS_MAX_ATTEMPTS) {
-        setWsStatus("disconnected");
-        return;
-      }
-      setWsStatus("reconnecting");
-      // Exponential backoff with ±20% jitter, capped.
-      const raw = WS_BASE_BACKOFF_MS * 2 ** (attempt - 1);
-      const capped = Math.min(raw, WS_MAX_BACKOFF_MS);
-      const jittered = capped * (0.8 + Math.random() * 0.4);
-      reconnectTimer = setTimeout(connect, jittered);
-    };
-
-    connect();
-
-    const onVis = () => {
-      if (document.visibilityState === "hidden") {
-        closedByUs = true;
-        try { ws?.close(); } catch { /* noop */ }
-      } else if (!ws || ws.readyState === WebSocket.CLOSED) {
-        closedByUs = false;
-        attempt = 0;
-        connect();
-      }
-    };
-    document.addEventListener("visibilitychange", onVis);
+    const unsubTicks = feed.subscribe((ticks) => {
+      setRows((prev) => {
+        const byIdx = new Map(ticks.map((t) => [t.symbol, t]));
+        return prev.map((r) => {
+          const t = byIdx.get(r.symbol);
+          if (!t) return r;
+          const flashing: Row["flashing"] = t.price > r.price ? "up" : t.price < r.price ? "down" : r.flashing;
+          return { ...r, price: t.price, change: t.change, updatedAt: t.updatedAt, flashing };
+        });
+      });
+      scheduleFlashClear();
+    });
+    const unsubStatus = feed.subscribeStatus(setStatuses);
 
     return () => {
-      closedByUs = true;
-      document.removeEventListener("visibilitychange", onVis);
-      if (reconnectTimer) clearTimeout(reconnectTimer);
-      if (rafHandle != null) cancelAnimationFrame(rafHandle);
+      unsubTicks();
+      unsubStatus();
       if (flashTimer) clearTimeout(flashTimer);
-      try { ws?.close(); } catch { /* noop */ }
+      feed.stop();
+      feedRef.current = null;
     };
-  }, [manualRetryToken]);
+  }, [fetchQuotes]);
+
+  const retry = (id: string) => feedRef.current?.retry(id);
+  const cryptoStatus = statuses[SOURCE_CRYPTO] ?? { id: SOURCE_CRYPTO, status: "connecting" as FeedStatus, attempt: 0 };
+  const tradStatus = statuses[SOURCE_TRADITIONAL] ?? { id: SOURCE_TRADITIONAL, status: "connecting" as FeedStatus, attempt: 0 };
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -366,8 +216,8 @@ export function MarketBoard() {
     <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <FeedStatusBadge label="عملات رقمية" status={wsStatus} attempt={wsAttempt} onRetry={() => setManualRetryToken((v) => v + 1)} />
-          <FeedStatusBadge label="أسواق تقليدية" status={pollStatus} attempt={pollAttempt} onRetry={() => setPollRetryToken((v) => v + 1)} />
+          <FeedStatusBadge label="عملات رقمية" status={cryptoStatus.status} attempt={cryptoStatus.attempt} onRetry={() => retry(SOURCE_CRYPTO)} />
+          <FeedStatusBadge label="أسواق تقليدية" status={tradStatus.status} attempt={tradStatus.attempt} onRetry={() => retry(SOURCE_TRADITIONAL)} />
           <h2 className="font-display text-xl font-semibold">شاشة الأسواق الحيّة</h2>
         </div>
         <input
@@ -492,18 +342,8 @@ export function MarketBoard() {
           </ul>
         )}
       </div>
-      <FeedStatusBanner
-        label="بث العملات الرقمية"
-        status={wsStatus}
-        attempt={wsAttempt}
-        onRetry={() => setManualRetryToken((v) => v + 1)}
-      />
-      <FeedStatusBanner
-        label="مزوّد الأسواق التقليدية"
-        status={pollStatus}
-        attempt={pollAttempt}
-        onRetry={() => setPollRetryToken((v) => v + 1)}
-      />
+      <FeedStatusBanner label="بث العملات الرقمية"        status={cryptoStatus.status} attempt={cryptoStatus.attempt} onRetry={() => retry(SOURCE_CRYPTO)} />
+      <FeedStatusBanner label="مزوّد الأسواق التقليدية"   status={tradStatus.status}   attempt={tradStatus.attempt}   onRetry={() => retry(SOURCE_TRADITIONAL)} />
       <p className="mt-3 text-[11px] text-muted-foreground/70">تحديث تلقائي كل {POLL_MS / 1000} ثوانٍ. الأسعار للاسترشاد فقط.</p>
       <MarketDetailDialog item={selectedItem} open={!!selected} onOpenChange={(v) => !v && setSelected(null)} />
     </section>
