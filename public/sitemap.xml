@@ -14,4 +14,14 @@
   <url><loc>https://www.hkexinvest.com/legal</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
   <url><loc>https://www.hkexinvest.com/privacy</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
   <url><loc>https://www.hkexinvest.com/terms</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://www.hkexinvest.com/markets/gold</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.hkexinvest.com/markets/silver</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.hkexinvest.com/markets/btc</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.hkexinvest.com/markets/eth</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.hkexinvest.com/markets/eurusd</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://www.hkexinvest.com/markets/gbpusd</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.hkexinvest.com/markets/usdjpy</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.hkexinvest.com/markets/us30</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.hkexinvest.com/markets/nas100</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://www.hkexinvest.com/markets/oil</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
 </urlset>

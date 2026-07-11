@@ -1,7 +1,10 @@
 import { createFileRoute, notFound, Link } from "@tanstack/react-router";
 import { PageShell, PageHero } from "@/components/page-shell";
 import { ArrowRight } from "lucide-react";
+import enData from "@/content/markets/en.json";
+import arData from "@/content/markets/ar.json";
 
+type FaqItem = { q: string; a: string };
 type Asset = {
   symbol: string;
   name: string;
@@ -9,151 +12,106 @@ type Asset = {
   title: string;
   description: string;
   intro: string;
+  overview: string;
   highlights: string[];
   why: string[];
+  tradingHours: string;
+  volatility: string;
+  risk: string;
+  faq: FaqItem[];
 };
 
-const ASSETS: Record<string, Asset> = {
-  btc: {
-    symbol: "BTC",
-    name: "Bitcoin",
-    category: "Cryptocurrency",
-    title: "Bitcoin (BTC) Price, Chart & Live Trading | HK Global Trading",
-    description:
-      "Live Bitcoin (BTC) price, real-time charts, and secure BTC/USD trading with tight spreads and 24/7 execution on HK Global Trading.",
-    intro:
-      "Track the live Bitcoin price and trade BTC/USD around the clock with institutional-grade liquidity, transparent spreads, and instant execution.",
-    highlights: [
-      "24/7 BTC/USD trading with deep liquidity",
-      "Tight spreads and low commissions",
-      "Advanced charting and price alerts",
-      "Segregated funds and enterprise custody",
-    ],
-    why: [
-      "The original and most liquid cryptocurrency",
-      "Global market cap leader with deep derivatives markets",
-      "A core diversifier in modern digital-asset portfolios",
-    ],
-  },
-  eth: {
-    symbol: "ETH",
-    name: "Ethereum",
-    category: "Cryptocurrency",
-    title: "Ethereum (ETH) Price, Chart & Live Trading | HK Global Trading",
-    description:
-      "Real-time Ethereum (ETH) price, live charts, and ETH/USD trading with fast execution, tight spreads, and 24/7 markets on HK Global Trading.",
-    intro:
-      "Follow the live Ethereum price and trade ETH/USD with fast execution, transparent pricing, and professional-grade analytics.",
-    highlights: [
-      "24/7 ETH/USD trading with deep order books",
-      "Low-latency execution and tight spreads",
-      "Advanced charts, indicators, and alerts",
-      "Bank-grade security and custody",
-    ],
-    why: [
-      "Leading smart-contract platform powering DeFi and NFTs",
-      "Second-largest crypto by market capitalization",
-      "High liquidity across spot and derivatives markets",
-    ],
-  },
-  xrp: {
-    symbol: "XRP",
-    name: "XRP",
-    category: "Cryptocurrency",
-    title: "XRP Price, Chart & Live Trading | HK Global Trading",
-    description:
-      "Live XRP price, real-time charts, and XRP/USD trading with tight spreads, fast execution, and 24/7 markets on HK Global Trading.",
-    intro:
-      "Monitor the live XRP price and trade XRP/USD with instant execution, competitive spreads, and professional charting tools.",
-    highlights: [
-      "24/7 XRP/USD trading with deep liquidity",
-      "Transparent pricing and low fees",
-      "Real-time charts and technical indicators",
-      "Secure custody and segregated client funds",
-    ],
-    why: [
-      "Purpose-built for fast, low-cost cross-border payments",
-      "One of the most traded digital assets globally",
-      "Established liquidity across major exchanges",
-    ],
-  },
-  tsla: {
-    symbol: "TSLA",
-    name: "Tesla",
-    category: "US Stocks",
-    title: "Tesla Stock (TSLA) Price, Chart & Trading | HK Global Trading",
-    description:
-      "Live Tesla (TSLA) stock price, real-time charts, and CFD trading with tight spreads and instant execution on HK Global Trading.",
-    intro:
-      "Track the live Tesla stock price and trade TSLA CFDs with tight spreads, leverage, and professional-grade execution.",
-    highlights: [
-      "Trade TSLA long or short via CFDs",
-      "Competitive spreads and low commissions",
-      "Real-time quotes and advanced charting",
-      "Regulated platform with segregated funds",
-    ],
-    why: [
-      "One of the most actively traded US equities",
-      "High volatility creates opportunities for active traders",
-      "Leader in the electric-vehicle and clean-energy sector",
-    ],
-  },
-  oil: {
-    symbol: "OIL",
-    name: "Crude Oil",
-    category: "Commodities",
-    title: "Crude Oil Price, Chart & Live Trading (WTI & Brent) | HK Global Trading",
-    description:
-      "Live crude oil prices (WTI & Brent), real-time charts, and oil CFD trading with tight spreads and fast execution on HK Global Trading.",
-    intro:
-      "Track live WTI and Brent crude oil prices and trade oil CFDs with tight spreads, deep liquidity, and instant execution.",
-    highlights: [
-      "Trade WTI and Brent crude via CFDs",
-      "Tight spreads and transparent pricing",
-      "Real-time charts with advanced indicators",
-      "Long or short with flexible leverage",
-    ],
-    why: [
-      "One of the world's most traded commodities",
-      "High liquidity and clear trending behavior",
-      "A key macro benchmark and portfolio diversifier",
-    ],
-  },
-};
+const EN = enData as Record<string, Asset>;
+const AR = arData as Record<string, Asset>;
+const SITE = "https://www.hkexinvest.com";
+
+const SLUGS = Object.keys(EN);
+
+type Lang = "en" | "ar";
+
+function pickLang(raw: unknown): Lang {
+  return raw === "ar" ? "ar" : "en";
+}
 
 export const Route = createFileRoute("/markets/$symbol")({
-  loader: ({ params }) => {
-    const asset = ASSETS[params.symbol.toLowerCase()];
+  validateSearch: (s: Record<string, unknown>) => ({ lang: pickLang(s.lang) }),
+  loaderDeps: ({ search }) => ({ lang: search.lang }),
+  loader: ({ params, deps }) => {
+    const slug = params.symbol.toLowerCase();
+    const bundle = deps.lang === "ar" ? AR : EN;
+    const asset = bundle[slug];
     if (!asset) throw notFound();
-    return asset;
+    return { asset, slug, lang: deps.lang };
   },
   head: ({ loaderData }) => {
     if (!loaderData) {
       return { meta: [{ title: "Asset not found" }, { name: "robots", content: "noindex" }] };
     }
-    const url = `https://hk-global-trade.lovable.app/markets/${loaderData.symbol.toLowerCase()}`;
+    const { asset, slug, lang } = loaderData;
+    const path = `/markets/${slug}`;
+    const canonical = `${SITE}${path}`;
+    const enUrl = canonical;
+    const arUrl = `${canonical}?lang=ar`;
+    const currentUrl = lang === "ar" ? arUrl : enUrl;
+
+    const financialProduct = {
+      "@context": "https://schema.org",
+      "@type": "FinancialProduct",
+      name: `${asset.name} (${asset.symbol})`,
+      category: asset.category,
+      description: asset.description,
+      url: currentUrl,
+      provider: {
+        "@type": "FinancialService",
+        name: "HKEX Invest",
+        url: SITE,
+      },
+    };
+
+    const faqPage = {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: asset.faq.map((f) => ({
+        "@type": "Question",
+        name: f.q,
+        acceptedAnswer: { "@type": "Answer", text: f.a },
+      })),
+    };
+
+    const breadcrumb = {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: SITE },
+        { "@type": "ListItem", position: 2, name: "Markets", item: `${SITE}/markets` },
+        { "@type": "ListItem", position: 3, name: asset.name, item: canonical },
+      ],
+    };
+
     return {
       meta: [
-        { title: loaderData.title },
-        { name: "description", content: loaderData.description },
-        { property: "og:title", content: loaderData.title },
-        { property: "og:description", content: loaderData.description },
+        { title: asset.title },
+        { name: "description", content: asset.description },
+        { name: "robots", content: "index,follow,max-image-preview:large" },
+        { property: "og:title", content: asset.title },
+        { property: "og:description", content: asset.description },
         { property: "og:type", content: "article" },
-        { property: "og:url", content: url },
+        { property: "og:url", content: currentUrl },
+        { property: "og:locale", content: lang === "ar" ? "ar_AE" : "en_US" },
+        { property: "og:locale:alternate", content: lang === "ar" ? "en_US" : "ar_AE" },
+        { name: "twitter:title", content: asset.title },
+        { name: "twitter:description", content: asset.description },
       ],
-      links: [{ rel: "canonical", href: url }],
+      links: [
+        { rel: "canonical", href: currentUrl },
+        { rel: "alternate", hrefLang: "en", href: enUrl },
+        { rel: "alternate", hrefLang: "ar", href: arUrl },
+        { rel: "alternate", hrefLang: "x-default", href: enUrl },
+      ],
       scripts: [
-        {
-          type: "application/ld+json",
-          children: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "FinancialProduct",
-            name: `${loaderData.name} (${loaderData.symbol})`,
-            category: loaderData.category,
-            description: loaderData.description,
-            url,
-          }),
-        },
+        { type: "application/ld+json", children: JSON.stringify(financialProduct) },
+        { type: "application/ld+json", children: JSON.stringify(faqPage) },
+        { type: "application/ld+json", children: JSON.stringify(breadcrumb) },
       ],
     };
   },
@@ -165,60 +123,173 @@ export const Route = createFileRoute("/markets/$symbol")({
   ),
 });
 
+const UI = {
+  en: {
+    breadcrumbHome: "Home",
+    breadcrumbMarkets: "Markets",
+    why: (n: string) => `Why trade ${n}?`,
+    highlights: "Trading highlights",
+    overview: "Market overview",
+    hours: "Trading hours",
+    volatility: "Volatility profile",
+    risk: "Risk disclosure",
+    faq: "Frequently asked questions",
+    related: "Related markets",
+    start: (s: string) => `Start trading ${s}`,
+    viewAll: "View all markets",
+    switchLang: "العربية",
+  },
+  ar: {
+    breadcrumbHome: "الرئيسية",
+    breadcrumbMarkets: "الأسواق",
+    why: (n: string) => `لماذا تتداول ${n}؟`,
+    highlights: "أبرز ميزات التداول",
+    overview: "نظرة عامة على السوق",
+    hours: "ساعات التداول",
+    volatility: "طبيعة التقلبات",
+    risk: "إفصاح المخاطر",
+    faq: "الأسئلة الشائعة",
+    related: "أسواق ذات صلة",
+    start: (s: string) => `ابدأ تداول ${s}`,
+    viewAll: "جميع الأسواق",
+    switchLang: "English",
+  },
+} as const;
+
 function AssetPage() {
-  const a = Route.useLoaderData();
+  const data = Route.useLoaderData() as { asset: Asset; slug: string; lang: Lang };
+  const { asset: a, slug, lang } = data;
+  const t = UI[lang];
+  const dir = lang === "ar" ? "rtl" : "ltr";
+  const related = SLUGS.filter((s) => s !== slug).slice(0, 6);
+  const bundle = lang === "ar" ? AR : EN;
+
   return (
     <PageShell>
-      <PageHero
-        eyebrow={a.category}
-        title={
-          <>
-            {a.name} <span className="text-gradient">({a.symbol})</span>
-          </>
-        }
-        subtitle={a.intro}
-      />
-      <section className="mx-auto max-w-5xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="grid gap-6 md:grid-cols-2">
-          <div className="glass rounded-2xl p-6">
-            <h2 className="font-display text-xl font-semibold">Why trade {a.name}?</h2>
-            <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-              {a.why.map((w: string) => (
-                <li key={w} className="flex items-start gap-2">
-                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-gold" />
-                  {w}
+      <div dir={dir}>
+        <PageHero
+          eyebrow={a.category}
+          title={
+            <>
+              {a.name} <span className="text-gradient">({a.symbol})</span>
+            </>
+          }
+          subtitle={a.intro}
+        />
+        <section className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
+          <nav aria-label="Breadcrumb" className="mb-6 text-xs text-muted-foreground">
+            <ol className="flex flex-wrap items-center gap-2">
+              <li><Link to="/">{t.breadcrumbHome}</Link></li>
+              <li aria-hidden>/</li>
+              <li><Link to="/markets">{t.breadcrumbMarkets}</Link></li>
+              <li aria-hidden>/</li>
+              <li className="text-foreground">{a.name}</li>
+            </ol>
+          </nav>
+
+          <div className="mb-8 flex justify-end">
+            <Link
+              to="/markets/$symbol"
+              params={{ symbol: slug }}
+              search={{ lang: lang === "ar" ? "en" : "ar" }}
+              className="rounded-full border border-white/10 px-3 py-1 text-xs text-muted-foreground hover:text-foreground"
+            >
+              {t.switchLang}
+            </Link>
+          </div>
+
+          <article className="glass rounded-2xl p-6">
+            <h2 className="font-display text-xl font-semibold">{t.overview}</h2>
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{a.overview}</p>
+          </article>
+
+          <div className="mt-6 grid gap-6 md:grid-cols-2">
+            <div className="glass rounded-2xl p-6">
+              <h2 className="font-display text-xl font-semibold">{t.why(a.name)}</h2>
+              <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+                {a.why.map((w: string) => (
+                  <li key={w} className="flex items-start gap-2">
+                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-gold" />
+                    <span>{w}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="glass rounded-2xl p-6">
+              <h2 className="font-display text-xl font-semibold">{t.highlights}</h2>
+              <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+                {a.highlights.map((h: string) => (
+                  <li key={h} className="flex items-start gap-2">
+                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-gold" />
+                    <span>{h}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <div className="mt-6 grid gap-6 md:grid-cols-3">
+            <div className="glass rounded-2xl p-5">
+              <h3 className="text-xs font-mono uppercase tracking-widest text-gold">{t.hours}</h3>
+              <p className="mt-2 text-sm text-muted-foreground">{a.tradingHours}</p>
+            </div>
+            <div className="glass rounded-2xl p-5">
+              <h3 className="text-xs font-mono uppercase tracking-widest text-gold">{t.volatility}</h3>
+              <p className="mt-2 text-sm text-muted-foreground">{a.volatility}</p>
+            </div>
+            <div className="glass rounded-2xl p-5">
+              <h3 className="text-xs font-mono uppercase tracking-widest text-gold">{t.risk}</h3>
+              <p className="mt-2 text-sm text-muted-foreground">{a.risk}</p>
+            </div>
+          </div>
+
+          <section className="mt-10">
+            <h2 className="font-display text-2xl font-semibold">{t.faq}</h2>
+            <div className="mt-4 space-y-3">
+              {a.faq.map((f: FaqItem) => (
+                <details key={f.q} className="glass rounded-xl p-4">
+                  <summary className="cursor-pointer font-medium text-foreground">{f.q}</summary>
+                  <p className="mt-2 text-sm text-muted-foreground">{f.a}</p>
+                </details>
+              ))}
+            </div>
+          </section>
+
+          <section className="mt-10">
+            <h2 className="font-display text-xl font-semibold">{t.related}</h2>
+            <ul className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
+              {related.map((s) => (
+                <li key={s}>
+                  <Link
+                    to="/markets/$symbol"
+                    params={{ symbol: s }}
+                    search={{ lang }}
+                    className="block rounded-lg border border-white/10 px-3 py-2 text-sm text-muted-foreground hover:border-gold/40 hover:text-foreground"
+                  >
+                    {bundle[s]?.name} <span className="text-gold/70">({bundle[s]?.symbol})</span>
+                  </Link>
                 </li>
               ))}
             </ul>
+          </section>
+
+          <div className="mt-10 flex flex-wrap gap-3">
+            <Link
+              to="/auth"
+              className="inline-flex items-center gap-2 rounded-full bg-[var(--gradient-brand)] px-5 py-2.5 text-sm font-semibold text-black"
+            >
+              {t.start(a.symbol)}
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+            <Link
+              to="/markets"
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 px-5 py-2.5 text-sm text-muted-foreground hover:text-foreground"
+            >
+              {t.viewAll}
+            </Link>
           </div>
-          <div className="glass rounded-2xl p-6">
-            <h2 className="font-display text-xl font-semibold">Trading highlights</h2>
-            <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-              {a.highlights.map((h: string) => (
-                <li key={h} className="flex items-start gap-2">
-                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-gold" />
-                  {h}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-        <div className="mt-10 flex flex-wrap gap-3">
-          <Link
-            to="/auth"
-            className="inline-flex items-center gap-2 rounded-full bg-[var(--gradient-brand)] px-5 py-2.5 text-sm font-semibold text-black"
-          >
-            Start trading {a.symbol}
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-          <Link
-            to="/markets"
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 px-5 py-2.5 text-sm text-muted-foreground hover:text-foreground"
-          >
-            View all markets
-          </Link>
-        </div>
-      </section>
+        </section>
+      </div>
     </PageShell>
   );
 }
