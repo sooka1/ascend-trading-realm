@@ -737,6 +737,14 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
             </button>
             <button
               type="button"
+              disabled={hitLog.length === 0}
+              onClick={() => exportHitLogCsv(hitLog)}
+              className="rounded px-1.5 py-0.5 text-[9px] text-white/60 hover:bg-white/10 hover:text-white disabled:opacity-40"
+            >
+              CSV
+            </button>
+            <button
+              type="button"
               onClick={() => {
                 setHitLog([]); saveAlertLog([]);
                 hitDedupeRef.current.clear(); saveSeen(hitDedupeRef.current);
@@ -745,6 +753,23 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
               className="rounded px-1.5 py-0.5 text-[9px] text-white/60 hover:bg-white/10 hover:text-white"
             >
               Clear
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                if (!window.confirm("سيتم إعادة تعيين إعدادات TP/SL والفلاتر ومسح السجل المحلي. المتابعة؟")) return;
+                setShowRiskLines(true);
+                setAlertSettings(DEFAULT_ALERT_SETTINGS);
+                saveAlertSettings(DEFAULT_ALERT_SETTINGS);
+                setLogKind("all"); setLogSide("all"); setLogQuery("");
+                try { window.localStorage.removeItem(LOG_FILTERS_KEY); } catch { /* noop */ }
+                setHitLog([]); saveAlertLog([]);
+                hitDedupeRef.current.clear(); saveSeen(hitDedupeRef.current);
+                setSelectedHit(null); setFocusedHit(null);
+              }}
+              className="rounded px-1.5 py-0.5 text-[9px] text-amber-300/80 hover:bg-white/10 hover:text-amber-200"
+            >
+              Reset
             </button>
           </div>
           {hitLog.slice(0, 4).map((h) => (
