@@ -10,7 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
   loadAlertLog, saveAlertLog, loadSeen, saveSeen,
-  loadAlertSettings, saveAlertSettings, playAlertSound,
+  loadAlertSettings, saveAlertSettings, playAlertSound, DEFAULT_ALERT_SETTINGS,
   type AlertEntry, type AlertSettings,
 } from "../lib/tp-sl-alerts";
 
@@ -95,9 +95,39 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
   const [selectedHit, setSelectedHit] = useState<HitLog | null>(null);
   const [focusedHit, setFocusedHit] = useState<HitLog | null>(null);
   const [logOpen, setLogOpen] = useState(false);
-  const [logKind, setLogKind] = useState<"all" | "TP" | "SL">("all");
-  const [logSide, setLogSide] = useState<"all" | "buy" | "sell">("all");
-  const [logQuery, setLogQuery] = useState("");
+  const LOG_FILTERS_KEY = "hk.tpsl.logFilters.v1";
+  const [logKind, setLogKind] = useState<"all" | "TP" | "SL">(() => {
+    try { return (JSON.parse(window.localStorage.getItem(LOG_FILTERS_KEY) || "{}").kind ?? "all") as "all" | "TP" | "SL"; } catch { return "all"; }
+  });
+  const [logSide, setLogSide] = useState<"all" | "buy" | "sell">(() => {
+    try { return (JSON.parse(window.localStorage.getItem(LOG_FILTERS_KEY) || "{}").side ?? "all") as "all" | "buy" | "sell"; } catch { return "all"; }
+  });
+  const [logQuery, setLogQuery] = useState<string>(() => {
+    try { return String(JSON.parse(window.localStorage.getItem(LOG_FILTERS_KEY) || "{}").q ?? ""); } catch { return ""; }
+  });
+  useEffect(() => {
+    try { window.localStorage.setItem(LOG_FILTERS_KEY, JSON.stringify({ kind: logKind, side: logSide, q: logQuery })); } catch { /* noop */ }
+  }, [logKind, logSide, logQuery]);
+  const exportHitLogCsv = useCallback((rowsSrc: HitLog[]) => {
+    if (!rowsSrc.length) return;
+    const header = ["at_iso","symbol","kind","side","entry","price","volume","result","pos_id"];
+    const esc = (v: unknown) => {
+      const s = String(v ?? "");
+      return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+    };
+    const rows = rowsSrc.map((h) => [
+      new Date(h.at).toISOString(), h.symbol, h.kind, h.side,
+      h.entry, h.price, h.volume, h.result, h.posId,
+    ].map(esc).join(","));
+    const csv = "\uFEFF" + [header.join(","), ...rows].join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `tp-sl-alerts-${new Date().toISOString().slice(0,10)}.csv`;
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  }, []);
   const filteredHitLog = hitLog.filter((h) => {
     if (logKind !== "all" && h.kind !== logKind) return false;
     if (logSide !== "all" && h.side !== logSide) return false;
@@ -707,6 +737,14 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
             </button>
             <button
               type="button"
+              disabled={hitLog.length === 0}
+              onClick={() => exportHitLogCsv(hitLog)}
+              className="rounded px-1.5 py-0.5 text-[9px] text-white/60 hover:bg-white/10 hover:text-white disabled:opacity-40"
+            >
+              CSV
+            </button>
+            <button
+              type="button"
               onClick={() => {
                 setHitLog([]); saveAlertLog([]);
                 hitDedupeRef.current.clear(); saveSeen(hitDedupeRef.current);
@@ -715,6 +753,23 @@ export function TerminalChart({ symbol, timeframe, chartType, precision, positio
               className="rounded px-1.5 py-0.5 text-[9px] text-white/60 hover:bg-white/10 hover:text-white"
             >
               Clear
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                if (!window.confirm("سيتم إعادة تعيين إعدادات TP/SL والفلاتر ومسح السجل المحلي. المتابعة؟")) return;
+                setShowRiskLines(true);
+                setAlertSettings(DEFAULT_ALERT_SETTINGS);
+                saveAlertSettings(DEFAULT_ALERT_SETTINGS);
+                setLogKind("all"); setLogSide("all"); setLogQuery("");
+                try { window.localStorage.removeItem(LOG_FILTERS_KEY); } catch { /* noop */ }
+                setHitLog([]); saveAlertLog([]);
+                hitDedupeRef.current.clear(); saveSeen(hitDedupeRef.current);
+                setSelectedHit(null); setFocusedHit(null);
+              }}
+              className="rounded px-1.5 py-0.5 text-[9px] text-amber-300/80 hover:bg-white/10 hover:text-amber-200"
+            >
+              Reset
             </button>
           </div>
           {hitLog.slice(0, 4).map((h) => (
