@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useServerFn } from "@tanstack/react-start";
+import { decideKycAdmin } from "@/lib/admin.functions";
 import { AdminShell, AdminCard, StatusPill } from "@/components/admin-shell";
 import { Button } from "@/components/ui/button";
 import { BadgeCheck, ShieldCheck, Clock, XCircle, Check, X } from "lucide-react";
@@ -27,6 +29,7 @@ function AdminKyc() {
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "pending" | "approved" | "rejected">("pending");
+  const decideFn = useServerFn(decideKycAdmin);
 
   async function load() {
     setLoading(true);
@@ -44,11 +47,11 @@ function AdminKyc() {
 
   async function decide(row: Row, decision: "approved" | "rejected") {
     const notes = decision === "rejected" ? window.prompt("سبب الرفض (اختياري):") ?? null : null;
-    const { error } = await supabase
-      .from("profiles")
-      .update({ verification_status: decision, verified_at: decision === "approved" ? new Date().toISOString() : null, verification_notes: notes })
-      .eq("id", row.id);
-    if (error) return toast.error(error.message);
+    try {
+      await decideFn({ data: { userId: row.id, decision, notes } });
+    } catch (e: any) {
+      return toast.error(e?.message ?? "فشل الحفظ");
+    }
     toast.success(decision === "approved" ? "تم توثيق الحساب" : "تم رفض الطلب");
     await load();
   }
