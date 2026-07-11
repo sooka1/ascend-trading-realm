@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { AdminShell, AdminCard } from "@/components/admin-shell";
-import { Bell, Send, History, TestTube2, ExternalLink } from "lucide-react";
+import { Bell, Send, History, TestTube2, ExternalLink, ShieldCheck, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { broadcastNotification, listBroadcasts } from "@/lib/broadcast.functions";
 import { sendTestPushToSelf } from "@/lib/push.functions";
 import { canUsePush, ensurePushSubscription } from "@/lib/push-client";
+import { checkEmailDns } from "@/lib/email-dns.functions";
 
 export const Route = createFileRoute("/_authenticated/_admin/admin/notifications")({
   head: () => ({ meta: [{ title: "Admin — Notifications" }] }),
@@ -24,6 +25,25 @@ function AdminNotifications() {
   const fetchLogs = useServerFn(listBroadcasts);
   const sendTest = useServerFn(sendTestPushToSelf);
   const [testing, setTesting] = useState(false);
+  const runDnsCheck = useServerFn(checkEmailDns);
+  const [dns, setDns] = useState<Awaited<ReturnType<typeof checkEmailDns>> | null>(null);
+  const [dnsLoading, setDnsLoading] = useState(false);
+
+  const loadDns = useCallback(async () => {
+    setDnsLoading(true);
+    try {
+      const res = await runDnsCheck();
+      setDns(res);
+    } catch (e: any) {
+      toast.error(e?.message ?? "تعذّر فحص DNS");
+    } finally {
+      setDnsLoading(false);
+    }
+  }, [runDnsCheck]);
+
+  useEffect(() => {
+    void loadDns();
+  }, [loadDns]);
   const [envInfo, setEnvInfo] = useState<{ host: string; allowed: boolean; permission: string }>(
     { host: "", allowed: false, permission: "default" },
   );
@@ -255,7 +275,66 @@ function AdminNotifications() {
           </div>
         )}
       </AdminCard>
+
+      <AdminCard title="تحقق مصادقة البريد (SPF / DKIM / DMARC)" icon={ShieldCheck}>
+        <div className="space-y-3 text-sm">
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-muted-foreground">
+              نطاق الإرسال: <span className="font-mono text-foreground">{dns?.senderDomain ?? "…"}</span>
+            </p>
+            <Button variant="outline" size="sm" onClick={loadDns} disabled={dnsLoading}>
+              <RefreshCw className={`me-1.5 h-3.5 w-3.5 ${dnsLoading ? "animate-spin" : ""}`} />
+              إعادة الفحص
+            </Button>
+          </div>
+          {!dns ? (
+            <p className="text-xs text-muted-foreground">جارٍ الفحص…</p>
+          ) : (
+            <div className="space-y-2">
+              <DnsRow label="SPF" ok={!!dns.spf} value={dns.spf ?? "غير موجود"} />
+              <DnsRow
+                label="DKIM"
+                ok={dns.dkim.length > 0}
+                value={
+                  dns.dkim.length > 0
+                    ? dns.dkim.map((d) => `${d.selector}: ${d.record.slice(0, 80)}…`).join("\n")
+                    : "لم يُعثر على سجل DKIM بأي محدد شائع"
+                }
+              />
+              <DnsRow label="DMARC" ok={!!dns.dmarc} value={dns.dmarc ?? "غير موجود"} />
+              <DnsRow label="MX" ok={dns.mx.length > 0} value={dns.mx.join("\n") || "غير موجود"} />
+              <DnsRow label="NS delegation" ok={dns.ns.length > 0} value={dns.ns.join("\n") || "غير موجود"} />
+              <p className="pt-2 font-mono text-[10px] text-muted-foreground">
+                آخر فحص: {new Date(dns.checkedAt).toLocaleString()}
+              </p>
+            </div>
+          )}
+          <p className="text-xs text-muted-foreground">
+            سجلات DNS يديرها Lovable عبر تفويض NS. إذا ظهر SPF/DKIM/DMARC بحالة سليمة فإن Gmail يقبل الرسائل من نطاقك دون علامات Spam.
+          </p>
+        </div>
+      </AdminCard>
     </AdminShell>
+  );
+}
+
+function DnsRow({ label, ok, value }: { label: string; ok: boolean; value: string }) {
+  return (
+    <div className="rounded-sm border border-white/10 bg-white/[0.02] p-2.5">
+      <div className="mb-1 flex items-center justify-between">
+        <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">{label}</span>
+        <span
+          className={`rounded-sm border px-2 py-0.5 font-mono text-[10px] uppercase ${
+            ok
+              ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
+              : "border-red-500/30 bg-red-500/10 text-red-300"
+          }`}
+        >
+          {ok ? "OK" : "MISSING"}
+        </span>
+      </div>
+      <pre className="whitespace-pre-wrap break-all font-mono text-[10.5px] text-muted-foreground">{value}</pre>
+    </div>
   );
 }
 
