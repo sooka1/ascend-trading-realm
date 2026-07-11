@@ -49,6 +49,7 @@ import { Route as AuthenticatedPortalMfaRouteImport } from './routes/_authentica
 import { Route as AuthenticatedPortalFavoritesRouteImport } from './routes/_authenticated/portal.favorites'
 import { Route as AuthenticatedPortalDownloadsRouteImport } from './routes/_authenticated/portal.downloads'
 import { Route as AuthenticatedPortalDocumentsRouteImport } from './routes/_authenticated/portal.documents'
+import { Route as AuthenticatedPortalCompetitionsRouteImport } from './routes/_authenticated/portal.competitions'
 import { Route as AuthenticatedPortalActivityRouteImport } from './routes/_authenticated/portal.activity'
 import { Route as AuthenticatedPortalAccountsRouteImport } from './routes/_authenticated/portal.accounts'
 import { Route as AuthenticatedAppProfileRouteImport } from './routes/_authenticated/app.profile'
@@ -292,6 +293,12 @@ const AuthenticatedPortalDocumentsRoute =
     path: '/portal/documents',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedPortalCompetitionsRoute =
+  AuthenticatedPortalCompetitionsRouteImport.update({
+    id: '/portal/competitions',
+    path: '/portal/competitions',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPortalActivityRoute =
   AuthenticatedPortalActivityRouteImport.update({
     id: '/portal/activity',
@@ -494,6 +501,7 @@ export interface FileRoutesByFullPath {
   '/app/profile': typeof AuthenticatedAppProfileRoute
   '/portal/accounts': typeof AuthenticatedPortalAccountsRoute
   '/portal/activity': typeof AuthenticatedPortalActivityRoute
+  '/portal/competitions': typeof AuthenticatedPortalCompetitionsRoute
   '/portal/documents': typeof AuthenticatedPortalDocumentsRoute
   '/portal/downloads': typeof AuthenticatedPortalDownloadsRoute
   '/portal/favorites': typeof AuthenticatedPortalFavoritesRoute
@@ -563,6 +571,7 @@ export interface FileRoutesByTo {
   '/app/profile': typeof AuthenticatedAppProfileRoute
   '/portal/accounts': typeof AuthenticatedPortalAccountsRoute
   '/portal/activity': typeof AuthenticatedPortalActivityRoute
+  '/portal/competitions': typeof AuthenticatedPortalCompetitionsRoute
   '/portal/documents': typeof AuthenticatedPortalDocumentsRoute
   '/portal/downloads': typeof AuthenticatedPortalDownloadsRoute
   '/portal/favorites': typeof AuthenticatedPortalFavoritesRoute
@@ -635,6 +644,7 @@ export interface FileRoutesById {
   '/_authenticated/app/profile': typeof AuthenticatedAppProfileRoute
   '/_authenticated/portal/accounts': typeof AuthenticatedPortalAccountsRoute
   '/_authenticated/portal/activity': typeof AuthenticatedPortalActivityRoute
+  '/_authenticated/portal/competitions': typeof AuthenticatedPortalCompetitionsRoute
   '/_authenticated/portal/documents': typeof AuthenticatedPortalDocumentsRoute
   '/_authenticated/portal/downloads': typeof AuthenticatedPortalDownloadsRoute
   '/_authenticated/portal/favorites': typeof AuthenticatedPortalFavoritesRoute
@@ -706,6 +716,7 @@ export interface FileRouteTypes {
     | '/app/profile'
     | '/portal/accounts'
     | '/portal/activity'
+    | '/portal/competitions'
     | '/portal/documents'
     | '/portal/downloads'
     | '/portal/favorites'
@@ -775,6 +786,7 @@ export interface FileRouteTypes {
     | '/app/profile'
     | '/portal/accounts'
     | '/portal/activity'
+    | '/portal/competitions'
     | '/portal/documents'
     | '/portal/downloads'
     | '/portal/favorites'
@@ -846,6 +858,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/profile'
     | '/_authenticated/portal/accounts'
     | '/_authenticated/portal/activity'
+    | '/_authenticated/portal/competitions'
     | '/_authenticated/portal/documents'
     | '/_authenticated/portal/downloads'
     | '/_authenticated/portal/favorites'
@@ -1192,6 +1205,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPortalDocumentsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/portal/competitions': {
+      id: '/_authenticated/portal/competitions'
+      path: '/portal/competitions'
+      fullPath: '/portal/competitions'
+      preLoaderRoute: typeof AuthenticatedPortalCompetitionsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/portal/activity': {
       id: '/_authenticated/portal/activity'
       path: '/portal/activity'
@@ -1485,6 +1505,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedSecurityRoute: typeof AuthenticatedSecurityRoute
   AuthenticatedPortalAccountsRoute: typeof AuthenticatedPortalAccountsRoute
   AuthenticatedPortalActivityRoute: typeof AuthenticatedPortalActivityRoute
+  AuthenticatedPortalCompetitionsRoute: typeof AuthenticatedPortalCompetitionsRoute
   AuthenticatedPortalDocumentsRoute: typeof AuthenticatedPortalDocumentsRoute
   AuthenticatedPortalDownloadsRoute: typeof AuthenticatedPortalDownloadsRoute
   AuthenticatedPortalFavoritesRoute: typeof AuthenticatedPortalFavoritesRoute
@@ -1512,6 +1533,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSecurityRoute: AuthenticatedSecurityRoute,
   AuthenticatedPortalAccountsRoute: AuthenticatedPortalAccountsRoute,
   AuthenticatedPortalActivityRoute: AuthenticatedPortalActivityRoute,
+  AuthenticatedPortalCompetitionsRoute: AuthenticatedPortalCompetitionsRoute,
   AuthenticatedPortalDocumentsRoute: AuthenticatedPortalDocumentsRoute,
   AuthenticatedPortalDownloadsRoute: AuthenticatedPortalDownloadsRoute,
   AuthenticatedPortalFavoritesRoute: AuthenticatedPortalFavoritesRoute,
