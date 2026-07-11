@@ -6,6 +6,7 @@ import { template as withdrawalConfirmationTemplate } from './withdrawal-confirm
 import { template as tradeAlertTemplate } from './trade-alert'
 import { template as kycStatusTemplate } from './kyc-status'
 import { template as securityAlertTemplate } from './security-alert'
+import { template as supportInquiryTemplate } from './support-inquiry'
 
 export interface TemplateEntry {
   component: ComponentType<any>
@@ -32,4 +33,5 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'trade-alert': tradeAlertTemplate,
   'kyc-status': kycStatusTemplate,
   'security-alert': securityAlertTemplate,
+  'support-inquiry': supportInquiryTemplate,
 }

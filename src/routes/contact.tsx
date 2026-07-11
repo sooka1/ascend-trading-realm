@@ -6,6 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { usePage } from "@/lib/i18n";
+import { useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { sendSupportInquiry } from "@/lib/support-inquiry.functions";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -21,6 +25,33 @@ export const Route = createFileRoute("/contact")({
 
 function Contact() {
   const p = usePage().contact;
+  const send = useServerFn(sendSupportInquiry);
+  const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
+  const [sending, setSending] = useState(false);
+
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setSending(true);
+    try {
+      await send({
+        data: {
+          kind: "contact",
+          name: form.name,
+          email: form.email,
+          subject: form.subject || undefined,
+          message: form.message,
+          source: "contact",
+        },
+      });
+      toast.success(p.sent);
+      setForm({ name: "", email: "", subject: "", message: "" });
+    } catch (err: any) {
+      toast.error(err?.message ?? "تعذّر الإرسال");
+    } finally {
+      setSending(false);
+    }
+  }
+
   return (
     <PageShell>
       <PageHero
@@ -31,28 +62,38 @@ function Contact() {
       <section className="mx-auto grid max-w-7xl gap-8 px-4 py-16 sm:px-6 lg:grid-cols-[1.2fr_1fr] lg:px-8">
         <form
           className="glass-strong rounded-2xl p-6 md:p-8"
-          onSubmit={(e) => { e.preventDefault(); alert(p.sent); }}
+          onSubmit={onSubmit}
         >
           <h2 className="font-display text-2xl font-bold">{p.formTitle}</h2>
           <div className="mt-6 grid gap-4 md:grid-cols-2">
             <div>
               <Label htmlFor="name">{p.fullName}</Label>
-              <Input id="name" className="mt-1.5 bg-white/5" required />
+              <Input id="name" className="mt-1.5 bg-white/5" required
+                value={form.name}
+                onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} />
             </div>
             <div>
               <Label htmlFor="email">{p.email}</Label>
-              <Input id="email" type="email" className="mt-1.5 bg-white/5" required />
+              <Input id="email" type="email" className="mt-1.5 bg-white/5" required
+                value={form.email}
+                onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} />
             </div>
           </div>
           <div className="mt-4">
             <Label htmlFor="subject">{p.subject}</Label>
-            <Input id="subject" className="mt-1.5 bg-white/5" />
+            <Input id="subject" className="mt-1.5 bg-white/5"
+              value={form.subject}
+              onChange={(e) => setForm((f) => ({ ...f, subject: e.target.value }))} />
           </div>
           <div className="mt-4">
             <Label htmlFor="msg">{p.message}</Label>
-            <Textarea id="msg" rows={6} className="mt-1.5 bg-white/5" required />
+            <Textarea id="msg" rows={6} className="mt-1.5 bg-white/5" required
+              value={form.message}
+              onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))} />
           </div>
-          <Button type="submit" className="mt-6 bg-[var(--gradient-brand)] text-white">{p.send}</Button>
+          <Button type="submit" disabled={sending} className="mt-6 bg-[var(--gradient-brand)] text-white">
+            {sending ? "جارٍ الإرسال…" : p.send}
+          </Button>
         </form>
 
         <div className="space-y-4">
