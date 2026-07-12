@@ -11,7 +11,7 @@ const PRODUCTION_HOSTS = new Set([
   "hkexinvest-com.lovable.app",
 ]);
 
-export const Route = createFileRoute("/api/_sentry_probe")({
+export const Route = createFileRoute("/api/sentry-probe")({
   server: {
     handlers: {
       POST: async ({ request }) => {
