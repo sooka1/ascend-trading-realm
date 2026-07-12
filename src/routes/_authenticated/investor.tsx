@@ -478,6 +478,47 @@ function InvestorPortal() {
     const parsed = withdrawSchema.safeParse(Object.fromEntries(fd));
     if (!parsed.success) return toast.error(parsed.error.issues[0].message);
     if (parsed.data.amount > balance) return toast.error("المبلغ يتجاوز الرصيد المتاح");
+    // Network-specific destination validation (fail fast before dialog)
+    const ruleEarly = ADDRESS_RULES[withdrawMethod];
+    if (!ruleEarly.regex.test(parsed.data.destination)) return toast.error(ruleEarly.label);
+    // If the withdrawal will dip into subscription capital, cancel pending
+    // profit distributions on the affected subs. Warn the user first.
+    const affectedCapital = Math.max(0, parsed.data.amount - available);
+    if (affectedCapital > 0) {
+      // Estimate future weekly profit lost, weighted by each active sub's target return.
+      let remainingToCover = affectedCapital;
+      let affectedSubsCount = 0;
+      let estLoss = 0;
+      const sortedActive = [...subs]
+        .filter((s) => s.status === "active")
+        .sort((a, b) => Number(a.amount) - Number(b.amount));
+      for (const s of sortedActive) {
+        if (remainingToCover <= 0) break;
+        const take = Math.min(Number(s.amount), remainingToCover);
+        const pkg = packages.find((p) => p.id === s.package_id);
+        const pct = Number(pkg?.target_return_pct ?? 0);
+        estLoss += take * (pct / 100);
+        affectedSubsCount += 1;
+        remainingToCover -= take;
+      }
+      setWithdrawAck(false);
+      setWithdrawWarn({
+        parsed: parsed.data,
+        form,
+        affectedCapital,
+        affectedSubsCount,
+        estLoss,
+      });
+      return;
+    }
+    await performWithdraw(parsed.data, form);
+  }
+
+  async function performWithdraw(
+    data: z.infer<typeof withdrawSchema>,
+    form: HTMLFormElement,
+  ) {
+    if (!uid) return;
     // Require KYC verification before any withdrawal
     const { data: prof } = await supabase
       .from("profiles")
@@ -491,7 +532,7 @@ function InvestorPortal() {
     }
     // Network-specific destination validation
     const rule = ADDRESS_RULES[withdrawMethod];
-    if (!rule.regex.test(parsed.data.destination)) return toast.error(rule.label);
+    if (!rule.regex.test(data.destination)) return toast.error(rule.label);
     // Require MFA for withdrawals
     const { data: fx } = await supabase.auth.mfa.listFactors();
     const totp = (fx?.totp ?? []).find((f) => f.status === "verified");
@@ -508,7 +549,7 @@ function InvestorPortal() {
     const before = subs
       .filter((s) => s.status === "active")
       .map((s) => ({ id: s.id, amount: Number(s.amount) }));
-    const { error } = await supabase.from("withdrawals").insert({ user_id: uid, ...parsed.data });
+    const { error } = await supabase.from("withdrawals").insert({ user_id: uid, ...data });
     if (error) return toast.error(error.message);
     // The AFTER INSERT trigger `trg_withdrawals_apply_capital` deducts capital
     // atomically. Read the post-trigger state to surface a clear status.
@@ -536,9 +577,9 @@ function InvestorPortal() {
     await supabase.from("notifications").insert({
       user_id: uid,
       title: "تم استلام طلب السحب",
-      body: `${fmt(parsed.data.amount)} — قيد المراجعة`,
+      body: `${fmt(data.amount)} — قيد المراجعة`,
     });
-    toast.success(`تم إرسال طلب السحب بنجاح — ${fmt(parsed.data.amount)} قيد المراجعة`);
+    toast.success(`تم إرسال طلب السحب بنجاح — ${fmt(data.amount)} قيد المراجعة`);
     if (deducted > 0) {
       toast.info(`تم خصم ${fmt(deducted)} من رأس المال في الاشتراكات النشطة`);
     }
