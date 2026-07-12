@@ -870,6 +870,464 @@ export type Database = {
         }
         Relationships: []
       }
+      master_eligibility_rules: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          is_active: boolean
+          max_drawdown_pct: number
+          min_account_age_days: number
+          min_closed_trades: number
+          min_monthly_return_pct: number
+          min_trading_days: number
+          min_trust_score: number
+          min_verification_level: string
+          min_win_rate_pct: number
+          notes: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          max_drawdown_pct?: number
+          min_account_age_days?: number
+          min_closed_trades?: number
+          min_monthly_return_pct?: number
+          min_trading_days?: number
+          min_trust_score?: number
+          min_verification_level?: string
+          min_win_rate_pct?: number
+          notes?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          max_drawdown_pct?: number
+          min_account_age_days?: number
+          min_closed_trades?: number
+          min_monthly_return_pct?: number
+          min_trading_days?: number
+          min_trust_score?: number
+          min_verification_level?: string
+          min_win_rate_pct?: number
+          notes?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      master_levels: {
+        Row: {
+          badge: string | null
+          benefits: Json
+          code: string
+          created_at: string
+          id: string
+          is_active: boolean
+          min_assets_copied: number
+          min_followers: number
+          min_months_active: number
+          min_performance_pct: number
+          min_score: number
+          name: string
+          rank: number
+          updated_at: string
+        }
+        Insert: {
+          badge?: string | null
+          benefits?: Json
+          code: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          min_assets_copied?: number
+          min_followers?: number
+          min_months_active?: number
+          min_performance_pct?: number
+          min_score?: number
+          name: string
+          rank: number
+          updated_at?: string
+        }
+        Update: {
+          badge?: string | null
+          benefits?: Json
+          code?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          min_assets_copied?: number
+          min_followers?: number
+          min_months_active?: number
+          min_performance_pct?: number
+          min_score?: number
+          name?: string
+          rank?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      master_trader_applications: {
+        Row: {
+          admin_notes: string | null
+          approved_master_id: string | null
+          auto_eligibility_passed: boolean | null
+          avg_holding_time: string | null
+          biography: string | null
+          created_at: string
+          eligibility_snapshot: Json
+          experience_years: number | null
+          id: string
+          preferred_assets: string[]
+          reviewed_at: string | null
+          reviewed_by: string | null
+          risk_level: string | null
+          social_links: Json
+          status: string
+          strategy_description: string | null
+          trading_markets: string[]
+          trading_style: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          approved_master_id?: string | null
+          auto_eligibility_passed?: boolean | null
+          avg_holding_time?: string | null
+          biography?: string | null
+          created_at?: string
+          eligibility_snapshot?: Json
+          experience_years?: number | null
+          id?: string
+          preferred_assets?: string[]
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          risk_level?: string | null
+          social_links?: Json
+          status?: string
+          strategy_description?: string | null
+          trading_markets?: string[]
+          trading_style?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_notes?: string | null
+          approved_master_id?: string | null
+          auto_eligibility_passed?: boolean | null
+          avg_holding_time?: string | null
+          biography?: string | null
+          created_at?: string
+          eligibility_snapshot?: Json
+          experience_years?: number | null
+          id?: string
+          preferred_assets?: string[]
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          risk_level?: string | null
+          social_links?: Json
+          status?: string
+          strategy_description?: string | null
+          trading_markets?: string[]
+          trading_style?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "master_trader_applications_approved_master_id_fkey"
+            columns: ["approved_master_id"]
+            isOneToOne: false
+            referencedRelation: "copy_masters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      master_trader_audit: {
+        Row: {
+          actor_id: string | null
+          application_id: string | null
+          created_at: string
+          event: string
+          id: string
+          master_profile_id: string | null
+          payload: Json
+          target_user_id: string | null
+        }
+        Insert: {
+          actor_id?: string | null
+          application_id?: string | null
+          created_at?: string
+          event: string
+          id?: string
+          master_profile_id?: string | null
+          payload?: Json
+          target_user_id?: string | null
+        }
+        Update: {
+          actor_id?: string | null
+          application_id?: string | null
+          created_at?: string
+          event?: string
+          id?: string
+          master_profile_id?: string | null
+          payload?: Json
+          target_user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "master_trader_audit_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "master_trader_applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "master_trader_audit_master_profile_id_fkey"
+            columns: ["master_profile_id"]
+            isOneToOne: false
+            referencedRelation: "master_trader_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "master_trader_audit_master_profile_id_fkey"
+            columns: ["master_profile_id"]
+            isOneToOne: false
+            referencedRelation: "v_master_traders_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      master_trader_badges: {
+        Row: {
+          awarded_at: string
+          awarded_by: string | null
+          badge_code: string
+          expires_at: string | null
+          id: string
+          master_profile_id: string
+        }
+        Insert: {
+          awarded_at?: string
+          awarded_by?: string | null
+          badge_code: string
+          expires_at?: string | null
+          id?: string
+          master_profile_id: string
+        }
+        Update: {
+          awarded_at?: string
+          awarded_by?: string | null
+          badge_code?: string
+          expires_at?: string | null
+          id?: string
+          master_profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "master_trader_badges_badge_code_fkey"
+            columns: ["badge_code"]
+            isOneToOne: false
+            referencedRelation: "master_verification_badges"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "master_trader_badges_master_profile_id_fkey"
+            columns: ["master_profile_id"]
+            isOneToOne: false
+            referencedRelation: "master_trader_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "master_trader_badges_master_profile_id_fkey"
+            columns: ["master_profile_id"]
+            isOneToOne: false
+            referencedRelation: "v_master_traders_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      master_trader_profiles: {
+        Row: {
+          account_age_days: number | null
+          annual_return_pct: number | null
+          application_id: string | null
+          assets_copied: number
+          avatar_url: string | null
+          average_return_pct: number | null
+          avg_holding_time: string | null
+          avg_trade_duration_hours: number | null
+          biography: string | null
+          copy_master_id: string | null
+          cover_url: string | null
+          created_at: string
+          display_name: string | null
+          followers_count: number
+          id: string
+          is_banned: boolean
+          is_featured: boolean
+          is_hidden: boolean
+          languages: string[]
+          level_code: string | null
+          markets: string[]
+          max_drawdown_pct: number | null
+          metadata: Json
+          monthly_return_pct: number | null
+          monthly_stats: Json
+          portfolio_size: number | null
+          recent_performance: Json
+          risk_category: string | null
+          sharpe_ratio: number | null
+          status: string
+          subscribers_count: number
+          trading_since: string | null
+          trading_style: string | null
+          trust_score: number | null
+          updated_at: string
+          user_id: string
+          win_rate_pct: number | null
+          years_experience: number | null
+        }
+        Insert: {
+          account_age_days?: number | null
+          annual_return_pct?: number | null
+          application_id?: string | null
+          assets_copied?: number
+          avatar_url?: string | null
+          average_return_pct?: number | null
+          avg_holding_time?: string | null
+          avg_trade_duration_hours?: number | null
+          biography?: string | null
+          copy_master_id?: string | null
+          cover_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          followers_count?: number
+          id?: string
+          is_banned?: boolean
+          is_featured?: boolean
+          is_hidden?: boolean
+          languages?: string[]
+          level_code?: string | null
+          markets?: string[]
+          max_drawdown_pct?: number | null
+          metadata?: Json
+          monthly_return_pct?: number | null
+          monthly_stats?: Json
+          portfolio_size?: number | null
+          recent_performance?: Json
+          risk_category?: string | null
+          sharpe_ratio?: number | null
+          status?: string
+          subscribers_count?: number
+          trading_since?: string | null
+          trading_style?: string | null
+          trust_score?: number | null
+          updated_at?: string
+          user_id: string
+          win_rate_pct?: number | null
+          years_experience?: number | null
+        }
+        Update: {
+          account_age_days?: number | null
+          annual_return_pct?: number | null
+          application_id?: string | null
+          assets_copied?: number
+          avatar_url?: string | null
+          average_return_pct?: number | null
+          avg_holding_time?: string | null
+          avg_trade_duration_hours?: number | null
+          biography?: string | null
+          copy_master_id?: string | null
+          cover_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          followers_count?: number
+          id?: string
+          is_banned?: boolean
+          is_featured?: boolean
+          is_hidden?: boolean
+          languages?: string[]
+          level_code?: string | null
+          markets?: string[]
+          max_drawdown_pct?: number | null
+          metadata?: Json
+          monthly_return_pct?: number | null
+          monthly_stats?: Json
+          portfolio_size?: number | null
+          recent_performance?: Json
+          risk_category?: string | null
+          sharpe_ratio?: number | null
+          status?: string
+          subscribers_count?: number
+          trading_since?: string | null
+          trading_style?: string | null
+          trust_score?: number | null
+          updated_at?: string
+          user_id?: string
+          win_rate_pct?: number | null
+          years_experience?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "master_trader_profiles_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "master_trader_applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "master_trader_profiles_copy_master_id_fkey"
+            columns: ["copy_master_id"]
+            isOneToOne: true
+            referencedRelation: "copy_masters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "master_trader_profiles_level_code_fkey"
+            columns: ["level_code"]
+            isOneToOne: false
+            referencedRelation: "master_levels"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      master_verification_badges: {
+        Row: {
+          code: string
+          created_at: string
+          description: string | null
+          icon: string | null
+          id: string
+          is_active: boolean
+          name: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+        }
+        Relationships: []
+      }
       messages: {
         Row: {
           body: string
@@ -2541,6 +2999,61 @@ export type Database = {
         }
         Relationships: []
       }
+      v_master_traders_public: {
+        Row: {
+          account_age_days: number | null
+          annual_return_pct: number | null
+          assets_copied: number | null
+          avatar_url: string | null
+          average_return_pct: number | null
+          avg_holding_time: string | null
+          avg_trade_duration_hours: number | null
+          badges: Json | null
+          biography: string | null
+          copy_master_id: string | null
+          cover_url: string | null
+          display_name: string | null
+          followers_count: number | null
+          id: string | null
+          is_featured: boolean | null
+          languages: string[] | null
+          level_badge: string | null
+          level_code: string | null
+          level_name: string | null
+          level_rank: number | null
+          markets: string[] | null
+          max_drawdown_pct: number | null
+          monthly_return_pct: number | null
+          monthly_stats: Json | null
+          portfolio_size: number | null
+          recent_performance: Json | null
+          risk_category: string | null
+          sharpe_ratio: number | null
+          subscribers_count: number | null
+          trading_since: string | null
+          trading_style: string | null
+          trust_score: number | null
+          user_id: string | null
+          win_rate_pct: number | null
+          years_experience: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "master_trader_profiles_copy_master_id_fkey"
+            columns: ["copy_master_id"]
+            isOneToOne: true
+            referencedRelation: "copy_masters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "master_trader_profiles_level_code_fkey"
+            columns: ["level_code"]
+            isOneToOne: false
+            referencedRelation: "master_levels"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
       v_portfolio_ranking: {
         Row: {
           aum: number | null
@@ -2610,6 +3123,24 @@ export type Database = {
           _user_id: string
         }
         Returns: string
+      }
+      master_application_decide: {
+        Args: {
+          _application_id: string
+          _decision: string
+          _level_code?: string
+          _notes?: string
+        }
+        Returns: Json
+      }
+      master_profile_action: {
+        Args: {
+          _action: string
+          _notes?: string
+          _profile_id: string
+          _value?: string
+        }
+        Returns: Json
       }
       subscribe_to_master: {
         Args: { _amount: number; _master_id: string }
