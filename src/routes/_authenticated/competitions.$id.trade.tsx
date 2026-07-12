@@ -114,6 +114,33 @@ function marginUsd(pos: Position, prices: PriceMap): number {
 
 function CompetitionTradePage() {
   const { id } = useParams({ from: "/_authenticated/competitions/$id/trade" });
+  const [entryStatus, setEntryStatus] = useState<"loading" | "entered" | "denied">("loading");
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data: userRes } = await supabase.auth.getUser();
+      const uid = userRes.user?.id;
+      if (!uid) { if (!cancelled) setEntryStatus("denied"); return; }
+      const { data } = await supabase
+        .from("competition_entries")
+        .select("id,status")
+        .eq("user_id", uid)
+        .eq("competition_id", id)
+        .maybeSingle();
+      if (cancelled) return;
+      const ok =
+        !!data &&
+        (data.status === "confirmed" || data.status === "active" || data.status === "pending");
+      setEntryStatus(ok ? "entered" : "denied");
+    })();
+    return () => { cancelled = true; };
+  }, [id]);
+
+  if (entryStatus !== "entered") {
+    return <CompetitionEntryGate id={id} status={entryStatus} />;
+  }
+
   const [active, setActive] = useState<Instrument>(INSTRUMENTS[1]);
   const [qtyMode, setQtyMode] = useState<"lots" | "units">("lots");
   const [lotsInput, setLotsInput] = useState("0.01");
