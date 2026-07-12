@@ -392,6 +392,27 @@ export type Database = {
         }
         Relationships: []
       }
+      auth_resend_attempts: {
+        Row: {
+          created_at: string
+          email_hash: string
+          id: number
+          ip_hash: string | null
+        }
+        Insert: {
+          created_at?: string
+          email_hash: string
+          id?: number
+          ip_hash?: string | null
+        }
+        Update: {
+          created_at?: string
+          email_hash?: string
+          id?: number
+          ip_hash?: string | null
+        }
+        Relationships: []
+      }
       benchmark_prices: {
         Row: {
           as_of_date: string
@@ -5896,6 +5917,13 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      consume_auth_resend_attempt: {
+        Args: { _email_hash: string; _ip_hash: string }
+        Returns: {
+          allowed: boolean
+          retry_after_seconds: number
+        }[]
       }
       copy_calc_follower_lot: {
         Args: {
