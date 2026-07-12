@@ -80,8 +80,11 @@ function VerifyEmailPage() {
   // Clear pending state and hand off to /auth with the email prefilled.
   function goToLoginPrefilled(addr: string | null) {
     clearPending();
-    const search = addr ? { email: addr } : undefined;
-    navigate({ to: "/auth", search });
+    if (addr && typeof window !== "undefined") {
+      window.location.assign(`/auth?email=${encodeURIComponent(addr)}`);
+      return;
+    }
+    navigate({ to: "/auth" });
   }
 
   // Parse & scrub any Supabase error fragment on first paint.
