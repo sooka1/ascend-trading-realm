@@ -70,7 +70,7 @@ export function SiteHeader() {
         hidden ? "-translate-y-full" : "translate-y-0",
       )}
     >
-      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-6 px-4 sm:px-6 lg:px-8 md:h-24">
+      <div className="mx-auto flex h-24 max-w-7xl items-center justify-between gap-6 px-4 sm:px-6 lg:px-8 md:h-32 lg:h-36">
         <Link to="/" className="shrink-0" aria-label="HKEX home">
           <HKLogo />
         </Link>
