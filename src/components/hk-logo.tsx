@@ -15,20 +15,19 @@ interface HKLogoProps {
 }
 
 export function HKLogo({ className, size = "md" }: HKLogoProps) {
-  // Height-only sizing with w-auto keeps the original aspect ratio intact so
-  // the candlestick section next to the wordmark is always fully visible.
-  // - sm: mobile headers (~48-56px tall)
-  // - md: desktop / portal / admin headers (~60-68px tall, scales down on mobile)
-  // - lg: auth / verify-email / marketing hero (~300-380px wide)
-  // Aspect ratio of the platform logo is ~1200:658 (≈1.824:1). Height-only
-  // sizing with w-auto preserves that ratio and keeps the candlestick fully
-  // visible.
+  // Height caps with `w-auto` preserve the original aspect ratio (~1.82:1)
+  // so the candlestick and wordmark are never cropped. The logo must NOT
+  // dictate header height — `max-h` + `shrink-0` lets the header size itself.
+  // Public-header caps per spec: mobile 38px · tablet 44px · desktop 52px.
   const dim =
     size === "sm"
-      ? "h-12 sm:h-14 w-auto"
+      ? // Mobile / portal / admin compact headers (max-height driven).
+        "max-h-[38px] sm:max-h-[44px] w-auto shrink-0"
       : size === "lg"
-        ? "h-auto w-[420px] sm:w-[560px] md:w-[720px] lg:w-[900px] max-w-full"
-        : "h-14 sm:h-16 md:h-20 lg:h-24 w-auto";
+        ? // Auth pages, footer, loading/error surfaces (width driven).
+          "h-auto w-[300px] sm:w-[360px] md:w-[400px] max-w-full shrink-0"
+        : // Default = public desktop header, responsive down to mobile.
+          "max-h-[38px] sm:max-h-[44px] md:max-h-[52px] w-auto shrink-0";
 
   return (
     <img
