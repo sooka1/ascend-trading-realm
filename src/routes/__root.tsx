@@ -218,7 +218,11 @@ function RootShell({ children }: { children: ReactNode }) {
         />
       </head>
       <body suppressHydrationWarning>
-        {children}
+        {/* I18nProvider wraps the shell so RootComponent, ErrorComponent,
+            and NotFoundComponent (all rendered as `children` here) share
+            a single, always-mounted i18n context — including during SSR
+            and route error/fallback rendering. */}
+        <I18nProvider>{children}</I18nProvider>
         <Scripts />
       </body>
     </html>
@@ -292,7 +296,6 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <I18nProvider>
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[9999] focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground focus:outline-none"
@@ -305,7 +308,6 @@ function RootComponent() {
         <Toaster theme="dark" position="top-right" richColors />
         <ImpersonationBanner />
         <OfflineBanner />
-        </I18nProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );
