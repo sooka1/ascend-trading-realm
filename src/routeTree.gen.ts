@@ -28,7 +28,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MarketsSymbolRouteImport } from './routes/markets.$symbol'
-import { Route as ApiSentry_probeRouteImport } from './routes/api/_sentry_probe'
+import { Route as ApiSentryProbeRouteImport } from './routes/api/sentry-probe'
 import { Route as AuthenticatedSecurityRouteImport } from './routes/_authenticated/security'
 import { Route as AuthenticatedInvestorRouteImport } from './routes/_authenticated/investor'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
@@ -183,9 +183,9 @@ const MarketsSymbolRoute = MarketsSymbolRouteImport.update({
   path: '/$symbol',
   getParentRoute: () => MarketsRoute,
 } as any)
-const ApiSentry_probeRoute = ApiSentry_probeRouteImport.update({
-  id: '/api/_sentry_probe',
-  path: '/api',
+const ApiSentryProbeRoute = ApiSentryProbeRouteImport.update({
+  id: '/api/sentry-probe',
+  path: '/api/sentry-probe',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedSecurityRoute = AuthenticatedSecurityRouteImport.update({
@@ -553,7 +553,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/investor': typeof AuthenticatedInvestorRoute
   '/security': typeof AuthenticatedSecurityRoute
-  '/api': typeof ApiSentry_probeRoute
+  '/api/sentry-probe': typeof ApiSentryProbeRoute
   '/markets/$symbol': typeof MarketsSymbolRoute
   '/app/activity': typeof AuthenticatedAppActivityRoute
   '/app/portfolio': typeof AuthenticatedAppPortfolioRoute
@@ -632,7 +632,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/investor': typeof AuthenticatedInvestorRoute
   '/security': typeof AuthenticatedSecurityRoute
-  '/api': typeof ApiSentry_probeRoute
+  '/api/sentry-probe': typeof ApiSentryProbeRoute
   '/markets/$symbol': typeof MarketsSymbolRoute
   '/app/activity': typeof AuthenticatedAppActivityRoute
   '/app/portfolio': typeof AuthenticatedAppPortfolioRoute
@@ -714,7 +714,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/investor': typeof AuthenticatedInvestorRoute
   '/_authenticated/security': typeof AuthenticatedSecurityRoute
-  '/api/_sentry_probe': typeof ApiSentry_probeRoute
+  '/api/sentry-probe': typeof ApiSentryProbeRoute
   '/markets/$symbol': typeof MarketsSymbolRoute
   '/_authenticated/app/activity': typeof AuthenticatedAppActivityRoute
   '/_authenticated/app/portfolio': typeof AuthenticatedAppPortfolioRoute
@@ -795,7 +795,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/investor'
     | '/security'
-    | '/api'
+    | '/api/sentry-probe'
     | '/markets/$symbol'
     | '/app/activity'
     | '/app/portfolio'
@@ -874,7 +874,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/investor'
     | '/security'
-    | '/api'
+    | '/api/sentry-probe'
     | '/markets/$symbol'
     | '/app/activity'
     | '/app/portfolio'
@@ -955,7 +955,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/investor'
     | '/_authenticated/security'
-    | '/api/_sentry_probe'
+    | '/api/sentry-probe'
     | '/markets/$symbol'
     | '/_authenticated/app/activity'
     | '/_authenticated/app/portfolio'
@@ -1032,7 +1032,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   RiskRoute: typeof RiskRoute
   TermsRoute: typeof TermsRoute
-  ApiSentry_probeRoute: typeof ApiSentry_probeRoute
+  ApiSentryProbeRoute: typeof ApiSentryProbeRoute
   ApiPublicHealthRoute: typeof ApiPublicHealthRoute
   ApiPublicOpsRoute: typeof ApiPublicOpsRoute
   ApiPublicWebhooksBinancePayRoute: typeof ApiPublicWebhooksBinancePayRoute
@@ -1176,11 +1176,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MarketsSymbolRouteImport
       parentRoute: typeof MarketsRoute
     }
-    '/api/_sentry_probe': {
-      id: '/api/_sentry_probe'
-      path: '/api'
-      fullPath: '/api'
-      preLoaderRoute: typeof ApiSentry_probeRouteImport
+    '/api/sentry-probe': {
+      id: '/api/sentry-probe'
+      path: '/api/sentry-probe'
+      fullPath: '/api/sentry-probe'
+      preLoaderRoute: typeof ApiSentryProbeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/security': {
@@ -1775,7 +1775,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   RiskRoute: RiskRoute,
   TermsRoute: TermsRoute,
-  ApiSentry_probeRoute: ApiSentry_probeRoute,
+  ApiSentryProbeRoute: ApiSentryProbeRoute,
   ApiPublicHealthRoute: ApiPublicHealthRoute,
   ApiPublicOpsRoute: ApiPublicOpsRoute,
   ApiPublicWebhooksBinancePayRoute: ApiPublicWebhooksBinancePayRoute,
