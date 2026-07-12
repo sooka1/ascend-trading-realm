@@ -438,6 +438,76 @@ export type Database = {
         }
         Relationships: []
       }
+      fee_events: {
+        Row: {
+          base_amount: number
+          created_at: string
+          currency: string
+          fee_amount: number
+          id: string
+          kind: Database["public"]["Enums"]["fee_kind"]
+          metadata: Json
+          package_id: string | null
+          period_end: string | null
+          period_start: string | null
+          rate_pct: number
+          subscription_id: string | null
+          user_id: string
+        }
+        Insert: {
+          base_amount: number
+          created_at?: string
+          currency?: string
+          fee_amount: number
+          id?: string
+          kind: Database["public"]["Enums"]["fee_kind"]
+          metadata?: Json
+          package_id?: string | null
+          period_end?: string | null
+          period_start?: string | null
+          rate_pct: number
+          subscription_id?: string | null
+          user_id: string
+        }
+        Update: {
+          base_amount?: number
+          created_at?: string
+          currency?: string
+          fee_amount?: number
+          id?: string
+          kind?: Database["public"]["Enums"]["fee_kind"]
+          metadata?: Json
+          package_id?: string | null
+          period_end?: string | null
+          period_start?: string | null
+          rate_pct?: number
+          subscription_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fee_events_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "packages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fee_events_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "v_aum_by_package"
+            referencedColumns: ["package_id"]
+          },
+          {
+            foreignKeyName: "fee_events_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       finance_audit_log: {
         Row: {
           action: string
@@ -582,6 +652,56 @@ export type Database = {
         }
         Relationships: []
       }
+      investment_lifecycle_events: {
+        Row: {
+          actor_id: string | null
+          amount: number | null
+          created_at: string
+          currency: string | null
+          event: Database["public"]["Enums"]["investment_event"]
+          id: string
+          metadata: Json
+          reference_id: string | null
+          reference_table: string | null
+          subscription_id: string | null
+          user_id: string
+        }
+        Insert: {
+          actor_id?: string | null
+          amount?: number | null
+          created_at?: string
+          currency?: string | null
+          event: Database["public"]["Enums"]["investment_event"]
+          id?: string
+          metadata?: Json
+          reference_id?: string | null
+          reference_table?: string | null
+          subscription_id?: string | null
+          user_id: string
+        }
+        Update: {
+          actor_id?: string | null
+          amount?: number | null
+          created_at?: string
+          currency?: string | null
+          event?: Database["public"]["Enums"]["investment_event"]
+          id?: string
+          metadata?: Json
+          reference_id?: string | null
+          reference_table?: string | null
+          subscription_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "investment_lifecycle_events_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       investment_requests: {
         Row: {
           capital_range: Database["public"]["Enums"]["capital_range"]
@@ -696,6 +816,57 @@ export type Database = {
         }
         Relationships: []
       }
+      nav_snapshots: {
+        Row: {
+          active_investors: number
+          aum: number
+          created_at: string
+          currency: string
+          id: string
+          metadata: Json
+          nav_per_unit: number
+          package_id: string
+          snapshot_date: string
+        }
+        Insert: {
+          active_investors?: number
+          aum?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          metadata?: Json
+          nav_per_unit?: number
+          package_id: string
+          snapshot_date?: string
+        }
+        Update: {
+          active_investors?: number
+          aum?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          metadata?: Json
+          nav_per_unit?: number
+          package_id?: string
+          snapshot_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "nav_snapshots_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "packages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "nav_snapshots_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "v_aum_by_package"
+            referencedColumns: ["package_id"]
+          },
+        ]
+      }
       notification_broadcasts: {
         Row: {
           body: string | null
@@ -800,6 +971,54 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      portfolio_managers: {
+        Row: {
+          allocation_pct: number
+          assigned_at: string
+          created_at: string
+          id: string
+          is_active: boolean
+          manager_id: string
+          package_id: string
+          updated_at: string
+        }
+        Insert: {
+          allocation_pct?: number
+          assigned_at?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          manager_id: string
+          package_id: string
+          updated_at?: string
+        }
+        Update: {
+          allocation_pct?: number
+          assigned_at?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          manager_id?: string
+          package_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portfolio_managers_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "packages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "portfolio_managers_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "v_aum_by_package"
+            referencedColumns: ["package_id"]
+          },
+        ]
       }
       portfolio_snapshots: {
         Row: {
@@ -1249,6 +1468,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "packages"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subscriptions_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "v_aum_by_package"
+            referencedColumns: ["package_id"]
           },
         ]
       }
@@ -1839,6 +2065,45 @@ export type Database = {
       }
     }
     Views: {
+      v_aum_by_package: {
+        Row: {
+          active_investors: number | null
+          aum: number | null
+          name: string | null
+          package_id: string | null
+        }
+        Relationships: []
+      }
+      v_investor_summary: {
+        Row: {
+          active_capital: number | null
+          total_deposited: number | null
+          total_fees: number | null
+          total_profits: number | null
+          total_referral: number | null
+          total_withdrawn: number | null
+          user_id: string | null
+        }
+        Insert: {
+          active_capital?: never
+          total_deposited?: never
+          total_fees?: never
+          total_profits?: never
+          total_referral?: never
+          total_withdrawn?: never
+          user_id?: string | null
+        }
+        Update: {
+          active_capital?: never
+          total_deposited?: never
+          total_fees?: never
+          total_profits?: never
+          total_referral?: never
+          total_withdrawn?: never
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       v_ledger_balances: {
         Row: {
           account: Database["public"]["Enums"]["ledger_account"] | null
@@ -1922,6 +2187,21 @@ export type Database = {
         | "support"
         | "investor"
       capital_range: "1k_10k" | "10k_50k" | "50k_250k" | "250k_1m" | "1m_plus"
+      fee_kind: "management" | "performance" | "entry" | "exit" | "other"
+      investment_event:
+        | "subscription_created"
+        | "subscription_activated"
+        | "subscription_paused"
+        | "subscription_closed"
+        | "capital_increased"
+        | "capital_reduced"
+        | "redemption_requested"
+        | "redemption_approved"
+        | "redemption_rejected"
+        | "distribution_credited"
+        | "fee_charged"
+        | "manager_assigned"
+        | "manager_unassigned"
       ledger_account:
         | "wallet"
         | "subscription"
@@ -2089,6 +2369,22 @@ export const Constants = {
         "investor",
       ],
       capital_range: ["1k_10k", "10k_50k", "50k_250k", "250k_1m", "1m_plus"],
+      fee_kind: ["management", "performance", "entry", "exit", "other"],
+      investment_event: [
+        "subscription_created",
+        "subscription_activated",
+        "subscription_paused",
+        "subscription_closed",
+        "capital_increased",
+        "capital_reduced",
+        "redemption_requested",
+        "redemption_approved",
+        "redemption_rejected",
+        "distribution_credited",
+        "fee_charged",
+        "manager_assigned",
+        "manager_unassigned",
+      ],
       ledger_account: [
         "wallet",
         "subscription",
