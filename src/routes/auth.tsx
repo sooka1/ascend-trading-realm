@@ -83,6 +83,16 @@ function Auth() {
         if (saved) setRefCode(saved);
       } catch { /* ignore */ }
     }
+    // Prefill ?email= (used by the "already confirmed" recovery flow from
+    // /verify-email). Same-origin, sanitized by z.email() at submit time.
+    const prefill = p.get("email");
+    if (prefill) {
+      const trimmed = prefill.trim().slice(0, 255);
+      if (trimmed) {
+        setEmail(trimmed);
+        setMode("login");
+      }
+    }
   }, []);
 
   // Route super_admin → /admin, everyone else → /portal.
