@@ -3,20 +3,23 @@ import { createClient } from "@supabase/supabase-js";
 import * as Sentry from "@sentry/cloudflare";
 
 // TEMPORARY preview-only Sentry verification probe.
-// Guarantees:
-//  - only responds on the exact deployed preview hostname
-//  - requires a one-time SENTRY_PROBE_TOKEN header
-//  - requires an authenticated super_admin bearer token
-//  - no DB writes, no wallet/trade/competition/webhook/user-data operations
-//  - returns dsnPresent (boolean only), eventId, flushed — never the DSN value
-const PREVIEW_HOST = "id-preview--5d06956d-0893-4e53-8e16-f9255052df0e.lovable.app";
+// Rejects all production/custom hosts explicitly.
+const PRODUCTION_HOSTS = new Set([
+  "hkexinvest-com.lovable.app",
+  "hkexinvest.com",
+  "www.hkexinvest.com",
+  "project--5d06956d-0893-4e53-8e16-f9255052df0e.lovable.app",
+]);
 
-export const Route = createFileRoute("/api/public/_sentry-probe")({
+export const Route = createFileRoute("/api/public/sentry-probe")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const url = new URL(request.url);
-        if (url.hostname !== PREVIEW_HOST) {
+          const url = new URL(request.url);
+          const forwardedHost = (request.headers.get("x-forwarded-host") ?? "").toLowerCase();
+          const hostHeader = (request.headers.get("host") ?? "").toLowerCase();
+          const observedHost = forwardedHost || hostHeader || url.hostname;
+          if (PRODUCTION_HOSTS.has(observedHost)) {
           return new Response("Not found", { status: 404 });
         }
 
@@ -58,7 +61,7 @@ export const Route = createFileRoute("/api/public/_sentry-probe")({
           new Error("Sentry verification probe — safe to ignore"),
           {
             tags: { probe: "sentry_verify" },
-            extra: { source: "api/public/_sentry-probe", host: url.hostname, userId },
+            extra: { source: "api/public/sentry-probe", host: observedHost, userId },
           },
         );
 
@@ -70,7 +73,7 @@ export const Route = createFileRoute("/api/public/_sentry-probe")({
         }
 
         return new Response(
-          JSON.stringify({ dsnPresent, eventId: eventId ?? null, flushed, host: url.hostname }),
+          JSON.stringify({ dsnPresent, eventId: eventId ?? null, flushed, host: observedHost }),
           { status: 200, headers: { "Content-Type": "application/json", "Cache-Control": "no-store" } },
         );
       },
