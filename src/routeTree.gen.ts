@@ -34,7 +34,6 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/_admin/route'
 import { Route as AuthenticatedPortalIndexRouteImport } from './routes/_authenticated/portal.index'
-import { Route as ApiPublicSentryProbeRouteImport } from './routes/api/public/sentry-probe'
 import { Route as ApiPublicOpsRouteImport } from './routes/api/public/ops'
 import { Route as ApiPublicHealthRouteImport } from './routes/api/public/health'
 import { Route as AuthenticatedPortalUpdatesRouteImport } from './routes/_authenticated/portal.updates'
@@ -213,11 +212,6 @@ const AuthenticatedPortalIndexRoute =
     path: '/portal/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const ApiPublicSentryProbeRoute = ApiPublicSentryProbeRouteImport.update({
-  id: '/api/public/sentry-probe',
-  path: '/api/public/sentry-probe',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiPublicOpsRoute = ApiPublicOpsRouteImport.update({
   id: '/api/public/ops',
   path: '/api/public/ops',
@@ -578,7 +572,6 @@ export interface FileRoutesByFullPath {
   '/portal/updates': typeof AuthenticatedPortalUpdatesRoute
   '/api/public/health': typeof ApiPublicHealthRoute
   '/api/public/ops': typeof ApiPublicOpsRoute
-  '/api/public/sentry-probe': typeof ApiPublicSentryProbeRoute
   '/portal/': typeof AuthenticatedPortalIndexRoute
   '/admin/accounting': typeof AuthenticatedAdminAdminAccountingRoute
   '/admin/analytics': typeof AuthenticatedAdminAdminAnalyticsRoute
@@ -657,7 +650,6 @@ export interface FileRoutesByTo {
   '/portal/updates': typeof AuthenticatedPortalUpdatesRoute
   '/api/public/health': typeof ApiPublicHealthRoute
   '/api/public/ops': typeof ApiPublicOpsRoute
-  '/api/public/sentry-probe': typeof ApiPublicSentryProbeRoute
   '/portal': typeof AuthenticatedPortalIndexRoute
   '/admin/accounting': typeof AuthenticatedAdminAdminAccountingRoute
   '/admin/analytics': typeof AuthenticatedAdminAdminAnalyticsRoute
@@ -739,7 +731,6 @@ export interface FileRoutesById {
   '/_authenticated/portal/updates': typeof AuthenticatedPortalUpdatesRoute
   '/api/public/health': typeof ApiPublicHealthRoute
   '/api/public/ops': typeof ApiPublicOpsRoute
-  '/api/public/sentry-probe': typeof ApiPublicSentryProbeRoute
   '/_authenticated/portal/': typeof AuthenticatedPortalIndexRoute
   '/_authenticated/_admin/admin/accounting': typeof AuthenticatedAdminAdminAccountingRoute
   '/_authenticated/_admin/admin/analytics': typeof AuthenticatedAdminAdminAnalyticsRoute
@@ -820,7 +811,6 @@ export interface FileRouteTypes {
     | '/portal/updates'
     | '/api/public/health'
     | '/api/public/ops'
-    | '/api/public/sentry-probe'
     | '/portal/'
     | '/admin/accounting'
     | '/admin/analytics'
@@ -899,7 +889,6 @@ export interface FileRouteTypes {
     | '/portal/updates'
     | '/api/public/health'
     | '/api/public/ops'
-    | '/api/public/sentry-probe'
     | '/portal'
     | '/admin/accounting'
     | '/admin/analytics'
@@ -980,7 +969,6 @@ export interface FileRouteTypes {
     | '/_authenticated/portal/updates'
     | '/api/public/health'
     | '/api/public/ops'
-    | '/api/public/sentry-probe'
     | '/_authenticated/portal/'
     | '/_authenticated/_admin/admin/accounting'
     | '/_authenticated/_admin/admin/analytics'
@@ -1034,7 +1022,6 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   ApiPublicHealthRoute: typeof ApiPublicHealthRoute
   ApiPublicOpsRoute: typeof ApiPublicOpsRoute
-  ApiPublicSentryProbeRoute: typeof ApiPublicSentryProbeRoute
   ApiPublicWebhooksBinancePayRoute: typeof ApiPublicWebhooksBinancePayRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
@@ -1217,13 +1204,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/portal/'
       preLoaderRoute: typeof AuthenticatedPortalIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/api/public/sentry-probe': {
-      id: '/api/public/sentry-probe'
-      path: '/api/public/sentry-probe'
-      fullPath: '/api/public/sentry-probe'
-      preLoaderRoute: typeof ApiPublicSentryProbeRouteImport
-      parentRoute: typeof rootRouteImport
     }
     '/api/public/ops': {
       id: '/api/public/ops'
@@ -1777,7 +1757,6 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   ApiPublicHealthRoute: ApiPublicHealthRoute,
   ApiPublicOpsRoute: ApiPublicOpsRoute,
-  ApiPublicSentryProbeRoute: ApiPublicSentryProbeRoute,
   ApiPublicWebhooksBinancePayRoute: ApiPublicWebhooksBinancePayRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
