@@ -417,6 +417,7 @@ function Auth() {
                 onResend={handleResend}
                 onBack={resetToLogin}
                 onChangeEmail={changeEmail}
+                onAlreadyConfirmed={handleAlreadyConfirmed}
                 state={resendState}
               />
             ) : (
