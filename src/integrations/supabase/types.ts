@@ -5549,6 +5549,15 @@ export type Database = {
           },
         ]
       }
+      v_system_health_db_latency: {
+        Row: {
+          active_connections: number | null
+          idle_in_tx: number | null
+          longest_tx_seconds: number | null
+          observed_at: string | null
+        }
+        Relationships: []
+      }
       v_system_health_ledger: {
         Row: {
           imbalance_last_30d: number | null
@@ -5566,6 +5575,16 @@ export type Database = {
           ready_now: number | null
           stale_locks: number | null
           status: string | null
+        }
+        Relationships: []
+      }
+      v_system_health_row_counts: {
+        Row: {
+          approx_rows: number | null
+          dead_rows: number | null
+          last_autovacuum: string | null
+          last_vacuum: string | null
+          table_name: unknown
         }
         Relationships: []
       }
@@ -5860,6 +5879,18 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      hyperscale_ensure_monthly_partitions: {
+        Args: {
+          p_months_ahead?: number
+          p_months_behind?: number
+          p_partitioned_table: string
+        }
+        Returns: number
+      }
+      hyperscale_prepare_partitioned_table: {
+        Args: { p_partition_key?: string; p_source_table: string }
+        Returns: string
       }
       ledger_post: {
         Args: {
