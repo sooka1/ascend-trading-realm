@@ -2756,6 +2756,414 @@ export type Database = {
         }
         Relationships: []
       }
+      sim_accounts: {
+        Row: {
+          balance: number
+          closed_pnl: number
+          competition_entry_id: string | null
+          created_at: string
+          credit: number
+          currency: string
+          daily_profit: number
+          equity: number
+          floating_pnl: number
+          free_margin: number
+          id: string
+          leverage: number
+          margin_level: number
+          max_drawdown: number
+          monthly_profit: number
+          netting_mode: boolean
+          peak_equity: number
+          starting_balance: number
+          status: string
+          updated_at: string
+          used_margin: number
+          user_id: string
+          weekly_profit: number
+        }
+        Insert: {
+          balance?: number
+          closed_pnl?: number
+          competition_entry_id?: string | null
+          created_at?: string
+          credit?: number
+          currency?: string
+          daily_profit?: number
+          equity?: number
+          floating_pnl?: number
+          free_margin?: number
+          id?: string
+          leverage?: number
+          margin_level?: number
+          max_drawdown?: number
+          monthly_profit?: number
+          netting_mode?: boolean
+          peak_equity?: number
+          starting_balance?: number
+          status?: string
+          updated_at?: string
+          used_margin?: number
+          user_id: string
+          weekly_profit?: number
+        }
+        Update: {
+          balance?: number
+          closed_pnl?: number
+          competition_entry_id?: string | null
+          created_at?: string
+          credit?: number
+          currency?: string
+          daily_profit?: number
+          equity?: number
+          floating_pnl?: number
+          free_margin?: number
+          id?: string
+          leverage?: number
+          margin_level?: number
+          max_drawdown?: number
+          monthly_profit?: number
+          netting_mode?: boolean
+          peak_equity?: number
+          starting_balance?: number
+          status?: string
+          updated_at?: string
+          used_margin?: number
+          user_id?: string
+          weekly_profit?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sim_accounts_competition_entry_id_fkey"
+            columns: ["competition_entry_id"]
+            isOneToOne: true
+            referencedRelation: "competition_entries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sim_audit_log: {
+        Row: {
+          account_id: string | null
+          actor_id: string | null
+          created_at: string
+          event: string
+          id: number
+          order_id: string | null
+          payload: Json
+          position_id: string | null
+        }
+        Insert: {
+          account_id?: string | null
+          actor_id?: string | null
+          created_at?: string
+          event: string
+          id?: number
+          order_id?: string | null
+          payload?: Json
+          position_id?: string | null
+        }
+        Update: {
+          account_id?: string | null
+          actor_id?: string | null
+          created_at?: string
+          event?: string
+          id?: number
+          order_id?: string | null
+          payload?: Json
+          position_id?: string | null
+        }
+        Relationships: []
+      }
+      sim_config: {
+        Row: {
+          commission_per_lot: number
+          created_at: string
+          default_leverage: number
+          default_spread_pips: number
+          execution_delay_ms: number
+          id: string
+          margin_call_level: number
+          max_leverage: number
+          scope: string
+          slippage_pips: number
+          stop_out_level: number
+          swap_long: number
+          swap_short: number
+          updated_at: string
+        }
+        Insert: {
+          commission_per_lot?: number
+          created_at?: string
+          default_leverage?: number
+          default_spread_pips?: number
+          execution_delay_ms?: number
+          id?: string
+          margin_call_level?: number
+          max_leverage?: number
+          scope?: string
+          slippage_pips?: number
+          stop_out_level?: number
+          swap_long?: number
+          swap_short?: number
+          updated_at?: string
+        }
+        Update: {
+          commission_per_lot?: number
+          created_at?: string
+          default_leverage?: number
+          default_spread_pips?: number
+          execution_delay_ms?: number
+          id?: string
+          margin_call_level?: number
+          max_leverage?: number
+          scope?: string
+          slippage_pips?: number
+          stop_out_level?: number
+          swap_long?: number
+          swap_short?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      sim_orders: {
+        Row: {
+          account_id: string
+          created_at: string
+          executed_price: number | null
+          execution_delay_ms: number | null
+          expires_at: string | null
+          filled_at: string | null
+          id: string
+          order_type: string
+          reject_reason: string | null
+          requested_price: number | null
+          side: string
+          slippage_pips: number | null
+          status: string
+          stop_loss: number | null
+          symbol: string
+          take_profit: number | null
+          updated_at: string
+          user_id: string
+          volume: number
+        }
+        Insert: {
+          account_id: string
+          created_at?: string
+          executed_price?: number | null
+          execution_delay_ms?: number | null
+          expires_at?: string | null
+          filled_at?: string | null
+          id?: string
+          order_type: string
+          reject_reason?: string | null
+          requested_price?: number | null
+          side: string
+          slippage_pips?: number | null
+          status?: string
+          stop_loss?: number | null
+          symbol: string
+          take_profit?: number | null
+          updated_at?: string
+          user_id: string
+          volume: number
+        }
+        Update: {
+          account_id?: string
+          created_at?: string
+          executed_price?: number | null
+          execution_delay_ms?: number | null
+          expires_at?: string | null
+          filled_at?: string | null
+          id?: string
+          order_type?: string
+          reject_reason?: string | null
+          requested_price?: number | null
+          side?: string
+          slippage_pips?: number | null
+          status?: string
+          stop_loss?: number | null
+          symbol?: string
+          take_profit?: number | null
+          updated_at?: string
+          user_id?: string
+          volume?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sim_orders_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "sim_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sim_orders_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "v_sim_competition_stats"
+            referencedColumns: ["account_id"]
+          },
+        ]
+      }
+      sim_positions: {
+        Row: {
+          account_id: string
+          breakeven_pips: number | null
+          commission: number
+          current_price: number | null
+          entry_price: number
+          floating_pnl: number
+          id: string
+          opened_at: string
+          order_id: string | null
+          required_margin: number
+          side: string
+          spread_pips: number | null
+          status: string
+          stop_loss: number | null
+          swap: number
+          symbol: string
+          take_profit: number | null
+          trailing_stop_pips: number | null
+          updated_at: string
+          user_id: string
+          volume: number
+        }
+        Insert: {
+          account_id: string
+          breakeven_pips?: number | null
+          commission?: number
+          current_price?: number | null
+          entry_price: number
+          floating_pnl?: number
+          id?: string
+          opened_at?: string
+          order_id?: string | null
+          required_margin?: number
+          side: string
+          spread_pips?: number | null
+          status?: string
+          stop_loss?: number | null
+          swap?: number
+          symbol: string
+          take_profit?: number | null
+          trailing_stop_pips?: number | null
+          updated_at?: string
+          user_id: string
+          volume: number
+        }
+        Update: {
+          account_id?: string
+          breakeven_pips?: number | null
+          commission?: number
+          current_price?: number | null
+          entry_price?: number
+          floating_pnl?: number
+          id?: string
+          opened_at?: string
+          order_id?: string | null
+          required_margin?: number
+          side?: string
+          spread_pips?: number | null
+          status?: string
+          stop_loss?: number | null
+          swap?: number
+          symbol?: string
+          take_profit?: number | null
+          trailing_stop_pips?: number | null
+          updated_at?: string
+          user_id?: string
+          volume?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sim_positions_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "sim_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sim_positions_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "v_sim_competition_stats"
+            referencedColumns: ["account_id"]
+          },
+          {
+            foreignKeyName: "sim_positions_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "sim_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sim_trade_history: {
+        Row: {
+          account_id: string
+          close_reason: string | null
+          commission: number
+          created_at: string
+          entry_price: number
+          entry_time: string
+          execution_delay_ms: number | null
+          exit_price: number
+          exit_time: string
+          id: string
+          position_id: string | null
+          profit: number
+          side: string
+          spread_pips: number | null
+          swap: number
+          symbol: string
+          user_id: string
+          volume: number
+        }
+        Insert: {
+          account_id: string
+          close_reason?: string | null
+          commission?: number
+          created_at?: string
+          entry_price: number
+          entry_time: string
+          execution_delay_ms?: number | null
+          exit_price: number
+          exit_time: string
+          id?: string
+          position_id?: string | null
+          profit: number
+          side: string
+          spread_pips?: number | null
+          swap?: number
+          symbol: string
+          user_id: string
+          volume: number
+        }
+        Update: {
+          account_id?: string
+          close_reason?: string | null
+          commission?: number
+          created_at?: string
+          entry_price?: number
+          entry_time?: string
+          execution_delay_ms?: number | null
+          exit_price?: number
+          exit_time?: string
+          id?: string
+          position_id?: string | null
+          profit?: number
+          side?: string
+          spread_pips?: number | null
+          swap?: number
+          symbol?: string
+          user_id?: string
+          volume?: number
+        }
+        Relationships: []
+      }
       statements: {
         Row: {
           created_at: string
@@ -3710,6 +4118,30 @@ export type Database = {
         }
         Relationships: []
       }
+      v_sim_competition_stats: {
+        Row: {
+          account_id: string | null
+          closed_trades: number | null
+          competition_entry_id: string | null
+          equity: number | null
+          max_drawdown: number | null
+          open_trades: number | null
+          rank: number | null
+          return_pct: number | null
+          starting_balance: number | null
+          user_id: string | null
+          win_rate: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sim_accounts_competition_entry_id_fkey"
+            columns: ["competition_entry_id"]
+            isOneToOne: true
+            referencedRelation: "competition_entries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       admin_adjust_balance: {
@@ -3836,6 +4268,33 @@ export type Database = {
       }
       md_toggle_provider: {
         Args: { _code: string; _enabled: boolean }
+        Returns: Json
+      }
+      sim_close_position: {
+        Args: { _position_id: string; _reason?: string; _volume?: number }
+        Returns: Json
+      }
+      sim_get_market_price: { Args: { _symbol: string }; Returns: number }
+      sim_mark_to_market: { Args: { _account_id: string }; Returns: Json }
+      sim_place_order: {
+        Args: {
+          _account_id: string
+          _order_type: string
+          _requested_price?: number
+          _stop_loss?: number
+          _symbol: string
+          _take_profit?: number
+          _volume: number
+        }
+        Returns: Json
+      }
+      sim_update_stops: {
+        Args: {
+          _position_id: string
+          _sl?: number
+          _tp?: number
+          _trailing_pips?: number
+        }
         Returns: Json
       }
       subscribe_to_master: {
