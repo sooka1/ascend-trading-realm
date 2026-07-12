@@ -71,7 +71,9 @@ export function SiteHeader() {
       )}
     >
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-6 px-4 sm:h-16 sm:px-6 lg:h-[72px] lg:px-8">
-        <Link to="/" className="shrink-0" aria-label="HKEX home" />
+        <Link to="/" className="shrink-0" aria-label="HKEX home">
+          <HKLogo />
+        </Link>
 
         <nav className="hidden items-center gap-1 lg:flex">
           {NAV.map((item) => (
