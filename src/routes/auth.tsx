@@ -583,12 +583,14 @@ function ConfirmEmailPanel({
   onResend,
   onBack,
   onChangeEmail,
+  onAlreadyConfirmed,
   state,
 }: {
   email: string;
   onResend: () => void;
   onBack: () => void;
   onChangeEmail: () => void;
+  onAlreadyConfirmed: () => void;
   state: { loading: boolean; cooldown: number; error?: string; sent?: boolean };
 }) {
   const { t } = useI18n();
