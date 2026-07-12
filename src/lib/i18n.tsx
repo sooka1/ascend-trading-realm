@@ -946,6 +946,7 @@ export const DICTS: Record<Lang, Dict> = {
     "auth.confirm.resend_error": "E-posta yeniden gönderilemedi",
     "auth.confirm.offline": "\u00c7evrimd\u0131\u015f\u0131s\u0131n\u0131z. Ba\u011flant\u0131n\u0131z\u0131 kontrol edip tekrar deneyin.",
     "auth.confirm.generic_error": "Bir sorun olu\u015ftu. L\u00fctfen daha sonra tekrar deneyin.",
+    "auth.confirm.already_confirmed": "E-postan\u0131z\u0131 zaten onaylad\u0131n\u0131z m\u0131? Giri\u015f yap\u0131n",
     "auth.verify.enter_email": "Onay ba\u011flant\u0131s\u0131n\u0131 yeniden g\u00f6ndermek i\u00e7in kay\u0131t oldu\u011funuz e-postay\u0131 girin.",
     "auth.verify.error.expired": "Onay ba\u011flant\u0131s\u0131n\u0131n s\u00fcresi doldu. Yeni bir tane isteyin.",
     "auth.verify.error.used": "Bu ba\u011flant\u0131 daha \u00f6nce kullan\u0131ld\u0131. Giri\u015f yap\u0131n veya yeni bir ba\u011flant\u0131 isteyin.",
