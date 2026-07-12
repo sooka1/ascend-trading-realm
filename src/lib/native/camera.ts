@@ -56,7 +56,8 @@ export async function capturePhoto(opts: {
   }
 
   // Web fallback
-  const file = await pickFileWeb({ accept: "image/*", capture: opts.source === "camera" ? (opts.side === "front" ? "user" : "environment") : undefined });
+  const picked = await pickFileWeb({ accept: "image/*", capture: opts.source === "camera" ? (opts.side === "front" ? "user" : "environment") : undefined });
+  const file = Array.isArray(picked) ? picked[0] : picked;
   if (!file) return null;
   return await compressImage(file, { maxWidth: width, maxHeight: height, quality });
 }
