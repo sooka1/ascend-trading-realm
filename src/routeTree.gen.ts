@@ -36,6 +36,7 @@ import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authentic
 import { Route as AuthenticatedPortalIndexRouteImport } from './routes/_authenticated/portal.index'
 import { Route as ApiPublicOpsRouteImport } from './routes/api/public/ops'
 import { Route as ApiPublicHealthRouteImport } from './routes/api/public/health'
+import { Route as ApiPublicSentryProbeRouteImport } from './routes/api/public/_sentry-probe'
 import { Route as AuthenticatedPortalUpdatesRouteImport } from './routes/_authenticated/portal.updates'
 import { Route as AuthenticatedPortalTransactionsRouteImport } from './routes/_authenticated/portal.transactions'
 import { Route as AuthenticatedPortalTradingRouteImport } from './routes/_authenticated/portal.trading'
@@ -220,6 +221,11 @@ const ApiPublicOpsRoute = ApiPublicOpsRouteImport.update({
 const ApiPublicHealthRoute = ApiPublicHealthRouteImport.update({
   id: '/api/public/health',
   path: '/api/public/health',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicSentryProbeRoute = ApiPublicSentryProbeRouteImport.update({
+  id: '/api/public/_sentry-probe',
+  path: '/api/public',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedPortalUpdatesRoute =
@@ -570,6 +576,7 @@ export interface FileRoutesByFullPath {
   '/portal/trading': typeof AuthenticatedPortalTradingRoute
   '/portal/transactions': typeof AuthenticatedPortalTransactionsRoute
   '/portal/updates': typeof AuthenticatedPortalUpdatesRoute
+  '/api/public': typeof ApiPublicSentryProbeRoute
   '/api/public/health': typeof ApiPublicHealthRoute
   '/api/public/ops': typeof ApiPublicOpsRoute
   '/portal/': typeof AuthenticatedPortalIndexRoute
@@ -648,6 +655,7 @@ export interface FileRoutesByTo {
   '/portal/trading': typeof AuthenticatedPortalTradingRoute
   '/portal/transactions': typeof AuthenticatedPortalTransactionsRoute
   '/portal/updates': typeof AuthenticatedPortalUpdatesRoute
+  '/api/public': typeof ApiPublicSentryProbeRoute
   '/api/public/health': typeof ApiPublicHealthRoute
   '/api/public/ops': typeof ApiPublicOpsRoute
   '/portal': typeof AuthenticatedPortalIndexRoute
@@ -729,6 +737,7 @@ export interface FileRoutesById {
   '/_authenticated/portal/trading': typeof AuthenticatedPortalTradingRoute
   '/_authenticated/portal/transactions': typeof AuthenticatedPortalTransactionsRoute
   '/_authenticated/portal/updates': typeof AuthenticatedPortalUpdatesRoute
+  '/api/public/_sentry-probe': typeof ApiPublicSentryProbeRoute
   '/api/public/health': typeof ApiPublicHealthRoute
   '/api/public/ops': typeof ApiPublicOpsRoute
   '/_authenticated/portal/': typeof AuthenticatedPortalIndexRoute
@@ -809,6 +818,7 @@ export interface FileRouteTypes {
     | '/portal/trading'
     | '/portal/transactions'
     | '/portal/updates'
+    | '/api/public'
     | '/api/public/health'
     | '/api/public/ops'
     | '/portal/'
@@ -887,6 +897,7 @@ export interface FileRouteTypes {
     | '/portal/trading'
     | '/portal/transactions'
     | '/portal/updates'
+    | '/api/public'
     | '/api/public/health'
     | '/api/public/ops'
     | '/portal'
@@ -967,6 +978,7 @@ export interface FileRouteTypes {
     | '/_authenticated/portal/trading'
     | '/_authenticated/portal/transactions'
     | '/_authenticated/portal/updates'
+    | '/api/public/_sentry-probe'
     | '/api/public/health'
     | '/api/public/ops'
     | '/_authenticated/portal/'
@@ -1020,6 +1032,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   RiskRoute: typeof RiskRoute
   TermsRoute: typeof TermsRoute
+  ApiPublicSentryProbeRoute: typeof ApiPublicSentryProbeRoute
   ApiPublicHealthRoute: typeof ApiPublicHealthRoute
   ApiPublicOpsRoute: typeof ApiPublicOpsRoute
   ApiPublicWebhooksBinancePayRoute: typeof ApiPublicWebhooksBinancePayRoute
@@ -1217,6 +1230,13 @@ declare module '@tanstack/react-router' {
       path: '/api/public/health'
       fullPath: '/api/public/health'
       preLoaderRoute: typeof ApiPublicHealthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/_sentry-probe': {
+      id: '/api/public/_sentry-probe'
+      path: '/api/public'
+      fullPath: '/api/public'
+      preLoaderRoute: typeof ApiPublicSentryProbeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/portal/updates': {
@@ -1755,6 +1775,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   RiskRoute: RiskRoute,
   TermsRoute: TermsRoute,
+  ApiPublicSentryProbeRoute: ApiPublicSentryProbeRoute,
   ApiPublicHealthRoute: ApiPublicHealthRoute,
   ApiPublicOpsRoute: ApiPublicOpsRoute,
   ApiPublicWebhooksBinancePayRoute: ApiPublicWebhooksBinancePayRoute,
@@ -1765,13 +1786,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
