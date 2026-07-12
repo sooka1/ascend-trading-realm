@@ -1160,6 +1160,306 @@ export type Database = {
         }
         Relationships: []
       }
+      market_data_candles: {
+        Row: {
+          bucket_start: string
+          close: number
+          created_at: string
+          high: number
+          id: string
+          low: number
+          open: number
+          provider_code: string
+          symbol: string
+          timeframe: string
+          updated_at: string
+          volume: number | null
+        }
+        Insert: {
+          bucket_start: string
+          close: number
+          created_at?: string
+          high: number
+          id?: string
+          low: number
+          open: number
+          provider_code: string
+          symbol: string
+          timeframe: string
+          updated_at?: string
+          volume?: number | null
+        }
+        Update: {
+          bucket_start?: string
+          close?: number
+          created_at?: string
+          high?: number
+          id?: string
+          low?: number
+          open?: number
+          provider_code?: string
+          symbol?: string
+          timeframe?: string
+          updated_at?: string
+          volume?: number | null
+        }
+        Relationships: []
+      }
+      market_data_failover_history: {
+        Row: {
+          from_provider: string | null
+          id: string
+          metadata: Json
+          reason: string | null
+          to_provider: string
+          triggered_at: string
+          triggered_by: string | null
+        }
+        Insert: {
+          from_provider?: string | null
+          id?: string
+          metadata?: Json
+          reason?: string | null
+          to_provider: string
+          triggered_at?: string
+          triggered_by?: string | null
+        }
+        Update: {
+          from_provider?: string | null
+          id?: string
+          metadata?: Json
+          reason?: string | null
+          to_provider?: string
+          triggered_at?: string
+          triggered_by?: string | null
+        }
+        Relationships: []
+      }
+      market_data_health: {
+        Row: {
+          failure_count: number
+          id: string
+          is_current_active: boolean
+          last_failure_at: string | null
+          last_success_at: string | null
+          provider_code: string
+          recovery_count: number
+          status: string
+          updated_at: string
+          uptime_pct: number | null
+        }
+        Insert: {
+          failure_count?: number
+          id?: string
+          is_current_active?: boolean
+          last_failure_at?: string | null
+          last_success_at?: string | null
+          provider_code: string
+          recovery_count?: number
+          status?: string
+          updated_at?: string
+          uptime_pct?: number | null
+        }
+        Update: {
+          failure_count?: number
+          id?: string
+          is_current_active?: boolean
+          last_failure_at?: string | null
+          last_success_at?: string | null
+          provider_code?: string
+          recovery_count?: number
+          status?: string
+          updated_at?: string
+          uptime_pct?: number | null
+        }
+        Relationships: []
+      }
+      market_data_latency_samples: {
+        Row: {
+          channel: string
+          id: number
+          latency_ms: number
+          metadata: Json
+          provider_code: string
+          sampled_at: string
+        }
+        Insert: {
+          channel: string
+          id?: number
+          latency_ms: number
+          metadata?: Json
+          provider_code: string
+          sampled_at?: string
+        }
+        Update: {
+          channel?: string
+          id?: number
+          latency_ms?: number
+          metadata?: Json
+          provider_code?: string
+          sampled_at?: string
+        }
+        Relationships: []
+      }
+      market_data_prices_latest: {
+        Row: {
+          ask: number | null
+          asset_class: string | null
+          bid: number | null
+          id: string
+          metadata: Json
+          price: number
+          price_time: string
+          provider_code: string
+          received_at: string
+          symbol: string
+          volume: number | null
+        }
+        Insert: {
+          ask?: number | null
+          asset_class?: string | null
+          bid?: number | null
+          id?: string
+          metadata?: Json
+          price: number
+          price_time: string
+          provider_code: string
+          received_at?: string
+          symbol: string
+          volume?: number | null
+        }
+        Update: {
+          ask?: number | null
+          asset_class?: string | null
+          bid?: number | null
+          id?: string
+          metadata?: Json
+          price?: number
+          price_time?: string
+          provider_code?: string
+          received_at?: string
+          symbol?: string
+          volume?: number | null
+        }
+        Relationships: []
+      }
+      market_data_providers: {
+        Row: {
+          base_url: string | null
+          code: string
+          config: Json
+          created_at: string
+          id: string
+          is_enabled: boolean
+          name: string
+          priority: number
+          role: string
+          supports_polling: boolean
+          supports_websocket: boolean
+          updated_at: string
+        }
+        Insert: {
+          base_url?: string | null
+          code: string
+          config?: Json
+          created_at?: string
+          id?: string
+          is_enabled?: boolean
+          name: string
+          priority?: number
+          role?: string
+          supports_polling?: boolean
+          supports_websocket?: boolean
+          updated_at?: string
+        }
+        Update: {
+          base_url?: string | null
+          code?: string
+          config?: Json
+          created_at?: string
+          id?: string
+          is_enabled?: boolean
+          name?: string
+          priority?: number
+          role?: string
+          supports_polling?: boolean
+          supports_websocket?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      market_data_ticks: {
+        Row: {
+          id: number
+          price: number
+          price_time: string
+          provider_code: string
+          received_at: string
+          symbol: string
+          volume: number | null
+        }
+        Insert: {
+          id?: number
+          price: number
+          price_time: string
+          provider_code: string
+          received_at?: string
+          symbol: string
+          volume?: number | null
+        }
+        Update: {
+          id?: number
+          price?: number
+          price_time?: string
+          provider_code?: string
+          received_at?: string
+          symbol?: string
+          volume?: number | null
+        }
+        Relationships: []
+      }
+      market_sessions: {
+        Row: {
+          closes_at: string | null
+          created_at: string
+          holidays: string[] | null
+          id: string
+          is_24x7: boolean
+          market_code: string
+          opens_at: string | null
+          session_name: string
+          timezone: string
+          updated_at: string
+          weekdays: number[]
+        }
+        Insert: {
+          closes_at?: string | null
+          created_at?: string
+          holidays?: string[] | null
+          id?: string
+          is_24x7?: boolean
+          market_code: string
+          opens_at?: string | null
+          session_name: string
+          timezone?: string
+          updated_at?: string
+          weekdays?: number[]
+        }
+        Update: {
+          closes_at?: string | null
+          created_at?: string
+          holidays?: string[] | null
+          id?: string
+          is_24x7?: boolean
+          market_code?: string
+          opens_at?: string | null
+          session_name?: string
+          timezone?: string
+          updated_at?: string
+          weekdays?: number[]
+        }
+        Relationships: []
+      }
       master_eligibility_rules: {
         Row: {
           created_at: string
@@ -3370,6 +3670,33 @@ export type Database = {
           },
         ]
       }
+      v_md_latest_prices: {
+        Row: {
+          price: number | null
+          price_time: string | null
+          provider_code: string | null
+          received_at: string | null
+          symbol: string | null
+        }
+        Relationships: []
+      }
+      v_md_provider_health: {
+        Row: {
+          avg_latency_1h: number | null
+          code: string | null
+          failure_count: number | null
+          is_current_active: boolean | null
+          is_enabled: boolean | null
+          last_failure_at: string | null
+          last_success_at: string | null
+          name: string | null
+          priority: number | null
+          recovery_count: number | null
+          role: string | null
+          status: string | null
+        }
+        Relationships: []
+      }
       v_portfolio_ranking: {
         Row: {
           aum: number | null
@@ -3485,6 +3812,30 @@ export type Database = {
           _profile_id: string
           _value?: string
         }
+        Returns: Json
+      }
+      md_force_failover: {
+        Args: { _reason?: string; _to_provider: string }
+        Returns: Json
+      }
+      md_get_active_provider: { Args: never; Returns: string }
+      md_ingest_price: {
+        Args: {
+          _asset_class?: string
+          _price: number
+          _price_time: string
+          _provider: string
+          _symbol: string
+          _volume?: number
+        }
+        Returns: Json
+      }
+      md_record_health: {
+        Args: { _code: string; _latency_ms?: number; _success: boolean }
+        Returns: undefined
+      }
+      md_toggle_provider: {
+        Args: { _code: string; _enabled: boolean }
         Returns: Json
       }
       subscribe_to_master: {
