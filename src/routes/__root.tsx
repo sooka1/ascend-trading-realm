@@ -11,6 +11,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { initSentryClient, captureClientException } from "../lib/sentry-client";
 import { I18nProvider } from "../lib/i18n";
 import { Toaster } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -89,6 +90,9 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
   const router = useRouter();
   useEffect(() => {
+    // Report to Sentry AND Lovable capture — each sink dedupes by error
+    // reference, so a single error object is never sent twice to either.
+    captureClientException(error, { boundary: "tanstack_root_error_component" });
     reportLovableError(error, { boundary: "tanstack_root_error_component" });
   }, [error]);
 
@@ -226,6 +230,8 @@ function RootComponent() {
   const router = useRouter();
 
   useEffect(() => {
+    // Initialize Sentry on the client as early as safely possible after mount.
+    initSentryClient();
     installTimezonePatch();
     void loadUserTimezoneFromProfile().then(() => {
       // Re-render everything so freshly-loaded locale/timezone reach existing

@@ -1,5 +1,7 @@
 import "./lib/error-capture";
 
+import * as Sentry from "@sentry/cloudflare";
+
 import { consumeLastCapturedError } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
 
@@ -44,13 +46,20 @@ function isH3SwallowedErrorBody(body: string): boolean {
   }
 }
 
-export default {
+const workerHandler = {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
       return await normalizeCatastrophicSsrResponse(response);
     } catch (error) {
+      // Also forward to Sentry — withSentry catches uncaught throws, but
+      // we return an HTML fallback here so it wouldn't otherwise escape.
+      try {
+        Sentry.captureException(error);
+      } catch {
+        // ignore — never break the response path
+      }
       console.error(error);
       return new Response(renderErrorPage(), {
         status: 500,
@@ -59,3 +68,15 @@ export default {
     }
   },
 };
+
+// Sentry.withSentry initializes Sentry per-request using the Worker
+// `env` binding, then wraps `fetch` so uncaught throws are reported.
+// When env.SENTRY_DSN is absent, withSentry no-ops (safe in dev).
+export default Sentry.withSentry(
+  (env: { SENTRY_DSN?: string }) => ({
+    dsn: env?.SENTRY_DSN,
+    // Requirement: no tracing / logs / profiling yet.
+    tracesSampleRate: 0,
+  }),
+  workerHandler,
+);
