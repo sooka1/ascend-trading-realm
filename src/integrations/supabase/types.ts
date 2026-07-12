@@ -5919,9 +5919,10 @@ export type Database = {
         }
       }
       consume_auth_resend_attempt: {
-        Args: { _email_hash: string; _ip_hash: string }
+        Args: { _email: string; _ip: string }
         Returns: {
           allowed: boolean
+          config_ok: boolean
           retry_after_seconds: number
         }[]
       }

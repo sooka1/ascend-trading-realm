@@ -8,11 +8,11 @@
 //     * 1 request / 60 s per email
 //     * 5 / hour per email
 //     * 20 / hour per IP (CF-Connecting-IP only)
-//   via `public.consume_auth_resend_attempt(email_hash, ip_hash)`.
-// - Identifiers are HMAC-SHA256 with a server-only secret
-//   (AUTH_RATE_LIMIT_HMAC_KEY). Raw email/IP never leave the request path.
-// - Reads the HMAC secret from the Cloudflare Worker binding via
-//   `cloudflare:workers`; falls closed if unavailable.
+//   via `public.consume_auth_resend_attempt(_email text, _ip text)`.
+// - Identifier HMACs are computed INSIDE Postgres using a secret held in
+//   Supabase Vault (`auth_rate_limit_hmac_key`). Raw email/IP are passed
+//   only to the service-role RPC over the internal Data API; they are not
+//   persisted and are never written by application logging.
 // - Total response time is padded to a 500–800 ms range so throttling,
 //   unknown accounts, and successful sends are indistinguishable.
 // - Logs contain only { operation, code, status }. No email/IP/hash/token.
@@ -60,47 +60,6 @@ function reportSentry(err: unknown, tag: LogTag) {
   });
 }
 
-async function readHmacKey(): Promise<string | null> {
-  // Prefer the Cloudflare Worker binding when available.
-  try {
-    // @ts-expect-error - virtual module resolved by the Worker runtime, not TS.
-    const mod = await import(/* @vite-ignore */ "cloudflare:workers");
-    const v = (mod as { env?: Record<string, unknown> })?.env?.AUTH_RATE_LIMIT_HMAC_KEY;
-    if (typeof v === "string" && v.length >= 32) return v;
-  } catch {
-    // module not available in this runtime — fall through
-  }
-  // Some Worker builds surface bindings on globalThis.
-  const g = globalThis as unknown as {
-    AUTH_RATE_LIMIT_HMAC_KEY?: unknown;
-    env?: { AUTH_RATE_LIMIT_HMAC_KEY?: unknown };
-  };
-  const direct = g.AUTH_RATE_LIMIT_HMAC_KEY;
-  if (typeof direct === "string" && direct.length >= 32) return direct;
-  const nested = g.env?.AUTH_RATE_LIMIT_HMAC_KEY;
-  if (typeof nested === "string" && nested.length >= 32) return nested;
-  return null;
-}
-
-async function hmacSha256(key: string, message: string): Promise<Uint8Array> {
-  const enc = new TextEncoder();
-  const cryptoKey = await crypto.subtle.importKey(
-    "raw",
-    enc.encode(key),
-    { name: "HMAC", hash: "SHA-256" },
-    false,
-    ["sign"],
-  );
-  const sig = await crypto.subtle.sign("HMAC", cryptoKey, enc.encode(message));
-  return new Uint8Array(sig);
-}
-
-function bytesToPgHex(bytes: Uint8Array): string {
-  let hex = "";
-  for (let i = 0; i < bytes.length; i++) hex += bytes[i].toString(16).padStart(2, "0");
-  return `\\x${hex}`;
-}
-
 function pickCfIp(headers: Headers): string | null {
   // Trust CF-Connecting-IP ONLY. Never X-Forwarded-For.
   const raw = headers.get("cf-connecting-ip");
@@ -142,14 +101,6 @@ export const requestVerificationResend = createServerFn({ method: "POST" })
       const req = getRequest();
       const headers = req?.headers ?? new Headers();
 
-      const hmacKey = await readHmacKey();
-      if (!hmacKey) {
-        logOp("config_error", { code: "hmac_key_missing" });
-        reportSentry(new Error("AUTH_RATE_LIMIT_HMAC_KEY unavailable"), "config_error");
-        await padTo(startedAt, 500, 800);
-        return { ok: true as const };
-      }
-
       const SUPABASE_URL = process.env.SUPABASE_URL;
       const SUPABASE_PUBLISHABLE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY;
       const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -160,18 +111,20 @@ export const requestVerificationResend = createServerFn({ method: "POST" })
         return { ok: true as const };
       }
 
-      const emailHashBytes = await hmacSha256(hmacKey, `email:${data.email}`);
       const ip = pickCfIp(headers);
-      const ipHashBytes = ip ? await hmacSha256(hmacKey, `ip:${ip}`) : null;
 
-      // Rate-limit RPC uses the service-role client (private table, no RLS).
+      // Rate-limit RPC uses the service-role client (private RPC, EXECUTE
+      // granted only to service_role). HMACs are computed inside Postgres
+      // using the Vault-held secret; raw email/IP travel only over the
+      // internal Data API and are not persisted.
       const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
         auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
       });
 
+      // NOTE: never log RPC parameters — they contain the raw email/IP.
       const rpc = await admin.rpc("consume_auth_resend_attempt", {
-        _email_hash: bytesToPgHex(emailHashBytes),
-        _ip_hash: ipHashBytes ? bytesToPgHex(ipHashBytes) : null,
+        _email: data.email,
+        _ip: ip,
       });
 
       if (rpc.error) {
@@ -182,7 +135,15 @@ export const requestVerificationResend = createServerFn({ method: "POST" })
       }
 
       const row = Array.isArray(rpc.data) ? rpc.data[0] : rpc.data;
+      const configOk: boolean = row?.config_ok !== false;
       const allowed: boolean = !!row?.allowed;
+
+      if (!configOk) {
+        logOp("config_error", { code: "vault_secret_missing" });
+        reportSentry(new Error("Vault secret auth_rate_limit_hmac_key unavailable"), "config_error");
+        await padTo(startedAt, 500, 800);
+        return { ok: true as const };
+      }
 
       if (!allowed) {
         logOp("throttled");
