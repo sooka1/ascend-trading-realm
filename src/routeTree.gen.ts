@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VerifyEmailRouteImport } from './routes/verify-email'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as RiskRouteImport } from './routes/risk'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
@@ -88,6 +89,11 @@ import { Route as AuthenticatedAdminAdminAuditRouteImport } from './routes/_auth
 import { Route as AuthenticatedAdminAdminAnalyticsRouteImport } from './routes/_authenticated/_admin/admin.analytics'
 import { Route as AuthenticatedAdminAdminAccountingRouteImport } from './routes/_authenticated/_admin/admin.accounting'
 
+const VerifyEmailRoute = VerifyEmailRouteImport.update({
+  id: '/verify-email',
+  path: '/verify-email',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
   path: '/terms',
@@ -543,6 +549,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/risk': typeof RiskRoute
   '/terms': typeof TermsRoute
+  '/verify-email': typeof VerifyEmailRoute
   '/app': typeof AuthenticatedAppRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/investor': typeof AuthenticatedInvestorRoute
@@ -621,6 +628,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/risk': typeof RiskRoute
   '/terms': typeof TermsRoute
+  '/verify-email': typeof VerifyEmailRoute
   '/app': typeof AuthenticatedAppRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/investor': typeof AuthenticatedInvestorRoute
@@ -701,6 +709,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/risk': typeof RiskRoute
   '/terms': typeof TermsRoute
+  '/verify-email': typeof VerifyEmailRoute
   '/_authenticated/_admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
@@ -782,6 +791,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/risk'
     | '/terms'
+    | '/verify-email'
     | '/app'
     | '/dashboard'
     | '/investor'
@@ -860,6 +870,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/risk'
     | '/terms'
+    | '/verify-email'
     | '/app'
     | '/dashboard'
     | '/investor'
@@ -939,6 +950,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/risk'
     | '/terms'
+    | '/verify-email'
     | '/_authenticated/_admin'
     | '/_authenticated/app'
     | '/_authenticated/dashboard'
@@ -1020,6 +1032,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   RiskRoute: typeof RiskRoute
   TermsRoute: typeof TermsRoute
+  VerifyEmailRoute: typeof VerifyEmailRoute
   ApiPublicHealthRoute: typeof ApiPublicHealthRoute
   ApiPublicOpsRoute: typeof ApiPublicOpsRoute
   ApiPublicWebhooksBinancePayRoute: typeof ApiPublicWebhooksBinancePayRoute
@@ -1030,6 +1043,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/verify-email': {
+      id: '/verify-email'
+      path: '/verify-email'
+      fullPath: '/verify-email'
+      preLoaderRoute: typeof VerifyEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/terms': {
       id: '/terms'
       path: '/terms'
@@ -1755,6 +1775,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   RiskRoute: RiskRoute,
   TermsRoute: TermsRoute,
+  VerifyEmailRoute: VerifyEmailRoute,
   ApiPublicHealthRoute: ApiPublicHealthRoute,
   ApiPublicOpsRoute: ApiPublicOpsRoute,
   ApiPublicWebhooksBinancePayRoute: ApiPublicWebhooksBinancePayRoute,
