@@ -1196,6 +1196,68 @@ function InvestorPortal() {
           })()}
         </AlertDialogContent>
       </AlertDialog>
+      <AlertDialog
+        open={!!withdrawWarn}
+        onOpenChange={(o) => { if (!o) { setWithdrawWarn(null); setWithdrawAck(false); } }}
+      >
+        <AlertDialogContent className="border-white/10 bg-neutral-950/95 text-foreground backdrop-blur">
+          {withdrawWarn && (
+            <>
+              <AlertDialogHeader>
+                <AlertDialogTitle className="font-display text-amber-300">
+                  تحذير — سيتم إلغاء توزيعات أرباح مستقبلية
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  هذا السحب سيقلّل رأس المال في {withdrawWarn.affectedSubsCount} اشتراك نشط،
+                  وسيؤدي إلى إلغاء توزيعات الأرباح المستقبلية على الجزء المُخصَّص منه.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <div className="grid grid-cols-3 gap-3 rounded-md border border-amber-400/30 bg-amber-400/[0.06] p-3 text-center text-xs">
+                <div>
+                  <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">اشتراكات متأثرة</p>
+                  <p className="mt-1 font-mono text-base tabular-nums">{withdrawWarn.affectedSubsCount}</p>
+                </div>
+                <div>
+                  <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">رأس المال المتأثر</p>
+                  <p className="mt-1 font-mono text-base tabular-nums">${fmt(withdrawWarn.affectedCapital)}</p>
+                </div>
+                <div>
+                  <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">أرباح مقدَّرة مفقودة</p>
+                  <p className="mt-1 font-mono text-base tabular-nums text-amber-300">≈ ${fmt(withdrawWarn.estLoss)}</p>
+                </div>
+              </div>
+              <label className="mt-3 flex items-start gap-2 text-xs text-muted-foreground">
+                <Checkbox
+                  checked={withdrawAck}
+                  onCheckedChange={(v) => setWithdrawAck(v === true)}
+                  className="mt-0.5"
+                />
+                <span>أفهم أن توزيعات الأرباح المستقبلية المرتبطة برأس المال المسحوب سيتم إلغاؤها.</span>
+              </label>
+              <AlertDialogFooter>
+                <AlertDialogCancel
+                  className="border-white/10 bg-transparent hover:bg-white/5"
+                  onClick={() => { setWithdrawWarn(null); setWithdrawAck(false); }}
+                >
+                  إلغاء
+                </AlertDialogCancel>
+                <AlertDialogAction
+                  disabled={!withdrawAck}
+                  onClick={async () => {
+                    const w = withdrawWarn;
+                    setWithdrawWarn(null);
+                    setWithdrawAck(false);
+                    await performWithdraw(w.parsed, w.form);
+                  }}
+                  className="bg-red-600 text-white hover:bg-red-700 disabled:opacity-40"
+                >
+                  متابعة السحب
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </>
+          )}
+        </AlertDialogContent>
+      </AlertDialog>
     </PageShell>
   );
 }
