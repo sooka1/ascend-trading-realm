@@ -664,6 +664,14 @@ function ConfirmEmailPanel({
         <Button
           type="button"
           variant="outline"
+          onClick={onAlreadyConfirmed}
+          className="h-12 w-full border-gold/40 bg-gold/10 text-base font-medium text-foreground hover:bg-gold/20 sm:h-10 sm:text-sm"
+        >
+          {t("auth.confirm.already_confirmed")}
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
           onClick={onBack}
           className="h-12 w-full border-white/15 bg-white/5 text-base sm:h-10 sm:text-sm"
         >
