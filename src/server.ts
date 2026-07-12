@@ -49,6 +49,15 @@ function isH3SwallowedErrorBody(body: string): boolean {
 const workerHandler = {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
+      // Expose the Worker `env` binding (same mechanism Sentry uses via
+      // withSentry) so server functions can read runtime secrets such as
+      // AUTH_RATE_LIMIT_HMAC_KEY without touching process.env. The value
+      // is never logged or returned to the client.
+      try {
+        (globalThis as unknown as { env?: unknown }).env = env;
+      } catch {
+        // never break the response path
+      }
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
       return await normalizeCatastrophicSsrResponse(response);
