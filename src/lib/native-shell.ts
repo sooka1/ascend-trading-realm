@@ -2,6 +2,13 @@
 // button, keyboard, network monitor, haptics. All calls are guarded with
 // Capacitor.isNativePlatform() so the same bundle runs safely on web.
 import { Capacitor } from "@capacitor/core";
+import { initPushNotifications, revokeCurrentPushToken } from "@/lib/native/push";
+import { initDeepLinks } from "@/lib/native/deep-links";
+import { initAppLockActivity } from "@/lib/native/biometric";
+import { initAppResumeSync } from "@/lib/native/app-resume";
+import { initNetworkRecovery } from "@/lib/native/network-queue";
+import { initCrashHandler } from "@/lib/native/crash-handler";
+import { supabase } from "@/integrations/supabase/client";
 
 let initialized = false;
 
@@ -10,8 +17,25 @@ export async function initNativeShell(opts: {
 }) {
   if (initialized) return;
   if (typeof window === "undefined") return;
-  if (!Capacitor.isNativePlatform()) return;
   initialized = true;
+
+  // Cross-platform Sprint 1 wiring — safe on web too.
+  initCrashHandler();
+  initAppLockActivity();
+  initAppResumeSync();
+  void initNetworkRecovery();
+  void initDeepLinks();
+
+  // Revoke this device's FCM token on sign-out.
+  supabase.auth.onAuthStateChange((event) => {
+    if (event === "SIGNED_OUT") void revokeCurrentPushToken();
+    if (event === "SIGNED_IN") void initPushNotifications();
+  });
+
+  if (!Capacitor.isNativePlatform()) return;
+
+  // Native-only: push registration, status bar, splash, keyboard, back button, app state.
+  void initPushNotifications();
 
   try {
     const { StatusBar, Style } = await import("@capacitor/status-bar");

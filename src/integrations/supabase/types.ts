@@ -1761,6 +1761,54 @@ export type Database = {
         }
         Relationships: []
       }
+      device_tokens: {
+        Row: {
+          app_version: string | null
+          created_at: string
+          device_id: string
+          fcm_token: string
+          id: string
+          last_seen_at: string
+          locale: string | null
+          model: string | null
+          os_version: string | null
+          platform: string
+          revoked_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          app_version?: string | null
+          created_at?: string
+          device_id: string
+          fcm_token: string
+          id?: string
+          last_seen_at?: string
+          locale?: string | null
+          model?: string | null
+          os_version?: string | null
+          platform: string
+          revoked_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          app_version?: string | null
+          created_at?: string
+          device_id?: string
+          fcm_token?: string
+          id?: string
+          last_seen_at?: string
+          locale?: string | null
+          model?: string | null
+          os_version?: string | null
+          platform?: string
+          revoked_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       documents: {
         Row: {
           category: string
