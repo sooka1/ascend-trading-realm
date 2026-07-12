@@ -14,6 +14,384 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_admin_insights: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          insight_code: string
+          payload: Json
+          period_end: string | null
+          period_start: string | null
+          severity: Database["public"]["Enums"]["ai_insight_severity"]
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          insight_code: string
+          payload?: Json
+          period_end?: string | null
+          period_start?: string | null
+          severity?: Database["public"]["Enums"]["ai_insight_severity"]
+          title: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          insight_code?: string
+          payload?: Json
+          period_end?: string | null
+          period_start?: string | null
+          severity?: Database["public"]["Enums"]["ai_insight_severity"]
+          title?: string
+        }
+        Relationships: []
+      }
+      ai_events_timeline: {
+        Row: {
+          amount: number | null
+          created_at: string
+          currency: string | null
+          event_category: string
+          event_type: string
+          id: string
+          occurred_at: string
+          payload: Json
+          reference_id: string | null
+          reference_table: string | null
+          summary: string | null
+          user_id: string
+        }
+        Insert: {
+          amount?: number | null
+          created_at?: string
+          currency?: string | null
+          event_category: string
+          event_type: string
+          id?: string
+          occurred_at?: string
+          payload?: Json
+          reference_id?: string | null
+          reference_table?: string | null
+          summary?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number | null
+          created_at?: string
+          currency?: string | null
+          event_category?: string
+          event_type?: string
+          id?: string
+          occurred_at?: string
+          payload?: Json
+          reference_id?: string | null
+          reference_table?: string | null
+          summary?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ai_explanations: {
+        Row: {
+          created_at: string
+          explanation: string
+          id: string
+          model: string | null
+          question: string
+          reference_id: string | null
+          reference_table: string | null
+          supporting_data: Json
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          explanation: string
+          id?: string
+          model?: string | null
+          question: string
+          reference_id?: string | null
+          reference_table?: string | null
+          supporting_data?: Json
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          explanation?: string
+          id?: string
+          model?: string | null
+          question?: string
+          reference_id?: string | null
+          reference_table?: string | null
+          supporting_data?: Json
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ai_investor_profiles: {
+        Row: {
+          behavior: Json
+          created_at: string
+          goal_progress: Json
+          goals: Json
+          id: string
+          investment_experience: string | null
+          investment_horizon: string | null
+          preferred_assets: string[]
+          preferred_markets: string[]
+          risk_tolerance:
+            | Database["public"]["Enums"]["ai_risk_tolerance"]
+            | null
+          updated_at: string
+          user_id: string
+          version: number
+        }
+        Insert: {
+          behavior?: Json
+          created_at?: string
+          goal_progress?: Json
+          goals?: Json
+          id?: string
+          investment_experience?: string | null
+          investment_horizon?: string | null
+          preferred_assets?: string[]
+          preferred_markets?: string[]
+          risk_tolerance?:
+            | Database["public"]["Enums"]["ai_risk_tolerance"]
+            | null
+          updated_at?: string
+          user_id: string
+          version?: number
+        }
+        Update: {
+          behavior?: Json
+          created_at?: string
+          goal_progress?: Json
+          goals?: Json
+          id?: string
+          investment_experience?: string | null
+          investment_horizon?: string | null
+          preferred_assets?: string[]
+          preferred_markets?: string[]
+          risk_tolerance?:
+            | Database["public"]["Enums"]["ai_risk_tolerance"]
+            | null
+          updated_at?: string
+          user_id?: string
+          version?: number
+        }
+        Relationships: []
+      }
+      ai_memory: {
+        Row: {
+          confidence: number | null
+          created_at: string
+          id: string
+          is_active: boolean
+          key: string
+          source: string
+          user_id: string
+          valid_from: string
+          valid_to: string | null
+          value: Json
+        }
+        Insert: {
+          confidence?: number | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          key: string
+          source?: string
+          user_id: string
+          valid_from?: string
+          valid_to?: string | null
+          value: Json
+        }
+        Update: {
+          confidence?: number | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          key?: string
+          source?: string
+          user_id?: string
+          valid_from?: string
+          valid_to?: string | null
+          value?: Json
+        }
+        Relationships: []
+      }
+      ai_query_audit: {
+        Row: {
+          action: string
+          actor_id: string | null
+          created_at: string
+          id: string
+          payload: Json
+          surface: string | null
+          target_user_id: string | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          payload?: Json
+          surface?: string | null
+          target_user_id?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          payload?: Json
+          surface?: string | null
+          target_user_id?: string | null
+        }
+        Relationships: []
+      }
+      ai_recommendations: {
+        Row: {
+          action_type: string | null
+          approved_at: string | null
+          approved_by: string | null
+          category: string
+          created_at: string
+          data_snapshot: Json
+          expires_at: string | null
+          id: string
+          profile_snapshot: Json
+          rationale: string
+          status: string
+          suggested_payload: Json
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          action_type?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          category: string
+          created_at?: string
+          data_snapshot?: Json
+          expires_at?: string | null
+          id?: string
+          profile_snapshot?: Json
+          rationale: string
+          status?: string
+          suggested_payload?: Json
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          action_type?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          category?: string
+          created_at?: string
+          data_snapshot?: Json
+          expires_at?: string | null
+          id?: string
+          profile_snapshot?: Json
+          rationale?: string
+          status?: string
+          suggested_payload?: Json
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ai_reports: {
+        Row: {
+          created_at: string
+          generated_by: string
+          id: string
+          model: string | null
+          payload: Json
+          period_end: string | null
+          period_start: string | null
+          report_type: Database["public"]["Enums"]["ai_report_type"]
+          summary: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          generated_by?: string
+          id?: string
+          model?: string | null
+          payload?: Json
+          period_end?: string | null
+          period_start?: string | null
+          report_type: Database["public"]["Enums"]["ai_report_type"]
+          summary?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          generated_by?: string
+          id?: string
+          model?: string | null
+          payload?: Json
+          period_end?: string | null
+          period_start?: string | null
+          report_type?: Database["public"]["Enums"]["ai_report_type"]
+          summary?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      ai_risk_insights: {
+        Row: {
+          created_at: string
+          description: string | null
+          detected_at: string
+          evidence: Json
+          id: string
+          insight_code: string
+          resolved_at: string | null
+          scope: string
+          severity: Database["public"]["Enums"]["ai_insight_severity"]
+          status: string
+          title: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          detected_at?: string
+          evidence?: Json
+          id?: string
+          insight_code: string
+          resolved_at?: string | null
+          scope?: string
+          severity?: Database["public"]["Enums"]["ai_insight_severity"]
+          status?: string
+          title: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          detected_at?: string
+          evidence?: Json
+          id?: string
+          insight_code?: string
+          resolved_at?: string | null
+          scope?: string
+          severity?: Database["public"]["Enums"]["ai_insight_severity"]
+          status?: string
+          title?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       benchmark_prices: {
         Row: {
           as_of_date: string
@@ -4530,6 +4908,56 @@ export type Database = {
         }
         Relationships: []
       }
+      v_ai_competition_summary: {
+        Row: {
+          active_entries: number | null
+          total_entries: number | null
+          total_fees: number | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
+      v_ai_copy_summary: {
+        Row: {
+          active_copies: number | null
+          copy_capital: number | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
+      v_ai_investment_summary: {
+        Row: {
+          active_capital: number | null
+          active_subs: number | null
+          cancelled_subs: number | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
+      v_ai_wallet_summary: {
+        Row: {
+          total_deposits: number | null
+          total_profits: number | null
+          total_referral: number | null
+          total_withdrawals: number | null
+          user_id: string | null
+        }
+        Insert: {
+          total_deposits?: never
+          total_profits?: never
+          total_referral?: never
+          total_withdrawals?: never
+          user_id?: string | null
+        }
+        Update: {
+          total_deposits?: never
+          total_profits?: never
+          total_referral?: never
+          total_withdrawals?: never
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       v_aum_by_package: {
         Row: {
           active_investors: number | null
@@ -4961,6 +5389,46 @@ export type Database = {
         Args: { _delta: number; _reason: string; _user_id: string }
         Returns: Json
       }
+      ai_generate_timeline: {
+        Args: { _limit?: number; _target?: string }
+        Returns: number
+      }
+      ai_get_user_context: { Args: { _target?: string }; Returns: Json }
+      ai_log_query: {
+        Args: {
+          _action: string
+          _payload?: Json
+          _surface?: string
+          _target_user_id?: string
+        }
+        Returns: string
+      }
+      ai_record_memory: {
+        Args: {
+          _confidence?: number
+          _key: string
+          _source?: string
+          _value: Json
+        }
+        Returns: {
+          confidence: number | null
+          created_at: string
+          id: string
+          is_active: boolean
+          key: string
+          source: string
+          user_id: string
+          valid_from: string
+          valid_to: string | null
+          value: Json
+        }
+        SetofOptions: {
+          from: "*"
+          to: "ai_memory"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       close_master_trade: {
         Args: { _exit_price: number; _trade_id: string }
         Returns: Json
@@ -5254,6 +5722,22 @@ export type Database = {
       }
     }
     Enums: {
+      ai_insight_severity: "info" | "low" | "medium" | "high" | "critical"
+      ai_report_type:
+        | "daily"
+        | "weekly"
+        | "monthly"
+        | "portfolio"
+        | "competition"
+        | "copy_trading"
+        | "investment"
+        | "risk"
+      ai_risk_tolerance:
+        | "conservative"
+        | "moderate"
+        | "balanced"
+        | "growth"
+        | "aggressive"
       app_role:
         | "admin"
         | "moderator"
@@ -5469,6 +5953,24 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      ai_insight_severity: ["info", "low", "medium", "high", "critical"],
+      ai_report_type: [
+        "daily",
+        "weekly",
+        "monthly",
+        "portfolio",
+        "competition",
+        "copy_trading",
+        "investment",
+        "risk",
+      ],
+      ai_risk_tolerance: [
+        "conservative",
+        "moderate",
+        "balanced",
+        "growth",
+        "aggressive",
+      ],
       app_role: [
         "admin",
         "moderator",
