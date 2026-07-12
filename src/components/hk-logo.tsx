@@ -25,7 +25,7 @@ export function HKLogo({ className, size = "md" }: HKLogoProps) {
       ? "h-12 sm:h-14 w-auto"
       : size === "lg"
         ? "h-auto w-[300px] sm:w-[360px] md:w-[400px] max-w-full"
-        : "h-12 sm:h-16 md:h-[68px] w-auto";
+        : "h-11 sm:h-14 md:h-[60px] w-auto";
 
   return (
     <img
