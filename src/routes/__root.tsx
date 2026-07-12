@@ -253,6 +253,14 @@ function RootComponent() {
         return false;
       },
     });
+    // Deep-link / push navigation bridge.
+    const onNavigate = (e: Event) => {
+      const path = (e as CustomEvent<string>).detail;
+      if (typeof path === "string" && path.startsWith("/")) {
+        router.navigate({ to: path });
+      }
+    };
+    window.addEventListener("app:navigate", onNavigate);
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {
       if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
       if (event !== "SIGNED_OUT") {
@@ -269,6 +277,7 @@ function RootComponent() {
     return () => {
       sub.subscription.unsubscribe();
       unsubGa();
+      window.removeEventListener("app:navigate", onNavigate);
     };
   }, [router, queryClient]);
 
