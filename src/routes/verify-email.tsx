@@ -54,6 +54,14 @@ function savePending(email: string, cooldownSeconds: number) {
   }
 }
 
+function clearPending() {
+  try {
+    localStorage.removeItem(PENDING_KEY);
+  } catch {
+    /* ignore */
+  }
+}
+
 function VerifyEmailPage() {
   const { t } = useI18n();
   const navigate = useNavigate();
@@ -66,6 +74,15 @@ function VerifyEmailPage() {
   const [errorCode, setErrorCode] = useState<VerifyErrorCode | null>(null);
 
   const resend = useServerFn(requestVerificationResend);
+
+  // Cross-origin recovery: user opened the confirmation link on another
+  // origin (e.g. www.hkexinvest.com) and this tab can't observe the session.
+  // Clear pending state and hand off to /auth with the email prefilled.
+  function goToLoginPrefilled(addr: string | null) {
+    clearPending();
+    const search = addr ? { email: addr } : undefined;
+    navigate({ to: "/auth", search });
+  }
 
   // Parse & scrub any Supabase error fragment on first paint.
   useEffect(() => {
