@@ -63,10 +63,9 @@ function reportSentry(err: unknown, tag: LogTag) {
 async function readHmacKey(): Promise<string | null> {
   // Prefer the Cloudflare Worker binding when available.
   try {
-    const mod = (await import(/* @vite-ignore */ "cloudflare:workers")) as {
-      env?: Record<string, unknown>;
-    };
-    const v = mod.env?.AUTH_RATE_LIMIT_HMAC_KEY;
+    // @ts-expect-error - virtual module resolved by the Worker runtime, not TS.
+    const mod = await import(/* @vite-ignore */ "cloudflare:workers");
+    const v = (mod as { env?: Record<string, unknown> })?.env?.AUTH_RATE_LIMIT_HMAC_KEY;
     if (typeof v === "string" && v.length >= 32) return v;
   } catch {
     // module not available in this runtime — fall through
