@@ -272,6 +272,14 @@ function VerifyEmailPage() {
                 <Button
                   type="button"
                   variant="outline"
+                  onClick={() => goToLoginPrefilled(email)}
+                  className="h-12 w-full border-gold/40 bg-gold/10 text-base font-medium text-foreground hover:bg-gold/20 sm:h-10 sm:text-sm"
+                >
+                  {t("auth.confirm.already_confirmed")}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
                   onClick={() => navigate({ to: "/auth" })}
                   className="h-12 w-full border-white/15 bg-white/5 text-base sm:h-10 sm:text-sm"
                 >
@@ -307,6 +315,14 @@ function VerifyEmailPage() {
                 >
                   {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   {t("auth.confirm.resend")}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => goToLoginPrefilled(null)}
+                  className="h-12 w-full border-gold/40 bg-gold/10 text-base font-medium text-foreground hover:bg-gold/20 sm:h-10 sm:text-sm"
+                >
+                  {t("auth.confirm.already_confirmed")}
                 </Button>
                 <Button
                   type="button"
