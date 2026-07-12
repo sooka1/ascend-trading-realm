@@ -20,12 +20,15 @@ export function HKLogo({ className, size = "md" }: HKLogoProps) {
   // - sm: mobile headers (~48-56px tall)
   // - md: desktop / portal / admin headers (~60-68px tall, scales down on mobile)
   // - lg: auth / verify-email / marketing hero (~300-380px wide)
+  // Aspect ratio of the platform logo is ~1200:658 (≈1.824:1). Height-only
+  // sizing with w-auto preserves that ratio and keeps the candlestick fully
+  // visible.
   const dim =
     size === "sm"
-      ? "h-12 sm:h-14 w-auto"
+      ? "h-14 sm:h-16 w-auto"
       : size === "lg"
-        ? "h-auto w-[300px] sm:w-[360px] md:w-[400px] max-w-full"
-        : "h-11 sm:h-14 md:h-[60px] w-auto";
+        ? "h-auto w-[420px] sm:w-[560px] md:w-[720px] lg:w-[900px] max-w-full"
+        : "h-16 sm:h-20 md:h-[76px] w-auto";
 
   return (
     <img
