@@ -558,6 +558,7 @@ export const DICTS: Record<Lang, Dict> = {
     "auth.confirm.resend_error": "Impossible de renvoyer l\u2019e-mail",
     "auth.confirm.offline": "Vous \u00eates hors ligne. V\u00e9rifiez votre connexion et r\u00e9essayez.",
     "auth.confirm.generic_error": "Une erreur s\u2019est produite. R\u00e9essayez plus tard.",
+    "auth.confirm.already_confirmed": "D\u00e9j\u00e0 confirm\u00e9\u00a0? Se connecter",
     "auth.verify.enter_email": "Saisissez l\u2019e-mail utilis\u00e9 lors de l\u2019inscription pour renvoyer le lien de confirmation.",
     "auth.verify.error.expired": "Le lien de confirmation a expir\u00e9. Demandez-en un nouveau.",
     "auth.verify.error.used": "Ce lien a d\u00e9j\u00e0 \u00e9t\u00e9 utilis\u00e9. Connectez-vous ou demandez un nouveau lien.",
