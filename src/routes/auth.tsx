@@ -83,6 +83,16 @@ function Auth() {
         if (saved) setRefCode(saved);
       } catch { /* ignore */ }
     }
+    // Prefill ?email= (used by the "already confirmed" recovery flow from
+    // /verify-email). Same-origin, sanitized by z.email() at submit time.
+    const prefill = p.get("email");
+    if (prefill) {
+      const trimmed = prefill.trim().slice(0, 255);
+      if (trimmed) {
+        setEmail(trimmed);
+        setMode("login");
+      }
+    }
   }, []);
 
   // Route super_admin → /admin, everyone else → /portal.
@@ -325,6 +335,27 @@ function Auth() {
     clearCooldown();
   }
 
+  // Cross-origin recovery: user confirmed the emailed link on a different
+  // origin (e.g. www.hkexinvest.com) and this tab's Supabase client cannot
+  // observe that session. This affordance clears the local pending state,
+  // prefills the login form, and focuses the password field.
+  function handleAlreadyConfirmed() {
+    const prefill = pendingEmail ?? email ?? "";
+    clearCooldown();
+    setPendingEmail(null);
+    setResendState({ loading: false, cooldown: 0, error: undefined, sent: false });
+    setErrors({});
+    setMode("login");
+    setPassword("");
+    if (prefill) setEmail(prefill);
+    if (typeof window !== "undefined") {
+      window.requestAnimationFrame(() => {
+        const el = document.getElementById("pw") as HTMLInputElement | null;
+        el?.focus();
+      });
+    }
+  }
+
   async function handleGoogle() {
     setLoading(true);
     try {
@@ -396,6 +427,7 @@ function Auth() {
                 onResend={handleResend}
                 onBack={resetToLogin}
                 onChangeEmail={changeEmail}
+                onAlreadyConfirmed={handleAlreadyConfirmed}
                 state={resendState}
               />
             ) : (
@@ -561,12 +593,14 @@ function ConfirmEmailPanel({
   onResend,
   onBack,
   onChangeEmail,
+  onAlreadyConfirmed,
   state,
 }: {
   email: string;
   onResend: () => void;
   onBack: () => void;
   onChangeEmail: () => void;
+  onAlreadyConfirmed: () => void;
   state: { loading: boolean; cooldown: number; error?: string; sent?: boolean };
 }) {
   const { t } = useI18n();
@@ -636,6 +670,14 @@ function ConfirmEmailPanel({
           className="h-12 w-full border-white/15 bg-white/5 text-base sm:h-10 sm:text-sm"
         >
           {t("auth.confirm.change_email")}
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onAlreadyConfirmed}
+          className="h-12 w-full border-gold/40 bg-gold/10 text-base font-medium text-foreground hover:bg-gold/20 sm:h-10 sm:text-sm"
+        >
+          {t("auth.confirm.already_confirmed")}
         </Button>
         <Button
           type="button"

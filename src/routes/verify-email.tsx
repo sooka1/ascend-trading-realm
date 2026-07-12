@@ -54,6 +54,14 @@ function savePending(email: string, cooldownSeconds: number) {
   }
 }
 
+function clearPending() {
+  try {
+    localStorage.removeItem(PENDING_KEY);
+  } catch {
+    /* ignore */
+  }
+}
+
 function VerifyEmailPage() {
   const { t } = useI18n();
   const navigate = useNavigate();
@@ -66,6 +74,18 @@ function VerifyEmailPage() {
   const [errorCode, setErrorCode] = useState<VerifyErrorCode | null>(null);
 
   const resend = useServerFn(requestVerificationResend);
+
+  // Cross-origin recovery: user opened the confirmation link on another
+  // origin (e.g. www.hkexinvest.com) and this tab can't observe the session.
+  // Clear pending state and hand off to /auth with the email prefilled.
+  function goToLoginPrefilled(addr: string | null) {
+    clearPending();
+    if (addr && typeof window !== "undefined") {
+      window.location.assign(`/auth?email=${encodeURIComponent(addr)}`);
+      return;
+    }
+    navigate({ to: "/auth" });
+  }
 
   // Parse & scrub any Supabase error fragment on first paint.
   useEffect(() => {
@@ -255,6 +275,14 @@ function VerifyEmailPage() {
                 <Button
                   type="button"
                   variant="outline"
+                  onClick={() => goToLoginPrefilled(email)}
+                  className="h-12 w-full border-gold/40 bg-gold/10 text-base font-medium text-foreground hover:bg-gold/20 sm:h-10 sm:text-sm"
+                >
+                  {t("auth.confirm.already_confirmed")}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
                   onClick={() => navigate({ to: "/auth" })}
                   className="h-12 w-full border-white/15 bg-white/5 text-base sm:h-10 sm:text-sm"
                 >
@@ -290,6 +318,14 @@ function VerifyEmailPage() {
                 >
                   {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   {t("auth.confirm.resend")}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => goToLoginPrefilled(null)}
+                  className="h-12 w-full border-gold/40 bg-gold/10 text-base font-medium text-foreground hover:bg-gold/20 sm:h-10 sm:text-sm"
+                >
+                  {t("auth.confirm.already_confirmed")}
                 </Button>
                 <Button
                   type="button"
