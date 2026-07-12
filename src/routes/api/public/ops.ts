@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { createHmac, timingSafeEqual } from "crypto";
+import { captureServerException } from "@/lib/sentry.server";
 
 // GET /api/public/ops — internal monitoring snapshot for uptime dashboards.
 // Protected by a shared-secret bearer token (OPS_MONITOR_TOKEN).
@@ -21,6 +22,7 @@ export const Route = createFileRoute("/api/public/ops")({
   server: {
     handlers: {
       GET: async ({ request }) => {
+       try {
         const token = process.env.OPS_MONITOR_TOKEN;
         if (!token) return new Response("Not configured", { status: 503 });
         if (!verifyBearer(request.headers.get("authorization"), token)) {
@@ -57,6 +59,10 @@ export const Route = createFileRoute("/api/public/ops")({
             headers: { "Content-Type": "application/json", "Cache-Control": "no-store" },
           },
         );
+       } catch (e) {
+         captureServerException(e, { route: "/api/public/ops" });
+         throw e;
+       }
       },
     },
   },

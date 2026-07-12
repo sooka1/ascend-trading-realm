@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
+import { captureServerException } from "@/lib/sentry.server";
 
 // GET /api/public/health — liveness + readiness probe for external monitors.
 // Returns HTTP 200 only when every critical dependency is reachable.
@@ -29,6 +30,7 @@ export const Route = createFileRoute("/api/public/health")({
             const { error } = await client.from("instruments").select("id", { count: "exact", head: true }).limit(1);
             checks.database = { ok: !error, latency_ms: Date.now() - t0, detail: error?.message };
           } catch (e) {
+            captureServerException(e, { probe: "database", route: "/api/public/health" });
             checks.database = { ok: false, detail: (e as Error).message };
           }
           try {
@@ -48,6 +50,7 @@ export const Route = createFileRoute("/api/public/health")({
               detail: error?.message ?? (fresh ? undefined : "stale (>15min)"),
             };
           } catch (e) {
+            captureServerException(e, { probe: "market_data", route: "/api/public/health" });
             checks.market_data = { ok: false, detail: (e as Error).message };
           }
         }

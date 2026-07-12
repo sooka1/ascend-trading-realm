@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { createHmac, timingSafeEqual } from "crypto";
+import { captureServerException } from "@/lib/sentry.server";
 
 // Binance Pay webhook: verifies the merchant signature over
 // `${timestamp}\n${nonce}\n${body}\n` with HMAC-SHA512(API_SECRET),
@@ -9,6 +10,7 @@ export const Route = createFileRoute("/api/public/webhooks/binance-pay")({
   server: {
     handlers: {
       POST: async ({ request }) => {
+       try {
         const apiSecret = process.env.BINANCE_PAY_API_SECRET;
         if (!apiSecret) return new Response("Not configured", { status: 503 });
 
@@ -116,6 +118,10 @@ export const Route = createFileRoute("/api/public/webhooks/binance-pay")({
 
         // Binance Pay expects this ACK shape
         return Response.json({ returnCode: "SUCCESS", returnMessage: null });
+       } catch (e) {
+         captureServerException(e, { route: "/api/public/webhooks/binance-pay" });
+         throw e;
+       }
       },
     },
   },
