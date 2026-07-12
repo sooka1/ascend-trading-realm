@@ -239,27 +239,9 @@ function Hero({ c }: { c: LandingContent }) {
               <Link to="/competitions">{c.hero.ctaLearn}</Link>
             </Button>
           </div>
-          <dl className="mt-14 grid max-w-lg grid-cols-3 gap-3 text-sm">
-            {[
-              { k: c.hero.statAum, v: "$1.2B+", d: "+12.4%", tone: "up" },
-              { k: c.hero.statClients, v: "18,400+", d: "OPTIMIZED", tone: "muted" },
-              { k: c.hero.statCountries, v: "62", d: "GLOBAL", tone: "muted" },
-            ].map((s) => (
-              <div
-                key={s.k}
-                className="relative space-y-1 rounded-lg border border-gold/25 bg-white/[0.03] px-4 py-3 backdrop-blur-sm before:absolute before:inset-x-3 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-gold/60 before:to-transparent"
-              >
-                <dt className="font-mono text-[10px] font-medium uppercase tracking-[0.24em] text-gold/85">{s.k}</dt>
-                <dd className="font-display text-3xl font-normal text-foreground tabular-nums">{s.v}</dd>
-                <p className={`font-mono text-[10px] tracking-wide ${s.tone === "up" ? "text-bull" : "text-muted-foreground"}`}>
-                  {s.tone === "up" ? "↑ " : ""}{s.d}
-                </p>
-              </div>
-            ))}
-          </dl>
         </div>
 
-        <div className="relative flex justify-center">
+        <div className="relative flex flex-col items-center">
           <div className="pointer-events-none absolute -inset-4 -z-10 rounded-2xl bg-[radial-gradient(ellipse_at_top,rgba(30,107,255,0.22),transparent_65%)] blur-3xl" aria-hidden />
 
           {/* Desktop monitor / display showing the same hero video */}
@@ -297,6 +279,24 @@ function Hero({ c }: { c: LandingContent }) {
             <div className="relative mx-auto h-2 w-48 rounded-b-2xl bg-gradient-to-b from-neutral-800 to-neutral-950 shadow-[0_10px_20px_-8px_rgba(0,0,0,0.6)]" />
           </div>
           <p className="pointer-events-none absolute -bottom-8 left-0 right-0 text-center font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground/70">{c.hero.disclaimer}</p>
+          <dl className="mt-16 grid w-full max-w-[560px] grid-cols-3 gap-3 text-sm">
+            {[
+              { k: c.hero.statAum, v: "$1.2B+", d: "+12.4%", tone: "up" },
+              { k: c.hero.statClients, v: "18,400+", d: "OPTIMIZED", tone: "muted" },
+              { k: c.hero.statCountries, v: "62", d: "GLOBAL", tone: "muted" },
+            ].map((s) => (
+              <div
+                key={s.k}
+                className="relative space-y-1 rounded-lg border border-gold/25 bg-white/[0.03] px-4 py-3 backdrop-blur-sm before:absolute before:inset-x-3 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-gold/60 before:to-transparent"
+              >
+                <dt className="font-mono text-[10px] font-medium uppercase tracking-[0.24em] text-gold/85">{s.k}</dt>
+                <dd className="font-display text-3xl font-normal text-foreground tabular-nums">{s.v}</dd>
+                <p className={`font-mono text-[10px] tracking-wide ${s.tone === "up" ? "text-bull" : "text-muted-foreground"}`}>
+                  {s.tone === "up" ? "↑ " : ""}{s.d}
+                </p>
+              </div>
+            ))}
+          </dl>
         </div>
       </div>
     </section>
