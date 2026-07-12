@@ -325,6 +325,27 @@ function Auth() {
     clearCooldown();
   }
 
+  // Cross-origin recovery: user confirmed the emailed link on a different
+  // origin (e.g. www.hkexinvest.com) and this tab's Supabase client cannot
+  // observe that session. This affordance clears the local pending state,
+  // prefills the login form, and focuses the password field.
+  function handleAlreadyConfirmed() {
+    const prefill = pendingEmail ?? email ?? "";
+    clearCooldown();
+    setPendingEmail(null);
+    setResendState({ loading: false, cooldown: 0, error: undefined, sent: false });
+    setErrors({});
+    setMode("login");
+    setPassword("");
+    if (prefill) setEmail(prefill);
+    if (typeof window !== "undefined") {
+      window.requestAnimationFrame(() => {
+        const el = document.getElementById("pw") as HTMLInputElement | null;
+        el?.focus();
+      });
+    }
+  }
+
   async function handleGoogle() {
     setLoading(true);
     try {
