@@ -202,16 +202,16 @@ function Hero({ c }: { c: LandingContent }) {
         <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/65 to-background" />
         <div className="absolute inset-0 bg-grid opacity-[0.12]" />
       </div>
+      <img
+        src="/branding/hkex-logo-platform.png"
+        alt="HKEX — 交易・投資・成長"
+        width={300}
+        height={150}
+        className="absolute right-4 top-4 z-10 h-[90px] w-auto select-none object-contain sm:right-6 sm:h-[110px] lg:right-8 lg:top-6 lg:h-[150px]"
+        draggable={false}
+      />
       <div className="relative mx-auto grid max-w-7xl gap-10 px-4 pt-2 pb-16 sm:px-6 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:px-8 lg:pt-4 lg:pb-24">
         <div>
-          <img
-            src="/branding/hkex-logo-platform.png"
-            alt="HKEX — 交易・投資・成長"
-            width={300}
-            height={150}
-            className="mb-4 block h-[150px] w-[300px] object-contain select-none"
-            draggable={false}
-          />
           <div className="flex items-center gap-4">
             <span className="h-px w-10 bg-gold/60" aria-hidden />
             <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-gold/90">
