@@ -32,14 +32,14 @@ export async function initNativeShell(opts: {
 
   try {
     const { App } = await import("@capacitor/app");
-    App.addListener("backButton", ({ canGoBack }) => {
+    App.addListener("backButton", ({ canGoBack }: { canGoBack: boolean }) => {
       const handled = opts.onBack?.();
       if (handled) return;
       if (canGoBack) window.history.back();
       else App.exitApp();
     });
     // Background/foreground resume — invalidate caches on resume.
-    App.addListener("appStateChange", (state) => {
+    App.addListener("appStateChange", (state: { isActive: boolean }) => {
       if (state.isActive) {
         window.dispatchEvent(new CustomEvent("app:resume"));
       }
@@ -48,7 +48,7 @@ export async function initNativeShell(opts: {
 
   try {
     const { Network } = await import("@capacitor/network");
-    Network.addListener("networkStatusChange", (s) => {
+    Network.addListener("networkStatusChange", (s: unknown) => {
       window.dispatchEvent(new CustomEvent("app:network", { detail: s }));
     });
   } catch {}
