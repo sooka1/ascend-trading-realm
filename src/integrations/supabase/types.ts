@@ -1224,6 +1224,60 @@ export type Database = {
         }
         Relationships: []
       }
+      copy_execution_dlq: {
+        Row: {
+          attempts: number
+          created_at: string
+          dedupe_key: string
+          enqueued_at: string
+          event_type: string
+          failed_at: string
+          id: string
+          last_error: string | null
+          master_id: string
+          master_trade_id: string | null
+          original_id: string
+          payload: Json
+          review_notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+        }
+        Insert: {
+          attempts: number
+          created_at?: string
+          dedupe_key: string
+          enqueued_at: string
+          event_type: string
+          failed_at?: string
+          id?: string
+          last_error?: string | null
+          master_id: string
+          master_trade_id?: string | null
+          original_id: string
+          payload?: Json
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+        }
+        Update: {
+          attempts?: number
+          created_at?: string
+          dedupe_key?: string
+          enqueued_at?: string
+          event_type?: string
+          failed_at?: string
+          id?: string
+          last_error?: string | null
+          master_id?: string
+          master_trade_id?: string | null
+          original_id?: string
+          payload?: Json
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+        }
+        Relationships: []
+      }
       copy_execution_log: {
         Row: {
           calc_method: string | null
@@ -1331,14 +1385,19 @@ export type Database = {
           dedupe_key: string
           enqueued_at: string
           event_type: string
+          heartbeat_at: string | null
           id: string
           last_error: string | null
+          locked_until: string | null
           master_id: string
           master_trade_id: string | null
+          max_attempts: number
+          next_retry_at: string | null
           payload: Json
           started_at: string | null
           status: string
           updated_at: string
+          worker_id: string | null
         }
         Insert: {
           attempts?: number
@@ -1347,14 +1406,19 @@ export type Database = {
           dedupe_key: string
           enqueued_at?: string
           event_type: string
+          heartbeat_at?: string | null
           id?: string
           last_error?: string | null
+          locked_until?: string | null
           master_id: string
           master_trade_id?: string | null
+          max_attempts?: number
+          next_retry_at?: string | null
           payload?: Json
           started_at?: string | null
           status?: string
           updated_at?: string
+          worker_id?: string | null
         }
         Update: {
           attempts?: number
@@ -1363,14 +1427,19 @@ export type Database = {
           dedupe_key?: string
           enqueued_at?: string
           event_type?: string
+          heartbeat_at?: string | null
           id?: string
           last_error?: string | null
+          locked_until?: string | null
           master_id?: string
           master_trade_id?: string | null
+          max_attempts?: number
+          next_retry_at?: string | null
           payload?: Json
           started_at?: string | null
           status?: string
           updated_at?: string
+          worker_id?: string | null
         }
         Relationships: [
           {
@@ -2206,6 +2275,36 @@ export type Database = {
           reference_table?: string | null
           tx_id?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      ledger_integrity_daily: {
+        Row: {
+          day: string
+          id: string
+          imbalance_amount: number
+          ran_at: string
+          total_entries: number
+          total_tx: number
+          unbalanced_tx: number
+        }
+        Insert: {
+          day: string
+          id?: string
+          imbalance_amount?: number
+          ran_at?: string
+          total_entries: number
+          total_tx: number
+          unbalanced_tx: number
+        }
+        Update: {
+          day?: string
+          id?: string
+          imbalance_amount?: number
+          ran_at?: string
+          total_entries?: number
+          total_tx?: number
+          unbalanced_tx?: number
         }
         Relationships: []
       }
@@ -5312,6 +5411,25 @@ export type Database = {
         }
         Relationships: []
       }
+      v_ledger_daily_totals: {
+        Row: {
+          account: Database["public"]["Enums"]["ledger_account"] | null
+          currency: string | null
+          day: string | null
+          entries: number | null
+          net_amount: number | null
+        }
+        Relationships: []
+      }
+      v_ledger_unbalanced_tx: {
+        Row: {
+          entry_count: number | null
+          first_seen: string | null
+          imbalance: number | null
+          tx_id: string | null
+        }
+        Relationships: []
+      }
       v_master_traders_public: {
         Row: {
           account_age_days: number | null
@@ -5430,6 +5548,35 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      v_system_health_ledger: {
+        Row: {
+          imbalance_last_30d: number | null
+          last_reconciled_at: string | null
+          total_entries: number | null
+          unbalanced_tx: number | null
+        }
+        Relationships: []
+      }
+      v_system_health_queue: {
+        Row: {
+          jobs: number | null
+          max_attempts_seen: number | null
+          oldest_enqueued: string | null
+          ready_now: number | null
+          stale_locks: number | null
+          status: string | null
+        }
+        Relationships: []
+      }
+      v_system_health_workers: {
+        Row: {
+          active_jobs: number | null
+          last_heartbeat: string | null
+          next_expiry: string | null
+          worker_id: string | null
+        }
+        Relationships: []
       }
     }
     Functions: {
@@ -5627,6 +5774,37 @@ export type Database = {
         }
         Returns: number
       }
+      copy_claim_next_job: {
+        Args: { _lock_seconds?: number; _worker_id: string }
+        Returns: {
+          attempts: number
+          completed_at: string | null
+          created_at: string
+          dedupe_key: string
+          enqueued_at: string
+          event_type: string
+          heartbeat_at: string | null
+          id: string
+          last_error: string | null
+          locked_until: string | null
+          master_id: string
+          master_trade_id: string | null
+          max_attempts: number
+          next_retry_at: string | null
+          payload: Json
+          started_at: string | null
+          status: string
+          updated_at: string
+          worker_id: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "copy_execution_queue"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      copy_complete_job: { Args: { _id: string }; Returns: undefined }
       copy_enqueue_master_event: {
         Args: {
           _dedupe_key?: string
@@ -5637,12 +5815,14 @@ export type Database = {
         }
         Returns: string
       }
+      copy_fail_job: { Args: { _error: string; _id: string }; Returns: string }
       copy_force_sync: { Args: { _master_id: string }; Returns: Json }
       copy_pause_subscription: {
         Args: { _subscription_id: string }
         Returns: Json
       }
       copy_process_queue_item: { Args: { _queue_id: string }; Returns: Json }
+      copy_release_stale_jobs: { Args: never; Returns: number }
       copy_resume_subscription: {
         Args: { _subscription_id: string }
         Returns: Json
@@ -5736,6 +5916,24 @@ export type Database = {
       md_toggle_provider: {
         Args: { _code: string; _enabled: boolean }
         Returns: Json
+      }
+      run_daily_ledger_reconciliation: {
+        Args: { _day?: string }
+        Returns: {
+          day: string
+          id: string
+          imbalance_amount: number
+          ran_at: string
+          total_entries: number
+          total_tx: number
+          unbalanced_tx: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "ledger_integrity_daily"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       sim_close_position: {
         Args: { _position_id: string; _reason?: string; _volume?: number }
