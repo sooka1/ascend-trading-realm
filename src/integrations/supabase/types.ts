@@ -1146,6 +1146,117 @@ export type Database = {
         }
         Relationships: []
       }
+      competition_rewards_paid: {
+        Row: {
+          amount: number
+          competition_id: string
+          created_at: string
+          currency: string
+          deposit_id: string | null
+          final_equity: number
+          granted_at: string | null
+          id: string
+          notified_at: string | null
+          rank: number
+          return_pct: number
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          competition_id: string
+          created_at?: string
+          currency?: string
+          deposit_id?: string | null
+          final_equity: number
+          granted_at?: string | null
+          id?: string
+          notified_at?: string | null
+          rank: number
+          return_pct?: number
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          competition_id?: string
+          created_at?: string
+          currency?: string
+          deposit_id?: string | null
+          final_equity?: number
+          granted_at?: string | null
+          id?: string
+          notified_at?: string | null
+          rank?: number
+          return_pct?: number
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      competition_settlements: {
+        Row: {
+          archived_at: string | null
+          competition_id: string
+          created_at: string
+          currency: string
+          end_at: string
+          entry_fee: number
+          frozen_at: string | null
+          id: string
+          metadata: Json
+          name: string
+          prize_distribution: Json
+          prize_pool: number
+          settled_at: string | null
+          starting_balance: number
+          status: string
+          updated_at: string
+          winners_count: number | null
+        }
+        Insert: {
+          archived_at?: string | null
+          competition_id: string
+          created_at?: string
+          currency?: string
+          end_at: string
+          entry_fee?: number
+          frozen_at?: string | null
+          id?: string
+          metadata?: Json
+          name: string
+          prize_distribution?: Json
+          prize_pool?: number
+          settled_at?: string | null
+          starting_balance?: number
+          status?: string
+          updated_at?: string
+          winners_count?: number | null
+        }
+        Update: {
+          archived_at?: string | null
+          competition_id?: string
+          created_at?: string
+          currency?: string
+          end_at?: string
+          entry_fee?: number
+          frozen_at?: string | null
+          id?: string
+          metadata?: Json
+          name?: string
+          prize_distribution?: Json
+          prize_pool?: number
+          settled_at?: string | null
+          starting_balance?: number
+          status?: string
+          updated_at?: string
+          winners_count?: number | null
+        }
+        Relationships: []
+      }
       competition_trades: {
         Row: {
           closed_at: string | null
@@ -5966,6 +6077,8 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      settle_competition: { Args: { _competition_id: string }; Returns: Json }
+      settle_due_competitions: { Args: never; Returns: Json }
       sim_close_position: {
         Args: { _position_id: string; _reason?: string; _volume?: number }
         Returns: Json
