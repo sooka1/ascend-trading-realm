@@ -17,6 +17,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { installTimezonePatch, loadUserTimezoneFromProfile, setUserTimezone, setUserLocale } from "@/lib/user-timezone";
 import { ImpersonationBanner } from "@/components/impersonation-banner";
 import { ThemeProvider } from "@/hooks/use-theme";
+import { initNativeShell } from "@/lib/native-shell";
 
 function NotFoundComponent() {
   const suggestions: Array<{ to: string; label: string; hint: string }> = [
@@ -242,6 +243,16 @@ function RootComponent() {
     };
     sendPageView();
     const unsubGa = router.subscribe("onResolved", sendPageView);
+    // Native mobile shell (Capacitor). No-ops on web.
+    void initNativeShell({
+      onBack: () => {
+        if (window.history.length > 1) {
+          window.history.back();
+          return true;
+        }
+        return false;
+      },
+    });
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {
       if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
       if (event !== "SIGNED_OUT") {
