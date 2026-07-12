@@ -115,6 +115,629 @@ export type Database = {
         }
         Relationships: []
       }
+      comp_anti_cheat_flags: {
+        Row: {
+          competition_id: string
+          created_at: string
+          detected_by: string
+          evidence: Json
+          flag_type: string
+          id: string
+          registration_id: string | null
+          resolution: string | null
+          reviewed_at: string | null
+          reviewer_id: string | null
+          severity: string
+          status: Database["public"]["Enums"]["comp_flag_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          competition_id: string
+          created_at?: string
+          detected_by?: string
+          evidence?: Json
+          flag_type: string
+          id?: string
+          registration_id?: string | null
+          resolution?: string | null
+          reviewed_at?: string | null
+          reviewer_id?: string | null
+          severity?: string
+          status?: Database["public"]["Enums"]["comp_flag_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          competition_id?: string
+          created_at?: string
+          detected_by?: string
+          evidence?: Json
+          flag_type?: string
+          id?: string
+          registration_id?: string | null
+          resolution?: string | null
+          reviewed_at?: string | null
+          reviewer_id?: string | null
+          severity?: string
+          status?: Database["public"]["Enums"]["comp_flag_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comp_anti_cheat_flags_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "comp_definitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comp_anti_cheat_flags_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "v_comp_active"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comp_anti_cheat_flags_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
+            referencedRelation: "comp_registrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      comp_definitions: {
+        Row: {
+          allowed_symbols: string[]
+          capacity: number | null
+          comp_type: Database["public"]["Enums"]["comp_type"]
+          country_allowlist: string[]
+          country_blocklist: string[]
+          created_at: string
+          created_by: string | null
+          currency: string
+          description: string | null
+          eligibility: Json
+          end_at: string | null
+          entry_fee: number
+          id: string
+          kyc_required: boolean
+          leverage: number
+          max_daily_loss_pct: number | null
+          max_drawdown_pct: number | null
+          max_positions: number | null
+          max_trades: number | null
+          metadata: Json
+          min_risk_profile: string | null
+          min_trades: number | null
+          name: string
+          registration_close_at: string | null
+          registration_open_at: string | null
+          rules: Json
+          slug: string
+          spread_rules: Json
+          start_at: string | null
+          starting_balance: number
+          status: Database["public"]["Enums"]["comp_status"]
+          trading_hours: Json
+          updated_at: string
+          visibility: string
+          waiting_list_enabled: boolean
+          weekend_trading: boolean
+        }
+        Insert: {
+          allowed_symbols?: string[]
+          capacity?: number | null
+          comp_type?: Database["public"]["Enums"]["comp_type"]
+          country_allowlist?: string[]
+          country_blocklist?: string[]
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          description?: string | null
+          eligibility?: Json
+          end_at?: string | null
+          entry_fee?: number
+          id?: string
+          kyc_required?: boolean
+          leverage?: number
+          max_daily_loss_pct?: number | null
+          max_drawdown_pct?: number | null
+          max_positions?: number | null
+          max_trades?: number | null
+          metadata?: Json
+          min_risk_profile?: string | null
+          min_trades?: number | null
+          name: string
+          registration_close_at?: string | null
+          registration_open_at?: string | null
+          rules?: Json
+          slug: string
+          spread_rules?: Json
+          start_at?: string | null
+          starting_balance?: number
+          status?: Database["public"]["Enums"]["comp_status"]
+          trading_hours?: Json
+          updated_at?: string
+          visibility?: string
+          waiting_list_enabled?: boolean
+          weekend_trading?: boolean
+        }
+        Update: {
+          allowed_symbols?: string[]
+          capacity?: number | null
+          comp_type?: Database["public"]["Enums"]["comp_type"]
+          country_allowlist?: string[]
+          country_blocklist?: string[]
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          description?: string | null
+          eligibility?: Json
+          end_at?: string | null
+          entry_fee?: number
+          id?: string
+          kyc_required?: boolean
+          leverage?: number
+          max_daily_loss_pct?: number | null
+          max_drawdown_pct?: number | null
+          max_positions?: number | null
+          max_trades?: number | null
+          metadata?: Json
+          min_risk_profile?: string | null
+          min_trades?: number | null
+          name?: string
+          registration_close_at?: string | null
+          registration_open_at?: string | null
+          rules?: Json
+          slug?: string
+          spread_rules?: Json
+          start_at?: string | null
+          starting_balance?: number
+          status?: Database["public"]["Enums"]["comp_status"]
+          trading_hours?: Json
+          updated_at?: string
+          visibility?: string
+          waiting_list_enabled?: boolean
+          weekend_trading?: boolean
+        }
+        Relationships: []
+      }
+      comp_events: {
+        Row: {
+          competition_id: string
+          created_at: string
+          event_type: string
+          id: string
+          payload: Json
+          registration_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          competition_id: string
+          created_at?: string
+          event_type: string
+          id?: string
+          payload?: Json
+          registration_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          competition_id?: string
+          created_at?: string
+          event_type?: string
+          id?: string
+          payload?: Json
+          registration_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comp_events_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "comp_definitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comp_events_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "v_comp_active"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comp_events_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
+            referencedRelation: "comp_registrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      comp_invitations: {
+        Row: {
+          assigned_user_id: string | null
+          code: string
+          competition_id: string
+          created_at: string
+          expires_at: string | null
+          id: string
+          is_active: boolean
+          max_uses: number
+          updated_at: string
+          used_count: number
+        }
+        Insert: {
+          assigned_user_id?: string | null
+          code: string
+          competition_id: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          max_uses?: number
+          updated_at?: string
+          used_count?: number
+        }
+        Update: {
+          assigned_user_id?: string | null
+          code?: string
+          competition_id?: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          max_uses?: number
+          updated_at?: string
+          used_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comp_invitations_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "comp_definitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comp_invitations_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "v_comp_active"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      comp_leaderboard_snapshots: {
+        Row: {
+          captured_at: string
+          competition_id: string
+          consistency_score: number | null
+          drawdown_pct: number
+          equity: number
+          id: string
+          is_latest: boolean
+          rank: number | null
+          registration_id: string
+          return_pct: number
+          sharpe_ratio: number | null
+          trades: number
+          user_id: string
+          win_rate: number
+        }
+        Insert: {
+          captured_at?: string
+          competition_id: string
+          consistency_score?: number | null
+          drawdown_pct?: number
+          equity?: number
+          id?: string
+          is_latest?: boolean
+          rank?: number | null
+          registration_id: string
+          return_pct?: number
+          sharpe_ratio?: number | null
+          trades?: number
+          user_id: string
+          win_rate?: number
+        }
+        Update: {
+          captured_at?: string
+          competition_id?: string
+          consistency_score?: number | null
+          drawdown_pct?: number
+          equity?: number
+          id?: string
+          is_latest?: boolean
+          rank?: number | null
+          registration_id?: string
+          return_pct?: number
+          sharpe_ratio?: number | null
+          trades?: number
+          user_id?: string
+          win_rate?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comp_leaderboard_snapshots_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "comp_definitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comp_leaderboard_snapshots_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "v_comp_active"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comp_leaderboard_snapshots_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
+            referencedRelation: "comp_registrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      comp_registrations: {
+        Row: {
+          competition_id: string
+          confirmed_at: string | null
+          created_at: string
+          disqualification_reason: string | null
+          disqualified_at: string | null
+          eligibility_result: Json
+          id: string
+          invitation_code: string | null
+          metadata: Json
+          queue_position: number | null
+          registered_at: string
+          sim_account_id: string | null
+          status: Database["public"]["Enums"]["comp_registration_status"]
+          team_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          competition_id: string
+          confirmed_at?: string | null
+          created_at?: string
+          disqualification_reason?: string | null
+          disqualified_at?: string | null
+          eligibility_result?: Json
+          id?: string
+          invitation_code?: string | null
+          metadata?: Json
+          queue_position?: number | null
+          registered_at?: string
+          sim_account_id?: string | null
+          status?: Database["public"]["Enums"]["comp_registration_status"]
+          team_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          competition_id?: string
+          confirmed_at?: string | null
+          created_at?: string
+          disqualification_reason?: string | null
+          disqualified_at?: string | null
+          eligibility_result?: Json
+          id?: string
+          invitation_code?: string | null
+          metadata?: Json
+          queue_position?: number | null
+          registered_at?: string
+          sim_account_id?: string | null
+          status?: Database["public"]["Enums"]["comp_registration_status"]
+          team_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comp_registrations_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "comp_definitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comp_registrations_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "v_comp_active"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      comp_reports: {
+        Row: {
+          competition_id: string
+          created_at: string
+          generated_at: string
+          generated_by: string | null
+          id: string
+          payload: Json
+          report_type: string
+        }
+        Insert: {
+          competition_id: string
+          created_at?: string
+          generated_at?: string
+          generated_by?: string | null
+          id?: string
+          payload?: Json
+          report_type: string
+        }
+        Update: {
+          competition_id?: string
+          created_at?: string
+          generated_at?: string
+          generated_by?: string | null
+          id?: string
+          payload?: Json
+          report_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comp_reports_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "comp_definitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comp_reports_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "v_comp_active"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      comp_reward_grants: {
+        Row: {
+          amount: number
+          competition_id: string
+          created_at: string
+          currency: string
+          granted_at: string
+          id: string
+          ledger_entry_id: string | null
+          metadata: Json
+          rank: number | null
+          registration_id: string
+          reward_id: string | null
+          reward_type: Database["public"]["Enums"]["comp_reward_type"]
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          competition_id: string
+          created_at?: string
+          currency?: string
+          granted_at?: string
+          id?: string
+          ledger_entry_id?: string | null
+          metadata?: Json
+          rank?: number | null
+          registration_id: string
+          reward_id?: string | null
+          reward_type: Database["public"]["Enums"]["comp_reward_type"]
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          competition_id?: string
+          created_at?: string
+          currency?: string
+          granted_at?: string
+          id?: string
+          ledger_entry_id?: string | null
+          metadata?: Json
+          rank?: number | null
+          registration_id?: string
+          reward_id?: string | null
+          reward_type?: Database["public"]["Enums"]["comp_reward_type"]
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comp_reward_grants_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "comp_definitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comp_reward_grants_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "v_comp_active"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comp_reward_grants_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
+            referencedRelation: "comp_registrations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comp_reward_grants_reward_id_fkey"
+            columns: ["reward_id"]
+            isOneToOne: false
+            referencedRelation: "comp_rewards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      comp_rewards: {
+        Row: {
+          amount: number
+          competition_id: string
+          created_at: string
+          currency: string
+          id: string
+          metadata: Json
+          rank_from: number
+          rank_to: number
+          reward_type: Database["public"]["Enums"]["comp_reward_type"]
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          competition_id: string
+          created_at?: string
+          currency?: string
+          id?: string
+          metadata?: Json
+          rank_from: number
+          rank_to: number
+          reward_type: Database["public"]["Enums"]["comp_reward_type"]
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          competition_id?: string
+          created_at?: string
+          currency?: string
+          id?: string
+          metadata?: Json
+          rank_from?: number
+          rank_to?: number
+          reward_type?: Database["public"]["Enums"]["comp_reward_type"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comp_rewards_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "comp_definitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comp_rewards_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "v_comp_active"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       competition_entries: {
         Row: {
           competition_id: string | null
@@ -3916,6 +4539,196 @@ export type Database = {
         }
         Relationships: []
       }
+      v_comp_active: {
+        Row: {
+          allowed_symbols: string[] | null
+          capacity: number | null
+          comp_type: Database["public"]["Enums"]["comp_type"] | null
+          country_allowlist: string[] | null
+          country_blocklist: string[] | null
+          created_at: string | null
+          created_by: string | null
+          currency: string | null
+          description: string | null
+          eligibility: Json | null
+          end_at: string | null
+          entry_fee: number | null
+          id: string | null
+          kyc_required: boolean | null
+          leverage: number | null
+          max_daily_loss_pct: number | null
+          max_drawdown_pct: number | null
+          max_positions: number | null
+          max_trades: number | null
+          metadata: Json | null
+          min_risk_profile: string | null
+          min_trades: number | null
+          name: string | null
+          registration_close_at: string | null
+          registration_open_at: string | null
+          rules: Json | null
+          slug: string | null
+          spread_rules: Json | null
+          start_at: string | null
+          starting_balance: number | null
+          status: Database["public"]["Enums"]["comp_status"] | null
+          trading_hours: Json | null
+          updated_at: string | null
+          visibility: string | null
+          waiting_list_enabled: boolean | null
+          weekend_trading: boolean | null
+        }
+        Insert: {
+          allowed_symbols?: string[] | null
+          capacity?: number | null
+          comp_type?: Database["public"]["Enums"]["comp_type"] | null
+          country_allowlist?: string[] | null
+          country_blocklist?: string[] | null
+          created_at?: string | null
+          created_by?: string | null
+          currency?: string | null
+          description?: string | null
+          eligibility?: Json | null
+          end_at?: string | null
+          entry_fee?: number | null
+          id?: string | null
+          kyc_required?: boolean | null
+          leverage?: number | null
+          max_daily_loss_pct?: number | null
+          max_drawdown_pct?: number | null
+          max_positions?: number | null
+          max_trades?: number | null
+          metadata?: Json | null
+          min_risk_profile?: string | null
+          min_trades?: number | null
+          name?: string | null
+          registration_close_at?: string | null
+          registration_open_at?: string | null
+          rules?: Json | null
+          slug?: string | null
+          spread_rules?: Json | null
+          start_at?: string | null
+          starting_balance?: number | null
+          status?: Database["public"]["Enums"]["comp_status"] | null
+          trading_hours?: Json | null
+          updated_at?: string | null
+          visibility?: string | null
+          waiting_list_enabled?: boolean | null
+          weekend_trading?: boolean | null
+        }
+        Update: {
+          allowed_symbols?: string[] | null
+          capacity?: number | null
+          comp_type?: Database["public"]["Enums"]["comp_type"] | null
+          country_allowlist?: string[] | null
+          country_blocklist?: string[] | null
+          created_at?: string | null
+          created_by?: string | null
+          currency?: string | null
+          description?: string | null
+          eligibility?: Json | null
+          end_at?: string | null
+          entry_fee?: number | null
+          id?: string | null
+          kyc_required?: boolean | null
+          leverage?: number | null
+          max_daily_loss_pct?: number | null
+          max_drawdown_pct?: number | null
+          max_positions?: number | null
+          max_trades?: number | null
+          metadata?: Json | null
+          min_risk_profile?: string | null
+          min_trades?: number | null
+          name?: string | null
+          registration_close_at?: string | null
+          registration_open_at?: string | null
+          rules?: Json | null
+          slug?: string | null
+          spread_rules?: Json | null
+          start_at?: string | null
+          starting_balance?: number | null
+          status?: Database["public"]["Enums"]["comp_status"] | null
+          trading_hours?: Json | null
+          updated_at?: string | null
+          visibility?: string | null
+          waiting_list_enabled?: boolean | null
+          weekend_trading?: boolean | null
+        }
+        Relationships: []
+      }
+      v_comp_leaderboard_latest: {
+        Row: {
+          captured_at: string | null
+          competition_id: string | null
+          consistency_score: number | null
+          drawdown_pct: number | null
+          equity: number | null
+          id: string | null
+          is_latest: boolean | null
+          rank: number | null
+          registration_id: string | null
+          return_pct: number | null
+          sharpe_ratio: number | null
+          trades: number | null
+          user_id: string | null
+          win_rate: number | null
+        }
+        Insert: {
+          captured_at?: string | null
+          competition_id?: string | null
+          consistency_score?: number | null
+          drawdown_pct?: number | null
+          equity?: number | null
+          id?: string | null
+          is_latest?: boolean | null
+          rank?: number | null
+          registration_id?: string | null
+          return_pct?: number | null
+          sharpe_ratio?: number | null
+          trades?: number | null
+          user_id?: string | null
+          win_rate?: number | null
+        }
+        Update: {
+          captured_at?: string | null
+          competition_id?: string | null
+          consistency_score?: number | null
+          drawdown_pct?: number | null
+          equity?: number | null
+          id?: string | null
+          is_latest?: boolean | null
+          rank?: number | null
+          registration_id?: string | null
+          return_pct?: number | null
+          sharpe_ratio?: number | null
+          trades?: number | null
+          user_id?: string | null
+          win_rate?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comp_leaderboard_snapshots_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "comp_definitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comp_leaderboard_snapshots_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "v_comp_active"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comp_leaderboard_snapshots_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
+            referencedRelation: "comp_registrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       v_copy_queue_admin: {
         Row: {
           attempts: number | null
@@ -4152,6 +4965,144 @@ export type Database = {
         Args: { _exit_price: number; _trade_id: string }
         Returns: Json
       }
+      comp_flag_participant: {
+        Args: {
+          _competition_id: string
+          _evidence?: Json
+          _flag_type: string
+          _severity?: string
+          _user_id: string
+        }
+        Returns: {
+          competition_id: string
+          created_at: string
+          detected_by: string
+          evidence: Json
+          flag_type: string
+          id: string
+          registration_id: string | null
+          resolution: string | null
+          reviewed_at: string | null
+          reviewer_id: string | null
+          severity: string
+          status: Database["public"]["Enums"]["comp_flag_status"]
+          updated_at: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "comp_anti_cheat_flags"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      comp_grant_reward: {
+        Args: { _competition_id: string; _reward_id: string; _user_id: string }
+        Returns: {
+          amount: number
+          competition_id: string
+          created_at: string
+          currency: string
+          granted_at: string
+          id: string
+          ledger_entry_id: string | null
+          metadata: Json
+          rank: number | null
+          registration_id: string
+          reward_id: string | null
+          reward_type: Database["public"]["Enums"]["comp_reward_type"]
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "comp_reward_grants"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      comp_refresh_leaderboard: {
+        Args: { _competition_id: string }
+        Returns: number
+      }
+      comp_register: {
+        Args: { _competition_id: string; _invitation_code?: string }
+        Returns: {
+          competition_id: string
+          confirmed_at: string | null
+          created_at: string
+          disqualification_reason: string | null
+          disqualified_at: string | null
+          eligibility_result: Json
+          id: string
+          invitation_code: string | null
+          metadata: Json
+          queue_position: number | null
+          registered_at: string
+          sim_account_id: string | null
+          status: Database["public"]["Enums"]["comp_registration_status"]
+          team_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "comp_registrations"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      comp_transition_status: {
+        Args: {
+          _competition_id: string
+          _new_status: Database["public"]["Enums"]["comp_status"]
+        }
+        Returns: {
+          allowed_symbols: string[]
+          capacity: number | null
+          comp_type: Database["public"]["Enums"]["comp_type"]
+          country_allowlist: string[]
+          country_blocklist: string[]
+          created_at: string
+          created_by: string | null
+          currency: string
+          description: string | null
+          eligibility: Json
+          end_at: string | null
+          entry_fee: number
+          id: string
+          kyc_required: boolean
+          leverage: number
+          max_daily_loss_pct: number | null
+          max_drawdown_pct: number | null
+          max_positions: number | null
+          max_trades: number | null
+          metadata: Json
+          min_risk_profile: string | null
+          min_trades: number | null
+          name: string
+          registration_close_at: string | null
+          registration_open_at: string | null
+          rules: Json
+          slug: string
+          spread_rules: Json
+          start_at: string | null
+          starting_balance: number
+          status: Database["public"]["Enums"]["comp_status"]
+          trading_hours: Json
+          updated_at: string
+          visibility: string
+          waiting_list_enabled: boolean
+          weekend_trading: boolean
+        }
+        SetofOptions: {
+          from: "*"
+          to: "comp_definitions"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       copy_calc_follower_lot: {
         Args: {
           _master_capital: number
@@ -4314,6 +5265,40 @@ export type Database = {
         | "support"
         | "investor"
       capital_range: "1k_10k" | "10k_50k" | "50k_250k" | "250k_1m" | "1m_plus"
+      comp_flag_status: "open" | "reviewing" | "confirmed" | "dismissed"
+      comp_registration_status:
+        | "pending"
+        | "confirmed"
+        | "waiting_list"
+        | "rejected"
+        | "withdrawn"
+        | "disqualified"
+      comp_reward_type:
+        | "cash"
+        | "wallet_credit"
+        | "bonus_credit"
+        | "coupon"
+        | "badge"
+        | "certificate"
+      comp_status:
+        | "draft"
+        | "scheduled"
+        | "registration_open"
+        | "registration_closed"
+        | "preparing_accounts"
+        | "running"
+        | "paused"
+        | "finished"
+        | "reward_distribution"
+        | "archived"
+      comp_type:
+        | "free"
+        | "paid"
+        | "private"
+        | "invitation_only"
+        | "team"
+        | "league"
+        | "season"
       fee_kind: "management" | "performance" | "entry" | "exit" | "other"
       investment_event:
         | "subscription_created"
@@ -4496,6 +5481,44 @@ export const Constants = {
         "investor",
       ],
       capital_range: ["1k_10k", "10k_50k", "50k_250k", "250k_1m", "1m_plus"],
+      comp_flag_status: ["open", "reviewing", "confirmed", "dismissed"],
+      comp_registration_status: [
+        "pending",
+        "confirmed",
+        "waiting_list",
+        "rejected",
+        "withdrawn",
+        "disqualified",
+      ],
+      comp_reward_type: [
+        "cash",
+        "wallet_credit",
+        "bonus_credit",
+        "coupon",
+        "badge",
+        "certificate",
+      ],
+      comp_status: [
+        "draft",
+        "scheduled",
+        "registration_open",
+        "registration_closed",
+        "preparing_accounts",
+        "running",
+        "paused",
+        "finished",
+        "reward_distribution",
+        "archived",
+      ],
+      comp_type: [
+        "free",
+        "paid",
+        "private",
+        "invitation_only",
+        "team",
+        "league",
+        "season",
+      ],
       fee_kind: ["management", "performance", "entry", "exit", "other"],
       investment_event: [
         "subscription_created",
