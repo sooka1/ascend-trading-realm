@@ -140,7 +140,10 @@ function CompetitionTradePage() {
   if (entryStatus !== "entered") {
     return <CompetitionEntryGate id={id} status={entryStatus} />;
   }
+  return <TradingTerminal id={id} />;
+}
 
+function TradingTerminal({ id }: { id: string }) {
   const [active, setActive] = useState<Instrument>(INSTRUMENTS[1]);
   const [qtyMode, setQtyMode] = useState<"lots" | "units">("lots");
   const [lotsInput, setLotsInput] = useState("0.01");
