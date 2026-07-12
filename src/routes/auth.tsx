@@ -203,7 +203,7 @@ function Auth() {
     const limiter = rateLimit(key, { max: 5, windowMs: 60_000 });
     if (!limiter.tryConsume()) {
       const secs = Math.ceil(limiter.resetIn() / 1000);
-      toast.error(`محاولات كثيرة. حاول بعد ${secs} ثانية.`);
+      toast.error(t("auth.err.rate_limit").replace("{seconds}", String(secs)));
       return;
     }
     const parsed =
