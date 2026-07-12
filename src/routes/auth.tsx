@@ -83,15 +83,21 @@ function Auth() {
         if (saved) setRefCode(saved);
       } catch { /* ignore */ }
     }
-    // Prefill ?email= (used by the "already confirmed" recovery flow from
-    // /verify-email). Same-origin, sanitized by z.email() at submit time.
-    const prefill = p.get("email");
-    if (prefill) {
-      const trimmed = prefill.trim().slice(0, 255);
-      if (trimmed) {
-        setEmail(trimmed);
-        setMode("login");
+    // One-time same-origin handoff from the /verify-email recovery flow.
+    // The email never travels through the URL, router search state, logs,
+    // or analytics — only sessionStorage on this origin.
+    try {
+      const prefill = sessionStorage.getItem("hk.auth.loginPrefill");
+      if (prefill) {
+        sessionStorage.removeItem("hk.auth.loginPrefill");
+        const trimmed = prefill.trim().slice(0, 255);
+        if (trimmed) {
+          setEmail(trimmed);
+          setMode("login");
+        }
       }
+    } catch {
+      /* sessionStorage unavailable → no prefill, no error */
     }
   }, []);
 
