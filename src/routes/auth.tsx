@@ -12,6 +12,9 @@ import { lovable } from "@/integrations/lovable/index";
 import { toast } from "sonner";
 import { z } from "zod";
 import { useI18n } from "@/lib/i18n";
+import { useServerFn } from "@tanstack/react-start";
+import { requestVerificationResend } from "@/lib/auth-resend.functions";
+import { parseVerificationError, scrubVerificationErrorFromUrl } from "@/lib/auth-hash-errors";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -40,6 +43,18 @@ function Auth() {
     cooldown: 0,
   });
   const navigate = useNavigate();
+  const resendServerFn = useServerFn(requestVerificationResend);
+
+  // Scrub any Supabase error fragment landed on /auth and route to /verify-email.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const code = parseVerificationError(window.location.hash, window.location.search);
+    scrubVerificationErrorFromUrl();
+    if (code) {
+      navigate({ to: "/verify-email", replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Capture ?redirect=<path> so we can bounce back after login.
   // Only same-origin relative paths are accepted; ignore anything else.
@@ -244,11 +259,26 @@ function Auth() {
           await goPostLogin(data.session.user.id);
         } else {
           setPendingEmail(email);
-          setResendState({ loading: false, cooldown: 30 });
-          saveCooldown(email, 30);
+          setResendState({ loading: false, cooldown: 60 });
+          saveCooldown(email, 60);
         }
       }
     } catch (err) {
+      // Detect unconfirmed-email login and pivot into the pending panel
+      // instead of leaking a distinct error (enumeration-safe).
+      const errAny = err as { code?: string; name?: string; message?: string } | null;
+      const code = errAny?.code ?? "";
+      const msg = errAny?.message ?? "";
+      const isUnconfirmed =
+        code === "email_not_confirmed" || /email.*not.*confirm/i.test(msg);
+      if (mode === "login" && isUnconfirmed) {
+        setPendingEmail(email);
+        setResendState({ loading: false, cooldown: 60 });
+        saveCooldown(email, 60);
+        // Fire a resend so a fresh link arrives — outcome is generic.
+        void resendServerFn({ data: { email } }).catch(() => {});
+        return;
+      }
       const message = err instanceof Error ? err.message : t("auth.err.generic");
       setErrors({ form: message });
       toast.error(message);
@@ -259,16 +289,17 @@ function Auth() {
 
   async function handleResend() {
     if (!pendingEmail || resendState.loading || resendState.cooldown > 0) return;
+    if (typeof navigator !== "undefined" && !navigator.onLine) {
+      setResendState((s) => ({ ...s, error: t("auth.confirm.offline") }));
+      return;
+    }
     setResendState((s) => ({ ...s, loading: true, error: undefined, sent: false }));
     try {
-      const { error } = await supabase.auth.resend({
-        type: "signup",
-        email: pendingEmail,
-        options: { emailRedirectTo: `${window.location.origin}/portal` },
-      });
-      if (error) throw error;
-      setResendState({ loading: false, cooldown: 30, sent: true });
-      saveCooldown(pendingEmail, 30);
+      // Server fn returns { ok: true } regardless of internal outcome
+      // (enumeration-safe). Client shows a generic success either way.
+      await resendServerFn({ data: { email: pendingEmail } });
+      setResendState({ loading: false, cooldown: 60, sent: true });
+      saveCooldown(pendingEmail, 60);
       toast.success(t("auth.toast.resent"));
     } catch (err) {
       const message = err instanceof Error ? err.message : t("auth.confirm.resend_error");
