@@ -14,6 +14,80 @@ export type Database = {
   }
   public: {
     Tables: {
+      benchmark_prices: {
+        Row: {
+          as_of_date: string
+          benchmark_id: string
+          close_value: number
+          created_at: string
+          id: string
+          return_pct: number | null
+        }
+        Insert: {
+          as_of_date: string
+          benchmark_id: string
+          close_value: number
+          created_at?: string
+          id?: string
+          return_pct?: number | null
+        }
+        Update: {
+          as_of_date?: string
+          benchmark_id?: string
+          close_value?: number
+          created_at?: string
+          id?: string
+          return_pct?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "benchmark_prices_benchmark_id_fkey"
+            columns: ["benchmark_id"]
+            isOneToOne: false
+            referencedRelation: "benchmarks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      benchmarks: {
+        Row: {
+          code: string
+          created_at: string
+          currency: string
+          description: string | null
+          id: string
+          is_active: boolean
+          kind: string
+          metadata: Json
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          currency?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          kind?: string
+          metadata?: Json
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          currency?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          kind?: string
+          metadata?: Json
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       chart_drawings: {
         Row: {
           created_at: string
@@ -500,6 +574,13 @@ export type Database = {
             referencedColumns: ["package_id"]
           },
           {
+            foreignKeyName: "fee_events_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "v_portfolio_ranking"
+            referencedColumns: ["package_id"]
+          },
+          {
             foreignKeyName: "fee_events_subscription_id_fkey"
             columns: ["subscription_id"]
             isOneToOne: false
@@ -865,6 +946,13 @@ export type Database = {
             referencedRelation: "v_aum_by_package"
             referencedColumns: ["package_id"]
           },
+          {
+            foreignKeyName: "nav_snapshots_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "v_portfolio_ranking"
+            referencedColumns: ["package_id"]
+          },
         ]
       }
       notification_broadcasts: {
@@ -927,6 +1015,91 @@ export type Database = {
         }
         Relationships: []
       }
+      package_versions: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          asset_allocation: Json
+          benchmark_id: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          effective_date: string
+          id: string
+          investment_strategy: string | null
+          is_current: boolean
+          management_fee_pct: number | null
+          metadata: Json
+          package_id: string
+          performance_fee_pct: number | null
+          risk_level: string | null
+          updated_at: string
+          version_number: number
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          asset_allocation?: Json
+          benchmark_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          effective_date?: string
+          id?: string
+          investment_strategy?: string | null
+          is_current?: boolean
+          management_fee_pct?: number | null
+          metadata?: Json
+          package_id: string
+          performance_fee_pct?: number | null
+          risk_level?: string | null
+          updated_at?: string
+          version_number: number
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          asset_allocation?: Json
+          benchmark_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          effective_date?: string
+          id?: string
+          investment_strategy?: string | null
+          is_current?: boolean
+          management_fee_pct?: number | null
+          metadata?: Json
+          package_id?: string
+          performance_fee_pct?: number | null
+          risk_level?: string | null
+          updated_at?: string
+          version_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "package_versions_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "packages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "package_versions_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "v_aum_by_package"
+            referencedColumns: ["package_id"]
+          },
+          {
+            foreignKeyName: "package_versions_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "v_portfolio_ranking"
+            referencedColumns: ["package_id"]
+          },
+        ]
+      }
       packages: {
         Row: {
           active: boolean
@@ -971,6 +1144,76 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      portfolio_health_scores: {
+        Row: {
+          as_of_date: string
+          capital_preservation_score: number | null
+          consistency_score: number | null
+          created_at: string
+          drawdown_score: number | null
+          id: string
+          metadata: Json
+          overall_score: number
+          package_id: string
+          performance_score: number | null
+          risk_score: number | null
+          satisfaction_score: number | null
+          updated_at: string
+        }
+        Insert: {
+          as_of_date?: string
+          capital_preservation_score?: number | null
+          consistency_score?: number | null
+          created_at?: string
+          drawdown_score?: number | null
+          id?: string
+          metadata?: Json
+          overall_score: number
+          package_id: string
+          performance_score?: number | null
+          risk_score?: number | null
+          satisfaction_score?: number | null
+          updated_at?: string
+        }
+        Update: {
+          as_of_date?: string
+          capital_preservation_score?: number | null
+          consistency_score?: number | null
+          created_at?: string
+          drawdown_score?: number | null
+          id?: string
+          metadata?: Json
+          overall_score?: number
+          package_id?: string
+          performance_score?: number | null
+          risk_score?: number | null
+          satisfaction_score?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portfolio_health_scores_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "packages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "portfolio_health_scores_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "v_aum_by_package"
+            referencedColumns: ["package_id"]
+          },
+          {
+            foreignKeyName: "portfolio_health_scores_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "v_portfolio_ranking"
+            referencedColumns: ["package_id"]
+          },
+        ]
       }
       portfolio_managers: {
         Row: {
@@ -1017,6 +1260,121 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_aum_by_package"
             referencedColumns: ["package_id"]
+          },
+          {
+            foreignKeyName: "portfolio_managers_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "v_portfolio_ranking"
+            referencedColumns: ["package_id"]
+          },
+        ]
+      }
+      portfolio_risk_metrics: {
+        Row: {
+          benchmark_id: string | null
+          benchmark_return_pct: number | null
+          calmar_ratio: number | null
+          created_at: string
+          id: string
+          max_drawdown_pct: number | null
+          metadata: Json
+          monthly_win_ratio: number | null
+          package_id: string
+          package_version_id: string | null
+          period_end: string
+          period_start: string
+          portfolio_return_pct: number | null
+          profit_consistency: number | null
+          risk_score: number | null
+          sharpe_ratio: number | null
+          sortino_ratio: number | null
+          stability_score: number | null
+          tracking_difference_pct: number | null
+          updated_at: string
+          volatility_pct: number | null
+        }
+        Insert: {
+          benchmark_id?: string | null
+          benchmark_return_pct?: number | null
+          calmar_ratio?: number | null
+          created_at?: string
+          id?: string
+          max_drawdown_pct?: number | null
+          metadata?: Json
+          monthly_win_ratio?: number | null
+          package_id: string
+          package_version_id?: string | null
+          period_end: string
+          period_start: string
+          portfolio_return_pct?: number | null
+          profit_consistency?: number | null
+          risk_score?: number | null
+          sharpe_ratio?: number | null
+          sortino_ratio?: number | null
+          stability_score?: number | null
+          tracking_difference_pct?: number | null
+          updated_at?: string
+          volatility_pct?: number | null
+        }
+        Update: {
+          benchmark_id?: string | null
+          benchmark_return_pct?: number | null
+          calmar_ratio?: number | null
+          created_at?: string
+          id?: string
+          max_drawdown_pct?: number | null
+          metadata?: Json
+          monthly_win_ratio?: number | null
+          package_id?: string
+          package_version_id?: string | null
+          period_end?: string
+          period_start?: string
+          portfolio_return_pct?: number | null
+          profit_consistency?: number | null
+          risk_score?: number | null
+          sharpe_ratio?: number | null
+          sortino_ratio?: number | null
+          stability_score?: number | null
+          tracking_difference_pct?: number | null
+          updated_at?: string
+          volatility_pct?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portfolio_risk_metrics_benchmark_id_fkey"
+            columns: ["benchmark_id"]
+            isOneToOne: false
+            referencedRelation: "benchmarks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "portfolio_risk_metrics_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "packages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "portfolio_risk_metrics_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "v_aum_by_package"
+            referencedColumns: ["package_id"]
+          },
+          {
+            foreignKeyName: "portfolio_risk_metrics_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "v_portfolio_ranking"
+            referencedColumns: ["package_id"]
+          },
+          {
+            foreignKeyName: "portfolio_risk_metrics_package_version_id_fkey"
+            columns: ["package_version_id"]
+            isOneToOne: false
+            referencedRelation: "package_versions"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -1432,6 +1790,7 @@ export type Database = {
           ends_at: string | null
           id: string
           package_id: string
+          package_version_id: string | null
           started_at: string | null
           status: string
           updated_at: string
@@ -1444,6 +1803,7 @@ export type Database = {
           ends_at?: string | null
           id?: string
           package_id: string
+          package_version_id?: string | null
           started_at?: string | null
           status?: string
           updated_at?: string
@@ -1456,6 +1816,7 @@ export type Database = {
           ends_at?: string | null
           id?: string
           package_id?: string
+          package_version_id?: string | null
           started_at?: string | null
           status?: string
           updated_at?: string
@@ -1475,6 +1836,20 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_aum_by_package"
             referencedColumns: ["package_id"]
+          },
+          {
+            foreignKeyName: "subscriptions_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "v_portfolio_ranking"
+            referencedColumns: ["package_id"]
+          },
+          {
+            foreignKeyName: "subscriptions_package_version_id_fkey"
+            columns: ["package_version_id"]
+            isOneToOne: false
+            referencedRelation: "package_versions"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -2065,12 +2440,65 @@ export type Database = {
       }
     }
     Views: {
+      v_admin_aum_dashboard: {
+        Row: {
+          active_investors: number | null
+          aum: number | null
+          monthly_fee_revenue: number | null
+          monthly_inflows: number | null
+          monthly_outflows: number | null
+          total_users: number | null
+        }
+        Relationships: []
+      }
       v_aum_by_package: {
         Row: {
           active_investors: number | null
           aum: number | null
           name: string | null
           package_id: string | null
+        }
+        Relationships: []
+      }
+      v_investor_analytics: {
+        Row: {
+          active_capital: number | null
+          display_name: string | null
+          email: string | null
+          investment_age_days: number | null
+          joined_at: string | null
+          net_investment: number | null
+          total_deposits: number | null
+          total_fees: number | null
+          total_profit: number | null
+          total_withdrawals: number | null
+          user_id: string | null
+        }
+        Insert: {
+          active_capital?: never
+          display_name?: string | null
+          email?: string | null
+          investment_age_days?: never
+          joined_at?: string | null
+          net_investment?: never
+          total_deposits?: never
+          total_fees?: never
+          total_profit?: never
+          total_withdrawals?: never
+          user_id?: string | null
+        }
+        Update: {
+          active_capital?: never
+          display_name?: string | null
+          email?: string | null
+          investment_age_days?: never
+          joined_at?: string | null
+          net_investment?: never
+          total_deposits?: never
+          total_fees?: never
+          total_profit?: never
+          total_withdrawals?: never
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -2110,6 +2538,19 @@ export type Database = {
           balance: number | null
           currency: string | null
           user_id: string | null
+        }
+        Relationships: []
+      }
+      v_portfolio_ranking: {
+        Row: {
+          aum: number | null
+          health_score: number | null
+          investors: number | null
+          latest_return_pct: number | null
+          max_drawdown_pct: number | null
+          name: string | null
+          package_id: string | null
+          risk_score: number | null
         }
         Relationships: []
       }
