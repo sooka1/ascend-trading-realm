@@ -364,6 +364,7 @@ export const DICTS: Record<Lang, Dict> = {
     "auth.confirm.resend_error": "Couldn\u2019t resend the email",
     "auth.confirm.offline": "You\u2019re offline. Check your connection and try again.",
     "auth.confirm.generic_error": "Something went wrong. Please try again later.",
+    "auth.confirm.already_confirmed": "Already confirmed? Sign in",
     "auth.verify.enter_email": "Enter the email you signed up with to resend the confirmation link.",
     "auth.verify.error.expired": "The confirmation link has expired. Request a new one.",
     "auth.verify.error.used": "This link has already been used. Sign in or request a new one.",
