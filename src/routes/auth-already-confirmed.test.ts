@@ -38,7 +38,24 @@ describe("/auth pending panel — recovery affordance", () => {
     expect(fn).toMatch(/getElementById\("pw"\)/);
   });
   test("?email= query param prefills login form", () => {
-    expect(authSrc).toMatch(/p\.get\("email"\)/);
+    // Security: email must NEVER travel through the URL.
+    expect(authSrc).not.toMatch(/\?email=/);
+    expect(authSrc).not.toMatch(/p\.get\("email"\)/);
+    expect(authSrc).not.toMatch(/searchParams[\s\S]{0,40}email/);
+  });
+  test("prefill is a one-time sessionStorage read-and-delete", () => {
+    expect(authSrc).toMatch(/sessionStorage\.getItem\("hk\.auth\.loginPrefill"\)/);
+    expect(authSrc).toMatch(/sessionStorage\.removeItem\("hk\.auth\.loginPrefill"\)/);
+    // The removeItem must be reachable from the getItem branch (same block).
+    const block =
+      authSrc.match(/getItem\("hk\.auth\.loginPrefill"\)[\s\S]{0,400}?removeItem\("hk\.auth\.loginPrefill"\)/) ??
+      [];
+    expect(block.length).toBeGreaterThan(0);
+  });
+  test("prefill read is wrapped so missing storage falls through silently", () => {
+    const block =
+      authSrc.match(/try\s*\{[\s\S]{0,600}?hk\.auth\.loginPrefill[\s\S]{0,600}?\}\s*catch/) ?? [];
+    expect(block.length).toBeGreaterThan(0);
   });
   test("resend button disable predicate is unchanged (no `sent` gate)", () => {
     expect(authSrc).toMatch(/disabled=\{state\.loading \|\| state\.cooldown > 0\}/);
@@ -50,7 +67,18 @@ describe("/verify-email — recovery affordance", () => {
     expect(verifySrc).toMatch(/function clearPending\(\)/);
     const fn = verifySrc.match(/function goToLoginPrefilled\([\s\S]*?\n  \}/)?.[0] ?? "";
     expect(fn).toMatch(/clearPending\(\)/);
-    expect(fn).toMatch(/\/auth\?email=/);
+    // Security: no query-param email handoff anywhere.
+    expect(fn).not.toMatch(/\?email=/);
+    expect(fn).not.toMatch(/encodeURIComponent/);
+    expect(fn).toMatch(/sessionStorage\.setItem\("hk\.auth\.loginPrefill"/);
+    expect(fn).toMatch(/navigate\(\{\s*to:\s*"\/auth"\s*\}\)/);
+  });
+  test("sessionStorage failure falls through to plain navigate", () => {
+    const fn = verifySrc.match(/function goToLoginPrefilled\([\s\S]*?\n  \}/)?.[0] ?? "";
+    expect(fn).toMatch(/try\s*\{[\s\S]*?setItem[\s\S]*?\}\s*catch/);
+  });
+  test("no ?email= URL construction anywhere in verify-email.tsx", () => {
+    expect(verifySrc).not.toMatch(/\?email=/);
   });
   test("both branches render the already-confirmed button", () => {
     const occurrences = verifySrc.match(/auth\.confirm\.already_confirmed/g) ?? [];
