@@ -1,6 +1,7 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { NotificationsListener } from "@/components/notifications-listener";
+import { OfflineBanner } from "@/components/mobile/offline-banner";
 
 function AuthPending() {
   return (
@@ -32,6 +33,7 @@ export const Route = createFileRoute("/_authenticated")({
   component: () => (
     <>
       <NotificationsListener />
+      <OfflineBanner />
       <Outlet />
     </>
   ),
