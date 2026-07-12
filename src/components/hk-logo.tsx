@@ -25,10 +25,10 @@ export function HKLogo({ className, size = "md" }: HKLogoProps) {
   // visible.
   const dim =
     size === "sm"
-      ? "h-14 sm:h-16 w-auto"
+      ? "h-16 sm:h-20 w-auto"
       : size === "lg"
         ? "h-auto w-[420px] sm:w-[560px] md:w-[720px] lg:w-[900px] max-w-full"
-        : "h-16 sm:h-20 md:h-[76px] w-auto";
+        : "h-20 sm:h-24 md:h-28 lg:h-32 w-auto";
 
   return (
     <img
