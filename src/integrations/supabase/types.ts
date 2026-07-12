@@ -223,6 +223,254 @@ export type Database = {
         }
         Relationships: []
       }
+      copy_execution_log: {
+        Row: {
+          calc_method: string | null
+          copy_mode: string | null
+          created_at: string
+          event_type: string
+          executed_at: string
+          failure_reason: string | null
+          id: string
+          latency_ms: number | null
+          lot_size: number | null
+          master_id: string
+          master_trade_id: string | null
+          metadata: Json
+          queue_id: string | null
+          status: string
+          subscription_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          calc_method?: string | null
+          copy_mode?: string | null
+          created_at?: string
+          event_type: string
+          executed_at?: string
+          failure_reason?: string | null
+          id?: string
+          latency_ms?: number | null
+          lot_size?: number | null
+          master_id: string
+          master_trade_id?: string | null
+          metadata?: Json
+          queue_id?: string | null
+          status: string
+          subscription_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          calc_method?: string | null
+          copy_mode?: string | null
+          created_at?: string
+          event_type?: string
+          executed_at?: string
+          failure_reason?: string | null
+          id?: string
+          latency_ms?: number | null
+          lot_size?: number | null
+          master_id?: string
+          master_trade_id?: string | null
+          metadata?: Json
+          queue_id?: string | null
+          status?: string
+          subscription_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "copy_execution_log_queue_id_fkey"
+            columns: ["queue_id"]
+            isOneToOne: false
+            referencedRelation: "copy_execution_queue"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "copy_execution_log_queue_id_fkey"
+            columns: ["queue_id"]
+            isOneToOne: false
+            referencedRelation: "v_copy_queue_admin"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      copy_execution_modes: {
+        Row: {
+          code: string
+          created_at: string
+          description: string | null
+          is_enabled: boolean
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          description?: string | null
+          is_enabled?: boolean
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          description?: string | null
+          is_enabled?: boolean
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      copy_execution_queue: {
+        Row: {
+          attempts: number
+          completed_at: string | null
+          created_at: string
+          dedupe_key: string
+          enqueued_at: string
+          event_type: string
+          id: string
+          last_error: string | null
+          master_id: string
+          master_trade_id: string | null
+          payload: Json
+          started_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          attempts?: number
+          completed_at?: string | null
+          created_at?: string
+          dedupe_key: string
+          enqueued_at?: string
+          event_type: string
+          id?: string
+          last_error?: string | null
+          master_id: string
+          master_trade_id?: string | null
+          payload?: Json
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          attempts?: number
+          completed_at?: string | null
+          created_at?: string
+          dedupe_key?: string
+          enqueued_at?: string
+          event_type?: string
+          id?: string
+          last_error?: string | null
+          master_id?: string
+          master_trade_id?: string | null
+          payload?: Json
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "copy_execution_queue_master_trade_id_fkey"
+            columns: ["master_trade_id"]
+            isOneToOne: false
+            referencedRelation: "copy_master_trades"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      copy_follower_settings: {
+        Row: {
+          capital_allocation: number
+          close_on_unsubscribe: boolean
+          copy_mode: string
+          copy_stop_loss_pct: number | null
+          copy_take_profit_pct: number | null
+          created_at: string
+          daily_realized_pnl: number
+          fixed_lot_size: number | null
+          id: string
+          is_paused: boolean
+          last_reset_date: string
+          max_allocation: number | null
+          max_daily_loss: number | null
+          max_open_positions: number | null
+          max_overall_loss: number | null
+          max_position_size: number | null
+          multiplier: number | null
+          overall_realized_pnl: number
+          percentage_per_trade: number | null
+          subscription_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          capital_allocation?: number
+          close_on_unsubscribe?: boolean
+          copy_mode?: string
+          copy_stop_loss_pct?: number | null
+          copy_take_profit_pct?: number | null
+          created_at?: string
+          daily_realized_pnl?: number
+          fixed_lot_size?: number | null
+          id?: string
+          is_paused?: boolean
+          last_reset_date?: string
+          max_allocation?: number | null
+          max_daily_loss?: number | null
+          max_open_positions?: number | null
+          max_overall_loss?: number | null
+          max_position_size?: number | null
+          multiplier?: number | null
+          overall_realized_pnl?: number
+          percentage_per_trade?: number | null
+          subscription_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          capital_allocation?: number
+          close_on_unsubscribe?: boolean
+          copy_mode?: string
+          copy_stop_loss_pct?: number | null
+          copy_take_profit_pct?: number | null
+          created_at?: string
+          daily_realized_pnl?: number
+          fixed_lot_size?: number | null
+          id?: string
+          is_paused?: boolean
+          last_reset_date?: string
+          max_allocation?: number | null
+          max_daily_loss?: number | null
+          max_open_positions?: number | null
+          max_overall_loss?: number | null
+          max_position_size?: number | null
+          multiplier?: number | null
+          overall_realized_pnl?: number
+          percentage_per_trade?: number | null
+          subscription_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "copy_follower_settings_copy_mode_fkey"
+            columns: ["copy_mode"]
+            isOneToOne: false
+            referencedRelation: "copy_execution_modes"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "copy_follower_settings_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: true
+            referencedRelation: "copy_subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       copy_master_trades: {
         Row: {
           closed_at: string | null
@@ -317,6 +565,48 @@ export type Database = {
           performance_fee_pct?: number
           risk_level?: string
           total_return_pct?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      copy_performance_daily: {
+        Row: {
+          avg_latency_ms: number | null
+          created_at: string
+          day: string
+          executed_count: number
+          failed_count: number
+          id: string
+          master_id: string | null
+          skipped_count: number
+          subscription_id: string | null
+          success_rate: number | null
+          updated_at: string
+        }
+        Insert: {
+          avg_latency_ms?: number | null
+          created_at?: string
+          day: string
+          executed_count?: number
+          failed_count?: number
+          id?: string
+          master_id?: string | null
+          skipped_count?: number
+          subscription_id?: string | null
+          success_rate?: number | null
+          updated_at?: string
+        }
+        Update: {
+          avg_latency_ms?: number | null
+          created_at?: string
+          day?: string
+          executed_count?: number
+          failed_count?: number
+          id?: string
+          master_id?: string | null
+          skipped_count?: number
+          subscription_id?: string | null
+          success_rate?: number | null
           updated_at?: string
         }
         Relationships: []
@@ -2918,6 +3208,32 @@ export type Database = {
         }
         Relationships: []
       }
+      v_copy_queue_admin: {
+        Row: {
+          attempts: number | null
+          completed_at: string | null
+          enqueued_at: string | null
+          event_type: string | null
+          id: string | null
+          last_error: string | null
+          master_id: string | null
+          master_name: string | null
+          master_trade_id: string | null
+          side: string | null
+          started_at: string | null
+          status: string | null
+          symbol: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "copy_execution_queue_master_trade_id_fkey"
+            columns: ["master_trade_id"]
+            isOneToOne: false
+            referencedRelation: "copy_master_trades"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       v_investor_analytics: {
         Row: {
           active_capital: number | null
@@ -3077,6 +3393,35 @@ export type Database = {
         Args: { _exit_price: number; _trade_id: string }
         Returns: Json
       }
+      copy_calc_follower_lot: {
+        Args: {
+          _master_capital: number
+          _master_lot: number
+          _settings: Database["public"]["Tables"]["copy_follower_settings"]["Row"]
+        }
+        Returns: number
+      }
+      copy_enqueue_master_event: {
+        Args: {
+          _dedupe_key?: string
+          _event_type: string
+          _master_id: string
+          _master_trade_id: string
+          _payload?: Json
+        }
+        Returns: string
+      }
+      copy_force_sync: { Args: { _master_id: string }; Returns: Json }
+      copy_pause_subscription: {
+        Args: { _subscription_id: string }
+        Returns: Json
+      }
+      copy_process_queue_item: { Args: { _queue_id: string }; Returns: Json }
+      copy_resume_subscription: {
+        Args: { _subscription_id: string }
+        Returns: Json
+      }
+      copy_retry_failed: { Args: { _queue_id: string }; Returns: Json }
       distribute_weekly_profits: { Args: never; Returns: number }
       email_has_role: {
         Args: { _email: string; _role: Database["public"]["Enums"]["app_role"] }
