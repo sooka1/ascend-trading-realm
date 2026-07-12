@@ -950,10 +950,22 @@ function InvestorPortal() {
             onCancel={async (w) => {
               if (!window.confirm(`إلغاء طلب سحب ${fmt(Number(w.amount))} ${w.currency}؟ سيتم استرجاع رأس المال.`)) return;
               setBusySub(`cancel:${w.id}`);
-              const { error } = await supabase.from("withdrawals").delete().eq("id", w.id);
+              // Guard: only pending withdrawals can be cancelled. Server-side filter prevents
+              // silent no-op if status advanced between render and click.
+              const { data: cancelled, error } = await supabase
+                .from("withdrawals")
+                .delete()
+                .eq("id", w.id)
+                .eq("status", "pending")
+                .select("id");
               setBusySub(null);
               if (error) {
                 toast.error(error.message);
+                return;
+              }
+              if (!cancelled || cancelled.length === 0) {
+                toast.error("لا يمكن إلغاء هذا الطلب — تمت معالجته بالفعل.");
+                await load();
                 return;
               }
               toast.success("تم إلغاء طلب السحب");
