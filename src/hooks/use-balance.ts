@@ -12,20 +12,22 @@ export function useAvailableBalance() {
   const [balance, setBalance] = useState(0);
   const [committed, setCommitted] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [uid, setUid] = useState<string | null>(null);
 
   async function load() {
     const { data: userRes } = await supabase.auth.getUser();
-    const uid = userRes.user?.id;
-    if (!uid) {
+    const id = userRes.user?.id ?? null;
+    setUid(id);
+    if (!id) {
       setLoading(false);
       return;
     }
     const [{ data: dp }, { data: wd }, { data: sb }, { data: pr }, { data: ce }] = await Promise.all([
-      supabase.from("deposits").select("amount,status").eq("user_id", uid),
-      supabase.from("withdrawals").select("amount,status").eq("user_id", uid),
-      supabase.from("subscriptions").select("amount,status").eq("user_id", uid),
-      supabase.from("profit_distributions").select("amount").eq("user_id", uid),
-      supabase.from("competition_entries").select("tier_fee,status").eq("user_id", uid),
+      supabase.from("deposits").select("amount,status").eq("user_id", id),
+      supabase.from("withdrawals").select("amount,status").eq("user_id", id),
+      supabase.from("subscriptions").select("amount,status").eq("user_id", id),
+      supabase.from("profit_distributions").select("amount").eq("user_id", id),
+      supabase.from("competition_entries").select("tier_fee,status").eq("user_id", id),
     ]);
     const inSum = ((dp ?? []) as Row[])
       .filter((r) => r.status === "approved")
@@ -49,6 +51,21 @@ export function useAvailableBalance() {
   useEffect(() => {
     void load();
   }, []);
+
+  // Realtime: refresh whenever the user's wallet-affecting rows change.
+  useEffect(() => {
+    if (!uid) return;
+    const channel = supabase
+      .channel(`wallet:${uid}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "deposits", filter: `user_id=eq.${uid}` }, () => void load())
+      .on("postgres_changes", { event: "*", schema: "public", table: "withdrawals", filter: `user_id=eq.${uid}` }, () => void load())
+      .on("postgres_changes", { event: "*", schema: "public", table: "subscriptions", filter: `user_id=eq.${uid}` }, () => void load())
+      .on("postgres_changes", { event: "*", schema: "public", table: "profit_distributions", filter: `user_id=eq.${uid}` }, () => void load())
+      .subscribe();
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, [uid]);
 
   const available = useMemo(() => Math.max(0, balance - committed), [balance, committed]);
   return { available, balance, committed, loading, reload: load };

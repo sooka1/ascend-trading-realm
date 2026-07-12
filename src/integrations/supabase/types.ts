@@ -6077,7 +6077,19 @@ export type Database = {
           isSetofReturn: false
         }
       }
-      settle_competition: { Args: { _competition_id: string }; Returns: Json }
+      settle_competition:
+        | {
+            Args: { _competition_id: string }
+            Returns: {
+              error: true
+            } & "Could not choose the best candidate function between: public.settle_competition(_competition_id => text), public.settle_competition(_competition_id => uuid). Try renaming the parameters or the function itself in the database so function overloading can be resolved"
+          }
+        | {
+            Args: { _competition_id: string }
+            Returns: {
+              error: true
+            } & "Could not choose the best candidate function between: public.settle_competition(_competition_id => text), public.settle_competition(_competition_id => uuid). Try renaming the parameters or the function itself in the database so function overloading can be resolved"
+          }
       settle_due_competitions: { Args: never; Returns: Json }
       sim_close_position: {
         Args: { _position_id: string; _reason?: string; _volume?: number }
