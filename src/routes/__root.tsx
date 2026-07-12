@@ -11,7 +11,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import { initSentryClient, captureClientException } from "../lib/sentry.client";
+import { initSentryClient, captureClientException } from "../lib/sentry-client";
 import { I18nProvider } from "../lib/i18n";
 import { Toaster } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
