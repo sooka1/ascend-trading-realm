@@ -15,8 +15,8 @@ import { useI18n } from "@/lib/i18n";
 export const Route = createFileRoute("/reset-password")({
   head: () => ({
     meta: [
-      { title: "Set a new password | HK Global Trading" },
-      { name: "description", content: "Choose a new password for your HK Global Trading account." },
+      { title: "Set a new password | HKEX" },
+      { name: "description", content: "Choose a new password for your HKEX account." },
       { name: "robots", content: "noindex" },
     ],
   }),

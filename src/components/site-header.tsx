@@ -71,7 +71,7 @@ export function SiteHeader() {
       )}
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 px-4 sm:px-6 lg:px-8">
-        <Link to="/" className="shrink-0" aria-label="HK Global Trading home">
+        <Link to="/" className="shrink-0" aria-label="HKEX home">
           <HKLogo />
         </Link>
 

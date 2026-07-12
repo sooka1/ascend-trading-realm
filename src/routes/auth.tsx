@@ -16,9 +16,9 @@ import { useI18n } from "@/lib/i18n";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Log in or open an account | HK Global Trading" },
-      { name: "description", content: "Log in to your HK Global Trading account or open a new one in under 5 minutes." },
-      { property: "og:title", content: "HK Global Trading — Sign in" },
+      { title: "Log in or open an account | HKEX" },
+      { name: "description", content: "Log in to your HKEX account or open a new one in under 5 minutes." },
+      { property: "og:title", content: "HKEX — Sign in" },
       { property: "og:description", content: "Access your trading terminal and competitions dashboard." },
     ],
   }),
@@ -347,7 +347,7 @@ function Auth() {
               ))}
             </div>
           </div>
-          <p className="text-xs text-muted-foreground">© {new Date().getFullYear()} HK Global Trading</p>
+          <p className="text-xs text-muted-foreground">© {new Date().getFullYear()} HKEX</p>
         </div>
 
         <div className="mx-auto flex w-full max-w-md items-center">
