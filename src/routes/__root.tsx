@@ -18,6 +18,7 @@ import { installTimezonePatch, loadUserTimezoneFromProfile, setUserTimezone, set
 import { ImpersonationBanner } from "@/components/impersonation-banner";
 import { ThemeProvider } from "@/hooks/use-theme";
 import { initNativeShell } from "@/lib/native-shell";
+import { OfflineBanner } from "@/components/mobile/offline-banner";
 
 function NotFoundComponent() {
   const suggestions: Array<{ to: string; label: string; hint: string }> = [
@@ -295,6 +296,7 @@ function RootComponent() {
         <Outlet />
         <Toaster theme="dark" position="top-right" richColors />
         <ImpersonationBanner />
+        <OfflineBanner />
         </I18nProvider>
       </ThemeProvider>
     </QueryClientProvider>
