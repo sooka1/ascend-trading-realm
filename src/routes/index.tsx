@@ -202,7 +202,7 @@ function Hero({ c }: { c: LandingContent }) {
         <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/65 to-background" />
         <div className="absolute inset-0 bg-grid opacity-[0.12]" />
       </div>
-      <div className="relative mx-auto grid max-w-7xl gap-10 px-4 pt-24 pb-16 sm:px-6 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:px-8 lg:pt-32 lg:pb-24">
+      <div className="relative mx-auto grid max-w-7xl gap-10 px-4 pt-6 pb-16 sm:px-6 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:px-8 lg:pt-10 lg:pb-24">
         <div>
           <img
             src="/branding/hkex-logo-platform.png"
