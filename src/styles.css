@@ -276,6 +276,20 @@ html.light ::selection {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 }
+@keyframes shimmer-x {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+.animate-shimmer-x {
+  animation: shimmer-x 1.4s linear infinite;
+}
+/* iOS notch / Android gesture-bar aware helpers. */
+@utility safe-pt { padding-top: env(safe-area-inset-top); }
+@utility safe-pb { padding-bottom: env(safe-area-inset-bottom); }
+@utility safe-px {
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
 .animate-float-slow { animation: float-slow 8s ease-in-out infinite; }
 .animate-ticker { animation: ticker 40s linear infinite; }
 .shimmer {
