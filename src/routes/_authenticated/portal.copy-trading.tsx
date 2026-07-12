@@ -1,10 +1,20 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Copy, Wallet, Pause, Play, X, TrendingUp } from "lucide-react";
 import { PortalShell, PortalCard } from "@/components/portal-shell";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import {
   listActiveMasters,
   getMyCopyState,
@@ -30,13 +40,16 @@ function CopyTradingPage() {
   const subscribe = useServerFn(subscribeToMaster);
   const updateSub = useServerFn(updateMyCopySubscription);
   const qc = useQueryClient();
+  const navigate = useNavigate();
 
   const mastersQ = useQuery({ queryKey: ["copy", "masters"], queryFn: () => fetchMasters() });
   const stateQ = useQuery({ queryKey: ["copy", "mystate"], queryFn: () => fetchState() });
 
   const [amount, setAmount] = useState<string>("");
   const [busy, setBusy] = useState(false);
-  const [shortfall, setShortfall] = useState<{ needed: number; available: number } | null>(null);
+  const [depositPrompt, setDepositPrompt] = useState<
+    { required: number; available: number; shortfall: number } | null
+  >(null);
 
   const master = mastersQ.data?.masters?.[0];
   const subs = stateQ.data?.subscriptions ?? [];
@@ -48,12 +61,14 @@ function CopyTradingPage() {
     const amt = Number(amount);
     if (!(amt > 0)) return toast.error("أدخل مبلغًا صحيحًا");
     setBusy(true);
-    setShortfall(null);
     try {
       const res = await subscribe({ data: { masterId: master.id, amount: amt } });
       if (!res.ok && res.needs_deposit) {
-        setShortfall({ needed: res.shortfall ?? 0, available: res.available ?? 0 });
-        toast.error("الرصيد غير كافٍ");
+        setDepositPrompt({
+          required: amt,
+          available: res.available ?? 0,
+          shortfall: res.shortfall ?? 0,
+        });
       } else {
         toast.success("تم تفعيل نسخ الصفقات");
         setAmount("");
@@ -114,19 +129,6 @@ function CopyTradingPage() {
                     {busy ? "…" : "اشترك"}
                   </button>
                 </div>
-                {shortfall && (
-                  <div className="rounded-md border border-amber-400/40 bg-amber-400/[0.06] p-3 text-xs">
-                    <p className="text-amber-200">
-                      رصيدك المتاح: ${fmt(shortfall.available)} — تحتاج إيداع ${fmt(shortfall.needed)} إضافية.
-                    </p>
-                    <Link
-                      to="/portal/transactions"
-                      className="mt-2 inline-flex items-center gap-1 text-gold underline"
-                    >
-                      <Wallet className="h-3.5 w-3.5" /> إيداع الآن
-                    </Link>
-                  </div>
-                )}
               </div>
             )}
           </PortalCard>
@@ -199,6 +201,48 @@ function CopyTradingPage() {
           )}
         </div>
       )}
+
+      <AlertDialog
+        open={!!depositPrompt}
+        onOpenChange={(open) => { if (!open) setDepositPrompt(null); }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>الرصيد غير كافٍ لتفعيل نسخ الصفقات</AlertDialogTitle>
+            <AlertDialogDescription>
+              لبدء الاشتراك بمبلغ ${fmt(depositPrompt?.required ?? 0)} تحتاج إلى إيداع مبلغ إضافي في محفظتك.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="grid grid-cols-3 gap-3 rounded-md border border-white/10 bg-white/[0.03] p-3 text-center text-xs">
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">رصيدك الحالي</p>
+              <p className="mt-1 font-mono text-base tabular-nums">${fmt(depositPrompt?.available ?? 0)}</p>
+            </div>
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">المبلغ المطلوب</p>
+              <p className="mt-1 font-mono text-base tabular-nums">${fmt(depositPrompt?.required ?? 0)}</p>
+            </div>
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">مبلغ الإيداع الناقص</p>
+              <p className="mt-1 font-mono text-base tabular-nums text-amber-300">
+                ${fmt(depositPrompt?.shortfall ?? 0)}
+              </p>
+            </div>
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel>إلغاء</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                setDepositPrompt(null);
+                navigate({ to: "/portal/transactions" });
+              }}
+              className="bg-gold text-background hover:bg-[oklch(0.88_0.11_90)]"
+            >
+              <Wallet className="ml-1 h-4 w-4" /> إيداع الآن
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </PortalShell>
   );
 }
