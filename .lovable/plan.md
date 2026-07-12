@@ -1,75 +1,84 @@
+# Final Production Fix Sprint
 
-## الهدف
-ربط حسابات المستثمرين بنظام نسخ الصفقات (Copy Trading) من مزود Master واحد، مع تمويل من المحفظة أو إيداع فوري، وإعطاء `super_admin` تحكم كامل بسجل تدقيق شامل.
+Fixes only. No new features, no schema changes, no business-logic changes, no UI redesigns. Everything is backward compatible.
 
-## البنية على قاعدة البيانات (Migration)
+---
 
-جداول جديدة في `public`:
+## Release Blockers
 
-1. **`copy_masters`** — قائمة مزودي النسخ (Master)
-   - `name`, `bio`, `avatar_url`, `risk_level`, `min_capital`, `performance_fee_pct`, `is_active`
-   - قراءة عامة (`anon` SELECT للنشطين فقط)
-   - كتابة: `super_admin` فقط
+### B1 — Hydration mismatch in `__root.tsx`
+The mismatch is caused by conditional node emission between SSR and client (line-number drift of `data-tsd-source` on a `<script>` and `<body>` indicate different branches render). Fix:
+- Locate the conditional block (client-only theme/analytics `<script>` or `typeof window` guard) and render the node unconditionally.
+- Add `suppressHydrationWarning` **only** on the single node whose text content legitimately differs (theme init script).
+- No SSR behavior change: same HTML shape emitted on both sides.
 
-2. **`copy_subscriptions`** — اشتراك المستثمر بمزود واحد
-   - `user_id`, `master_id`, `allocated_amount`, `currency='USD'`, `copy_ratio`, `status` (active/paused/closed)
-   - `started_at`, `closed_at`
-   - RLS: المستخدم يرى/يدير اشتراكه، `super_admin` يرى ويعدل الكل
-   - trigger: يتحقق من الرصيد المتاح (approved deposits + profits − withdrawals − committed) ويحجز `allocated_amount`
+### B2 — Repoint every `/dashboard` reference to `/portal`
+Grep the entire repo (`src/**`, `public/**`, `supabase/**` docs, email templates, push payloads) for `/dashboard` and replace with `/portal`. Areas to sweep:
+- `src/lib/email-templates/**` (welcome, deposit-confirmation, kyc-status, etc.)
+- `src/lib/push.server.ts`, `src/lib/chat-notify.ts` (deep-link URLs)
+- `src/lib/native/deep-links.ts`
+- Any `redirect({ to: "/dashboard" })` or `<Link to="/dashboard">`
+- Keep `src/routes/_authenticated/dashboard.tsx` as a *backward-compat* redirect (do not delete — protects old bookmarks).
 
-3. **`copy_master_trades`** — صفقات المزود (تُفتح من قبل super_admin/master)
-   - `master_id`, `symbol`, `side`, `entry_price`, `exit_price`, `volume`, `opened_at`, `closed_at`, `status`
-   - كتابة: `super_admin` فقط
+### B3 — Localize every auth error
+- Remove the hardcoded Arabic rate-limit message in `src/routes/forgot-password.tsx`.
+- Add i18n keys: `auth.err.rate_limit`, `auth.err.network`, `auth.err.timeout`, `auth.err.invalid_credentials`, `auth.err.email_not_confirmed`, `auth.err.generic`.
+- Central helper `src/lib/auth-error-i18n.ts`: `mapAuthError(err, t) => string` used by `/auth`, `/forgot-password`, `/reset-password`.
+- Sweep `src/routes/auth.tsx`, `reset-password.tsx`, `forgot-password.tsx` for hardcoded strings.
 
-4. **`copy_trade_fills`** — نسخ الصفقة على كل مشترك (يُنشأ تلقائياً عند فتح/إغلاق صفقة master)
-   - `master_trade_id`, `subscription_id`, `user_id`, `volume`, `pnl`, `status`
-   - trigger عند إغلاق master trade: يوزع الربح/الخسارة على `copy_subscriptions.allocated_amount` ويسجل في `notifications`
+---
 
-5. **`copy_audit_log`** — سجل كل حدث (subscribe/pause/close/deposit-shortfall/manual-adjust)
+## Critical Fixes
 
-دوال SQL:
-- `subscribe_to_master(_master_id, _amount)` — يتحقق من الرصيد، ينشئ الاشتراك، يعيد `{ok, needs_deposit, shortfall}`
-- `close_master_trade(_trade_id, _exit_price)` — security definer، `super_admin` فقط، يوزع النتائج
-- `admin_adjust_balance(_user_id, _delta, _reason)` — `super_admin` فقط، يسجل في audit
+### C1 — Copy Trading "needs deposit" dialog
+- In `src/routes/_authenticated/portal.copy-trading.tsx`, after `subscribeToMaster` returns `{ needs_deposit: true, available, shortfall }`, open an `<AlertDialog>` showing: required amount, current balance, shortfall, **Deposit Now** (navigates to `/portal/transactions` deposit tab) + **Cancel**.
+- Add i18n keys under `copy.needs_deposit.*`.
 
-كل الجداول: GRANT مناسب + RLS + سياسات `has_role(auth.uid(),'super_admin')` للتحكم الكامل.
+### C2 — Withdrawal warning modal
+- Add a preflight server fn `previewWithdrawal(amount)` → returns `{ cancelled_distributions: [...], lost_profit_estimate }` (read-only query, no schema change; reads existing `profit_distributions` table).
+- In the withdrawal component, if `cancelled_distributions.length > 0`, show `<AlertDialog>` listing them with lost-profit estimate + required checkbox + final confirm button.
 
-## الواجهات
+### C3 — KYC predefined rejection reasons
+- Add `src/lib/kyc-rejection-reasons.ts` with 8 enum categories (`document_unclear`, `id_expired`, `name_mismatch`, `address_unverified`, `selfie_mismatch`, `document_type_unsupported`, `duplicate_account`, `other`) — all i18n-keyed.
+- `src/routes/_authenticated/_admin/admin.kyc.tsx`: replace textarea with `<Select>` of categories + optional short internal admin note (never sent to user).
+- User-facing KYC status uses only the localized category label.
 
-**للمستثمر** (`/portal/copy-trading` جديد):
-- بطاقة المزود الوحيد المتاح (اسم، أداء، حد أدنى)
-- زر "اشترك في النسخ" → dialog:
-  - إدخال المبلغ
-  - عرض الرصيد المتاح
-  - إن كان كافياً: يخصم ويفعّل
-  - إن كان غير كافٍ: يعرض الفارق + زر "إيداع الآن" يوجّه لـ `/portal/transactions` مع رجوع تلقائي
-- إدارة الاشتراك: إيقاف/استئناف/إغلاق
-- سجل الصفقات المنسوخة والأرباح
+### C4 — Auth state separation
+- `src/routes/_authenticated/route.tsx`: split `pendingComponent` (spinner + skip-to-content), `errorComponent` (error message + **Retry** button that calls `router.invalidate()`), and add an offline detector (uses `useNetworkStatus`) that shows "You're offline — reconnect to continue".
+- Add 15s auth timeout via `AbortController` around `supabase.auth.getUser()` inside `beforeLoad`; on timeout throw a typed error surfaced by `errorComponent`.
 
-**للسوبر أدمن** (`/admin/copy-trading` جديد):
-- إدارة المزودين (CRUD)
-- فتح/إغلاق صفقات Master (تنعكس تلقائياً على كل المشتركين)
-- جدول كل الاشتراكات مع فلترة (نشط/موقوف/مغلق) + إجراءات (إيقاف/إغلاق)
-- تعديل رصيد أي مستخدم يدوياً مع سبب إلزامي
-- عرض `copy_audit_log` كامل
+### C5 — Competition entry gate
+- `src/routes/_authenticated/competitions.$id.trade.tsx`: `beforeLoad` calls `getMyCompetitionEntry(id)` (existing RPC). If not entered, render a details card (fee, prize, rules) with **Join Competition** button instead of the terminal. No terminal mount before registration.
 
-## الأمان
-- كل الكتابات الحساسة عبر `createServerFn` + `requireSupabaseAuth` + فحص `has_role(...,'super_admin')` داخل الـ handler
-- RLS صارم: المستخدم لا يرى إلا صفوفه، `super_admin` فقط يعدل صفقات master وأرصدة الآخرين
-- Zod validation على كل input (مبالغ موجبة، حد أقصى، UUID صالح)
-- rate limit على subscribe (منع duplicate خلال 10 ثوانٍ عبر trigger مشابه لـ `prevent_duplicate_subscription`)
-- كل تعديل رصيد يدوي مسجّل في `copy_audit_log` مع `admin_id`, `reason`, `before/after`
+---
 
-## الملفات
-- migration جديدة (الجداول + الدوال + السياسات)
-- `src/lib/copy-trading.functions.ts` — server functions
-- `src/routes/_authenticated/portal.copy-trading.tsx` — واجهة المستثمر
-- `src/routes/_authenticated/_admin/admin.copy-trading.tsx` — لوحة السوبر أدمن
-- تحديث `mobile-bottom-nav` / روابط البورتال لإضافة الصفحة
+## Additional UX Fixes
 
-## الخطوات
-1. Migration للجداول والدوال والسياسات
-2. Server functions للاشتراك والإدارة
-3. صفحة المستثمر مع تدفق الإيداع
-4. صفحة الأدمن الكاملة
-5. اختبار: اشتراك برصيد كافٍ، اشتراك بنقص رصيد → إيداع، إغلاق master trade، تعديل رصيد يدوي
+1. **Duplicate-click prevention** — audit all `useMutation` call sites; ensure primary buttons use `disabled={mutation.isPending}`. Focus files: `portal.copy-trading.tsx`, `portal.transactions.tsx`, `investment-request-form.tsx`, `admin.kyc.tsx`.
+2. **Notification badge rollback** — `src/components/notifications-popover.tsx`: use optimistic update with `onError` restore via `queryClient.setQueryData`.
+3. **Avatar validation** — `src/routes/_authenticated/portal.profile.tsx`: reject `>2MB` or non-`image/*` client-side with a toast before upload.
+4. **Wallet skeleton** — `src/hooks/use-balance.ts` consumers: replace `$0.00` flash with `<Skeleton>` while `isLoading`.
+5. **Admin pagination** — `admin.users.tsx`, `admin.subscriptions.tsx`, `admin.kyc.tsx`: add `page`/`pageSize` state + Prev/Next buttons; server fns already accept a range (add `.range()` if missing without changing signature — extend with optional params).
+6. **Support FAB hidden on unauth** — `src/components/support-fab.tsx`: return `null` when route is under `/auth`, `/reset-password`, `/forgot-password`, or user is unauthenticated.
+
+---
+
+## Technical Notes
+
+- All i18n keys added to both `ar` and `en` locale files.
+- `src/lib/auth-error-i18n.ts` — new file, pure mapper.
+- `src/lib/kyc-rejection-reasons.ts` — new file, enum + i18n keys.
+- No new tables, no RPC signature changes. Any new server fn (`previewWithdrawal`) is read-only.
+- `dashboard.tsx` redirect kept for backward-compat bookmarks.
+- Verification: `bun run build`, then Playwright smoke of `/auth`, `/portal`, `/portal/copy-trading`, `/competitions/:id/trade`.
+
+## Deliverables After Implementation
+
+1. **Production Fix Report** — file-by-file changelog.
+2. **Regression Report** — surface any behavior changes (should be none).
+3. **QA Score** — expected 92+/100.
+4. **Release Readiness Score** — expected 95+/100.
+
+---
+
+Approve to implement, or tell me which items to drop/re-scope.

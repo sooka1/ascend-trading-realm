@@ -70,7 +70,7 @@ function Auth() {
     }
   }, []);
 
-  // Route super_admin → /admin, everyone else → /dashboard.
+  // Route super_admin → /admin, everyone else → /portal.
   async function goPostLogin(userId: string) {
     const redirectTo = readRedirectTarget();
     if (redirectTo) {
@@ -84,9 +84,9 @@ function Auth() {
         .eq("user_id", userId)
         .eq("role", "super_admin")
         .maybeSingle();
-      navigate({ to: data ? "/admin" : "/dashboard", replace: true });
+      navigate({ to: data ? "/admin" : "/portal", replace: true });
     } catch {
-      navigate({ to: "/dashboard", replace: true });
+      navigate({ to: "/portal", replace: true });
     }
   }
 
@@ -203,7 +203,7 @@ function Auth() {
     const limiter = rateLimit(key, { max: 5, windowMs: 60_000 });
     if (!limiter.tryConsume()) {
       const secs = Math.ceil(limiter.resetIn() / 1000);
-      toast.error(`محاولات كثيرة. حاول بعد ${secs} ثانية.`);
+      toast.error(t("auth.err.rate_limit").replace("{seconds}", String(secs)));
       return;
     }
     const parsed =
@@ -226,13 +226,13 @@ function Auth() {
         if (error) throw error;
         toast.success(t("auth.toast.signed_in"));
         if (signIn.user) await goPostLogin(signIn.user.id);
-        else navigate({ to: "/dashboard", replace: true });
+        else navigate({ to: "/portal", replace: true });
       } else {
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/dashboard`,
+            emailRedirectTo: `${window.location.origin}/portal`,
             data: { display_name: fullName, ref_code: refCode || undefined },
           },
         });
@@ -264,7 +264,7 @@ function Auth() {
       const { error } = await supabase.auth.resend({
         type: "signup",
         email: pendingEmail,
-        options: { emailRedirectTo: `${window.location.origin}/dashboard` },
+        options: { emailRedirectTo: `${window.location.origin}/portal` },
       });
       if (error) throw error;
       setResendState({ loading: false, cooldown: 30, sent: true });
@@ -308,7 +308,7 @@ function Auth() {
       // Popup / web_message flow: session is set — route by role
       const { data: u } = await supabase.auth.getUser();
       if (u.user) await goPostLogin(u.user.id);
-      else navigate({ to: "/dashboard", replace: true });
+      else navigate({ to: "/portal", replace: true });
     } finally {
       setLoading(false);
     }

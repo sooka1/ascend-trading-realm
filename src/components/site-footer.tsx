@@ -36,7 +36,7 @@ const COLS = [
     links: [
       { label: "cta.login", to: "/auth" },
       { label: "cta.open_account", to: "/auth" },
-      { label: "cta.dashboard", to: "/dashboard" },
+      { label: "cta.dashboard", to: "/portal" },
       { label: "cta.portal", to: "/portal" },
     ],
   },

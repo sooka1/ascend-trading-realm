@@ -380,7 +380,7 @@ function EmptyMobile() {
       </p>
       <div className="mt-4 flex flex-col gap-2">
         <Button asChild className="bg-[var(--gradient-gold)] font-semibold text-background">
-          <Link to="/dashboard">فتح لوحة التحكم الكاملة</Link>
+          <Link to="/portal">فتح لوحة التحكم الكاملة</Link>
         </Button>
         <Button asChild variant="outline" className="border-white/15">
           <Link to="/contact">تحدث مع مستشار</Link>

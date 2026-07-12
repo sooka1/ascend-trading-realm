@@ -53,7 +53,7 @@ function ForgotPassword() {
       const raw = err instanceof Error ? err.message : "";
       const match = raw.match(/only request this after (\d+) seconds?/i);
       if (match) {
-        setError(`لأسباب أمنية، يمكنك طلب رابط جديد بعد ${match[1]} ثانية. تحقّق من صندوق الوارد ومجلد الرسائل غير المرغوب فيها.`);
+        setError(t("auth.forgot.err.rate_limit").replace("{seconds}", match[1]));
       } else {
         setError(raw || t("auth.forgot.err.generic"));
       }

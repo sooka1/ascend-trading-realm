@@ -31,7 +31,7 @@ function ProfileMobile() {
 
   const name = profile?.display_name ?? profile?.email?.split("@")[0] ?? "مستثمر";
   const rows = [
-    { icon: LayoutDashboard, label: "لوحة التحكم الكاملة", to: "/dashboard" as const },
+    { icon: LayoutDashboard, label: "لوحة التحكم الكاملة", to: "/portal" as const },
     { icon: FileText, label: "الكشوف والتقارير", to: "/portal" as const },
     { icon: MessageSquare, label: "الرسائل الآمنة", to: "/portal" as const },
     { icon: ShieldCheck, label: "الأمان والخصوصية", to: "/privacy" as const },

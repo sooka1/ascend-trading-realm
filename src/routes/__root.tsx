@@ -206,13 +206,14 @@ function RootShell({ children }: { children: ReactNode }) {
         <HeadContent />
         <script
           // Set the theme class before hydration so light mode doesn't flash.
+          suppressHydrationWarning
           dangerouslySetInnerHTML={{
             __html:
               "(function(){try{var t=localStorage.getItem('hkex-theme');if(t==='light'){document.documentElement.classList.add('light');document.documentElement.style.colorScheme='light';}else{document.documentElement.classList.add('dark');}}catch(e){}})();",
           }}
         />
       </head>
-      <body>
+      <body suppressHydrationWarning>
         {children}
         <Scripts />
       </body>

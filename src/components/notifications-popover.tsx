@@ -32,12 +32,23 @@ export function NotificationsPopover({ size = "md" }: { size?: "sm" | "md" }) {
   async function markAllRead() {
     const { data: u } = await supabase.auth.getUser();
     if (!u.user) return;
+    // Optimistic: flip unread → read locally, rollback on failure.
+    const prev = qc.getQueryData<Notif[]>(["portal", "notifications", "recent"]);
+    const now = new Date().toISOString();
+    qc.setQueryData<Notif[]>(["portal", "notifications", "recent"], (old) =>
+      (old ?? []).map((n) => (n.read_at ? n : { ...n, read_at: now })),
+    );
     const { error } = await supabase
       .from("notifications")
-      .update({ read_at: new Date().toISOString() })
+      .update({ read_at: now })
       .eq("user_id", u.user.id)
       .is("read_at", null);
-    if (error) return toast.error(error.message);
+    if (error) {
+      // Rollback
+      if (prev) qc.setQueryData(["portal", "notifications", "recent"], prev);
+      toast.error(error.message);
+      return;
+    }
     await qc.invalidateQueries({ queryKey: ["portal", "notifications"] });
   }
 
