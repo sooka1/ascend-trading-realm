@@ -92,6 +92,15 @@ function InvestorPortal() {
   const [pkgAmounts, setPkgAmounts] = useState<Record<string, string>>({});
   const [confirmSub, setConfirmSub] = useState<{ pkg: Pkg; amount: number } | null>(null);
   const [editSub, setEditSub] = useState<{ id: string; value: string; reason: string } | null>(null);
+  type PendingWithdraw = {
+    parsed: z.infer<typeof withdrawSchema>;
+    form: HTMLFormElement;
+    affectedCapital: number;
+    affectedSubsCount: number;
+    estLoss: number;
+  };
+  const [withdrawWarn, setWithdrawWarn] = useState<PendingWithdraw | null>(null);
+  const [withdrawAck, setWithdrawAck] = useState(false);
   type AmountChange = { id: string; subscription_id: string; amount_before: number; amount_after: number; amount_delta: number; currency: string; reason: string | null; created_at: string };
   const [amountChanges, setAmountChanges] = useState<AmountChange[]>([]);
   type Payout = { id: string; subscription_id: string; amount: number; currency: string; period_start: string; period_end: string; created_at: string };
