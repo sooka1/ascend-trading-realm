@@ -166,6 +166,13 @@ export const DICTS: Record<Lang, Dict> = {
     "auth.confirm.wrong_email": "بريد خاطئ؟",
     "auth.confirm.use_diff": "استخدم عنوانًا مختلفًا",
     "auth.confirm.resend_error": "تعذّر إعادة إرسال البريد",
+    "auth.confirm.offline": "أنت غير متصل بالإنترنت. تحقق من الاتصال ثم أعد المحاولة.",
+    "auth.confirm.generic_error": "حدث خطأ. الرجاء المحاولة لاحقًا.",
+    "auth.verify.enter_email": "أدخل عنوان البريد الذي سجّلت به لإعادة إرسال رابط التأكيد.",
+    "auth.verify.error.expired": "انتهت صلاحية رابط التأكيد. أرسل رابطًا جديدًا.",
+    "auth.verify.error.used": "تم استخدام هذا الرابط من قبل. سجّل الدخول أو اطلب رابطًا جديدًا.",
+    "auth.verify.error.invalid": "الرابط غير صالح. اطلب رابط تأكيد جديدًا.",
+    "auth.verify.error.generic": "تعذّر إتمام التأكيد. اطلب رابطًا جديدًا.",
     // Forgot password
     "auth.forgot.title": "إعادة تعيين كلمة المرور",
     "auth.forgot.sub": "أدخل البريد المرتبط بحسابك وسنرسل لك رابط إعادة تعيين آمنًا.",
