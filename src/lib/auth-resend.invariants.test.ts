@@ -8,6 +8,9 @@ import { join } from "node:path";
 
 const src = readFileSync(join(import.meta.dir, "auth-resend.functions.ts"), "utf8");
 
+// Strip line comments so invariant checks match code, not documentation.
+const code = src.replace(/^\s*\/\/.*$/gm, "");
+
 describe("auth-resend server function invariants", () => {
   test("no Worker-side HMAC or Cloudflare env binding for rate-limit key", () => {
     expect(src).not.toMatch(/AUTH_RATE_LIMIT_HMAC_KEY/);
@@ -29,13 +32,12 @@ describe("auth-resend server function invariants", () => {
   });
 
   test("uses only CF-Connecting-IP, never X-Forwarded-For", () => {
-    expect(src).toMatch(/cf-connecting-ip/i);
-    expect(src).not.toMatch(/x-forwarded-for/i);
+    expect(code).toMatch(/cf-connecting-ip/i);
+    expect(code).not.toMatch(/x-forwarded-for/i);
   });
 
   test("logs only allow-listed fields (op, tag, code, status)", () => {
-    // logOp payload must not include email, ip, or any raw request field.
-    const logFn = src.match(/function logOp[\s\S]*?\n\}/)?.[0] ?? "";
+    const logFn = (code.match(/function logOp[\s\S]*?\n\}/)?.[0] ?? "");
     expect(logFn).toMatch(/op:\s*"auth_resend"/);
     expect(logFn).not.toMatch(/email/i);
     expect(logFn).not.toMatch(/\bip\b/i);
