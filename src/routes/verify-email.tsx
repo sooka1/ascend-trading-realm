@@ -80,9 +80,14 @@ function VerifyEmailPage() {
   // Clear pending state and hand off to /auth with the email prefilled.
   function goToLoginPrefilled(addr: string | null) {
     clearPending();
-    if (addr && typeof window !== "undefined") {
-      window.location.assign(`/auth?email=${encodeURIComponent(addr)}`);
-      return;
+    // Same-origin one-time handoff. Never place the email in the URL,
+    // router search state, or any log/analytics sink.
+    if (addr) {
+      try {
+        sessionStorage.setItem("hk.auth.loginPrefill", addr);
+      } catch {
+        /* storage unavailable → navigate without prefill */
+      }
     }
     navigate({ to: "/auth" });
   }
