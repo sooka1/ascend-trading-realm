@@ -203,16 +203,6 @@ function Hero({ c }: { c: LandingContent }) {
         <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/65 to-background" />
         <div className="absolute inset-0 bg-grid opacity-[0.12]" />
       </div>
-      {/* Brand watermark → clickable button that opens the portfolios page. */}
-      <Link
-        to="/portfolios"
-        aria-label="HK Global Trade — عرض باقات الاستثمار"
-        className="group absolute right-6 top-6 z-20 flex items-center gap-3 rounded-md border border-[#a0430a] bg-[#c2410c] px-3 py-2 text-white shadow-[0_4px_14px_rgba(194,65,12,0.35)] backdrop-blur-sm transition-all duration-200 hover:border-[#ea580c] hover:bg-[#ea580c] hover:text-white hover:shadow-[0_6px_20px_rgba(234,88,12,0.5)] active:border-[#7c2d0a] active:bg-[#9a3412] active:shadow-[0_2px_8px_rgba(122,45,10,0.4)] active:scale-[0.98] sm:right-10 sm:top-10"
-      >
-        <HKLogo size="sm" showWordmark={false} />
-        <span className="font-mono text-[10px] uppercase tracking-[0.28em]">hk global trade</span>
-      </Link>
-
       <div className="relative mx-auto grid max-w-7xl gap-10 px-4 pt-24 pb-16 sm:px-6 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:px-8 lg:pt-32 lg:pb-24">
         <div>
           <div className="flex items-center gap-4">
