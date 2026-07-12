@@ -35,12 +35,12 @@ export const Route = createFileRoute("/api/public/health")({
             const t0 = Date.now();
             const { data, error } = await client
               .from("market_data_prices_latest")
-              .select("updated_at")
-              .order("updated_at", { ascending: false })
+              .select("price_time")
+              .order("price_time", { ascending: false })
               .limit(1)
               .maybeSingle();
-            const fresh = data?.updated_at
-              ? Date.now() - new Date(data.updated_at as string).getTime() < 15 * 60_000
+            const fresh = data?.price_time
+              ? Date.now() - new Date(data.price_time as string).getTime() < 15 * 60_000
               : false;
             checks.market_data = {
               ok: !error && fresh,
