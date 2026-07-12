@@ -348,7 +348,7 @@ export function SupportFab() {
 
   return (
     <>
-      {!open && (
+      {authed === true && !open && (
         <button
           onClick={() => setOpen(true)}
           aria-label="فتح شات الاستفسارات"
