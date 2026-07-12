@@ -209,7 +209,7 @@ function Hero({ c }: { c: LandingContent }) {
             alt="HKEX — 交易・投資・成長"
             width={300}
             height={150}
-            className="mb-8 block h-[150px] w-[300px] object-contain select-none"
+            className="mb-4 block h-[150px] w-[300px] object-contain select-none"
             draggable={false}
           />
           <div className="flex items-center gap-4">
@@ -218,7 +218,7 @@ function Hero({ c }: { c: LandingContent }) {
               {c.hero.badge}
             </span>
           </div>
-          <h1 className="mt-8 font-display text-[2.75rem] font-bold leading-[1.4] tracking-tight md:text-6xl md:leading-[1.35] lg:text-[4.5rem] lg:leading-[1.3]">
+          <h1 className="mt-4 font-display text-[2.75rem] font-bold leading-[1.4] tracking-tight md:text-6xl md:leading-[1.35] lg:text-[4.5rem] lg:leading-[1.3]">
             {c.hero.titleA}{" "}
             <span className="italic font-normal text-gold">{c.hero.titleB}</span>
             <br />
