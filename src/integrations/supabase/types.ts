@@ -5754,6 +5754,7 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      cleanup_expired_data: { Args: never; Returns: Json }
       close_master_trade: {
         Args: { _exit_price: number; _trade_id: string }
         Returns: Json
@@ -6059,6 +6060,9 @@ export type Database = {
         Args: { _code: string; _enabled: boolean }
         Returns: Json
       }
+      queue_health: { Args: never; Returns: Json }
+      reconcile_ledger_daily: { Args: never; Returns: Json }
+      recover_copy_queue: { Args: never; Returns: Json }
       run_daily_ledger_reconciliation: {
         Args: { _day?: string }
         Returns: {

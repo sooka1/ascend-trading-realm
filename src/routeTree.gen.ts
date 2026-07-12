@@ -34,6 +34,8 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/_admin/route'
 import { Route as AuthenticatedPortalIndexRouteImport } from './routes/_authenticated/portal.index'
+import { Route as ApiPublicOpsRouteImport } from './routes/api/public/ops'
+import { Route as ApiPublicHealthRouteImport } from './routes/api/public/health'
 import { Route as AuthenticatedPortalUpdatesRouteImport } from './routes/_authenticated/portal.updates'
 import { Route as AuthenticatedPortalTransactionsRouteImport } from './routes/_authenticated/portal.transactions'
 import { Route as AuthenticatedPortalTradingRouteImport } from './routes/_authenticated/portal.trading'
@@ -210,6 +212,16 @@ const AuthenticatedPortalIndexRoute =
     path: '/portal/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiPublicOpsRoute = ApiPublicOpsRouteImport.update({
+  id: '/api/public/ops',
+  path: '/api/public/ops',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicHealthRoute = ApiPublicHealthRouteImport.update({
+  id: '/api/public/health',
+  path: '/api/public/health',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedPortalUpdatesRoute =
   AuthenticatedPortalUpdatesRouteImport.update({
     id: '/portal/updates',
@@ -558,6 +570,8 @@ export interface FileRoutesByFullPath {
   '/portal/trading': typeof AuthenticatedPortalTradingRoute
   '/portal/transactions': typeof AuthenticatedPortalTransactionsRoute
   '/portal/updates': typeof AuthenticatedPortalUpdatesRoute
+  '/api/public/health': typeof ApiPublicHealthRoute
+  '/api/public/ops': typeof ApiPublicOpsRoute
   '/portal/': typeof AuthenticatedPortalIndexRoute
   '/admin/accounting': typeof AuthenticatedAdminAdminAccountingRoute
   '/admin/analytics': typeof AuthenticatedAdminAdminAnalyticsRoute
@@ -634,6 +648,8 @@ export interface FileRoutesByTo {
   '/portal/trading': typeof AuthenticatedPortalTradingRoute
   '/portal/transactions': typeof AuthenticatedPortalTransactionsRoute
   '/portal/updates': typeof AuthenticatedPortalUpdatesRoute
+  '/api/public/health': typeof ApiPublicHealthRoute
+  '/api/public/ops': typeof ApiPublicOpsRoute
   '/portal': typeof AuthenticatedPortalIndexRoute
   '/admin/accounting': typeof AuthenticatedAdminAdminAccountingRoute
   '/admin/analytics': typeof AuthenticatedAdminAdminAnalyticsRoute
@@ -713,6 +729,8 @@ export interface FileRoutesById {
   '/_authenticated/portal/trading': typeof AuthenticatedPortalTradingRoute
   '/_authenticated/portal/transactions': typeof AuthenticatedPortalTransactionsRoute
   '/_authenticated/portal/updates': typeof AuthenticatedPortalUpdatesRoute
+  '/api/public/health': typeof ApiPublicHealthRoute
+  '/api/public/ops': typeof ApiPublicOpsRoute
   '/_authenticated/portal/': typeof AuthenticatedPortalIndexRoute
   '/_authenticated/_admin/admin/accounting': typeof AuthenticatedAdminAdminAccountingRoute
   '/_authenticated/_admin/admin/analytics': typeof AuthenticatedAdminAdminAnalyticsRoute
@@ -791,6 +809,8 @@ export interface FileRouteTypes {
     | '/portal/trading'
     | '/portal/transactions'
     | '/portal/updates'
+    | '/api/public/health'
+    | '/api/public/ops'
     | '/portal/'
     | '/admin/accounting'
     | '/admin/analytics'
@@ -867,6 +887,8 @@ export interface FileRouteTypes {
     | '/portal/trading'
     | '/portal/transactions'
     | '/portal/updates'
+    | '/api/public/health'
+    | '/api/public/ops'
     | '/portal'
     | '/admin/accounting'
     | '/admin/analytics'
@@ -945,6 +967,8 @@ export interface FileRouteTypes {
     | '/_authenticated/portal/trading'
     | '/_authenticated/portal/transactions'
     | '/_authenticated/portal/updates'
+    | '/api/public/health'
+    | '/api/public/ops'
     | '/_authenticated/portal/'
     | '/_authenticated/_admin/admin/accounting'
     | '/_authenticated/_admin/admin/analytics'
@@ -996,6 +1020,8 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   RiskRoute: typeof RiskRoute
   TermsRoute: typeof TermsRoute
+  ApiPublicHealthRoute: typeof ApiPublicHealthRoute
+  ApiPublicOpsRoute: typeof ApiPublicOpsRoute
   ApiPublicWebhooksBinancePayRoute: typeof ApiPublicWebhooksBinancePayRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
@@ -1178,6 +1204,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/portal/'
       preLoaderRoute: typeof AuthenticatedPortalIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/api/public/ops': {
+      id: '/api/public/ops'
+      path: '/api/public/ops'
+      fullPath: '/api/public/ops'
+      preLoaderRoute: typeof ApiPublicOpsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/health': {
+      id: '/api/public/health'
+      path: '/api/public/health'
+      fullPath: '/api/public/health'
+      preLoaderRoute: typeof ApiPublicHealthRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/portal/updates': {
       id: '/_authenticated/portal/updates'
@@ -1715,6 +1755,8 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   RiskRoute: RiskRoute,
   TermsRoute: TermsRoute,
+  ApiPublicHealthRoute: ApiPublicHealthRoute,
+  ApiPublicOpsRoute: ApiPublicOpsRoute,
   ApiPublicWebhooksBinancePayRoute: ApiPublicWebhooksBinancePayRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
