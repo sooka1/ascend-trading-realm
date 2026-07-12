@@ -3,6 +3,9 @@ import { getNetStatus, onNetStatus, type NetStatus } from "@/lib/native/network-
 
 export function useNetworkStatus(): NetStatus {
   const [status, setStatus] = useState<NetStatus>(() => getNetStatus());
-  useEffect(() => onNetStatus(setStatus), []);
+  useEffect(() => {
+    const unsub = onNetStatus(setStatus);
+    return () => { unsub(); };
+  }, []);
   return status;
 }
