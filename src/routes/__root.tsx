@@ -230,6 +230,8 @@ function RootComponent() {
   const router = useRouter();
 
   useEffect(() => {
+    // Initialize Sentry on the client as early as safely possible after mount.
+    initSentryClient();
     installTimezonePatch();
     void loadUserTimezoneFromProfile().then(() => {
       // Re-render everything so freshly-loaded locale/timezone reach existing
