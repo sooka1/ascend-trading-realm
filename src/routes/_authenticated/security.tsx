@@ -29,7 +29,7 @@ import { useI18n } from "@/lib/i18n";
 export const Route = createFileRoute("/_authenticated/security")({
   head: () => ({
     meta: [
-      { title: "لوحة الأمان | HK Global Trading" },
+      { title: "لوحة الأمان | HKEX" },
       { name: "description", content: "نتائج فحص الأمان الأحدث: كل مشكلة، مستوى الخطورة، والإصلاح المقترح." },
       { name: "robots", content: "noindex" },
     ],

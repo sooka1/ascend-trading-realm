@@ -8,9 +8,9 @@ import { usePage } from "@/lib/i18n";
 export const Route = createFileRoute("/markets")({
   head: () => ({
     meta: [
-      { title: "Markets — Forex, Crypto, Stocks, Indices | HK Global Trading" },
+      { title: "Markets — Forex, Crypto, Stocks, Indices | HKEX" },
       { name: "description", content: "Trade 10,000+ instruments." },
-      { property: "og:title", content: "HK Global Trading Markets" },
+      { property: "og:title", content: "HKEX Markets" },
       { property: "og:description", content: "10,000+ instruments across every major asset class." },
     ],
   }),

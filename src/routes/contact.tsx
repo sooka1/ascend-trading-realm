@@ -14,9 +14,9 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact — Get in touch with HK Global Trading" },
+      { title: "Contact — Get in touch with HKEX" },
       { name: "description", content: "Talk to our sales, partnerships or support team." },
-      { property: "og:title", content: "Contact HK Global Trading" },
+      { property: "og:title", content: "Contact HKEX" },
       { property: "og:description", content: "Reach our sales, support or partnerships teams." },
     ],
   }),

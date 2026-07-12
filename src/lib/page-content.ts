@@ -23,27 +23,27 @@ type H4 = { eyebrow: string; titleA: string; titleB: string; subtitle: string };
 
 const en: PageContent = {
   about: {
-    meta: { title: "About HK Global Trading — Our story, mission and team", desc: "HK Global Trading is a premium multi-asset broker and competition platform serving 2M+ traders across 184 countries.", ogTitle: "About HK Global Trading", ogDesc: "The story behind the world's most competitive trading platform." },
-    hero: { eyebrow: "About us", titleA: "Built by traders,", titleB: "for traders", subtitle: "Founded in 2019, HK Global Trading unifies institutional-grade execution with a world-class competition ecosystem — trusted by more than 2 million clients worldwide." },
+    meta: { title: "About HKEX — Our story, mission and team", desc: "HKEX is a premium multi-asset broker and competition platform serving 2M+ traders across 184 countries.", ogTitle: "About HKEX", ogDesc: "The story behind the world's most competitive trading platform." },
+    hero: { eyebrow: "About us", titleA: "Built by traders,", titleB: "for traders", subtitle: "Founded in 2017, HKEX unifies institutional-grade execution with a world-class competition ecosystem — trusted by more than 2 million clients worldwide." },
     stats: { clients: "Active clients", countries: "Countries", volume: "Monthly volume", team: "Team members" },
     values: { missionT: "Our mission", missionB: "Give every trader — from first click to portfolio manager — an unfair edge through technology, education and competition.", valuesT: "Our values", valuesB: "Transparent pricing, uncompromising security, and a fanatical bias toward client outcomes over house P&L.", reachT: "Our reach", reachB: "Local expertise on five continents, 24/7 multilingual support, and licenses across leading global regulators." },
     leadership: { eyebrow: "Leadership", title: "A team forged on trading floors", body: "Our leadership brings decades of experience from Goldman Sachs, Jane Street, Coinbase and Interactive Brokers. We build for traders because we are traders — and every product decision passes through a live P&L." },
   },
   affiliate: {
-    meta: { title: "Affiliate Program — Earn up to $1,200 per referral | HK Global", desc: "Join the HK Global affiliate program.", ogTitle: "HK Global Affiliate Program", ogDesc: "Earn up to $1,200 per funded referral." },
+    meta: { title: "Affiliate Program — Earn up to $1,200 per referral | HKEX", desc: "Join the HKEX affiliate program.", ogTitle: "HKEX Affiliate Program", ogDesc: "Earn up to $1,200 per funded referral." },
     hero: { eyebrow: "Affiliate", titleA: "Refer. Earn.", titleB: "Repeat.", subtitle: "Up to $1,200 per funded referral plus 20% lifetime revenue share." },
     steps: { linkT: "Get your link", linkB: "Sign up and generate custom referral links and QR codes in seconds.", referT: "Refer clients", referB: "Share across your audience — social, blog, newsletter or paid.", earnT: "Earn", earnB: "Track live commissions in your dashboard and withdraw anytime." },
     commission: { title: "Commission structure", tier1: "Tier 1", tier2: "Tier 2", tier3: "Tier 3", rev: "Rev share", d1: "1-5 clients / mo", d2: "6-20 clients / mo", d3: "20+ clients / mo", d4: "Lifetime, all tiers", cta: "Become an affiliate" },
   },
   blog: {
-    meta: { title: "Blog — Trading education and stories | HK Global Trading", desc: "Long-form articles on trading psychology, strategy and community.", ogTitle: "HK Global Trading Blog", ogDesc: "Long-form trading insight." },
+    meta: { title: "Blog — Trading education and stories | HKEX", desc: "Long-form articles on trading psychology, strategy and community.", ogTitle: "HKEX Blog", ogDesc: "Long-form trading insight." },
     hero: { eyebrow: "Blog", titleA: "Deep dives,", titleB: "weekly", subtitle: "Long-form thinking on trading strategy, community and market structure." },
     read: "read",
     cats: { strategy: "Strategy", psychology: "Psychology", community: "Community", risk: "Risk", crypto: "Crypto", macro: "Macro" },
     posts: ["The 3 microstructure edges that survived 2024","Why top competitors journal every trade — and how to start","Inside the King of Wall Street competition final","Position sizing frameworks used by prop desks","Perpetuals vs spot: the true cost of leverage","How to trade FOMC weeks — 15 years of data"],
   },
   competitions: {
-    meta: { title: "Trading Competitions — Compete for real prizes | HK Global", desc: "Live trading tournaments with six-figure prize pools.", ogTitle: "HK Trading Competitions", ogDesc: "Compete against the world's best." },
+    meta: { title: "Trading Competitions — Compete for real prizes | HKEX", desc: "Live trading tournaments with six-figure prize pools.", ogTitle: "HK Trading Competitions", ogDesc: "Compete against the world's best." },
     hero: { eyebrow: "Competitions", titleA: "Live tournaments.", titleB: "Real prizes.", subtitle: "Enter free and paid competitions across forex, crypto, indices and stocks." },
     live: "Live now", upcoming: "Upcoming", recent: "Recent winners",
     prizePool: "Prize pool", endsIn: "Ends in", traders: "traders", enter: "Enter competition", register: "Register", starts: "Starts", winner: "Winner",
@@ -53,21 +53,21 @@ const en: PageContent = {
     finishedT: ["Q1 Global Championship","Nasdaq Showdown"],
   },
   contact: {
-    meta: { title: "Contact — Get in touch with HK Global Trading", desc: "Talk to our sales, partnerships or support team.", ogTitle: "Contact HK Global Trading", ogDesc: "Reach our teams." },
+    meta: { title: "Contact — Get in touch with HKEX", desc: "Talk to our sales, partnerships or support team.", ogTitle: "Contact HKEX", ogDesc: "Reach our teams." },
     hero: { eyebrow: "Contact", titleA: "Let's", titleB: "talk", subtitle: "Sales, partnerships, or press — we typically reply within one business hour." },
     formTitle: "Send us a message",
     fullName: "Full name", email: "Email", subject: "Subject", message: "Message", send: "Send message", sent: "Thanks — we'll be in touch shortly.",
     hqT: "Registered Office — Hong Kong", hqB: "Level 56, Two International Finance Centre\n8 Finance Street, Central\nHong Kong", emailT: "Email", phoneT: "Phone", officesT: "Offices",
   },
   economic: {
-    meta: { title: "Economic Calendar — Live macro events | HK Global Trading", desc: "Live economic calendar.", ogTitle: "HK Economic Calendar", ogDesc: "The macro events that move markets." },
+    meta: { title: "Economic Calendar — Live macro events | HKEX", desc: "Live economic calendar.", ogTitle: "HK Economic Calendar", ogDesc: "The macro events that move markets." },
     hero: { eyebrow: "Economic Calendar", titleA: "The events that", titleB: "move markets", subtitle: "Filter every macro release by impact, currency and region." },
     cols: { time: "Time", ccy: "Ccy", event: "Event", impact: "Impact", prev: "Prev", est: "Est" },
     impact: { high: "high", medium: "medium", low: "low" },
     events: ["Non-Farm Payrolls","Unemployment Rate","ISM Services PMI","BoE Rate Decision","German Factory Orders m/m","GDP q/q","RBA Meeting Minutes","BoC Governor Speech"],
   },
   education: {
-    meta: { title: "Trading Academy — Courses, videos and webinars | HK Global", desc: "Learn to trade like a pro.", ogTitle: "HK Trading Academy", ogDesc: "Free trading education." },
+    meta: { title: "Trading Academy — Courses, videos and webinars | HKEX", desc: "Learn to trade like a pro.", ogTitle: "HK Trading Academy", ogDesc: "Free trading education." },
     hero: { eyebrow: "Education", titleA: "The", titleB: "HK Academy", subtitle: "Everything you need to sharpen your edge — free for HK clients." },
     tracks: {
       coursesT: "Trading Courses", coursesB: "12 full curriculums across beginner, intermediate and pro levels.", coursesS: "220+ lessons",
@@ -78,7 +78,7 @@ const en: PageContent = {
     },
   },
   faq: {
-    meta: { title: "FAQ — Frequently asked questions | HK Global Trading", desc: "Answers to common questions.", ogTitle: "HK Global Trading FAQ", ogDesc: "Straight answers." },
+    meta: { title: "FAQ — Frequently asked questions | HKEX", desc: "Answers to common questions.", ogTitle: "HKEX FAQ", ogDesc: "Straight answers." },
     hero: { eyebrow: "FAQ", titleA: "Frequently asked", titleB: "questions" },
     groups: [
       { title: "Getting started", items: [
@@ -92,14 +92,14 @@ const en: PageContent = {
         { q: "When are prizes paid?", a: "Prizes are credited within 72 hours of results being finalized." },
       ]},
       { title: "Security & compliance", items: [
-        { q: "Is HK Global Trading regulated?", a: "Yes, we hold licenses across multiple leading global jurisdictions." },
+        { q: "Is HKEX regulated?", a: "Yes, we hold licenses across multiple leading global jurisdictions." },
         { q: "How are client funds protected?", a: "Client funds are segregated in tier-1 banks with internal insurance." },
         { q: "Do you support 2FA?", a: "Yes — TOTP and hardware key 2FA is available on every account." },
       ]},
     ],
   },
   markets: {
-    meta: { title: "Markets — Forex, Crypto, Stocks, Indices | HK Global Trading", desc: "Trade 10,000+ instruments.", ogTitle: "HK Global Trading Markets", ogDesc: "10,000+ instruments." },
+    meta: { title: "Markets — Forex, Crypto, Stocks, Indices | HKEX", desc: "Trade 10,000+ instruments.", ogTitle: "HKEX Markets", ogDesc: "10,000+ instruments." },
     hero: { eyebrow: "Markets", titleA: "Every market.", titleB: "Every session.", subtitle: "Access 10,000+ instruments through one unified account." },
     groups: [
       { name: "Forex", desc: "60+ major, minor and exotic pairs with raw-spread execution.", specs: ["From 0.0 pips","1:500 leverage","24/5"] },
@@ -111,7 +111,7 @@ const en: PageContent = {
     ],
   },
   news: {
-    meta: { title: "Market News — Live analysis and insights | HK Global Trading", desc: "Real-time market news.", ogTitle: "HK Global Trading — Market News", ogDesc: "Live market analysis." },
+    meta: { title: "Market News — Live analysis and insights | HKEX", desc: "Real-time market news.", ogTitle: "HKEX — Market News", ogDesc: "Live market analysis." },
     hero: { eyebrow: "Market news", titleA: "Live analysis.", titleB: "Real edge.", subtitle: "Daily briefings, deep dives and actionable setups from the HK research desk." },
     ago: "ago",
     items: [
@@ -124,7 +124,7 @@ const en: PageContent = {
     ],
   },
   partners: {
-    meta: { title: "Partners — Introducing Brokers & Institutional | HK Global", desc: "White-label, IB and institutional partnerships.", ogTitle: "Partner with HK Global Trading", ogDesc: "White-label, IB and institutional." },
+    meta: { title: "Partners — Introducing Brokers & Institutional | HKEX", desc: "White-label, IB and institutional partnerships.", ogTitle: "Partner with HKEX", ogDesc: "White-label, IB and institutional." },
     hero: { eyebrow: "Partners", titleA: "Grow with a", titleB: "world-class", titleC: "partner", subtitle: "Three tailored partnership tracks for brokers, fintechs and institutional desks." },
     models: [
       { title: "Introducing Broker", body: "Refer clients and earn ongoing revenue share plus performance bonuses.", cta: "Apply as IB" },
@@ -133,7 +133,7 @@ const en: PageContent = {
     ],
   },
   platform: {
-    meta: { title: "Trading Platform — HK Global Trading", desc: "Institutional-grade tools.", ogTitle: "The HK Trading Platform", ogDesc: "Pro-grade tools in one terminal." },
+    meta: { title: "Trading Platform — HKEX", desc: "Institutional-grade tools.", ogTitle: "The HK Trading Platform", ogDesc: "Pro-grade tools in one terminal." },
     hero: { eyebrow: "Trading Platform", titleA: "The", titleB: "terminal pros trust", subtitle: "Every tool a professional trader needs, unified in a single high-performance interface." },
     features: [
       { title: "Sub-20ms execution", body: "Direct market access with intelligent smart-order routing." },
@@ -146,7 +146,7 @@ const en: PageContent = {
     demo: { title: "Try it live in seconds", body: "A pre-funded demo account with $100k in virtual capital — no signup required.", tryDemo: "Try Demo", openLive: "Open Live Account" },
   },
   pricing: {
-    meta: { title: "Pricing — Spreads, commissions and account tiers | HK Global", desc: "Transparent pricing.", ogTitle: "HK Global Trading Pricing", ogDesc: "Transparent pricing." },
+    meta: { title: "Pricing — Spreads, commissions and account tiers | HKEX", desc: "Transparent pricing.", ogTitle: "HKEX Pricing", ogDesc: "Transparent pricing." },
     hero: { eyebrow: "Pricing", titleA: "Transparent.", titleB: "Ruthlessly fair.", subtitle: "No hidden fees. Choose the tier that fits your style." },
     popular: "Most popular",
     tiers: [
@@ -156,7 +156,7 @@ const en: PageContent = {
     ],
   },
   support: {
-    meta: { title: "Support Center — 24/7 client care | HK Global Trading", desc: "24/7 support.", ogTitle: "HK Global Support Center", ogDesc: "Human, multilingual support 24/7." },
+    meta: { title: "Support Center — 24/7 client care | HKEX", desc: "24/7 support.", ogTitle: "HKEX Support Center", ogDesc: "Human, multilingual support 24/7." },
     hero: { eyebrow: "Support", titleA: "We're here", titleB: "24/7", subtitle: "Real humans. Zero call-center scripts." },
     channels: [
       { title: "Live chat", body: "Average response: 42 seconds. Available in 14 languages.", cta: "Start chat" },
@@ -182,27 +182,27 @@ const en: PageContent = {
 
 const ar: PageContent = {
   about: {
-    meta: { title: "عن HK Global Trading — قصتنا ورسالتنا وفريقنا", desc: "HK Global Trading منصة وساطة متعددة الأصول تخدم أكثر من 2 مليون متداول في 184 دولة.", ogTitle: "عن HK Global Trading", ogDesc: "القصة وراء أكثر منصات التداول تنافسية في العالم." },
-    hero: { eyebrow: "استثمر أموالك… واترك التداول للمحترفين.", titleA: "نقوم بالتداول", titleB: "نيابةً عنك", subtitle: "فريق من المتداولين المحترفين يدير عمليات التداول باستخدام استراتيجيات مدروسة وإدارة مخاطر دقيقة، لتتمكن من الاستثمار دون الحاجة إلى تعلم التداول أو متابعة الأسواق بنفسك.\nتأسست في 2019، وتجمع HK Global Trading بين التنفيذ المؤسسي ومنظومة مسابقات عالمية — بثقة أكثر من مليوني عميل." },
+    meta: { title: "عن HKEX — قصتنا ورسالتنا وفريقنا", desc: "HKEX منصة وساطة متعددة الأصول تخدم أكثر من 2 مليون متداول في 184 دولة.", ogTitle: "عن HKEX", ogDesc: "القصة وراء أكثر منصات التداول تنافسية في العالم." },
+    hero: { eyebrow: "استثمر أموالك… واترك التداول للمحترفين.", titleA: "نقوم بالتداول", titleB: "نيابةً عنك", subtitle: "فريق من المتداولين المحترفين يدير عمليات التداول باستخدام استراتيجيات مدروسة وإدارة مخاطر دقيقة، لتتمكن من الاستثمار دون الحاجة إلى تعلم التداول أو متابعة الأسواق بنفسك.\nتأسست في 2017، وتجمع HKEX بين التنفيذ المؤسسي ومنظومة مسابقات عالمية — بثقة أكثر من مليوني عميل." },
     stats: { clients: "العملاء النشطون", countries: "الدول", volume: "الحجم الشهري", team: "أعضاء الفريق" },
     values: { missionT: "رسالتنا", missionB: "لم نُنشئ منصة لتعليم التداول، بل أنشأنا فريقًا يتداول نيابةً عنك.\nمهمتنا هي إدارة رأس مالك باحترافية من خلال متداولين ذوي خبرة، مع تطبيق استراتيجيات تداول وإدارة مخاطر تهدف إلى تحقيق أفضل أداء ممكن وفق ظروف السوق، بينما تبقى أنت مستثمرًا يتابع النتائج دون عناء التداول اليومي.", valuesT: "قيمنا", valuesB: "تسعير شفاف، أمان بلا تنازلات، وانحياز مطلق لمصلحة العميل.", reachT: "انتشارنا", reachB: "خبرة محلية في خمس قارات، ودعم 24/7 متعدد اللغات، وتراخيص من كبرى الجهات التنظيمية." },
     leadership: { eyebrow: "القيادة", title: "فريق صُنع على قاعات التداول", body: "تجلب قيادتنا عقودًا من الخبرة من Goldman Sachs وJane Street وCoinbase وInteractive Brokers. نبني للمتداولين لأننا متداولون." },
   },
   affiliate: {
-    meta: { title: "برنامج الشركاء — اربح حتى 1,200 دولار لكل إحالة | HK Global", desc: "انضم إلى برنامج شركاء HK Global.", ogTitle: "برنامج شركاء HK Global", ogDesc: "اربح حتى 1,200 دولار لكل إحالة ممولة." },
+    meta: { title: "برنامج الشركاء — اربح حتى 1,200 دولار لكل إحالة | HKEX", desc: "انضم إلى برنامج شركاء HKEX.", ogTitle: "برنامج شركاء HKEX", ogDesc: "اربح حتى 1,200 دولار لكل إحالة ممولة." },
     hero: { eyebrow: "الشركاء", titleA: "أحِل. اربح.", titleB: "كرّر.", subtitle: "حتى 1,200 دولار لكل إحالة ممولة و20% حصة إيرادات مدى الحياة." },
     steps: { linkT: "احصل على رابطك", linkB: "سجّل وأنشئ روابط إحالة مخصصة في ثوانٍ.", referT: "أحِل العملاء", referB: "شارك عبر جمهورك — سوشيال أو مدوّنة أو نشرة.", earnT: "اربح", earnB: "تابع عمولاتك مباشرة واسحبها في أي وقت." },
     commission: { title: "هيكل العمولات", tier1: "المستوى 1", tier2: "المستوى 2", tier3: "المستوى 3", rev: "حصة الإيرادات", d1: "1-5 عملاء شهريًا", d2: "6-20 عميلًا شهريًا", d3: "أكثر من 20 عميلًا شهريًا", d4: "مدى الحياة، جميع المستويات", cta: "كن شريكًا" },
   },
   blog: {
-    meta: { title: "المدوّنة — HK Global Trading", desc: "مقالات مطوّلة حول التداول.", ogTitle: "مدوّنة HK Global Trading", ogDesc: "رؤى تداول عميقة." },
+    meta: { title: "المدوّنة — HKEX", desc: "مقالات مطوّلة حول التداول.", ogTitle: "مدوّنة HKEX", ogDesc: "رؤى تداول عميقة." },
     hero: { eyebrow: "المدوّنة", titleA: "تحليلات عميقة،", titleB: "أسبوعيًا", subtitle: "تفكير مطوّل في استراتيجيات التداول والمجتمع." },
     read: "قراءة",
     cats: { strategy: "استراتيجية", psychology: "علم نفس", community: "مجتمع", risk: "المخاطر", crypto: "عملات رقمية", macro: "ماكرو" },
     posts: ["3 ميزات في البنية الدقيقة نجت من 2024","لماذا يدوّن أفضل المتنافسين كل صفقة","من داخل نهائي King of Wall Street","أطر تحديد حجم المراكز في مكاتب الملكية","العقود الدائمة مقابل الفوري: تكلفة الرافعة","التداول في أسابيع الفيدرالي — 15 عامًا من البيانات"],
   },
   competitions: {
-    meta: { title: "مسابقات التداول — HK Global", desc: "بطولات مباشرة بجوائز حقيقية.", ogTitle: "مسابقات HK للتداول", ogDesc: "نافس أفضل المتداولين." },
+    meta: { title: "مسابقات التداول — HKEX", desc: "بطولات مباشرة بجوائز حقيقية.", ogTitle: "مسابقات HK للتداول", ogDesc: "نافس أفضل المتداولين." },
     hero: { eyebrow: "المسابقات", titleA: "بطولات مباشرة.", titleB: "جوائز حقيقية.", subtitle: "مسابقات مجانية ومدفوعة عبر الفوركس والعملات الرقمية والمؤشرات والأسهم." },
     live: "مباشر الآن", upcoming: "قادم", recent: "الفائزون مؤخرًا",
     prizePool: "قيمة الجائزة", endsIn: "ينتهي خلال", traders: "متداول", enter: "شارك", register: "سجّل", starts: "يبدأ", winner: "الفائز",
@@ -212,21 +212,21 @@ const ar: PageContent = {
     finishedT: ["البطولة العالمية للربع الأول","مواجهة ناسداك"],
   },
   contact: {
-    meta: { title: "تواصل — HK Global Trading", desc: "تحدث مع فرقنا.", ogTitle: "تواصل مع HK Global Trading", ogDesc: "تواصل مع فرقنا." },
+    meta: { title: "تواصل — HKEX", desc: "تحدث مع فرقنا.", ogTitle: "تواصل مع HKEX", ogDesc: "تواصل مع فرقنا." },
     hero: { eyebrow: "تواصل", titleA: "لنَـ", titleB: "تحدّث", subtitle: "مبيعات أو شراكات أو صحافة — نردّ خلال ساعة عمل." },
     formTitle: "أرسل لنا رسالة",
     fullName: "الاسم الكامل", email: "البريد الإلكتروني", subject: "الموضوع", message: "الرسالة", send: "إرسال", sent: "شكرًا — سنتواصل معك قريبًا.",
     hqT: "المقر المسجّل — هونغ كونغ", hqB: "الطابق 56، برج المالية الدولي الثاني\n8 شارع فاينانس، سنترال\nهونغ كونغ", emailT: "البريد الإلكتروني", phoneT: "الهاتف", officesT: "المكاتب",
   },
   economic: {
-    meta: { title: "التقويم الاقتصادي — HK Global Trading", desc: "تقويم اقتصادي مباشر.", ogTitle: "التقويم الاقتصادي HK", ogDesc: "الأحداث التي تحرّك الأسواق." },
+    meta: { title: "التقويم الاقتصادي — HKEX", desc: "تقويم اقتصادي مباشر.", ogTitle: "التقويم الاقتصادي HK", ogDesc: "الأحداث التي تحرّك الأسواق." },
     hero: { eyebrow: "التقويم الاقتصادي", titleA: "الأحداث التي", titleB: "تحرّك الأسواق", subtitle: "صفّ كل إصدار ماكرو حسب التأثير والعملة والمنطقة." },
     cols: { time: "الوقت", ccy: "العملة", event: "الحدث", impact: "التأثير", prev: "السابق", est: "المتوقع" },
     impact: { high: "عالي", medium: "متوسط", low: "منخفض" },
     events: ["الوظائف غير الزراعية","معدل البطالة","مؤشر ISM للخدمات","قرار سعر الفائدة BoE","طلبات المصانع الألمانية شهريًا","الناتج المحلي ربعيًا","محضر اجتماع RBA","خطاب محافظ BoC"],
   },
   education: {
-    meta: { title: "أكاديمية التداول — HK Global", desc: "تعلّم التداول باحتراف.", ogTitle: "أكاديمية HK للتداول", ogDesc: "تعليم تداول مجاني." },
+    meta: { title: "أكاديمية التداول — HKEX", desc: "تعلّم التداول باحتراف.", ogTitle: "أكاديمية HK للتداول", ogDesc: "تعليم تداول مجاني." },
     hero: { eyebrow: "التعليم", titleA: "أكاديمية", titleB: "HK", subtitle: "كل ما تحتاجه لصقل ميزتك — مجانًا لعملاء HK." },
     tracks: {
       coursesT: "دورات التداول", coursesB: "12 منهجًا كاملًا للمبتدئين والمتوسطين والمحترفين.", coursesS: "أكثر من 220 درسًا",
@@ -237,7 +237,7 @@ const ar: PageContent = {
     },
   },
   faq: {
-    meta: { title: "الأسئلة الشائعة — HK Global Trading", desc: "إجابات على الأسئلة الشائعة.", ogTitle: "أسئلة HK Global Trading", ogDesc: "إجابات مباشرة." },
+    meta: { title: "الأسئلة الشائعة — HKEX", desc: "إجابات على الأسئلة الشائعة.", ogTitle: "أسئلة HKEX", ogDesc: "إجابات مباشرة." },
     hero: { eyebrow: "الأسئلة الشائعة", titleA: "أسئلة متكررة", titleB: "شائعة" },
     groups: [
       { title: "البداية", items: [
@@ -258,7 +258,7 @@ const ar: PageContent = {
     ],
   },
   markets: {
-    meta: { title: "الأسواق — HK Global Trading", desc: "تداول أكثر من 10,000 أداة.", ogTitle: "أسواق HK", ogDesc: "أكثر من 10,000 أداة." },
+    meta: { title: "الأسواق — HKEX", desc: "تداول أكثر من 10,000 أداة.", ogTitle: "أسواق HK", ogDesc: "أكثر من 10,000 أداة." },
     hero: { eyebrow: "الأسواق", titleA: "كل سوق.", titleB: "كل جلسة.", subtitle: "الوصول إلى أكثر من 10,000 أداة عبر حساب موحّد." },
     groups: [
       { name: "الفوركس", desc: "أكثر من 60 زوجًا رئيسيًا وثانويًا.", specs: ["من 0.0 نقطة","رافعة 1:500","24/5"] },
@@ -270,7 +270,7 @@ const ar: PageContent = {
     ],
   },
   news: {
-    meta: { title: "أخبار السوق — HK Global Trading", desc: "أخبار وتحليلات مباشرة.", ogTitle: "HK — أخبار السوق", ogDesc: "تحليل السوق المباشر." },
+    meta: { title: "أخبار السوق — HKEX", desc: "أخبار وتحليلات مباشرة.", ogTitle: "HK — أخبار السوق", ogDesc: "تحليل السوق المباشر." },
     hero: { eyebrow: "أخبار السوق", titleA: "تحليل مباشر.", titleB: "ميزة حقيقية.", subtitle: "إحاطات يومية وتحليلات عميقة من مكتب أبحاث HK." },
     ago: "منذ",
     items: [
@@ -283,7 +283,7 @@ const ar: PageContent = {
     ],
   },
   partners: {
-    meta: { title: "الشركاء — HK Global", desc: "شراكات White-label و IB والمؤسسات.", ogTitle: "كن شريكًا لـ HK", ogDesc: "White-label و IB والمؤسسات." },
+    meta: { title: "الشركاء — HKEX", desc: "شراكات White-label و IB والمؤسسات.", ogTitle: "كن شريكًا لـ HK", ogDesc: "White-label و IB والمؤسسات." },
     hero: { eyebrow: "الشركاء", titleA: "انمُ مع", titleB: "شريك عالمي", titleC: "المستوى", subtitle: "ثلاثة مسارات شراكة للوسطاء والفنتك والمكاتب المؤسسية." },
     models: [
       { title: "الوسيط المُقدِّم", body: "أحِل عملاء واكسب حصة إيرادات مستمرة.", cta: "قدّم كـ IB" },
@@ -292,7 +292,7 @@ const ar: PageContent = {
     ],
   },
   platform: {
-    meta: { title: "منصة التداول — HK Global Trading", desc: "أدوات مؤسسية.", ogTitle: "منصة HK للتداول", ogDesc: "أدوات احترافية في محطة واحدة." },
+    meta: { title: "منصة التداول — HKEX", desc: "أدوات مؤسسية.", ogTitle: "منصة HK للتداول", ogDesc: "أدوات احترافية في محطة واحدة." },
     hero: { eyebrow: "منصة التداول", titleA: "المحطة التي", titleB: "يثق بها المحترفون", subtitle: "كل أداة يحتاجها المحترف موحّدة في واجهة عالية الأداء." },
     features: [
       { title: "تنفيذ أقل من 20 مللي ثانية", body: "وصول مباشر للسوق مع توجيه أوامر ذكي." },
@@ -305,7 +305,7 @@ const ar: PageContent = {
     demo: { title: "جرّبها مباشرة في ثوانٍ", body: "حساب تجريبي مُموَّل بـ 100 ألف دولار — بدون تسجيل.", tryDemo: "جرّب النسخة التجريبية", openLive: "افتح حسابًا حقيقيًا" },
   },
   pricing: {
-    meta: { title: "التسعير — HK Global", desc: "تسعير شفاف.", ogTitle: "تسعير HK Global Trading", ogDesc: "تسعير شفاف." },
+    meta: { title: "التسعير — HKEX", desc: "تسعير شفاف.", ogTitle: "تسعير HKEX", ogDesc: "تسعير شفاف." },
     hero: { eyebrow: "التسعير", titleA: "شفاف.", titleB: "عادل بلا رحمة.", subtitle: "لا رسوم خفية. اختر المستوى الذي يناسبك." },
     popular: "الأكثر شعبية",
     tiers: [
@@ -315,7 +315,7 @@ const ar: PageContent = {
     ],
   },
   support: {
-    meta: { title: "مركز الدعم — HK Global Trading", desc: "دعم 24/7.", ogTitle: "مركز دعم HK", ogDesc: "دعم بشري متعدد اللغات 24/7." },
+    meta: { title: "مركز الدعم — HKEX", desc: "دعم 24/7.", ogTitle: "مركز دعم HK", ogDesc: "دعم بشري متعدد اللغات 24/7." },
     hero: { eyebrow: "الدعم", titleA: "نحن هنا", titleB: "24/7", subtitle: "أشخاص حقيقيون. بدون نصوص جاهزة." },
     channels: [
       { title: "الدردشة المباشرة", body: "متوسط الرد: 42 ثانية. بـ 14 لغة.", cta: "ابدأ الدردشة" },
@@ -345,7 +345,7 @@ const ar: PageContent = {
 const fr: PageContent = {
   ...en,
   about: { ...en.about,
-    hero: { eyebrow: "À propos", titleA: "Conçu par des traders,", titleB: "pour des traders", subtitle: "Fondée en 2019, HK Global Trading unit exécution institutionnelle et écosystème de compétitions mondial." },
+    hero: { eyebrow: "À propos", titleA: "Conçu par des traders,", titleB: "pour des traders", subtitle: "Fondée en 2017, HKEX unit exécution institutionnelle et écosystème de compétitions mondial." },
     stats: { clients: "Clients actifs", countries: "Pays", volume: "Volume mensuel", team: "Membres de l'équipe" },
     values: { missionT: "Notre mission", missionB: en.about.values.missionB, valuesT: "Nos valeurs", valuesB: en.about.values.valuesB, reachT: "Notre portée", reachB: en.about.values.reachB },
     leadership: { eyebrow: "Direction", title: "Une équipe forgée sur les salles de marché", body: en.about.leadership.body },
@@ -434,7 +434,7 @@ const fr: PageContent = {
 const es: PageContent = {
   ...en,
   about: { ...en.about,
-    hero: { eyebrow: "Nosotros", titleA: "Hecho por traders,", titleB: "para traders", subtitle: "Fundada en 2019, HK Global Trading une ejecución institucional con un ecosistema de competencias de clase mundial." },
+    hero: { eyebrow: "Nosotros", titleA: "Hecho por traders,", titleB: "para traders", subtitle: "Fundada en 2017, HKEX une ejecución institucional con un ecosistema de competencias de clase mundial." },
     stats: { clients: "Clientes activos", countries: "Países", volume: "Volumen mensual", team: "Miembros del equipo" },
     values: { missionT: "Nuestra misión", missionB: en.about.values.missionB, valuesT: "Nuestros valores", valuesB: en.about.values.valuesB, reachT: "Nuestro alcance", reachB: en.about.values.reachB },
     leadership: { eyebrow: "Liderazgo", title: "Un equipo forjado en salas de trading", body: en.about.leadership.body },
@@ -523,7 +523,7 @@ const es: PageContent = {
 const tr: PageContent = {
   ...en,
   about: { ...en.about,
-    hero: { eyebrow: "Hakkımızda", titleA: "Trader'lar tarafından,", titleB: "trader'lar için", subtitle: "2019'da kurulan HK Global Trading, kurumsal yürütmeyi dünya standartlarında bir yarışma ekosistemiyle birleştirir." },
+    hero: { eyebrow: "Hakkımızda", titleA: "Trader'lar tarafından,", titleB: "trader'lar için", subtitle: "2017'da kurulan HKEX, kurumsal yürütmeyi dünya standartlarında bir yarışma ekosistemiyle birleştirir." },
     stats: { clients: "Aktif müşteriler", countries: "Ülkeler", volume: "Aylık hacim", team: "Ekip üyeleri" },
     values: { missionT: "Misyonumuz", missionB: en.about.values.missionB, valuesT: "Değerlerimiz", valuesB: en.about.values.valuesB, reachT: "Erişimimiz", reachB: en.about.values.reachB },
     leadership: { eyebrow: "Liderlik", title: "İşlem katlarında pişmiş bir ekip", body: en.about.leadership.body },

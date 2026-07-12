@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 export const Route = createFileRoute("/education")({
   head: () => ({
     meta: [
-      { title: "Trading Academy — Courses, videos and webinars | HK Global" },
+      { title: "Trading Academy — Courses, videos and webinars | HKEX" },
       { name: "description", content: "Learn to trade like a pro." },
       { property: "og:title", content: "HK Trading Academy" },
       { property: "og:description", content: "Free trading education — courses, webinars, calculators." },
@@ -510,7 +510,7 @@ function ForeignCoursesSection() {
       </div>
 
       <p className="mt-4 text-[11px] text-muted-foreground/70">
-        الروابط تنقلك إلى المصادر الأجنبية الأصلية؛ HK Global غير مسؤول عن محتوى الجهات الخارجية.
+        الروابط تنقلك إلى المصادر الأجنبية الأصلية؛ HKEX غير مسؤول عن محتوى الجهات الخارجية.
       </p>
     </div>
   );

@@ -6,9 +6,9 @@ import { usePage } from "@/lib/i18n";
 export const Route = createFileRoute("/faq")({
   head: () => ({
     meta: [
-      { title: "FAQ — Frequently asked questions | HK Global Trading" },
+      { title: "FAQ — Frequently asked questions | HKEX" },
       { name: "description", content: "Answers to the most common questions." },
-      { property: "og:title", content: "HK Global Trading FAQ" },
+      { property: "og:title", content: "HKEX FAQ" },
       { property: "og:description", content: "Straight answers." },
     ],
   }),
