@@ -7,6 +7,18 @@ import { AdminShell, AdminCard, StatusPill } from "@/components/admin-shell";
 import { Button } from "@/components/ui/button";
 import { BadgeCheck, ShieldCheck, Clock, XCircle, Check, X } from "lucide-react";
 import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { KYC_REJECTION_REASONS, kycRejectionLabel, type KycRejectionCode } from "@/lib/kyc-rejection-reasons";
 
 export const Route = createFileRoute("/_authenticated/_admin/admin/kyc")({
   head: () => ({ meta: [{ title: "Admin — KYC Verification" }] }),
@@ -30,6 +42,8 @@ function AdminKyc() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "pending" | "approved" | "rejected">("pending");
   const decideFn = useServerFn(decideKycAdmin);
+  const [reject, setReject] = useState<{ row: Row; code: KycRejectionCode; internal: string } | null>(null);
+  const [busy, setBusy] = useState(false);
 
   async function load() {
     setLoading(true);
@@ -46,14 +60,38 @@ function AdminKyc() {
   const filtered = useMemo(() => rows.filter((r) => filter === "all" || r.verification_status === filter), [rows, filter]);
 
   async function decide(row: Row, decision: "approved" | "rejected") {
-    const notes = decision === "rejected" ? window.prompt("سبب الرفض (اختياري):") ?? null : null;
+    if (decision === "rejected") {
+      setReject({ row, code: "document_unclear", internal: "" });
+      return;
+    }
     try {
-      await decideFn({ data: { userId: row.id, decision, notes } });
+      await decideFn({ data: { userId: row.id, decision, notes: null } });
     } catch (e: any) {
       return toast.error(e?.message ?? "فشل الحفظ");
     }
-    toast.success(decision === "approved" ? "تم توثيق الحساب" : "تم رفض الطلب");
+    toast.success("تم توثيق الحساب");
     await load();
+  }
+
+  async function confirmReject() {
+    if (!reject) return;
+    setBusy(true);
+    // Store only the localized user-facing reason in verification_notes.
+    // The optional internal admin note is prefixed with a private marker so
+    // future reads can strip it before exposing to end users.
+    const publicReason = kycRejectionLabel(reject.code);
+    const internal = reject.internal.trim();
+    const notes = internal ? `${publicReason}\n[[internal]] ${internal}` : publicReason;
+    try {
+      await decideFn({ data: { userId: reject.row.id, decision: "rejected", notes } });
+      toast.success("تم رفض الطلب");
+      setReject(null);
+      await load();
+    } catch (e: any) {
+      toast.error(e?.message ?? "فشل الحفظ");
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (
@@ -76,6 +114,54 @@ function AdminKyc() {
           ))}
         </div>
       )}
+      <AlertDialog open={!!reject} onOpenChange={(o) => { if (!o) setReject(null); }}>
+        <AlertDialogContent>
+          {reject && (
+            <>
+              <AlertDialogHeader>
+                <AlertDialogTitle>رفض طلب توثيق</AlertDialogTitle>
+                <AlertDialogDescription>
+                  اختر سبب الرفض. سيرى المستخدم السبب المُختار فقط — الملاحظة الداخلية لا تُعرض له.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <div className="space-y-3">
+                <div className="space-y-1">
+                  <label className="text-xs font-mono uppercase tracking-wider text-muted-foreground">
+                    سبب الرفض (يُعرض للمستخدم)
+                  </label>
+                  <select
+                    value={reject.code}
+                    onChange={(e) => setReject({ ...reject, code: e.target.value as KycRejectionCode })}
+                    className="w-full rounded-md border border-white/10 bg-black/20 px-3 py-2 text-sm outline-none focus:border-gold/60"
+                  >
+                    {KYC_REJECTION_REASONS.map((r) => (
+                      <option key={r.code} value={r.code}>{r.label}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-mono uppercase tracking-wider text-muted-foreground">
+                    ملاحظة داخلية (اختياري — للإدارة فقط)
+                  </label>
+                  <Textarea
+                    value={reject.internal}
+                    onChange={(e) => setReject({ ...reject, internal: e.target.value })}
+                    maxLength={500}
+                    rows={3}
+                    placeholder="غير مرئية للمستخدم…"
+                  />
+                </div>
+              </div>
+              <AlertDialogFooter>
+                <AlertDialogCancel disabled={busy}>إلغاء</AlertDialogCancel>
+                <AlertDialogAction disabled={busy} onClick={confirmReject}>
+                  تأكيد الرفض
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </>
+          )}
+        </AlertDialogContent>
+      </AlertDialog>
     </AdminShell>
   );
 }

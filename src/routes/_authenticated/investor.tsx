@@ -11,6 +11,7 @@ import { ArrowDownToLine, ArrowRight, ArrowUpFromLine, CheckCircle2, Clock, Copy
 import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from "recharts";
 import { toast } from "sonner";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Checkbox } from "@/components/ui/checkbox";
 import trc20QrAsset from "@/assets/trc20-qr.png.asset.json";
 
 export const Route = createFileRoute("/_authenticated/investor")({
@@ -91,6 +92,15 @@ function InvestorPortal() {
   const [pkgAmounts, setPkgAmounts] = useState<Record<string, string>>({});
   const [confirmSub, setConfirmSub] = useState<{ pkg: Pkg; amount: number } | null>(null);
   const [editSub, setEditSub] = useState<{ id: string; value: string; reason: string } | null>(null);
+  type PendingWithdraw = {
+    parsed: z.infer<typeof withdrawSchema>;
+    form: HTMLFormElement;
+    affectedCapital: number;
+    affectedSubsCount: number;
+    estLoss: number;
+  };
+  const [withdrawWarn, setWithdrawWarn] = useState<PendingWithdraw | null>(null);
+  const [withdrawAck, setWithdrawAck] = useState(false);
   type AmountChange = { id: string; subscription_id: string; amount_before: number; amount_after: number; amount_delta: number; currency: string; reason: string | null; created_at: string };
   const [amountChanges, setAmountChanges] = useState<AmountChange[]>([]);
   type Payout = { id: string; subscription_id: string; amount: number; currency: string; period_start: string; period_end: string; created_at: string };
@@ -468,6 +478,47 @@ function InvestorPortal() {
     const parsed = withdrawSchema.safeParse(Object.fromEntries(fd));
     if (!parsed.success) return toast.error(parsed.error.issues[0].message);
     if (parsed.data.amount > balance) return toast.error("المبلغ يتجاوز الرصيد المتاح");
+    // Network-specific destination validation (fail fast before dialog)
+    const ruleEarly = ADDRESS_RULES[withdrawMethod];
+    if (!ruleEarly.regex.test(parsed.data.destination)) return toast.error(ruleEarly.label);
+    // If the withdrawal will dip into subscription capital, cancel pending
+    // profit distributions on the affected subs. Warn the user first.
+    const affectedCapital = Math.max(0, parsed.data.amount - available);
+    if (affectedCapital > 0) {
+      // Estimate future weekly profit lost, weighted by each active sub's target return.
+      let remainingToCover = affectedCapital;
+      let affectedSubsCount = 0;
+      let estLoss = 0;
+      const sortedActive = [...subs]
+        .filter((s) => s.status === "active")
+        .sort((a, b) => Number(a.amount) - Number(b.amount));
+      for (const s of sortedActive) {
+        if (remainingToCover <= 0) break;
+        const take = Math.min(Number(s.amount), remainingToCover);
+        const pkg = packages.find((p) => p.id === s.package_id);
+        const pct = Number(pkg?.target_return_pct ?? 0);
+        estLoss += take * (pct / 100);
+        affectedSubsCount += 1;
+        remainingToCover -= take;
+      }
+      setWithdrawAck(false);
+      setWithdrawWarn({
+        parsed: parsed.data,
+        form,
+        affectedCapital,
+        affectedSubsCount,
+        estLoss,
+      });
+      return;
+    }
+    await performWithdraw(parsed.data, form);
+  }
+
+  async function performWithdraw(
+    data: z.infer<typeof withdrawSchema>,
+    form: HTMLFormElement,
+  ) {
+    if (!uid) return;
     // Require KYC verification before any withdrawal
     const { data: prof } = await supabase
       .from("profiles")
@@ -481,7 +532,7 @@ function InvestorPortal() {
     }
     // Network-specific destination validation
     const rule = ADDRESS_RULES[withdrawMethod];
-    if (!rule.regex.test(parsed.data.destination)) return toast.error(rule.label);
+    if (!rule.regex.test(data.destination)) return toast.error(rule.label);
     // Require MFA for withdrawals
     const { data: fx } = await supabase.auth.mfa.listFactors();
     const totp = (fx?.totp ?? []).find((f) => f.status === "verified");
@@ -498,7 +549,7 @@ function InvestorPortal() {
     const before = subs
       .filter((s) => s.status === "active")
       .map((s) => ({ id: s.id, amount: Number(s.amount) }));
-    const { error } = await supabase.from("withdrawals").insert({ user_id: uid, ...parsed.data });
+    const { error } = await supabase.from("withdrawals").insert({ user_id: uid, ...data });
     if (error) return toast.error(error.message);
     // The AFTER INSERT trigger `trg_withdrawals_apply_capital` deducts capital
     // atomically. Read the post-trigger state to surface a clear status.
@@ -526,9 +577,9 @@ function InvestorPortal() {
     await supabase.from("notifications").insert({
       user_id: uid,
       title: "تم استلام طلب السحب",
-      body: `${fmt(parsed.data.amount)} — قيد المراجعة`,
+      body: `${fmt(data.amount)} — قيد المراجعة`,
     });
-    toast.success(`تم إرسال طلب السحب بنجاح — ${fmt(parsed.data.amount)} قيد المراجعة`);
+    toast.success(`تم إرسال طلب السحب بنجاح — ${fmt(data.amount)} قيد المراجعة`);
     if (deducted > 0) {
       toast.info(`تم خصم ${fmt(deducted)} من رأس المال في الاشتراكات النشطة`);
     }
@@ -1143,6 +1194,68 @@ function InvestorPortal() {
               </>
             );
           })()}
+        </AlertDialogContent>
+      </AlertDialog>
+      <AlertDialog
+        open={!!withdrawWarn}
+        onOpenChange={(o) => { if (!o) { setWithdrawWarn(null); setWithdrawAck(false); } }}
+      >
+        <AlertDialogContent className="border-white/10 bg-neutral-950/95 text-foreground backdrop-blur">
+          {withdrawWarn && (
+            <>
+              <AlertDialogHeader>
+                <AlertDialogTitle className="font-display text-amber-300">
+                  تحذير — سيتم إلغاء توزيعات أرباح مستقبلية
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  هذا السحب سيقلّل رأس المال في {withdrawWarn.affectedSubsCount} اشتراك نشط،
+                  وسيؤدي إلى إلغاء توزيعات الأرباح المستقبلية على الجزء المُخصَّص منه.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <div className="grid grid-cols-3 gap-3 rounded-md border border-amber-400/30 bg-amber-400/[0.06] p-3 text-center text-xs">
+                <div>
+                  <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">اشتراكات متأثرة</p>
+                  <p className="mt-1 font-mono text-base tabular-nums">{withdrawWarn.affectedSubsCount}</p>
+                </div>
+                <div>
+                  <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">رأس المال المتأثر</p>
+                  <p className="mt-1 font-mono text-base tabular-nums">${fmt(withdrawWarn.affectedCapital)}</p>
+                </div>
+                <div>
+                  <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">أرباح مقدَّرة مفقودة</p>
+                  <p className="mt-1 font-mono text-base tabular-nums text-amber-300">≈ ${fmt(withdrawWarn.estLoss)}</p>
+                </div>
+              </div>
+              <label className="mt-3 flex items-start gap-2 text-xs text-muted-foreground">
+                <Checkbox
+                  checked={withdrawAck}
+                  onCheckedChange={(v) => setWithdrawAck(v === true)}
+                  className="mt-0.5"
+                />
+                <span>أفهم أن توزيعات الأرباح المستقبلية المرتبطة برأس المال المسحوب سيتم إلغاؤها.</span>
+              </label>
+              <AlertDialogFooter>
+                <AlertDialogCancel
+                  className="border-white/10 bg-transparent hover:bg-white/5"
+                  onClick={() => { setWithdrawWarn(null); setWithdrawAck(false); }}
+                >
+                  إلغاء
+                </AlertDialogCancel>
+                <AlertDialogAction
+                  disabled={!withdrawAck}
+                  onClick={async () => {
+                    const w = withdrawWarn;
+                    setWithdrawWarn(null);
+                    setWithdrawAck(false);
+                    await performWithdraw(w.parsed, w.form);
+                  }}
+                  className="bg-red-600 text-white hover:bg-red-700 disabled:opacity-40"
+                >
+                  متابعة السحب
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </>
+          )}
         </AlertDialogContent>
       </AlertDialog>
     </PageShell>

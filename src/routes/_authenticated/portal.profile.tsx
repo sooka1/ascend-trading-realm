@@ -58,7 +58,12 @@ function ProfilePage() {
         setIdFrontUrl((data.id_front_url as string) ?? null);
         setIdBackUrl((data.id_back_url as string) ?? null);
         setSelfieUrl((data.selfie_url as string) ?? null);
-        setVerificationNotes((data.verification_notes as string) ?? null);
+        {
+          // Strip admin-only internal marker before exposing to the user.
+          const raw = (data.verification_notes as string) ?? null;
+          const publicPart = raw ? raw.split(/\r?\n?\[\[internal\]\]/)[0].trim() : null;
+          setVerificationNotes(publicPart && publicPart.length > 0 ? publicPart : null);
+        }
         if (data.language) {
           setLanguage(data.language as string);
           setUserLocale(data.language as string);
