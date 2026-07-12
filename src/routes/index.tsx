@@ -204,6 +204,14 @@ function Hero({ c }: { c: LandingContent }) {
       </div>
       <div className="relative mx-auto grid max-w-7xl gap-10 px-4 pt-24 pb-16 sm:px-6 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:px-8 lg:pt-32 lg:pb-24">
         <div>
+          <img
+            src="/branding/hkex-logo-platform.png"
+            alt="HKEX — 交易・投資・成長"
+            width={1200}
+            height={658}
+            className="mb-8 block h-auto w-full max-w-[1200px] object-contain select-none"
+            draggable={false}
+          />
           <div className="flex items-center gap-4">
             <span className="h-px w-10 bg-gold/60" aria-hidden />
             <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-gold/90">
