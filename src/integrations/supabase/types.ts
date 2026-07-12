@@ -624,6 +624,51 @@ export type Database = {
         }
         Relationships: []
       }
+      ledger_entries: {
+        Row: {
+          account: Database["public"]["Enums"]["ledger_account"]
+          amount: number
+          created_at: string
+          currency: string
+          direction: number
+          event: Database["public"]["Enums"]["ledger_event"]
+          id: string
+          metadata: Json
+          reference_id: string | null
+          reference_table: string | null
+          tx_id: string
+          user_id: string
+        }
+        Insert: {
+          account: Database["public"]["Enums"]["ledger_account"]
+          amount: number
+          created_at?: string
+          currency?: string
+          direction: number
+          event: Database["public"]["Enums"]["ledger_event"]
+          id?: string
+          metadata?: Json
+          reference_id?: string | null
+          reference_table?: string | null
+          tx_id: string
+          user_id: string
+        }
+        Update: {
+          account?: Database["public"]["Enums"]["ledger_account"]
+          amount?: number
+          created_at?: string
+          currency?: string
+          direction?: number
+          event?: Database["public"]["Enums"]["ledger_event"]
+          id?: string
+          metadata?: Json
+          reference_id?: string | null
+          reference_table?: string | null
+          tx_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       messages: {
         Row: {
           body: string
@@ -1794,7 +1839,15 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      v_ledger_balances: {
+        Row: {
+          account: Database["public"]["Enums"]["ledger_account"] | null
+          balance: number | null
+          currency: string | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       admin_adjust_balance: {
@@ -1838,6 +1891,20 @@ export type Database = {
         }
         Returns: boolean
       }
+      ledger_post: {
+        Args: {
+          _amount: number
+          _credit: Database["public"]["Enums"]["ledger_account"]
+          _currency: string
+          _debit: Database["public"]["Enums"]["ledger_account"]
+          _event: Database["public"]["Enums"]["ledger_event"]
+          _metadata?: Json
+          _ref_id: string
+          _ref_table: string
+          _user_id: string
+        }
+        Returns: string
+      }
       subscribe_to_master: {
         Args: { _amount: number; _master_id: string }
         Returns: Json
@@ -1855,6 +1922,30 @@ export type Database = {
         | "support"
         | "investor"
       capital_range: "1k_10k" | "10k_50k" | "50k_250k" | "250k_1m" | "1m_plus"
+      ledger_account:
+        | "wallet"
+        | "subscription"
+        | "competition"
+        | "copy_allocation"
+        | "profit_income"
+        | "referral_income"
+        | "fee"
+        | "adjustment"
+        | "external"
+      ledger_event:
+        | "deposit_approved"
+        | "withdrawal_approved"
+        | "withdrawal_reversed"
+        | "subscription_open"
+        | "subscription_close"
+        | "competition_enter"
+        | "competition_settle"
+        | "copy_allocate"
+        | "copy_settle"
+        | "profit_distribution"
+        | "referral_earning"
+        | "admin_adjustment"
+        | "fee_charge"
       risk_preference: "conservative" | "balanced" | "aggressive"
       ticket_priority: "low" | "normal" | "high" | "urgent"
       ticket_status: "open" | "pending" | "resolved" | "closed"
@@ -1998,6 +2089,32 @@ export const Constants = {
         "investor",
       ],
       capital_range: ["1k_10k", "10k_50k", "50k_250k", "250k_1m", "1m_plus"],
+      ledger_account: [
+        "wallet",
+        "subscription",
+        "competition",
+        "copy_allocation",
+        "profit_income",
+        "referral_income",
+        "fee",
+        "adjustment",
+        "external",
+      ],
+      ledger_event: [
+        "deposit_approved",
+        "withdrawal_approved",
+        "withdrawal_reversed",
+        "subscription_open",
+        "subscription_close",
+        "competition_enter",
+        "competition_settle",
+        "copy_allocate",
+        "copy_settle",
+        "profit_distribution",
+        "referral_earning",
+        "admin_adjustment",
+        "fee_charge",
+      ],
       risk_preference: ["conservative", "balanced", "aggressive"],
       ticket_priority: ["low", "normal", "high", "urgent"],
       ticket_status: ["open", "pending", "resolved", "closed"],
