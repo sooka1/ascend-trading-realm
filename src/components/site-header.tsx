@@ -94,7 +94,7 @@ export function SiteHeader() {
           {user ? (
             <>
               <Button variant="ghost" asChild>
-                <Link to="/dashboard">
+                <Link to="/portal">
                   <LayoutDashboard className="mr-2 h-4 w-4" /> Dashboard
                 </Link>
               </Button>
@@ -160,7 +160,7 @@ export function SiteHeader() {
             {user ? (
               <>
                 <Button variant="outline" asChild>
-                  <Link to="/dashboard" onClick={() => setOpen(false)}>Dashboard</Link>
+                  <Link to="/portal" onClick={() => setOpen(false)}>Dashboard</Link>
                 </Button>
                 <Button className="bg-[var(--gradient-brand)] text-white" onClick={() => { setOpen(false); handleSignOut(); }}>
                   Sign out

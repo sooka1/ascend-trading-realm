@@ -45,7 +45,7 @@ function AdminGate() {
             هذه الصفحة مخصصة للإدارة فقط. لا تملك الصلاحيات الكافية.
           </p>
           <Link
-            to="/dashboard"
+            to="/portal"
             className="mt-6 inline-flex rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm hover:border-gold/30"
           >
             العودة إلى لوحة المستثمر
