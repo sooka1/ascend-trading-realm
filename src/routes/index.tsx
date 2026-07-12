@@ -207,9 +207,9 @@ function Hero({ c }: { c: LandingContent }) {
           <img
             src="/branding/hkex-logo-platform.png"
             alt="HKEX — 交易・投資・成長"
-            width={1200}
-            height={658}
-            className="mb-8 block h-auto w-full max-w-[1200px] object-contain select-none"
+            width={300}
+            height={150}
+            className="mb-8 block h-[150px] w-[300px] object-contain select-none"
             draggable={false}
           />
           <div className="flex items-center gap-4">
