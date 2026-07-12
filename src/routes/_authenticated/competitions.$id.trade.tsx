@@ -775,3 +775,71 @@ function FlashPriceBase({
     </span>
   );
 }
+
+// Static competition metadata for the entry gate. Values mirror the summary
+// shown on /competitions and are safe to expose publicly.
+const COMP_META: Record<string, { name: string; entryFee: number; prize: number; market: string; rules: string }> = {
+  "fx-nov":        { name: "Forex Masters",         entryFee: 10, prize: 1000,  market: "فوركس",  rules: "أزواج العملات الكبرى — أسبوعان من التحدي." },
+  "crypto-q3":     { name: "Crypto Cup",            entryFee: 20, prize: 2000,  market: "كريبتو", rules: "BTC / ETH وأشهر العملات الرقمية." },
+  "gold-classic":  { name: "Gold Classic",          entryFee: 50, prize: 5000,  market: "معادن",   rules: "تداول الذهب والمعادن — سباق 10 أيام." },
+  "indices-june":  { name: "Indices Championship",  entryFee: 100, prize: 10000, market: "مؤشرات", rules: "مؤشرات عالمية — سباق أسبوعي." },
+};
+
+function CompetitionEntryGate({ id, status }: { id: string; status: "loading" | "denied" }) {
+  const meta = COMP_META[id];
+  return (
+    <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
+      <div className="mb-6">
+        <Link
+          to="/competitions"
+          className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-muted-foreground hover:border-gold/40 hover:text-foreground"
+        >
+          <ArrowLeft className="h-3.5 w-3.5" /> رجوع للمسابقات
+        </Link>
+      </div>
+      <div className="rounded-2xl border border-white/10 bg-neutral-950/60 p-8 backdrop-blur">
+        {status === "loading" ? (
+          <p className="text-center text-sm text-muted-foreground">جارٍ التحقق من مشاركتك…</p>
+        ) : (
+          <>
+            <p className="font-mono text-[10px] uppercase tracking-widest text-gold">مسابقة</p>
+            <h1 className="mt-1 font-display text-3xl font-semibold">{meta?.name ?? id}</h1>
+            <p className="mt-2 text-sm text-muted-foreground">
+              يجب الانضمام إلى المسابقة قبل الوصول إلى منصة التداول التجريبية.
+            </p>
+            <div className="mt-6 grid gap-3 sm:grid-cols-3">
+              <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3">
+                <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">رسم الاشتراك</p>
+                <p className="mt-1 font-mono text-lg tabular-nums">
+                  {meta ? "$" + meta.entryFee : "—"}
+                </p>
+              </div>
+              <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3">
+                <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">الجائزة</p>
+                <p className="mt-1 font-mono text-lg tabular-nums text-emerald-400">
+                  {meta ? "$" + meta.prize.toLocaleString("en-US") : "—"}
+                </p>
+              </div>
+              <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3">
+                <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">السوق</p>
+                <p className="mt-1 font-mono text-lg">{meta?.market ?? "—"}</p>
+              </div>
+            </div>
+            <div className="mt-4 rounded-lg border border-white/10 bg-white/[0.02] p-3 text-sm text-muted-foreground">
+              <p className="font-mono text-[10px] uppercase tracking-widest text-gold/80">القواعد</p>
+              <p className="mt-1">{meta?.rules ?? "شروط وقواعد المسابقة تُعرض في صفحة المسابقات."}</p>
+            </div>
+            <div className="mt-6 flex flex-wrap gap-2">
+              <Link
+                to="/competitions"
+                className="inline-flex items-center gap-2 rounded-full bg-gold px-5 py-2 text-sm font-semibold text-background hover:bg-[oklch(0.88_0.11_90)]"
+              >
+                انضم إلى المسابقة
+              </Link>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
