@@ -241,7 +241,7 @@ function Hero({ c }: { c: LandingContent }) {
           </div>
         </div>
 
-        <div className="relative flex justify-center">
+        <div className="relative flex flex-col items-center">
           <div className="pointer-events-none absolute -inset-4 -z-10 rounded-2xl bg-[radial-gradient(ellipse_at_top,rgba(30,107,255,0.22),transparent_65%)] blur-3xl" aria-hidden />
 
           {/* Desktop monitor / display showing the same hero video */}
