@@ -1043,6 +1043,11 @@ const LEGACY_DICTS: Record<Lang, Dict> = {
     },
 };
 
+export const DICTS: Record<Lang, Dict> = {
+  ...LEGACY_DICTS,
+  ...LOADED_DICTS,
+};
+
 type Ctx = { lang: Lang; setLang: (l: Lang) => void; t: (k: string) => string; dir: "rtl" | "ltr" };
 const I18nContext = createContext<Ctx | null>(null);
 
