@@ -16,43 +16,46 @@ import { cn } from "@/lib/utils";
 // English label, and a flag emoji rendered inside a circular chip. Only the
 // codes that also exist in `LANGUAGES` (i18n.tsx) actually switch the app
 // locale; the rest fall back to English with a graceful "coming soon" state.
-type Entry = { code: string; native: string; english: string; flag: string };
+// `country` is an ISO 3166-1 alpha-2 code used to load a real SVG flag from
+// flagcdn.com — emoji flags don't render on many Linux/Windows browsers, so
+// we always use images.
+type Entry = { code: string; native: string; english: string; country: string };
 const ENTRIES: Entry[] = [
-  { code: "en", native: "English", english: "Global", flag: "🇬🇧" },
-  { code: "ar", native: "العربية", english: "Arabic", flag: "🇸🇦" },
-  { code: "es", native: "Español", english: "Spanish", flag: "🇪🇸" },
-  { code: "fr", native: "Français", english: "French", flag: "🇫🇷" },
-  { code: "de", native: "Deutsch", english: "German", flag: "🇩🇪" },
-  { code: "it", native: "Italiano", english: "Italian", flag: "🇮🇹" },
-  { code: "pt", native: "Português", english: "Portuguese", flag: "🇵🇹" },
-  { code: "id", native: "Bahasa Indonesia", english: "Indonesian", flag: "🇮🇩" },
-  { code: "ms", native: "Bahasa Melayu", english: "Malaysian", flag: "🇲🇾" },
-  { code: "ko", native: "한국어", english: "Korean", flag: "🇰🇷" },
-  { code: "cs", native: "Český", english: "Czech", flag: "🇨🇿" },
-  { code: "pl", native: "Polski", english: "Polish", flag: "🇵🇱" },
-  { code: "hu", native: "Magyar", english: "Hungarian", flag: "🇭🇺" },
-  { code: "zh-cn", native: "中文简体", english: "Chinese", flag: "🇨🇳" },
-  { code: "zh-tw", native: "中文繁體", english: "Chinese", flag: "🇹🇼" },
-  { code: "vi", native: "Tiếng Việt", english: "Vietnamese", flag: "🇻🇳" },
-  { code: "th", native: "ไทย", english: "Thai", flag: "🇹🇭" },
-  { code: "hi", native: "हिन्दी", english: "Hindi", flag: "🇮🇳" },
-  { code: "ku", native: "Kurdî", english: "Kurdish", flag: "🇮🇶" },
-  { code: "mn", native: "Монгол", english: "Mongolian", flag: "🇲🇳" },
-  { code: "sv", native: "Svenska", english: "Swedish", flag: "🇸🇪" },
-  { code: "nl", native: "Nederlands", english: "Dutch", flag: "🇳🇱" },
-  { code: "uk", native: "Українська", english: "Ukrainian", flag: "🇺🇦" },
-  { code: "uz", native: "Oʻzbekcha", english: "Uzbek", flag: "🇺🇿" },
-  { code: "da", native: "Dansk", english: "Danish", flag: "🇩🇰" },
-  { code: "lt", native: "Lietuvių", english: "Lithuanian", flag: "🇱🇹" },
-  { code: "fi", native: "Suomi", english: "Finnish", flag: "🇫🇮" },
-  { code: "bg", native: "Български", english: "Bulgarian", flag: "🇧🇬" },
-  { code: "ro", native: "Română", english: "Romanian", flag: "🇷🇴" },
-  { code: "no", native: "Norsk", english: "Norwegian", flag: "🇳🇴" },
-  { code: "et", native: "Eesti", english: "Estonian", flag: "🇪🇪" },
-  { code: "hr", native: "Hrvatski", english: "Croatian", flag: "🇭🇷" },
-  { code: "ru", native: "Русский", english: "Russian", flag: "🇷🇺" },
-  { code: "tr", native: "Türkçe", english: "Turkish", flag: "🇹🇷" },
-  { code: "ja", native: "日本語", english: "Japanese", flag: "🇯🇵" },
+  { code: "en", native: "English", english: "Global", country: "gb" },
+  { code: "ar", native: "العربية", english: "Arabic", country: "sa" },
+  { code: "es", native: "Español", english: "Spanish", country: "es" },
+  { code: "fr", native: "Français", english: "French", country: "fr" },
+  { code: "de", native: "Deutsch", english: "German", country: "de" },
+  { code: "it", native: "Italiano", english: "Italian", country: "it" },
+  { code: "pt", native: "Português", english: "Portuguese", country: "pt" },
+  { code: "id", native: "Bahasa Indonesia", english: "Indonesian", country: "id" },
+  { code: "ms", native: "Bahasa Melayu", english: "Malaysian", country: "my" },
+  { code: "ko", native: "한국어", english: "Korean", country: "kr" },
+  { code: "cs", native: "Český", english: "Czech", country: "cz" },
+  { code: "pl", native: "Polski", english: "Polish", country: "pl" },
+  { code: "hu", native: "Magyar", english: "Hungarian", country: "hu" },
+  { code: "zh-cn", native: "中文简体", english: "Chinese", country: "cn" },
+  { code: "zh-tw", native: "中文繁體", english: "Chinese", country: "tw" },
+  { code: "vi", native: "Tiếng Việt", english: "Vietnamese", country: "vn" },
+  { code: "th", native: "ไทย", english: "Thai", country: "th" },
+  { code: "hi", native: "हिन्दी", english: "Hindi", country: "in" },
+  { code: "ku", native: "Kurdî", english: "Kurdish", country: "iq" },
+  { code: "mn", native: "Монгол", english: "Mongolian", country: "mn" },
+  { code: "sv", native: "Svenska", english: "Swedish", country: "se" },
+  { code: "nl", native: "Nederlands", english: "Dutch", country: "nl" },
+  { code: "uk", native: "Українська", english: "Ukrainian", country: "ua" },
+  { code: "uz", native: "Oʻzbekcha", english: "Uzbek", country: "uz" },
+  { code: "da", native: "Dansk", english: "Danish", country: "dk" },
+  { code: "lt", native: "Lietuvių", english: "Lithuanian", country: "lt" },
+  { code: "fi", native: "Suomi", english: "Finnish", country: "fi" },
+  { code: "bg", native: "Български", english: "Bulgarian", country: "bg" },
+  { code: "ro", native: "Română", english: "Romanian", country: "ro" },
+  { code: "no", native: "Norsk", english: "Norwegian", country: "no" },
+  { code: "et", native: "Eesti", english: "Estonian", country: "ee" },
+  { code: "hr", native: "Hrvatski", english: "Croatian", country: "hr" },
+  { code: "ru", native: "Русский", english: "Russian", country: "ru" },
+  { code: "tr", native: "Türkçe", english: "Turkish", country: "tr" },
+  { code: "ja", native: "日本語", english: "Japanese", country: "jp" },
 ];
 
 export function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
@@ -100,11 +103,17 @@ export function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
                 </div>
                 <span
                   className={cn(
-                    "relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-white/5 text-lg",
+                    "relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-white/5",
                     active && "ring-2 ring-primary",
                   )}
                 >
-                  <span aria-hidden>{e.flag}</span>
+                  <img
+                    src={`https://flagcdn.com/w80/${e.country}.png`}
+                    srcSet={`https://flagcdn.com/w160/${e.country}.png 2x`}
+                    alt=""
+                    loading="lazy"
+                    className="h-full w-full object-cover"
+                  />
                   {active && (
                     <span className="absolute inset-0 flex items-center justify-center bg-primary/80">
                       <Check className="h-4 w-4 text-primary-foreground" />
