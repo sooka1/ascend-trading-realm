@@ -41,6 +41,10 @@ export const DICTS: Record<Lang, Dict> = {
     "cta.dashboard": "لوحة التحكم",
     "cta.signout": "تسجيل الخروج",
     "lang.label": "اللغة",
+    "search.label": "بحث",
+    "search.placeholder": "ابحث في الصفحات والميزات…",
+    "search.empty": "لا توجد نتائج.",
+    "search.pages": "الصفحات",
     // Hero
     "hero.badge": "تداول عالمي المستوى، جوائز حقيقية",
     "hero.title.1": "تداول العالم.",
