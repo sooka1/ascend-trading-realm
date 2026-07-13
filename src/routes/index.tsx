@@ -240,6 +240,57 @@ function Hero({ c }: { c: LandingContent }) {
         <div className="relative flex flex-col items-center">
           <div className="pointer-events-none absolute -inset-4 -z-10 rounded-2xl bg-[radial-gradient(ellipse_at_top,rgba(30,107,255,0.22),transparent_65%)] blur-3xl" aria-hidden />
 
+          {/* Floating live-quote glass card — replaces the monitor, keeps the video visible behind it */}
+          <div className="relative mx-auto w-full max-w-[440px] lg:-mt-16 xl:-mt-24" aria-hidden>
+            <div className="rounded-2xl border border-white/15 bg-white/5 p-5 shadow-[0_25px_60px_-20px_rgba(0,0,0,0.55)] backdrop-blur-xl ring-1 ring-inset ring-white/10">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-bull shadow-[0_0_10px_currentColor]" />
+                  <span className="font-mono text-[10px] uppercase tracking-[0.28em] text-white/70">Live · XAU/USD</span>
+                </div>
+                <span className="font-mono text-[10px] text-white/50">18ms</span>
+              </div>
+              <div className="mt-3 flex items-end justify-between">
+                <div>
+                  <div className="font-display text-4xl font-semibold tabular-nums text-white">2,418.65</div>
+                  <div className="mt-1 font-mono text-[11px] text-bull">▲ +12.40 (+0.52%)</div>
+                </div>
+                <svg viewBox="0 0 120 48" className="h-12 w-32 text-bull">
+                  <polyline
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    strokeLinejoin="round"
+                    strokeLinecap="round"
+                    points="0,36 12,32 24,34 36,26 48,28 60,20 72,22 84,14 96,18 108,8 120,10"
+                  />
+                  <polyline
+                    fill="currentColor"
+                    fillOpacity="0.12"
+                    stroke="none"
+                    points="0,36 12,32 24,34 36,26 48,28 60,20 72,22 84,14 96,18 108,8 120,10 120,48 0,48"
+                  />
+                </svg>
+              </div>
+              <div className="mt-4 grid grid-cols-2 gap-2 font-mono text-[11px]">
+                <div className="rounded-md border border-white/10 bg-black/25 px-3 py-2">
+                  <div className="text-white/50">BID</div>
+                  <div className="text-white tabular-nums">2,418.42</div>
+                </div>
+                <div className="rounded-md border border-white/10 bg-black/25 px-3 py-2">
+                  <div className="text-white/50">ASK</div>
+                  <div className="text-white tabular-nums">2,418.88</div>
+                </div>
+              </div>
+              <div className="mt-3 grid grid-cols-2 gap-2">
+                <div className="rounded-md bg-bear/90 py-2 text-center font-mono text-[11px] font-semibold uppercase tracking-widest text-white">Sell</div>
+                <div className="rounded-md bg-bull/90 py-2 text-center font-mono text-[11px] font-semibold uppercase tracking-widest text-white">Buy</div>
+              </div>
+            </div>
+            {/* soft glow */}
+            <div className="pointer-events-none absolute -inset-6 -z-10 rounded-3xl bg-[radial-gradient(ellipse_at_center,rgba(212,175,55,0.20),transparent_70%)] blur-2xl" />
+          </div>
+
           <p className="pointer-events-none absolute -bottom-8 left-0 right-0 text-center font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground/70">{c.hero.disclaimer}</p>
           <dl className="mt-16 grid w-full max-w-[560px] grid-cols-3 gap-3 text-sm">
             {[
