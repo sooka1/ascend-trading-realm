@@ -12,9 +12,11 @@ interface HKLogoProps {
   size?: "sm" | "md" | "lg";
   /** Deprecated: no container is rendered around the logo anymore. Kept for API compatibility. */
   variant?: "default" | "chip";
+  /** Use the black-text header variant (red accents preserved). */
+  headerVariant?: boolean;
 }
 
-export function HKLogo({ className, size = "md" }: HKLogoProps) {
+export function HKLogo({ className, size = "md", headerVariant = false }: HKLogoProps) {
   // Height caps with `w-auto` preserve the original aspect ratio (~1.82:1)
   // so the candlestick and wordmark are never cropped. The logo must NOT
   // dictate header height — `max-h` + `shrink-0` lets the header size itself.
@@ -31,7 +33,7 @@ export function HKLogo({ className, size = "md" }: HKLogoProps) {
 
   return (
     <img
-      src={LOGO_SRC}
+      src={headerVariant ? "/branding/hkex-logo-header.png" : LOGO_SRC}
       alt={LOGO_ALT}
       className={cn("block object-contain select-none", dim, className)}
       draggable={false}
