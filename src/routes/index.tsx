@@ -169,12 +169,11 @@ function Hero({ c }: { c: LandingContent }) {
         <div
           ref={videoRef}
           className="absolute inset-0 will-change-transform"
-          style={{ transform: "translate3d(0,0,0) scale(1.08)" }}
         >
           {videoReady && (
             <video
               ref={videoElRef}
-              className="h-full w-full object-cover"
+              className="h-full w-full object-contain object-center sm:object-cover"
               autoPlay
               loop
               muted
@@ -191,7 +190,7 @@ function Hero({ c }: { c: LandingContent }) {
               alt=""
               loading="lazy"
               decoding="async"
-              className="h-full w-full object-cover"
+              className="h-full w-full object-contain object-center sm:object-cover"
             />
           )}
         </div>
