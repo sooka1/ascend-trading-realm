@@ -61,6 +61,7 @@ const ENTRIES: Entry[] = [
 export function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
   const { lang, setLang, t } = useI18n();
   const current = LANGUAGES.find((l) => l.code === lang);
+  const currentEntry = ENTRIES.find((e) => e.code === lang);
   const [open, setOpen] = useState(false);
 
   return (
@@ -72,7 +73,15 @@ export function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
           className="gap-2 border border-white/10 bg-white/5 hover:bg-white/10"
           aria-label={t("lang.label")}
         >
-          <Globe className="h-4 w-4" />
+          {currentEntry ? (
+            <img
+              src={`https://flagcdn.com/w40/${currentEntry.country}.png`}
+              alt=""
+              className="h-4 w-4 rounded-full object-cover"
+            />
+          ) : (
+            <Globe className="h-4 w-4" />
+          )}
           {!compact && <span className="text-xs font-medium">{current?.native}</span>}
         </Button>
       </DialogTrigger>
