@@ -213,11 +213,10 @@ function Hero({ c }: { c: LandingContent }) {
           </span>
           <span className="h-px w-6 bg-gold/60 sm:w-10" aria-hidden />
         </div>
-        <h1 className="mt-5 font-display text-[2rem] font-bold leading-[1.2] tracking-tight sm:mt-6 sm:text-[2.75rem] sm:leading-[1.15] md:text-5xl md:leading-[1.15] lg:text-[4.5rem] lg:leading-[1.05]">
-          {c.hero.titleA}{" "}
-          <span className="italic font-normal text-gold">{c.hero.titleB}</span>
-          <br />
-          {c.hero.titleC}
+        <h1 className="mt-5 font-display text-[1.75rem] font-semibold leading-[1.25] tracking-tight text-balance sm:mt-6 sm:text-[2.25rem] sm:font-bold sm:leading-[1.2] md:text-[3rem] md:leading-[1.15] lg:text-[4.25rem] lg:leading-[1.08] xl:text-[4.75rem]">
+          <span className="block">{c.hero.titleA}</span>
+          <span className="mt-1 block italic font-normal text-gold sm:mt-2">{c.hero.titleB}</span>
+          <span className="mt-1 block sm:mt-2">{c.hero.titleC}</span>
         </h1>
         <div className="mt-6 h-px w-20 bg-gradient-to-r from-transparent via-gold/70 to-transparent sm:mt-8 sm:w-24" aria-hidden />
         <p className="mt-5 max-w-2xl whitespace-pre-line text-base leading-relaxed text-muted-foreground sm:mt-6 sm:text-lg">
