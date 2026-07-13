@@ -197,13 +197,13 @@ function Hero({ c }: { c: LandingContent }) {
         {/* Bottom fade only, to blend into the page — video stays fully clear */}
         <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-background" />
       </div>
-      <div className="relative mx-auto flex min-h-[75vh] max-w-4xl flex-col items-center justify-start px-4 pt-6 pb-16 text-center sm:px-6 sm:pt-8 sm:pb-20 lg:px-8 lg:pt-10 lg:pb-24">
+      <div className="relative mx-auto flex min-h-[75vh] max-w-4xl flex-col items-center justify-start px-4 pt-2 pb-16 text-center sm:px-6 sm:pt-3 sm:pb-20 lg:px-8 lg:pt-4 lg:pb-24">
         <img
           src="/branding/hkex-logo-platform.png"
           alt="HKEX — 交易・投資・成長"
           width={300}
           height={150}
-          className="mb-6 block h-[110px] w-[220px] object-contain select-none sm:h-[130px] sm:w-[260px] md:h-[150px] md:w-[300px]"
+          className="mb-2 block h-[90px] w-[180px] object-contain select-none sm:mb-3 sm:h-[110px] sm:w-[220px] md:h-[130px] md:w-[260px]"
           draggable={false}
         />
         <div className="flex items-center gap-3 sm:gap-4">
