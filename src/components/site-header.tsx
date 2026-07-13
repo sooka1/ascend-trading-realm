@@ -65,8 +65,8 @@ export function SiteHeader() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 border-b border-white/10 bg-black text-white backdrop-blur-xl",
-        "[&_a]:text-white [&_button]:text-white",
+        "sticky top-0 z-50 border-b border-black/10 bg-white text-black backdrop-blur-xl",
+        "[&_a]:text-black [&_button]:text-black",
         "transition-transform duration-300 will-change-transform",
         hidden ? "-translate-y-full" : "translate-y-0",
       )}
@@ -81,7 +81,7 @@ export function SiteHeader() {
             <Link
               key={item.to}
               to={item.to}
-              className="px-3 py-2 text-sm text-white/90 transition-colors hover:text-gold"
+              className="px-3 py-2 text-sm text-black transition-colors hover:text-gold"
               activeProps={{ className: "text-gold" }}
             >
               {t(item.key)}
@@ -108,18 +108,18 @@ export function SiteHeader() {
                   <Link to="/admin/finance"><ShieldCheck className="mr-2 h-4 w-4" /> Admin</Link>
                 </Button>
               )}
-              <Button variant="outline" className="border-white/15" onClick={handleSignOut}>
+              <Button variant="outline" className="border-black/15 text-black" onClick={handleSignOut}>
                 Sign out
               </Button>
             </>
           ) : (
             <>
-              <Button variant="ghost" asChild>
+              <Button variant="ghost" asChild className="!text-blue-600 hover:!text-blue-700 font-semibold">
                 <Link to="/auth">{t("cta.login")}</Link>
               </Button>
               <Button
                 asChild
-                className="bg-[var(--gradient-brand)] text-white shadow-[var(--shadow-glow)] hover:opacity-95"
+                className="rounded-full bg-red-600 !text-white shadow-[0_0_0_4px_rgba(220,38,38,0.15)] hover:bg-red-700 hover:opacity-100"
               >
                 <Link to="/auth">{t("cta.open_account")}</Link>
               </Button>
@@ -132,7 +132,7 @@ export function SiteHeader() {
           <LanguageSwitcher compact />
           <ThemeToggle size="sm" />
           <button
-            className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-white/10"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-black/10"
             onClick={() => setOpen((v) => !v)}
             aria-label="Toggle menu"
           >
@@ -143,7 +143,7 @@ export function SiteHeader() {
 
       <div
         className={cn(
-          "overflow-hidden border-t border-white/5 lg:hidden",
+          "overflow-hidden border-t border-black/5 lg:hidden",
           open ? "max-h-[520px]" : "max-h-0",
           "transition-[max-height] duration-300",
         )}
@@ -154,7 +154,7 @@ export function SiteHeader() {
               key={item.to}
               to={item.to}
               onClick={() => setOpen(false)}
-              className="px-3 py-2.5 text-sm text-white/90 hover:text-gold"
+              className="px-3 py-2.5 text-sm text-black hover:text-gold"
             >
               {t(item.key)}
             </Link>
@@ -165,16 +165,16 @@ export function SiteHeader() {
                 <Button variant="outline" asChild>
                   <Link to="/portal" onClick={() => setOpen(false)}>Dashboard</Link>
                 </Button>
-                <Button className="bg-[var(--gradient-brand)] text-white" onClick={() => { setOpen(false); handleSignOut(); }}>
+                <Button className="rounded-full bg-red-600 !text-white hover:bg-red-700" onClick={() => { setOpen(false); handleSignOut(); }}>
                   Sign out
                 </Button>
               </>
             ) : (
               <>
-                <Button variant="outline" asChild>
+                <Button variant="outline" asChild className="!text-blue-600 border-blue-600">
                   <Link to="/auth" onClick={() => setOpen(false)}>{t("cta.login")}</Link>
                 </Button>
-                <Button asChild className="bg-[var(--gradient-brand)] text-white">
+                <Button asChild className="rounded-full bg-red-600 !text-white hover:bg-red-700">
                   <Link to="/auth" onClick={() => setOpen(false)}>{t("cta.open_account")}</Link>
                 </Button>
               </>
