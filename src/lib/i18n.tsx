@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
-export type Lang = "ar" | "en" | "fr" | "es" | "tr";
+export type Lang = string;
+
+const RTL_LANGS = new Set(["ar", "he", "fa", "ur", "ku", "ps", "sd", "yi"]);
 
 export const LANGUAGES: { code: Lang; label: string; native: string; dir: "rtl" | "ltr" }[] = [
   { code: "ar", label: "Arabic", native: "العربية", dir: "rtl" },
