@@ -195,12 +195,8 @@ function Hero({ c }: { c: LandingContent }) {
             />
           )}
         </div>
-        {/* Layered overlays: darken + brand tint + fade-to-page */}
-        <div className="absolute inset-0 bg-background/78" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,oklch(0.30_0.08_165/0.55),transparent_65%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,oklch(0.76_0.13_85/0.16),transparent_60%)]" />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/65 to-background" />
-        <div className="absolute inset-0 bg-grid opacity-[0.12]" />
+        {/* Bottom fade only, to blend into the page — video stays fully clear */}
+        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-background" />
       </div>
       <div className="relative mx-auto grid max-w-7xl gap-10 px-4 pt-2 pb-16 sm:px-6 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:px-8 lg:pt-4 lg:pb-24">
         <div>
