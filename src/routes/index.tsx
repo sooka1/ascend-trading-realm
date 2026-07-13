@@ -219,7 +219,7 @@ function Hero({ c }: { c: LandingContent }) {
           <span>{c.hero.titleC}</span>
         </h1>
         <div className="mt-6 h-px w-20 bg-gradient-to-r from-transparent via-gold/70 to-transparent sm:mt-8 sm:w-24" aria-hidden />
-        <p className="mt-5 max-w-2xl whitespace-pre-line text-base leading-relaxed text-white sm:mt-6 sm:text-lg">
+        <p className="mt-5 max-w-2xl whitespace-pre-line text-base leading-relaxed text-white dark:text-white sm:mt-6 sm:text-lg" style={{ color: "#ffffff" }}>
           {c.hero.subtitle}
         </p>
         <div className="mt-8 flex w-full flex-col items-stretch justify-center gap-3 sm:mt-10 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
