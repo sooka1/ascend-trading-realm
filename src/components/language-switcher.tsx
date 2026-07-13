@@ -70,7 +70,7 @@ export function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
         <Button
           variant="ghost"
           size={compact ? "icon" : "sm"}
-          className="gap-2 border border-white/10 bg-white/5 hover:bg-white/10"
+          className="gap-2 border-0 bg-transparent px-1 hover:bg-transparent"
           aria-label={t("lang.label")}
         >
           {currentEntry ? (
