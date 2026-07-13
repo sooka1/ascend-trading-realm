@@ -82,7 +82,7 @@ export function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
           ) : (
             <Globe className="h-4 w-4" />
           )}
-          {!compact && <span className="text-xs font-medium">{current?.native}</span>}
+          {!compact && <span className="text-xs font-medium">{current?.native ?? currentEntry?.native ?? lang.toUpperCase()}</span>}
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-5xl border-white/10 bg-background/95 backdrop-blur-xl">

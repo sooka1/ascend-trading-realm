@@ -3,7 +3,7 @@ import { PageShell, PageHero } from "@/components/page-shell";
 import { Button } from "@/components/ui/button";
 import { BadgeCheck, CheckCircle2, Quote, Star } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
-import { PORTFOLIOS } from "@/lib/portfolios-t";
+import { portfoliosContent } from "@/lib/portfolios-t";
 import type { Lang } from "@/lib/i18n";
 import {
   Carousel,
@@ -154,7 +154,7 @@ function StarRow({ value }: { value: number }) {
 
 function PortfoliosPage() {
   const { lang } = useI18n();
-  const c = PORTFOLIOS[lang];
+  const c = portfoliosContent(lang);
   return (
     <PageShell>
       <PageHero
@@ -214,7 +214,7 @@ function PortfoliosPage() {
 
 function ReviewsSection() {
   const { lang } = useI18n();
-  const r = REVIEWS[lang];
+  const r = REVIEWS[lang] ?? REVIEWS.en;
   const autoplay = React.useRef(
     Autoplay({ delay: 4500, stopOnInteraction: false, stopOnMouseEnter: true }),
   );

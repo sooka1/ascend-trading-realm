@@ -639,3 +639,7 @@ const tr: LandingContent = {
 };
 
 export const LANDING: Record<Lang, LandingContent> = { en, ar, fr, es, tr };
+
+export function landingContent(lang: Lang): LandingContent {
+  return LANDING[lang] ?? LANDING.en;
+}

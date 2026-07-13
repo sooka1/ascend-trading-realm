@@ -51,8 +51,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useI18n } from "@/lib/i18n";
-import { LANDING, type LandingContent } from "@/lib/landing-t";
-import { PORTFOLIOS } from "@/lib/portfolios-t";
+import { landingContent, type LandingContent } from "@/lib/landing-t";
+import { portfoliosContent } from "@/lib/portfolios-t";
 import heroVideo from "@/assets/hero-bg.mp4.asset.json";
 import heroPoster from "@/assets/hero-bg.jpg";
 import candlesVideo from "@/assets/hk-candles-intro.mp4.asset.json";
@@ -79,7 +79,7 @@ export const Route = createFileRoute("/")({
 
 function useContent(): LandingContent {
   const { lang } = useI18n();
-  return LANDING[lang];
+  return landingContent(lang);
 }
 
 function Home() {
@@ -377,7 +377,7 @@ function Features({ c }: { c: LandingContent }) {
 
 function SolutionsPreview({ c }: { c: LandingContent }) {
   const { lang } = useI18n();
-  const p = PORTFOLIOS[lang];
+  const p = portfoliosContent(lang);
   const targets = ["6 – 10%", "10 – 16%", "16 – 24%"];
   const mins = ["$100", "$500", "$1,000"];
   const HIGHLIGHT = [false, true, false];

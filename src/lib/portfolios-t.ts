@@ -246,3 +246,7 @@ export const PORTFOLIOS: Record<Lang, PortfoliosContent> = {
     ],
   },
 };
+
+export function portfoliosContent(lang: Lang): PortfoliosContent {
+  return PORTFOLIOS[lang] ?? PORTFOLIOS.en;
+}
