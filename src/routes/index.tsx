@@ -240,38 +240,6 @@ function Hero({ c }: { c: LandingContent }) {
         <div className="relative flex flex-col items-center">
           <div className="pointer-events-none absolute -inset-4 -z-10 rounded-2xl bg-[radial-gradient(ellipse_at_top,rgba(30,107,255,0.22),transparent_65%)] blur-3xl" aria-hidden />
 
-          {/* Desktop monitor / display showing the same hero video */}
-          <div className="relative mx-auto w-full max-w-[560px] lg:-mt-24 xl:-mt-36 rtl:mt-6 rtl:lg:-mt-10 rtl:xl:-mt-10">
-            {/* Monitor frame */}
-            <div
-              className="relative aspect-[16/10] w-full rounded-xl border border-neutral-700 p-2 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7),0_0_0_1px_rgba(255,255,255,0.06)_inset]"
-              style={{
-                backgroundImage:
-                  "linear-gradient(145deg,#3a3a3c 0%,#1c1c1e 45%,#0a0a0a 100%)",
-              }}
-            >
-              {/* Screen */}
-              <div className="relative h-full w-full overflow-hidden rounded-md bg-black ring-1 ring-black/80">
-                <video
-                  className="h-full w-full object-contain"
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  preload="metadata"
-                  poster={heroPoster}
-                >
-                <source src={candlesVideo.url} type="video/mp4" />
-                </video>
-                {/* Camera notch */}
-                <div className="pointer-events-none absolute left-1/2 top-1 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-neutral-800 ring-1 ring-neutral-600" />
-              </div>
-            </div>
-            {/* Stand neck */}
-            <div className="relative mx-auto h-6 w-24 bg-gradient-to-b from-neutral-700 to-neutral-900" />
-            {/* Stand base */}
-            <div className="relative mx-auto h-2 w-48 rounded-b-2xl bg-gradient-to-b from-neutral-800 to-neutral-950 shadow-[0_10px_20px_-8px_rgba(0,0,0,0.6)]" />
-          </div>
           <p className="pointer-events-none absolute -bottom-8 left-0 right-0 text-center font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground/70">{c.hero.disclaimer}</p>
           <dl className="mt-16 grid w-full max-w-[560px] grid-cols-3 gap-3 text-sm">
             {[
