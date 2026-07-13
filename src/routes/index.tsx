@@ -197,7 +197,7 @@ function Hero({ c }: { c: LandingContent }) {
         {/* Bottom fade only, to blend into the page — video stays fully clear */}
         <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-background" />
       </div>
-      <div className="relative mx-auto flex min-h-[80vh] max-w-4xl flex-col items-center justify-center px-4 py-16 text-center sm:px-6 sm:py-20 lg:px-8 lg:py-28">
+      <div className="relative mx-auto flex min-h-[75vh] max-w-4xl flex-col items-center justify-start px-4 pt-6 pb-16 text-center sm:px-6 sm:pt-8 sm:pb-20 lg:px-8 lg:pt-10 lg:pb-24">
         <img
           src="/branding/hkex-logo-platform.png"
           alt="HKEX — 交易・投資・成長"
