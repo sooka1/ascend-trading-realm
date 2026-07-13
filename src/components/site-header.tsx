@@ -12,6 +12,23 @@ import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { LayoutDashboard, ShieldCheck } from "lucide-react";
 
+function renderNavLabel(label: string) {
+  if (!label.includes("HKEN")) return label;
+  const parts = label.split("HKEN");
+  return (
+    <>
+      {parts.map((p, i) => (
+        <span key={i}>
+          {p}
+          {i < parts.length - 1 && (
+            <span className="font-black tracking-wider text-red-600">HKEN</span>
+          )}
+        </span>
+      ))}
+    </>
+  );
+}
+
 const NAV = [
   { key: "nav.about", to: "/about" },
   { key: "nav.competitions", to: "/competitions" },
@@ -84,7 +101,7 @@ export function SiteHeader() {
               className="px-3 py-2 text-sm text-black transition-colors hover:text-gold"
               activeProps={{ className: "text-gold" }}
             >
-              {t(item.key)}
+              {renderNavLabel(t(item.key))}
             </Link>
           ))}
         </nav>
@@ -156,7 +173,7 @@ export function SiteHeader() {
               onClick={() => setOpen(false)}
               className="px-3 py-2.5 text-sm text-black hover:text-gold"
             >
-              {t(item.key)}
+              {renderNavLabel(t(item.key))}
             </Link>
           ))}
           <div className="mt-2 grid grid-cols-2 gap-2">
