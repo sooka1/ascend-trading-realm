@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { useT } from "@/lib/i18n";
 import { LanguageSwitcher } from "./language-switcher";
 import { ThemeToggle } from "./theme-toggle";
+import { SiteSearch } from "./site-search";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { LayoutDashboard, ShieldCheck } from "lucide-react";
@@ -89,6 +90,7 @@ export function SiteHeader() {
         </nav>
 
         <div className="hidden items-center gap-2 lg:flex">
+          <SiteSearch />
           <LanguageSwitcher />
           <ThemeToggle size="sm" />
           {user ? (
@@ -126,6 +128,7 @@ export function SiteHeader() {
         </div>
 
         <div className="flex items-center gap-2 lg:hidden">
+          <SiteSearch compact />
           <LanguageSwitcher compact />
           <ThemeToggle size="sm" />
           <button
