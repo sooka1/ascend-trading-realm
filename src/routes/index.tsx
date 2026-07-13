@@ -197,46 +197,43 @@ function Hero({ c }: { c: LandingContent }) {
         {/* Bottom fade only, to blend into the page — video stays fully clear */}
         <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-background" />
       </div>
-      <div className="relative mx-auto grid max-w-7xl gap-10 px-4 pt-2 pb-16 sm:px-6 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:px-8 lg:pt-4 lg:pb-24">
-        <div>
-          <img
-            src="/branding/hkex-logo-platform.png"
-            alt="HKEX — 交易・投資・成長"
-            width={300}
-            height={150}
-            className="mb-4 block h-[150px] w-[300px] object-contain select-none"
-            draggable={false}
-          />
-          <div className="flex items-center gap-4">
-            <span className="h-px w-10 bg-gold/60" aria-hidden />
-            <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-gold/90">
-              {c.hero.badge}
-            </span>
-          </div>
-          <h1 className="mt-4 font-display text-[2.75rem] font-bold leading-[1.4] tracking-tight md:text-6xl md:leading-[1.35] lg:text-[4.5rem] lg:leading-[1.3]">
-            {c.hero.titleA}{" "}
-            <span className="italic font-normal text-gold">{c.hero.titleB}</span>
-            <br />
-            {c.hero.titleC}
-          </h1>
-          <div className="mt-6 h-px w-24 bg-gradient-to-l from-transparent via-gold/70 to-gold" aria-hidden />
-          <p className="mt-6 max-w-xl whitespace-pre-line text-lg leading-relaxed text-muted-foreground">
-            {c.hero.subtitle}
-          </p>
-          <div className="mt-10 flex flex-wrap items-center gap-3">
-            <Button asChild size="lg" className="rounded-sm border border-[#a0430a] bg-[#c2410c] font-semibold text-white shadow-[0_4px_14px_rgba(194,65,12,0.35)] transition-all duration-200 hover:border-[#ea580c] hover:bg-[#ea580c] hover:shadow-[0_6px_20px_rgba(234,88,12,0.5)] active:border-[#7c2d0a] active:bg-[#9a3412] active:scale-[0.98]">
-              <Link to="/auth">{c.hero.ctaOpen} <ArrowRight className="ml-2 h-4 w-4" /></Link>
-            </Button>
-            <Button asChild size="lg" variant="outline" className="rounded-sm border-gold/30 bg-transparent text-foreground transition hover:border-gold/70 hover:bg-gold/[0.06]">
-              <Link to="/copy-trading">{c.hero.ctaAdvisor}</Link>
-            </Button>
-            <Button asChild size="lg" variant="ghost">
-              <Link to="/competitions">{c.hero.ctaLearn}</Link>
-            </Button>
-          </div>
+      <div className="relative mx-auto flex max-w-4xl flex-col items-center px-4 pt-8 pb-20 text-center sm:px-6 lg:px-8 lg:pt-16 lg:pb-28">
+        <img
+          src="/branding/hkex-logo-platform.png"
+          alt="HKEX — 交易・投資・成長"
+          width={300}
+          height={150}
+          className="mb-6 block h-[150px] w-[300px] object-contain select-none"
+          draggable={false}
+        />
+        <div className="flex items-center gap-4">
+          <span className="h-px w-10 bg-gold/60" aria-hidden />
+          <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-gold/90">
+            {c.hero.badge}
+          </span>
+          <span className="h-px w-10 bg-gold/60" aria-hidden />
         </div>
-
-        <div className="relative hidden lg:block" aria-hidden />
+        <h1 className="mt-6 font-display text-[2.75rem] font-bold leading-[1.15] tracking-tight md:text-6xl md:leading-[1.1] lg:text-[4.5rem] lg:leading-[1.05]">
+          {c.hero.titleA}{" "}
+          <span className="italic font-normal text-gold">{c.hero.titleB}</span>
+          <br />
+          {c.hero.titleC}
+        </h1>
+        <div className="mt-8 h-px w-24 bg-gradient-to-r from-transparent via-gold/70 to-transparent" aria-hidden />
+        <p className="mt-6 max-w-2xl whitespace-pre-line text-lg leading-relaxed text-muted-foreground">
+          {c.hero.subtitle}
+        </p>
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
+          <Button asChild size="lg" className="rounded-sm border border-[#a0430a] bg-[#c2410c] font-semibold text-white shadow-[0_4px_14px_rgba(194,65,12,0.35)] transition-all duration-200 hover:border-[#ea580c] hover:bg-[#ea580c] hover:shadow-[0_6px_20px_rgba(234,88,12,0.5)] active:border-[#7c2d0a] active:bg-[#9a3412] active:scale-[0.98]">
+            <Link to="/auth">{c.hero.ctaOpen} <ArrowRight className="ml-2 h-4 w-4" /></Link>
+          </Button>
+          <Button asChild size="lg" variant="outline" className="rounded-sm border-gold/30 bg-transparent text-foreground transition hover:border-gold/70 hover:bg-gold/[0.06]">
+            <Link to="/copy-trading">{c.hero.ctaAdvisor}</Link>
+          </Button>
+          <Button asChild size="lg" variant="ghost">
+            <Link to="/competitions">{c.hero.ctaLearn}</Link>
+          </Button>
+        </div>
       </div>
     </section>
   );
