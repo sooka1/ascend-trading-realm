@@ -173,7 +173,7 @@ function Hero({ c }: { c: LandingContent }) {
           {videoReady && (
             <video
               ref={videoElRef}
-              className="h-full w-full object-contain object-center sm:object-cover"
+              className="h-full w-full object-contain object-center opacity-40 blur-md sm:object-cover"
               autoPlay
               loop
               muted
@@ -190,7 +190,7 @@ function Hero({ c }: { c: LandingContent }) {
               alt=""
               loading="lazy"
               decoding="async"
-              className="h-full w-full object-contain object-center sm:object-cover"
+              className="h-full w-full object-contain object-center opacity-40 blur-md sm:object-cover"
             />
           )}
         </div>
