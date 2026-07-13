@@ -198,9 +198,6 @@ function Hero({ c }: { c: LandingContent }) {
         {/* Bottom fade only, to blend into the page — video stays fully clear */}
         <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-background" />
       </div>
-      <p className="relative z-10 mx-auto max-w-4xl px-4 pt-6 text-center font-mono text-xs uppercase tracking-[0.28em] text-gold/90 sm:text-sm">
-        {c.hero.disclaimer}
-      </p>
       <div className="relative mx-auto grid max-w-7xl gap-10 px-4 pt-2 pb-16 sm:px-6 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:px-8 lg:pt-4 lg:pb-24">
         <div>
           <img
@@ -243,6 +240,7 @@ function Hero({ c }: { c: LandingContent }) {
         <div className="relative flex flex-col items-center">
           <div className="pointer-events-none absolute -inset-4 -z-10 rounded-2xl bg-[radial-gradient(ellipse_at_top,rgba(30,107,255,0.22),transparent_65%)] blur-3xl" aria-hidden />
 
+          <p className="pointer-events-none absolute -bottom-8 left-0 right-0 text-center font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground/70">{c.hero.disclaimer}</p>
           <dl className="mt-16 grid w-full max-w-[560px] grid-cols-3 gap-3 text-sm">
             {[
               { k: c.hero.statAum, v: "$1.2B+", d: "+12.4%", tone: "up" },
