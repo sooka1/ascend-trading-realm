@@ -226,10 +226,10 @@ function Hero({ c }: { c: LandingContent }) {
           <Button asChild size="lg" className="rounded-sm border border-[#a0430a] bg-[#c2410c] font-semibold text-white shadow-[0_4px_14px_rgba(194,65,12,0.35)] transition-all duration-200 hover:border-[#ea580c] hover:bg-[#ea580c] hover:shadow-[0_6px_20px_rgba(234,88,12,0.5)] active:border-[#7c2d0a] active:bg-[#9a3412] active:scale-[0.98]">
             <Link to="/auth">{c.hero.ctaOpen} <ArrowRight className="ml-2 h-4 w-4" /></Link>
           </Button>
-          <Button asChild size="lg" variant="outline" className="rounded-sm border-gold/30 bg-transparent text-foreground transition hover:border-gold/70 hover:bg-gold/[0.06]">
+          <Button asChild size="lg" className="rounded-sm border border-blue-700 bg-blue-600 font-semibold text-white shadow-[0_4px_14px_rgba(37,99,235,0.35)] transition-all duration-200 hover:border-blue-500 hover:bg-blue-500 hover:shadow-[0_6px_20px_rgba(59,130,246,0.5)] active:bg-blue-700 active:scale-[0.98]">
             <Link to="/copy-trading">{c.hero.ctaAdvisor}</Link>
           </Button>
-          <Button asChild size="lg" variant="ghost">
+          <Button asChild size="lg" className="rounded-sm border border-red-700 bg-red-600 font-semibold text-white shadow-[0_4px_14px_rgba(220,38,38,0.35)] transition-all duration-200 hover:border-red-500 hover:bg-red-500 hover:shadow-[0_6px_20px_rgba(239,68,68,0.5)] active:bg-red-700 active:scale-[0.98]">
             <Link to="/competitions">{c.hero.ctaLearn}</Link>
           </Button>
         </div>
