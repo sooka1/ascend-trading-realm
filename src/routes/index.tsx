@@ -182,7 +182,7 @@ function Hero({ c }: { c: LandingContent }) {
               preload="metadata"
               poster={heroPoster}
             >
-              <source src={heroVideo.url} type="video/mp4" />
+              <source src={candlesVideo.url} type="video/mp4" />
             </video>
           )}
           {!videoReady && (
