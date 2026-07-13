@@ -44,7 +44,19 @@ export const LANGUAGES: { code: Lang; label: string; native: string; dir: "rtl" 
 
 type Dict = Record<string, string>;
 
-export const DICTS: Record<Lang, Dict> = {
+const LOCALE_MODULES = import.meta.glob<Dict>("./locales/*.json", {
+  eager: true,
+  import: "default",
+});
+
+const LOADED_DICTS: Record<Lang, Dict> = Object.fromEntries(
+  Object.entries(LOCALE_MODULES).map(([p, mod]) => {
+    const code = p.replace(/^\.\/locales\//, "").replace(/\.json$/, "");
+    return [code, mod as Dict];
+  }),
+) as Record<Lang, Dict>;
+
+const LEGACY_DICTS: Record<Lang, Dict> = {
   ar: {
     "nav.platform": "المنصة",
     "nav.competitions": "المسابقات",
@@ -1029,6 +1041,11 @@ export const DICTS: Record<Lang, Dict> = {
     "about.cta.portfolios": "Yönetilen portföyleri keşfedin",
     "about.cta.advisor": "Danışmanla görüşün",
     },
+};
+
+export const DICTS: Record<Lang, Dict> = {
+  ...LEGACY_DICTS,
+  ...LOADED_DICTS,
 };
 
 type Ctx = { lang: Lang; setLang: (l: Lang) => void; t: (k: string) => string; dir: "rtl" | "ltr" };
