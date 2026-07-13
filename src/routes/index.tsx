@@ -257,7 +257,7 @@ function Hero({ c }: { c: LandingContent }) {
               {/* Screen */}
               <div className="relative h-full w-full overflow-hidden rounded-md bg-black ring-1 ring-black/80">
                 <video
-                  className="h-full w-full object-cover"
+                  className="h-full w-full object-contain"
                   autoPlay
                   loop
                   muted
@@ -267,8 +267,6 @@ function Hero({ c }: { c: LandingContent }) {
                 >
                 <source src={candlesVideo.url} type="video/mp4" />
                 </video>
-                {/* Screen glare */}
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-transparent" />
                 {/* Camera notch */}
                 <div className="pointer-events-none absolute left-1/2 top-1 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-neutral-800 ring-1 ring-neutral-600" />
               </div>
