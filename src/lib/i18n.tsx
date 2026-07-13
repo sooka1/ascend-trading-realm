@@ -1012,7 +1012,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY) as Lang | null;
-      if (saved && DICTS[saved]) setLangState(saved);
+      if (saved) setLangState(saved);
     } catch {}
   }, []);
 
