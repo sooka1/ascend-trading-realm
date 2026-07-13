@@ -197,33 +197,33 @@ function Hero({ c }: { c: LandingContent }) {
         {/* Bottom fade only, to blend into the page — video stays fully clear */}
         <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-background" />
       </div>
-      <div className="relative mx-auto flex max-w-4xl flex-col items-center px-4 pt-8 pb-20 text-center sm:px-6 lg:px-8 lg:pt-16 lg:pb-28">
+      <div className="relative mx-auto flex min-h-[80vh] max-w-4xl flex-col items-center justify-center px-4 py-16 text-center sm:px-6 sm:py-20 lg:px-8 lg:py-28">
         <img
           src="/branding/hkex-logo-platform.png"
           alt="HKEX — 交易・投資・成長"
           width={300}
           height={150}
-          className="mb-6 block h-[150px] w-[300px] object-contain select-none"
+          className="mb-6 block h-[110px] w-[220px] object-contain select-none sm:h-[130px] sm:w-[260px] md:h-[150px] md:w-[300px]"
           draggable={false}
         />
-        <div className="flex items-center gap-4">
-          <span className="h-px w-10 bg-gold/60" aria-hidden />
-          <span className="font-mono text-[10px] uppercase tracking-[0.32em] text-gold/90">
+        <div className="flex items-center gap-3 sm:gap-4">
+          <span className="h-px w-6 bg-gold/60 sm:w-10" aria-hidden />
+          <span className="font-mono text-[9px] uppercase tracking-[0.28em] text-gold/90 sm:text-[10px] sm:tracking-[0.32em]">
             {c.hero.badge}
           </span>
-          <span className="h-px w-10 bg-gold/60" aria-hidden />
+          <span className="h-px w-6 bg-gold/60 sm:w-10" aria-hidden />
         </div>
-        <h1 className="mt-6 font-display text-[2.75rem] font-bold leading-[1.15] tracking-tight md:text-6xl md:leading-[1.1] lg:text-[4.5rem] lg:leading-[1.05]">
+        <h1 className="mt-5 font-display text-[2rem] font-bold leading-[1.2] tracking-tight sm:mt-6 sm:text-[2.75rem] sm:leading-[1.15] md:text-5xl md:leading-[1.15] lg:text-[4.5rem] lg:leading-[1.05]">
           {c.hero.titleA}{" "}
           <span className="italic font-normal text-gold">{c.hero.titleB}</span>
           <br />
           {c.hero.titleC}
         </h1>
-        <div className="mt-8 h-px w-24 bg-gradient-to-r from-transparent via-gold/70 to-transparent" aria-hidden />
-        <p className="mt-6 max-w-2xl whitespace-pre-line text-lg leading-relaxed text-muted-foreground">
+        <div className="mt-6 h-px w-20 bg-gradient-to-r from-transparent via-gold/70 to-transparent sm:mt-8 sm:w-24" aria-hidden />
+        <p className="mt-5 max-w-2xl whitespace-pre-line text-base leading-relaxed text-muted-foreground sm:mt-6 sm:text-lg">
           {c.hero.subtitle}
         </p>
-        <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
+        <div className="mt-8 flex w-full flex-col items-stretch justify-center gap-3 sm:mt-10 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
           <Button asChild size="lg" className="rounded-sm border border-[#a0430a] bg-[#c2410c] font-semibold text-white shadow-[0_4px_14px_rgba(194,65,12,0.35)] transition-all duration-200 hover:border-[#ea580c] hover:bg-[#ea580c] hover:shadow-[0_6px_20px_rgba(234,88,12,0.5)] active:border-[#7c2d0a] active:bg-[#9a3412] active:scale-[0.98]">
             <Link to="/auth">{c.hero.ctaOpen} <ArrowRight className="ml-2 h-4 w-4" /></Link>
           </Button>
