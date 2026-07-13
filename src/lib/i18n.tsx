@@ -1008,7 +1008,8 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     } catch {}
   }, []);
 
-  const dir = LANGUAGES.find((l) => l.code === lang)?.dir ?? "ltr";
+  const dir: "rtl" | "ltr" =
+    LANGUAGES.find((l) => l.code === lang)?.dir ?? (RTL_LANGS.has(lang) ? "rtl" : "ltr");
 
   useEffect(() => {
     if (typeof document !== "undefined") {
