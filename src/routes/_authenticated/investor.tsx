@@ -1428,6 +1428,15 @@ function InvestorPortal() {
                 <AlertDialogCancel onClick={() => setInstantDeposit(null)}>إغلاق</AlertDialogCancel>
                 <Button
                   type="button"
+                  variant="outline"
+                  disabled={recheckBusy}
+                  className="border-emerald-400/40 bg-emerald-500/10 text-emerald-200 hover:bg-emerald-500/20"
+                  onClick={recheckInstantDeposit}
+                >
+                  {recheckBusy ? "جارٍ التحقق..." : "لقد أتممت التحويل — تحقّق الآن"}
+                </Button>
+                <Button
+                  type="button"
                   className="bg-[#F0B90B] font-semibold text-black hover:bg-[#F0B90B]/90"
                   onClick={async () => {
                     const amountStr = instantDeposit.uniqueAmount.toFixed(4);
