@@ -1343,6 +1343,60 @@ function InvestorPortal() {
           )}
         </AlertDialogContent>
       </AlertDialog>
+      <AlertDialog open={!!instantDeposit} onOpenChange={(o) => { if (!o) setInstantDeposit(null); }}>
+        <AlertDialogContent className="max-w-md">
+          {instantDeposit && (
+            <>
+              <AlertDialogHeader>
+                <AlertDialogTitle>تعليمات الإيداع الفوري</AlertDialogTitle>
+                <AlertDialogDescription>
+                  أرسل المبلغ المحدد أدناه بدقة تامة من Binance. سيُعتمد الإيداع تلقائياً خلال دقيقة من وصول الأموال.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <div className="grid gap-3 py-2 text-sm">
+                <div className="rounded-xl border border-emerald-400/40 bg-emerald-500/[0.08] p-4 text-center">
+                  <div className="text-[11px] text-emerald-300">المبلغ المطلوب بالضبط</div>
+                  <div dir="ltr" className="mt-1 font-mono text-2xl font-bold text-emerald-200">
+                    {instantDeposit.uniqueAmount.toFixed(4)} USDT
+                  </div>
+                  <div className="mt-1 text-[10px] text-muted-foreground">
+                    (يشمل رصيد {instantDeposit.baseAmount} USD + كسور فريدة للمطابقة التلقائية)
+                  </div>
+                </div>
+                <div>
+                  <div className="mb-1 text-[11px] text-muted-foreground">عنوان المحفظة ({instantDeposit.network})</div>
+                  <div className="flex items-center gap-2 rounded-lg border border-white/15 bg-white/5 p-2">
+                    <div dir="ltr" className="flex-1 break-all font-mono text-[11px]">{instantDeposit.address}</div>
+                    <Button
+                      type="button" size="sm" variant="outline" className="h-7 shrink-0 px-2"
+                      onClick={async () => {
+                        try { await navigator.clipboard.writeText(instantDeposit.address); toast.success("تم نسخ العنوان"); }
+                        catch { toast.error("تعذّر النسخ"); }
+                      }}
+                    >
+                      <Copy className="h-3 w-3" /><span className="ms-1 text-[11px]">نسخ</span>
+                    </Button>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between rounded-lg border border-amber-400/30 bg-amber-500/[0.05] p-2 text-[11px]">
+                  <span className="text-amber-300">الشبكة</span>
+                  <span className="font-mono">{instantDeposit.network} (Tron)</span>
+                </div>
+                <div className="flex items-center justify-between rounded-lg border border-amber-400/30 bg-amber-500/[0.05] p-2 text-[11px]">
+                  <span className="text-amber-300">ينتهي في</span>
+                  <span className="font-mono" dir="ltr">{new Date(instantDeposit.expiresAt).toLocaleTimeString()}</span>
+                </div>
+                <div className="rounded-lg border border-red-400/30 bg-red-500/[0.05] p-2 text-[10px] text-red-200">
+                  ⚠️ أرسل المبلغ <strong>بالضبط</strong> بجميع الكسور ({instantDeposit.uniqueAmount.toFixed(4)}). أي مبلغ آخر لن يُطابق تلقائياً.
+                </div>
+              </div>
+              <AlertDialogFooter>
+                <AlertDialogCancel onClick={() => setInstantDeposit(null)}>إغلاق</AlertDialogCancel>
+              </AlertDialogFooter>
+            </>
+          )}
+        </AlertDialogContent>
+      </AlertDialog>
     </PageShell>
   );
 }
