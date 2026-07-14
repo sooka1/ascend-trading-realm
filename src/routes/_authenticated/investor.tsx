@@ -1497,11 +1497,10 @@ function InvestorPortal() {
                   ⚠️ تأكد من الشبكة <strong>TRC20</strong> والعملة <strong>USDT</strong> داخل Binance قبل الإرسال.
                 </div>
               </div>
-              <AlertDialogFooter className="flex-col gap-2 sm:flex-row">
-                <AlertDialogCancel onClick={() => setConfirmBinanceOpen(false)}>رجوع</AlertDialogCancel>
+              <AlertDialogFooter className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:space-x-0">
                 <Button
                   type="button"
-                  className="bg-[#F0B90B] font-semibold text-black hover:bg-[#F0B90B]/90"
+                  className="w-full bg-[#F0B90B] font-semibold text-black hover:bg-[#F0B90B]/90"
                   onClick={async () => {
                     const amountStr = instantDeposit.uniqueAmount.toFixed(4);
                     try { await navigator.clipboard.writeText(amountStr); } catch { /* noop */ }
@@ -1522,6 +1521,7 @@ function InvestorPortal() {
                 >
                   متابعة وفتح Binance
                 </Button>
+                <AlertDialogCancel className="mt-0 w-full" onClick={() => setConfirmBinanceOpen(false)}>رجوع</AlertDialogCancel>
               </AlertDialogFooter>
             </>
           )}
