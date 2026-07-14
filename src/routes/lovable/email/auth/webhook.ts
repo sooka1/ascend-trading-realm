@@ -15,6 +15,21 @@ const ROOT_DOMAIN = "hkexinvest.com"
 const FROM_DOMAIN = "hkexinvest.com"
 const SITE_URL = `https://${ROOT_DOMAIN}`
 
+function isPasswordResetFlow(data: { url?: string | null; callback_url?: string | null }) {
+  const haystack = [data.url, data.callback_url]
+    .filter(Boolean)
+    .map((value) => {
+      try {
+        return decodeURIComponent(String(value)).toLowerCase()
+      } catch {
+        return String(value).toLowerCase()
+      }
+    })
+    .join(' ')
+
+  return haystack.includes('/reset-password')
+}
+
 // The SDK handler owns verification, dispatch, and retry semantics; this file
 // owns only the email decisions: subjects, templates, and per-type props.
 const handler = createAuthEmailHandler({
@@ -50,13 +65,24 @@ const handler = createAuthEmailHandler({
           token: data.token ?? '',
         }),
     },
-    recovery: {
-      subject: 'Reset your password',
-      render: (data) =>
-        React.createElement(RecoveryEmail, {
+    recovery: (data) => {
+      if (data.token && !isPasswordResetFlow(data)) {
+        return {
+          subject: 'Your login code',
+          element: React.createElement(MagicLinkEmail, {
+            siteName: SITE_NAME,
+            token: data.token,
+          }),
+        }
+      }
+
+      return {
+        subject: 'Reset your password',
+        element: React.createElement(RecoveryEmail, {
           siteName: SITE_NAME,
           confirmationUrl: data.url,
         }),
+      }
     },
     email_change: {
       subject: 'Confirm your new email',
