@@ -928,7 +928,7 @@ function InvestorPortal() {
                       {depositMethod === "binance_pay" && (
                         <div className="mt-3 rounded-lg border border-emerald-400/40 bg-emerald-500/[0.08] p-3">
                           <div className="mb-2 text-[11px] font-semibold text-emerald-300">
-                            ⚡ الدفع الفوري عبر Binance Pay (اعتماد تلقائي)
+                            ⚡ الإيداع الفوري عبر Binance (USDT-TRC20 · اعتماد تلقائي)
                           </div>
                           <div className="flex flex-wrap items-center gap-2">
                             <Input
@@ -956,7 +956,7 @@ function InvestorPortal() {
                             </Button>
                           </div>
                           <p className="mt-2 text-[10px] text-muted-foreground">
-                            سيُفتح Binance Pay في تبويب جديد. بعد إتمام الدفع سيُعتمد الإيداع تلقائيًا خلال ثوانٍ دون الحاجة لرفع إيصال.
+                            سيُعرض لك مبلغ فريد (بكسور عشرية) لإرساله من Binance. بمجرد وصول المبلغ إلى محفظتنا سيُعتمد الإيداع تلقائيًا خلال دقيقة.
                           </p>
                         </div>
                       )}
