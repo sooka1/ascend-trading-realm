@@ -42,6 +42,9 @@ function Auth() {
   const [otpPhase, setOtpPhase] = useState<"email" | "code">("email");
   const [otpCode, setOtpCode] = useState("");
   const [otpCooldown, setOtpCooldown] = useState(0);
+  // Verification-attempt lockout: after 5 failed attempts within 5 min for
+  // the same email, disable input and count down to retry.
+  const [otpLockRemaining, setOtpLockRemaining] = useState(0);
   const [pendingEmail, setPendingEmail] = useState<string | null>(null);
   const [resendState, setResendState] = useState<{ loading: boolean; cooldown: number; error?: string; sent?: boolean }>({
     loading: false,
@@ -193,6 +196,12 @@ function Auth() {
     const t = setTimeout(() => setOtpCooldown((s) => s - 1), 1000);
     return () => clearTimeout(t);
   }, [otpCooldown]);
+
+  useEffect(() => {
+    if (otpLockRemaining <= 0) return;
+    const t = setTimeout(() => setOtpLockRemaining((s) => Math.max(0, s - 1)), 1000);
+    return () => clearTimeout(t);
+  }, [otpLockRemaining]);
 
   // While the confirm-email screen is showing, watch for the user completing
   // confirmation in another tab and route them straight to the dashboard.
