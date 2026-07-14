@@ -236,8 +236,13 @@ function Auth() {
       .regex(/[0-9]/, t("auth.err.password.number")),
   });
 
-  async function sendOtpCode() {
+  async function sendOtpCode(opts?: { isResend?: boolean }) {
+    const isResend = opts?.isResend === true;
     setErrors({});
+    // On resend, clear any code the user may have typed so the old (now
+    // invalidated) token can't accidentally be submitted after a new one
+    // is generated on the server.
+    if (isResend) setOtpCode("");
     const parsed = z
       .object({ email: z.string().trim().email(t("auth.err.email.invalid")).max(255) })
       .safeParse({ email });
@@ -271,7 +276,7 @@ function Auth() {
       if (error && !/user.*not.*found|no.*user/i.test(error.message)) throw error;
       setOtpPhase("code");
       setOtpCooldown(60);
-      toast.success(t("auth.otp.sent"));
+      toast.success(isResend ? t("auth.otp.resent") : t("auth.otp.sent"));
     } catch (err) {
       const message = err instanceof Error ? err.message : t("auth.err.generic");
       setErrors({ form: message });
@@ -626,7 +631,7 @@ function Auth() {
                   <button
                     type="button"
                     disabled={otpCooldown > 0 || loading}
-                    onClick={() => void sendOtpCode()}
+                    onClick={() => void sendOtpCode({ isResend: true })}
                     className="text-muted-foreground underline-offset-4 hover:text-foreground hover:underline disabled:opacity-50"
                   >
                     {otpCooldown > 0
