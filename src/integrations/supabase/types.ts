@@ -1919,14 +1919,18 @@ export type Database = {
           amount: number
           created_at: string
           currency: string
+          deposit_address: string | null
+          expires_at: string | null
           id: string
           method: string
+          network: string | null
           notes: string | null
           reference: string | null
           reviewed_at: string | null
           reviewed_by: string | null
           status: string
           tx_hash: string | null
+          unique_amount: number | null
           updated_at: string
           user_id: string
         }
@@ -1934,14 +1938,18 @@ export type Database = {
           amount: number
           created_at?: string
           currency?: string
+          deposit_address?: string | null
+          expires_at?: string | null
           id?: string
           method?: string
+          network?: string | null
           notes?: string | null
           reference?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           status?: string
           tx_hash?: string | null
+          unique_amount?: number | null
           updated_at?: string
           user_id: string
         }
@@ -1949,14 +1957,18 @@ export type Database = {
           amount?: number
           created_at?: string
           currency?: string
+          deposit_address?: string | null
+          expires_at?: string | null
           id?: string
           method?: string
+          network?: string | null
           notes?: string | null
           reference?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           status?: string
           tx_hash?: string | null
+          unique_amount?: number | null
           updated_at?: string
           user_id?: string
         }

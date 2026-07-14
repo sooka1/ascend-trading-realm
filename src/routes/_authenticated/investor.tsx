@@ -14,7 +14,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Checkbox } from "@/components/ui/checkbox";
 import trc20QrAsset from "@/assets/trc20-qr.png.asset.json";
 import { useServerFn } from "@tanstack/react-start";
-import { createBinancePayOrder } from "@/lib/binance-pay.functions";
+import { createBinanceDeposit } from "@/lib/binance-spot.functions";
 
 export const Route = createFileRoute("/_authenticated/investor")({
   head: () => ({
@@ -93,23 +93,36 @@ function InvestorPortal() {
   const [withdrawMethod, setWithdrawMethod] = useState<"binance_pay" | "usdt_trc20">("binance_pay");
   const [instantPayAmount, setInstantPayAmount] = useState("");
   const [instantPayBusy, setInstantPayBusy] = useState(false);
-  const createBpOrder = useServerFn(createBinancePayOrder);
+  const [instantDeposit, setInstantDeposit] = useState<{
+    uniqueAmount: number;
+    baseAmount: number;
+    address: string;
+    network: string;
+    expiresAt: string;
+  } | null>(null);
+  const createSpotDeposit = useServerFn(createBinanceDeposit);
 
   async function startInstantBinancePay() {
     const amt = Number(instantPayAmount);
     if (!Number.isFinite(amt) || amt < 10) {
-      return toast.error("الحد الأدنى للإيداع الفوري 10$");
+      return toast.error("الحد الأدنى للإيداع الفوري 10 USDT");
     }
     setInstantPayBusy(true);
     try {
-      const res = await createBpOrder({ data: { amount: amt } });
-      toast.success("سيتم تحويلك إلى Binance Pay لإكمال الدفع");
-      window.open(res.checkoutUrl, "_blank", "noopener,noreferrer");
+      const res = await createSpotDeposit({ data: { amount: amt, network: "TRC20" } });
+      setInstantDeposit({
+        uniqueAmount: res.uniqueAmount,
+        baseAmount: res.baseAmount,
+        address: res.address,
+        network: res.network,
+        expiresAt: res.expiresAt,
+      });
+      toast.success("تم إنشاء طلب إيداع فوري — أرسل المبلغ المحدد بدقة");
       setInstantPayAmount("");
       await load();
       void router.invalidate();
     } catch (e) {
-      toast.error((e as Error).message || "تعذّر إنشاء عملية الدفع");
+      toast.error((e as Error).message || "تعذّر إنشاء طلب الإيداع");
     } finally {
       setInstantPayBusy(false);
     }
@@ -915,7 +928,7 @@ function InvestorPortal() {
                       {depositMethod === "binance_pay" && (
                         <div className="mt-3 rounded-lg border border-emerald-400/40 bg-emerald-500/[0.08] p-3">
                           <div className="mb-2 text-[11px] font-semibold text-emerald-300">
-                            ⚡ الدفع الفوري عبر Binance Pay (اعتماد تلقائي)
+                            ⚡ الإيداع الفوري عبر Binance (USDT-TRC20 · اعتماد تلقائي)
                           </div>
                           <div className="flex flex-wrap items-center gap-2">
                             <Input
@@ -943,7 +956,7 @@ function InvestorPortal() {
                             </Button>
                           </div>
                           <p className="mt-2 text-[10px] text-muted-foreground">
-                            سيُفتح Binance Pay في تبويب جديد. بعد إتمام الدفع سيُعتمد الإيداع تلقائيًا خلال ثوانٍ دون الحاجة لرفع إيصال.
+                            سيُعرض لك مبلغ فريد (بكسور عشرية) لإرساله من Binance. بمجرد وصول المبلغ إلى محفظتنا سيُعتمد الإيداع تلقائيًا خلال دقيقة.
                           </p>
                         </div>
                       )}
@@ -1325,6 +1338,60 @@ function InvestorPortal() {
                 >
                   متابعة السحب
                 </AlertDialogAction>
+              </AlertDialogFooter>
+            </>
+          )}
+        </AlertDialogContent>
+      </AlertDialog>
+      <AlertDialog open={!!instantDeposit} onOpenChange={(o) => { if (!o) setInstantDeposit(null); }}>
+        <AlertDialogContent className="max-w-md">
+          {instantDeposit && (
+            <>
+              <AlertDialogHeader>
+                <AlertDialogTitle>تعليمات الإيداع الفوري</AlertDialogTitle>
+                <AlertDialogDescription>
+                  أرسل المبلغ المحدد أدناه بدقة تامة من Binance. سيُعتمد الإيداع تلقائياً خلال دقيقة من وصول الأموال.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <div className="grid gap-3 py-2 text-sm">
+                <div className="rounded-xl border border-emerald-400/40 bg-emerald-500/[0.08] p-4 text-center">
+                  <div className="text-[11px] text-emerald-300">المبلغ المطلوب بالضبط</div>
+                  <div dir="ltr" className="mt-1 font-mono text-2xl font-bold text-emerald-200">
+                    {instantDeposit.uniqueAmount.toFixed(4)} USDT
+                  </div>
+                  <div className="mt-1 text-[10px] text-muted-foreground">
+                    (يشمل رصيد {instantDeposit.baseAmount} USD + كسور فريدة للمطابقة التلقائية)
+                  </div>
+                </div>
+                <div>
+                  <div className="mb-1 text-[11px] text-muted-foreground">عنوان المحفظة ({instantDeposit.network})</div>
+                  <div className="flex items-center gap-2 rounded-lg border border-white/15 bg-white/5 p-2">
+                    <div dir="ltr" className="flex-1 break-all font-mono text-[11px]">{instantDeposit.address}</div>
+                    <Button
+                      type="button" size="sm" variant="outline" className="h-7 shrink-0 px-2"
+                      onClick={async () => {
+                        try { await navigator.clipboard.writeText(instantDeposit.address); toast.success("تم نسخ العنوان"); }
+                        catch { toast.error("تعذّر النسخ"); }
+                      }}
+                    >
+                      <Copy className="h-3 w-3" /><span className="ms-1 text-[11px]">نسخ</span>
+                    </Button>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between rounded-lg border border-amber-400/30 bg-amber-500/[0.05] p-2 text-[11px]">
+                  <span className="text-amber-300">الشبكة</span>
+                  <span className="font-mono">{instantDeposit.network} (Tron)</span>
+                </div>
+                <div className="flex items-center justify-between rounded-lg border border-amber-400/30 bg-amber-500/[0.05] p-2 text-[11px]">
+                  <span className="text-amber-300">ينتهي في</span>
+                  <span className="font-mono" dir="ltr">{new Date(instantDeposit.expiresAt).toLocaleTimeString()}</span>
+                </div>
+                <div className="rounded-lg border border-red-400/30 bg-red-500/[0.05] p-2 text-[10px] text-red-200">
+                  ⚠️ أرسل المبلغ <strong>بالضبط</strong> بجميع الكسور ({instantDeposit.uniqueAmount.toFixed(4)}). أي مبلغ آخر لن يُطابق تلقائياً.
+                </div>
+              </div>
+              <AlertDialogFooter>
+                <AlertDialogCancel onClick={() => setInstantDeposit(null)}>إغلاق</AlertDialogCancel>
               </AlertDialogFooter>
             </>
           )}

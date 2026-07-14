@@ -63,7 +63,7 @@ import { Route as AuthenticatedAdminAdminIndexRouteImport } from './routes/_auth
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
-import { Route as ApiPublicWebhooksBinancePayRouteImport } from './routes/api/public/webhooks/binance-pay'
+import { Route as ApiPublicHooksBinancePollRouteImport } from './routes/api/public/hooks/binance-poll'
 import { Route as AuthenticatedCompetitionsIdTradeRouteImport } from './routes/_authenticated/competitions.$id.trade'
 import { Route as AuthenticatedAdminAdminUsersRouteImport } from './routes/_authenticated/_admin/admin.users'
 import { Route as AuthenticatedAdminAdminUserRolesRouteImport } from './routes/_authenticated/_admin/admin.user-roles'
@@ -380,10 +380,10 @@ const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
   path: '/lovable/email/auth/preview',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiPublicWebhooksBinancePayRoute =
-  ApiPublicWebhooksBinancePayRouteImport.update({
-    id: '/api/public/webhooks/binance-pay',
-    path: '/api/public/webhooks/binance-pay',
+const ApiPublicHooksBinancePollRoute =
+  ApiPublicHooksBinancePollRouteImport.update({
+    id: '/api/public/hooks/binance-poll',
+    path: '/api/public/hooks/binance-poll',
     getParentRoute: () => rootRouteImport,
   } as any)
 const AuthenticatedCompetitionsIdTradeRoute =
@@ -604,7 +604,7 @@ export interface FileRoutesByFullPath {
   '/admin/user-roles': typeof AuthenticatedAdminAdminUserRolesRoute
   '/admin/users': typeof AuthenticatedAdminAdminUsersRoute
   '/competitions/$id/trade': typeof AuthenticatedCompetitionsIdTradeRoute
-  '/api/public/webhooks/binance-pay': typeof ApiPublicWebhooksBinancePayRoute
+  '/api/public/hooks/binance-poll': typeof ApiPublicHooksBinancePollRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -683,7 +683,7 @@ export interface FileRoutesByTo {
   '/admin/user-roles': typeof AuthenticatedAdminAdminUserRolesRoute
   '/admin/users': typeof AuthenticatedAdminAdminUsersRoute
   '/competitions/$id/trade': typeof AuthenticatedCompetitionsIdTradeRoute
-  '/api/public/webhooks/binance-pay': typeof ApiPublicWebhooksBinancePayRoute
+  '/api/public/hooks/binance-poll': typeof ApiPublicHooksBinancePollRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -765,7 +765,7 @@ export interface FileRoutesById {
   '/_authenticated/_admin/admin/user-roles': typeof AuthenticatedAdminAdminUserRolesRoute
   '/_authenticated/_admin/admin/users': typeof AuthenticatedAdminAdminUsersRoute
   '/_authenticated/competitions/$id/trade': typeof AuthenticatedCompetitionsIdTradeRoute
-  '/api/public/webhooks/binance-pay': typeof ApiPublicWebhooksBinancePayRoute
+  '/api/public/hooks/binance-poll': typeof ApiPublicHooksBinancePollRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -846,7 +846,7 @@ export interface FileRouteTypes {
     | '/admin/user-roles'
     | '/admin/users'
     | '/competitions/$id/trade'
-    | '/api/public/webhooks/binance-pay'
+    | '/api/public/hooks/binance-poll'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
@@ -925,7 +925,7 @@ export interface FileRouteTypes {
     | '/admin/user-roles'
     | '/admin/users'
     | '/competitions/$id/trade'
-    | '/api/public/webhooks/binance-pay'
+    | '/api/public/hooks/binance-poll'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
@@ -1006,7 +1006,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_admin/admin/user-roles'
     | '/_authenticated/_admin/admin/users'
     | '/_authenticated/competitions/$id/trade'
-    | '/api/public/webhooks/binance-pay'
+    | '/api/public/hooks/binance-poll'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
@@ -1035,7 +1035,7 @@ export interface RootRouteChildren {
   VerifyEmailRoute: typeof VerifyEmailRoute
   ApiPublicHealthRoute: typeof ApiPublicHealthRoute
   ApiPublicOpsRoute: typeof ApiPublicOpsRoute
-  ApiPublicWebhooksBinancePayRoute: typeof ApiPublicWebhooksBinancePayRoute
+  ApiPublicHooksBinancePollRoute: typeof ApiPublicHooksBinancePollRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
@@ -1421,11 +1421,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailAuthPreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/webhooks/binance-pay': {
-      id: '/api/public/webhooks/binance-pay'
-      path: '/api/public/webhooks/binance-pay'
-      fullPath: '/api/public/webhooks/binance-pay'
-      preLoaderRoute: typeof ApiPublicWebhooksBinancePayRouteImport
+    '/api/public/hooks/binance-poll': {
+      id: '/api/public/hooks/binance-poll'
+      path: '/api/public/hooks/binance-poll'
+      fullPath: '/api/public/hooks/binance-poll'
+      preLoaderRoute: typeof ApiPublicHooksBinancePollRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/competitions/$id/trade': {
@@ -1778,7 +1778,7 @@ const rootRouteChildren: RootRouteChildren = {
   VerifyEmailRoute: VerifyEmailRoute,
   ApiPublicHealthRoute: ApiPublicHealthRoute,
   ApiPublicOpsRoute: ApiPublicOpsRoute,
-  ApiPublicWebhooksBinancePayRoute: ApiPublicWebhooksBinancePayRoute,
+  ApiPublicHooksBinancePollRoute: ApiPublicHooksBinancePollRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
@@ -1786,13 +1786,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
