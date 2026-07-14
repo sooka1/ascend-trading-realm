@@ -57,18 +57,17 @@ const handler = createAuthEmailHandler({
           confirmationUrl: data.url,
         }),
     },
-    magiclink: {
-      subject: 'Your HKEX login code',
-      render: (data) =>
-        React.createElement(MagicLinkEmail, {
-          siteName: SITE_NAME,
-          token: data.token ?? '',
-        }),
-    },
+    magiclink: (data) => ({
+      subject: data.token ? `Your HKEX login code ${data.token}` : 'Your HKEX login code',
+      element: React.createElement(MagicLinkEmail, {
+        siteName: SITE_NAME,
+        token: data.token ?? '',
+      }),
+    }),
     recovery: (data) => {
       if (data.token && !isPasswordResetFlow(data)) {
         return {
-          subject: 'Your HKEX login code',
+          subject: `Your HKEX login code ${data.token}`,
           element: React.createElement(MagicLinkEmail, {
             siteName: SITE_NAME,
             token: data.token,
