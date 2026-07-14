@@ -30,6 +30,10 @@ function isPasswordResetFlow(data: { url?: string | null; callback_url?: string 
   return haystack.includes('/reset-password')
 }
 
+function getLoginOtp(data: { token?: string | null; new_token?: string | null }) {
+  return data.token ?? data.new_token ?? ''
+}
+
 // The SDK handler owns verification, dispatch, and retry semantics; this file
 // owns only the email decisions: subjects, templates, and per-type props.
 const handler = createAuthEmailHandler({
@@ -57,20 +61,24 @@ const handler = createAuthEmailHandler({
           confirmationUrl: data.url,
         }),
     },
-    magiclink: (data) => ({
-      subject: data.token ? `Your HKEX login code ${data.token}` : 'Your HKEX login code',
-      element: React.createElement(MagicLinkEmail, {
-        siteName: SITE_NAME,
-        token: data.token ?? '',
-      }),
-    }),
+    magiclink: (data) => {
+      const token = getLoginOtp(data)
+      return {
+        subject: token ? `Your HKEX login code ${token}` : 'Your HKEX login code',
+        element: React.createElement(MagicLinkEmail, {
+          siteName: SITE_NAME,
+          token,
+        }),
+      }
+    },
     recovery: (data) => {
-      if (data.token && !isPasswordResetFlow(data)) {
+      const token = getLoginOtp(data)
+      if (!isPasswordResetFlow(data)) {
         return {
-          subject: `Your HKEX login code ${data.token}`,
+          subject: token ? `Your HKEX login code ${token}` : 'Your HKEX login code',
           element: React.createElement(MagicLinkEmail, {
             siteName: SITE_NAME,
-            token: data.token,
+            token,
           }),
         }
       }
