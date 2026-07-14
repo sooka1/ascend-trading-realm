@@ -94,12 +94,14 @@ function InvestorPortal() {
   const [instantPayAmount, setInstantPayAmount] = useState("");
   const [instantPayBusy, setInstantPayBusy] = useState(false);
   const [instantDeposit, setInstantDeposit] = useState<{
+    depositId: string;
     uniqueAmount: number;
     baseAmount: number;
     address: string;
     network: string;
     expiresAt: string;
   } | null>(null);
+  const [recheckBusy, setRecheckBusy] = useState(false);
   const createSpotDeposit = useServerFn(createBinanceDeposit);
 
   async function startInstantBinancePay() {
@@ -111,6 +113,7 @@ function InvestorPortal() {
     try {
       const res = await createSpotDeposit({ data: { amount: amt, network: "TRC20" } });
       setInstantDeposit({
+        depositId: res.depositId,
         uniqueAmount: res.uniqueAmount,
         baseAmount: res.baseAmount,
         address: res.address,
@@ -127,6 +130,37 @@ function InvestorPortal() {
       setInstantPayBusy(false);
     }
   }
+
+  async function recheckInstantDeposit() {
+    if (!instantDeposit) return;
+    setRecheckBusy(true);
+    try {
+      // Trigger the Binance polling endpoint to fetch fresh deposit history
+      await fetch("/api/public/hooks/binance-poll", { method: "POST" }).catch(() => null);
+      // Re-read this specific deposit from the DB
+      const { data: row } = await supabase
+        .from("deposits")
+        .select("status, tx_hash")
+        .eq("id", instantDeposit.depositId)
+        .maybeSingle();
+      await load();
+      void router.invalidate();
+      if (row?.status === "approved") {
+        toast.success("✅ تم استلام تحويلك واعتماد الإيداع — تمت إضافة الرصيد");
+        setInstantDeposit(null);
+      } else if (row?.status === "expired") {
+        toast.error("انتهت صلاحية طلب الإيداع — أنشئ طلباً جديداً");
+        setInstantDeposit(null);
+      } else {
+        toast.message("⏳ لم يصل التحويل بعد", {
+          description: "قد يستغرق تأكيد شبكة TRC20 من 30 ثانية إلى 3 دقائق. حاول التحقق مرة أخرى بعد قليل.",
+        });
+      }
+    } finally {
+      setRecheckBusy(false);
+    }
+  }
+
   const [pkgAmounts, setPkgAmounts] = useState<Record<string, string>>({});
   const [confirmSub, setConfirmSub] = useState<{ pkg: Pkg; amount: number } | null>(null);
   const [editSub, setEditSub] = useState<{ id: string; value: string; reason: string } | null>(null);
@@ -1392,6 +1426,15 @@ function InvestorPortal() {
               </div>
               <AlertDialogFooter className="flex-col gap-2 sm:flex-row">
                 <AlertDialogCancel onClick={() => setInstantDeposit(null)}>إغلاق</AlertDialogCancel>
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={recheckBusy}
+                  className="border-emerald-400/40 bg-emerald-500/10 text-emerald-200 hover:bg-emerald-500/20"
+                  onClick={recheckInstantDeposit}
+                >
+                  {recheckBusy ? "جارٍ التحقق..." : "لقد أتممت التحويل — تحقّق الآن"}
+                </Button>
                 <Button
                   type="button"
                   className="bg-[#F0B90B] font-semibold text-black hover:bg-[#F0B90B]/90"
