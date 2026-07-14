@@ -308,6 +308,20 @@ function Auth() {
       setErrors({ form: t("auth.otp.err_length") });
       return;
     }
+    // Local attempt limit: 5 verifications per 5 minutes per email. Server
+    // still enforces its own limits; this prevents brute-force from the
+    // client and gives clear feedback when the ceiling is hit.
+    const verifyKey = `auth:otpverify:${email.toLowerCase().trim()}`;
+    const { rateLimit } = await import("@/lib/rate-limit");
+    const limiter = rateLimit(verifyKey, { max: 5, windowMs: 5 * 60_000 });
+    if (!limiter.tryConsume()) {
+      const secs = Math.ceil(limiter.resetIn() / 1000);
+      setOtpLockRemaining(secs);
+      const msg = t("auth.otp.err_locked").replace("{seconds}", String(secs));
+      setErrors({ form: msg });
+      toast.error(msg);
+      return;
+    }
     setLoading(true);
     try {
       const { data, error } = await supabase.auth.verifyOtp({
@@ -316,6 +330,8 @@ function Auth() {
         type: "email",
       });
       if (error) throw error;
+      limiter.reset();
+      setOtpLockRemaining(0);
       toast.success(t("auth.toast.signed_in"));
       if (data.user) await goPostLogin(data.user.id);
       else navigate({ to: "/portal", replace: true });
@@ -323,6 +339,10 @@ function Auth() {
       const message = err instanceof Error ? err.message : t("auth.otp.err_invalid");
       setErrors({ form: message });
       toast.error(message);
+      // If this attempt exhausted the bucket, lock the input immediately.
+      if (limiter.remaining() <= 0) {
+        setOtpLockRemaining(Math.ceil(limiter.resetIn() / 1000));
+      }
     } finally {
       setLoading(false);
     }
