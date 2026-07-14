@@ -4,8 +4,6 @@
   Cache-Control: public, max-age=3600, must-revalidate
 /favicon-32x32.png
   Cache-Control: public, max-age=3600, must-revalidate
-/apple-touch-icon.png
-  Cache-Control: public, max-age=3600, must-revalidate
 /android-chrome-192x192.png
   Cache-Control: public, max-age=3600, must-revalidate
 /android-chrome-512x512.png
