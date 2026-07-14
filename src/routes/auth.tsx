@@ -285,6 +285,9 @@ function Auth() {
       if (error && !/user.*not.*found|no.*user/i.test(error.message)) throw error;
       setOtpPhase("code");
       setOtpCooldown(60);
+      // Sync any pre-existing verify-lock for this email so the UI reflects it.
+      const verifyLimiter = rateLimit(`auth:otpverify:${normalizedEmail}`, { max: 5, windowMs: 5 * 60_000 });
+      setOtpLockRemaining(verifyLimiter.remaining() <= 0 ? Math.ceil(verifyLimiter.resetIn() / 1000) : 0);
       toast.success(isResend ? t("auth.otp.resent") : t("auth.otp.sent"));
     } catch (err) {
       const message = err instanceof Error ? err.message : t("auth.err.generic");
