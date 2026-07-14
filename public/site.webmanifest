@@ -1,7 +1,7 @@
 {
-  "name": "HK Investment Management",
-  "short_name": "HK Invest",
-  "description": "منصة HKEX لإدارة الاستثمارات — إيداع، تداول، ومحفظة موثوقة.",
+  "name": "HKEX",
+  "short_name": "HKEX",
+  "description": "HKEX — منصة الاستثمار والتداول: إيداع، تداول، ومحفظة موثوقة.",
   "lang": "ar",
   "dir": "rtl",
   "start_url": "/",
