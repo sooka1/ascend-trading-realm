@@ -637,15 +637,21 @@ function Auth() {
                     className="mt-1.5 h-12 bg-white/5 text-center text-lg tracking-[0.5em] tabular-nums sm:h-11"
                     value={otpCode}
                     onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                    disabled={otpLockRemaining > 0}
                   />
                   <p className="mt-1.5 text-xs text-muted-foreground">
                     {t("auth.otp.sent_to")} <span className="font-medium text-foreground">{email}</span>
                   </p>
+                  {otpLockRemaining > 0 && (
+                    <p className="mt-2 text-xs text-destructive">
+                      {t("auth.otp.locked_in").replace("{seconds}", String(otpLockRemaining))}
+                    </p>
+                  )}
                 </div>
               )}
               <Button
                 type="submit"
-                disabled={loading || (otpPhase === "code" && otpCode.length !== 6)}
+                disabled={loading || (otpPhase === "code" && (otpCode.length !== 6 || otpLockRemaining > 0))}
                 className="h-12 w-full bg-[var(--gradient-brand)] text-base text-white shadow-[var(--shadow-glow)] sm:h-10 sm:text-sm"
               >
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
