@@ -102,6 +102,7 @@ function InvestorPortal() {
     expiresAt: string;
   } | null>(null);
   const [recheckBusy, setRecheckBusy] = useState(false);
+  const [confirmBinanceOpen, setConfirmBinanceOpen] = useState(false);
   const createSpotDeposit = useServerFn(createBinanceDeposit);
 
   async function startInstantBinancePay() {
@@ -1438,33 +1439,86 @@ function InvestorPortal() {
                 <Button
                   type="button"
                   className="bg-[#F0B90B] font-semibold text-black hover:bg-[#F0B90B]/90"
+                  onClick={() => setConfirmBinanceOpen(true)}
+                >
+                  فتح محفظة Binance لإتمام التحويل
+                </Button>
+              </AlertDialogFooter>
+            </>
+          )}
+        </AlertDialogContent>
+      </AlertDialog>
+      <AlertDialog open={confirmBinanceOpen} onOpenChange={setConfirmBinanceOpen}>
+        <AlertDialogContent className="max-w-md border-white/10 bg-neutral-950/95 text-foreground backdrop-blur">
+          {instantDeposit && (
+            <>
+              <AlertDialogHeader>
+                <AlertDialogTitle className="font-display text-amber-300">تأكيد قبل فتح Binance</AlertDialogTitle>
+                <AlertDialogDescription>
+                  راجع البيانات التالية بعناية. سيتم فتح Binance في نافذة جديدة. أي مبلغ أو عنوان مختلف لن يُطابق تلقائياً.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <div className="grid gap-3 py-2 text-sm">
+                <div className="rounded-xl border border-emerald-400/40 bg-emerald-500/[0.08] p-3">
+                  <div className="mb-1 text-[11px] text-emerald-300">المبلغ الفريد (بالضبط)</div>
+                  <div className="flex items-center gap-2">
+                    <div dir="ltr" className="flex-1 font-mono text-lg font-bold text-emerald-200">
+                      {instantDeposit.uniqueAmount.toFixed(4)} USDT
+                    </div>
+                    <Button
+                      type="button" size="sm" variant="outline" className="h-8 shrink-0 px-2"
+                      onClick={async () => {
+                        try { await navigator.clipboard.writeText(instantDeposit.uniqueAmount.toFixed(4)); toast.success("تم نسخ المبلغ"); }
+                        catch { toast.error("تعذّر النسخ"); }
+                      }}
+                    >
+                      <Copy className="h-3.5 w-3.5" /><span className="ms-1 text-[11px]">نسخ</span>
+                    </Button>
+                  </div>
+                </div>
+                <div className="rounded-xl border border-white/15 bg-white/5 p-3">
+                  <div className="mb-1 text-[11px] text-muted-foreground">عنوان الإرسال ({instantDeposit.network})</div>
+                  <div className="flex items-center gap-2">
+                    <div dir="ltr" className="flex-1 break-all font-mono text-[11px]">{instantDeposit.address}</div>
+                    <Button
+                      type="button" size="sm" variant="outline" className="h-8 shrink-0 px-2"
+                      onClick={async () => {
+                        try { await navigator.clipboard.writeText(instantDeposit.address); toast.success("تم نسخ العنوان"); }
+                        catch { toast.error("تعذّر النسخ"); }
+                      }}
+                    >
+                      <Copy className="h-3.5 w-3.5" /><span className="ms-1 text-[11px]">نسخ</span>
+                    </Button>
+                  </div>
+                </div>
+                <div className="rounded-lg border border-red-400/30 bg-red-500/[0.05] p-2 text-[10px] text-red-200">
+                  ⚠️ تأكد من الشبكة <strong>TRC20</strong> والعملة <strong>USDT</strong> داخل Binance قبل الإرسال.
+                </div>
+              </div>
+              <AlertDialogFooter className="flex-col gap-2 sm:flex-row">
+                <AlertDialogCancel onClick={() => setConfirmBinanceOpen(false)}>رجوع</AlertDialogCancel>
+                <Button
+                  type="button"
+                  className="bg-[#F0B90B] font-semibold text-black hover:bg-[#F0B90B]/90"
                   onClick={async () => {
                     const amountStr = instantDeposit.uniqueAmount.toFixed(4);
-                    // Binance's public URLs do not accept a prefilled amount/address
-                    // (security). Best we can do: preselect USDT + TRC20 via the URL,
-                    // and drop the exact amount into the clipboard so a single paste
-                    // fills the "Amount" field inside Binance.
                     try { await navigator.clipboard.writeText(amountStr); } catch { /* noop */ }
-                    toast.success(`تم نسخ المبلغ ${amountStr} USDT — الصقه في خانة الكمية داخل Binance`);
+                    toast.success(`تم نسخ المبلغ ${amountStr} USDT — الصقه داخل Binance`);
                     const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-                    // Web URL: preselects USDT + TRC20 network in the withdrawal form
                     const webLink =
                       "https://www.binance.com/en/my/wallet/account/main/withdrawal/crypto/USDT?network=TRC20";
-                    // Native app deep-link: opens the "Send crypto" screen with USDT
-                    // + TRC20 + destination address prefilled (address is public).
                     const deepLink =
                       `bnc://app.binance.com/uni-qr/cryptoWithdraw?coin=USDT&network=TRC20&address=${encodeURIComponent(instantDeposit.address)}`;
                     if (isMobile) {
                       window.location.href = deepLink;
-                      setTimeout(() => {
-                        window.open(webLink, "_blank", "noopener,noreferrer");
-                      }, 900);
+                      setTimeout(() => { window.open(webLink, "_blank", "noopener,noreferrer"); }, 900);
                     } else {
                       window.open(webLink, "_blank", "noopener,noreferrer");
                     }
+                    setConfirmBinanceOpen(false);
                   }}
                 >
-                  فتح محفظة Binance لإتمام التحويل
+                  متابعة وفتح Binance
                 </Button>
               </AlertDialogFooter>
             </>
