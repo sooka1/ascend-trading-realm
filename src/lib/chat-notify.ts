@@ -99,6 +99,8 @@ async function showSystemNotification(title: string, body?: string, url?: string
     await r.showNotification(title, {
       body: body ?? "",
       tag: "hk-chat",
+      icon: "/android-chrome-192x192.png",
+      badge: "/favicon-32x32.png",
       data: { url: url ?? window.location.pathname },
     });
   } catch { /* ignore */ }

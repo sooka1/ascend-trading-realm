@@ -11,6 +11,8 @@ self.addEventListener('message', (event) => {
       self.registration.showNotification(title || 'رسالة جديدة', {
         body: body || '',
         tag: tag || 'hk-chat',
+        icon: '/android-chrome-192x192.png',
+        badge: '/favicon-32x32.png',
         data: { url: url || '/' },
         renotify: true,
         vibrate: [200, 100, 200],
@@ -28,6 +30,8 @@ self.addEventListener('push', (event) => {
     self.registration.showNotification(payload.title || 'رسالة جديدة', {
       body: payload.body || '',
       tag: payload.tag || 'hk-chat',
+      icon: '/android-chrome-192x192.png',
+      badge: '/favicon-32x32.png',
       data: { url: payload.url || '/' },
       renotify: true,
       vibrate: [200, 100, 200, 100, 200],
