@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 // Binance Spot API deposit auto-detection via unique fractional amount matching.
-// User is asked to send an amount like 100.4728 USDT (with random 4-decimal
+// User is asked to send an amount like 100.47281 USDT (with random 5-decimal
 // fraction). A cron job polls /sapi/v1/capital/deposit/hisrec and matches
 // the incoming deposit by exact amount → auto-approves the pending row.
 
@@ -41,9 +41,9 @@ export const createBinanceDeposit = createServerFn({ method: "POST" })
     // already reserved by another pending deposit on the same network.
     let uniqueAmount: number | null = null;
     for (let i = 0; i < 6; i++) {
-      // Random 4-decimal fraction between 0.0001 and 0.9999
-      const fraction = (Math.floor(Math.random() * 9999) + 1) / 10000;
-      const candidate = Math.round((data.amount + fraction) * 10000) / 10000;
+      // Random 5-decimal fraction between 0.00001 and 0.99999
+      const fraction = (Math.floor(Math.random() * 99999) + 1) / 100000;
+      const candidate = Math.round((data.amount + fraction) * 100000) / 100000;
 
       const { data: clash } = await supabaseAdmin
         .from("deposits")

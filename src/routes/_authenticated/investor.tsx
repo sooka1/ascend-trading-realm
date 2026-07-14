@@ -1392,7 +1392,7 @@ function InvestorPortal() {
                 <div className="rounded-xl border border-emerald-400/40 bg-emerald-500/[0.08] p-4 text-center">
                   <div className="text-[11px] text-emerald-300">المبلغ المطلوب بالضبط</div>
                   <div dir="ltr" className="mt-1 font-mono text-2xl font-bold text-emerald-200">
-                    {instantDeposit.uniqueAmount.toFixed(4)} USDT
+                    {instantDeposit.uniqueAmount.toFixed(5)} USDT
                   </div>
                   <div className="mt-1 text-[10px] text-muted-foreground">
                     (يشمل رصيد {instantDeposit.baseAmount} USD + كسور فريدة للمطابقة التلقائية)
@@ -1424,7 +1424,7 @@ function InvestorPortal() {
                   </div>
                 </div>
                 <div className="rounded-lg border border-red-400/30 bg-red-500/[0.05] p-2 text-[10px] text-red-200">
-                  ⚠️ أرسل المبلغ <strong>بالضبط</strong> بجميع الكسور ({instantDeposit.uniqueAmount.toFixed(4)}). أي مبلغ آخر لن يُطابق تلقائياً.
+                  ⚠️ أرسل المبلغ <strong>بالضبط</strong> بجميع الكسور ({instantDeposit.uniqueAmount.toFixed(5)}). أي مبلغ آخر لن يُطابق تلقائياً.
                 </div>
               </div>
               <AlertDialogFooter className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:space-x-0">
@@ -1465,12 +1465,12 @@ function InvestorPortal() {
                   <div className="mb-1 text-[11px] text-emerald-300">المبلغ الفريد (بالضبط)</div>
                   <div className="flex items-center gap-2">
                     <div dir="ltr" className="min-w-0 flex-1 font-mono text-lg font-bold text-emerald-200">
-                      {instantDeposit.uniqueAmount.toFixed(4)} USDT
+                      {instantDeposit.uniqueAmount.toFixed(5)} USDT
                     </div>
                     <Button
                       type="button" size="sm" variant="outline" className="h-8 shrink-0 px-2"
                       onClick={async () => {
-                        try { await navigator.clipboard.writeText(instantDeposit.uniqueAmount.toFixed(4)); toast.success("تم نسخ المبلغ"); }
+                        try { await navigator.clipboard.writeText(instantDeposit.uniqueAmount.toFixed(5)); toast.success("تم نسخ المبلغ"); }
                         catch { toast.error("تعذّر النسخ"); }
                       }}
                     >
@@ -1502,7 +1502,7 @@ function InvestorPortal() {
                   type="button"
                   className="w-full bg-[#F0B90B] font-semibold text-black hover:bg-[#F0B90B]/90"
                   onClick={async () => {
-                    const amountStr = instantDeposit.uniqueAmount.toFixed(4);
+                    const amountStr = instantDeposit.uniqueAmount.toFixed(5);
                     const addr = instantDeposit.address;
                     // Binance's public URLs officially only accept `coin` and
                     // `network`. `address` + `amount` are unofficial params that
