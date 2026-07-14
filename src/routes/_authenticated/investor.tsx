@@ -1503,13 +1503,34 @@ function InvestorPortal() {
                   className="w-full bg-[#F0B90B] font-semibold text-black hover:bg-[#F0B90B]/90"
                   onClick={async () => {
                     const amountStr = instantDeposit.uniqueAmount.toFixed(4);
-                    try { await navigator.clipboard.writeText(amountStr); } catch { /* noop */ }
-                    toast.success(`تم نسخ المبلغ ${amountStr} USDT — الصقه داخل Binance`);
+                    const addr = instantDeposit.address;
+                    // Binance's public URLs officially only accept `coin` and
+                    // `network`. `address` + `amount` are unofficial params that
+                    // the native app (uni-qr/cryptoWithdraw) respects and the web
+                    // form ignores harmlessly. We pass all three so the app
+                    // path prefills everything, and the web path preselects the
+                    // coin + network.
+                    const params = new URLSearchParams({
+                      coin: "USDT",
+                      network: "TRC20",
+                      address: addr,
+                      amount: amountStr,
+                    }).toString();
+                    const webLink = `https://www.binance.com/en/my/wallet/account/main/withdrawal/crypto/USDT?${params}`;
+                    const deepLink = `bnc://app.binance.com/uni-qr/cryptoWithdraw?${params}`;
+                    // Clipboard holds ONE value at a time, so we rotate:
+                    // first copy the address (user pastes into "To"), then
+                    // 4s later switch to the amount (user pastes into "Amount").
+                    // Coin/network are preselected by the URL — no paste needed.
+                    try { await navigator.clipboard.writeText(addr); } catch { /* noop */ }
+                    toast.success("① تم نسخ العنوان — الصقه في خانة الوجهة داخل Binance");
+                    setTimeout(() => {
+                      navigator.clipboard.writeText(amountStr).then(
+                        () => toast.message(`② تم نسخ المبلغ ${amountStr} USDT — الصقه في خانة الكمية`),
+                        () => { /* clipboard needs document focus; user can use manual copy button */ },
+                      );
+                    }, 4000);
                     const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-                    const webLink =
-                      "https://www.binance.com/en/my/wallet/account/main/withdrawal/crypto/USDT?network=TRC20";
-                    const deepLink =
-                      `bnc://app.binance.com/uni-qr/cryptoWithdraw?coin=USDT&network=TRC20&address=${encodeURIComponent(instantDeposit.address)}`;
                     if (isMobile) {
                       window.location.href = deepLink;
                       setTimeout(() => { window.open(webLink, "_blank", "noopener,noreferrer"); }, 900);
