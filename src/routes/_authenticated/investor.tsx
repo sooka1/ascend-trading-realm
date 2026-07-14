@@ -13,6 +13,8 @@ import { toast } from "sonner";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import trc20QrAsset from "@/assets/trc20-qr.png.asset.json";
+import { useServerFn } from "@tanstack/react-start";
+import { createBinancePayOrder } from "@/lib/binance-pay.functions";
 
 export const Route = createFileRoute("/_authenticated/investor")({
   head: () => ({
