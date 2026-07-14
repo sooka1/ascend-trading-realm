@@ -1390,8 +1390,28 @@ function InvestorPortal() {
                   ⚠️ أرسل المبلغ <strong>بالضبط</strong> بجميع الكسور ({instantDeposit.uniqueAmount.toFixed(4)}). أي مبلغ آخر لن يُطابق تلقائياً.
                 </div>
               </div>
-              <AlertDialogFooter>
+              <AlertDialogFooter className="flex-col gap-2 sm:flex-row">
                 <AlertDialogCancel onClick={() => setInstantDeposit(null)}>إغلاق</AlertDialogCancel>
+                <Button
+                  type="button"
+                  className="bg-[#F0B90B] font-semibold text-black hover:bg-[#F0B90B]/90"
+                  onClick={async () => {
+                    try { await navigator.clipboard.writeText(instantDeposit.uniqueAmount.toFixed(4)); } catch { /* noop */ }
+                    toast.success("تم نسخ المبلغ — الصقه في خانة الكمية داخل Binance");
+                    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+                    const deepLink = "bnc://app.binance.com/payment/secpay";
+                    const webLink = "https://www.binance.com/en/my/wallet/account/main/withdrawal/crypto/USDT";
+                    if (isMobile) {
+                      // Try native app first, fall back to web after a short delay
+                      window.location.href = deepLink;
+                      setTimeout(() => { window.open(webLink, "_blank", "noopener,noreferrer"); }, 800);
+                    } else {
+                      window.open(webLink, "_blank", "noopener,noreferrer");
+                    }
+                  }}
+                >
+                  فتح محفظة Binance لإتمام التحويل
+                </Button>
               </AlertDialogFooter>
             </>
           )}
