@@ -31,9 +31,7 @@ function renderNavLabel(label: string) {
 
 const NAV = [
   { key: "nav.about", to: "/about" },
-  { key: "nav.competitions", to: "/competitions" },
   { key: "nav.portfolios", to: "/portfolios" },
-  { key: "nav.copytrading", to: "/copy-trading" },
   { key: "nav.risk", to: "/risk" },
   { key: "nav.markets", to: "/markets" },
   { key: "nav.education", to: "/education" },
