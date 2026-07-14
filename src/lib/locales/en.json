@@ -116,6 +116,7 @@
   "auth.otp.err_invalid": "Invalid or expired code.",
   "auth.otp.err_locked": "Too many attempts. Try again in {seconds}s.",
   "auth.otp.locked_in": "Input is temporarily disabled. Try again in {seconds}s.",
+  "auth.otp.latest_only": "Only the most recently sent code will work — earlier codes are no longer valid.",
   "auth.mobile.welcome": "Welcome back",
   "auth.mobile.open": "Open your account",
   "auth.mobile.welcome.sub": "Sign in to access your trading terminal.",

@@ -116,6 +116,7 @@
   "auth.otp.err_invalid": "الرمز غير صحيح أو انتهت صلاحيته.",
   "auth.otp.err_locked": "تم تجاوز عدد المحاولات. أعد المحاولة بعد {seconds} ثانية.",
   "auth.otp.locked_in": "تم إيقاف الإدخال مؤقتًا. أعد المحاولة بعد {seconds} ثانية.",
+  "auth.otp.latest_only": "آخر رمز أُرسل فقط هو الصالح — أي رمز سابق لم يعد يعمل.",
   "auth.mobile.welcome": "مرحبًا بعودتك",
   "auth.mobile.open": "افتح حسابك",
   "auth.mobile.welcome.sub": "سجّل الدخول للوصول إلى منصة التداول.",

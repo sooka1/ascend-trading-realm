@@ -45,6 +45,9 @@ function Auth() {
   // Verification-attempt lockout: after 5 failed attempts within 5 min for
   // the same email, disable input and count down to retry.
   const [otpLockRemaining, setOtpLockRemaining] = useState(0);
+  // Timestamp of the most recently issued OTP for the current email. Used to
+  // show a "latest code only" hint after a resend.
+  const [otpIssuedAt, setOtpIssuedAt] = useState<number | null>(null);
   const [pendingEmail, setPendingEmail] = useState<string | null>(null);
   const [resendState, setResendState] = useState<{ loading: boolean; cooldown: number; error?: string; sent?: boolean }>({
     loading: false,
@@ -285,9 +288,23 @@ function Auth() {
       if (error && !/user.*not.*found|no.*user/i.test(error.message)) throw error;
       setOtpPhase("code");
       setOtpCooldown(60);
-      // Sync any pre-existing verify-lock for this email so the UI reflects it.
-      const verifyLimiter = rateLimit(`auth:otpverify:${normalizedEmail}`, { max: 5, windowMs: 5 * 60_000 });
-      setOtpLockRemaining(verifyLimiter.remaining() <= 0 ? Math.ceil(verifyLimiter.resetIn() / 1000) : 0);
+      // A new OTP has been issued. Supabase invalidates any previously issued
+      // code for the same email server-side (only the latest one verifies),
+      // so mirror that on the client: bump the issued-at marker, wipe any
+      // typed code, and — on resend only — clear the verify-attempt counter
+      // and unlock the input, since prior failures were against a token that
+      // no longer exists.
+      const verifyKey = `auth:otpverify:${normalizedEmail}`;
+      const verifyLimiter = rateLimit(verifyKey, { max: 5, windowMs: 5 * 60_000 });
+      if (isResend) {
+        verifyLimiter.reset();
+        setOtpLockRemaining(0);
+        setOtpCode("");
+        setOtpIssuedAt(Date.now());
+      } else {
+        setOtpLockRemaining(verifyLimiter.remaining() <= 0 ? Math.ceil(verifyLimiter.resetIn() / 1000) : 0);
+        setOtpIssuedAt(Date.now());
+      }
       toast.success(isResend ? t("auth.otp.resent") : t("auth.otp.sent"));
     } catch (err) {
       const message = err instanceof Error ? err.message : t("auth.err.generic");
@@ -642,6 +659,11 @@ function Auth() {
                   <p className="mt-1.5 text-xs text-muted-foreground">
                     {t("auth.otp.sent_to")} <span className="font-medium text-foreground">{email}</span>
                   </p>
+                  {otpIssuedAt && (
+                    <p className="mt-1 text-[11px] text-muted-foreground/80">
+                      {t("auth.otp.latest_only")}
+                    </p>
+                  )}
                   {otpLockRemaining > 0 && (
                     <p className="mt-2 text-xs text-destructive">
                       {t("auth.otp.locked_in").replace("{seconds}", String(otpLockRemaining))}
