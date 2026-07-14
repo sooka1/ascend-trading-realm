@@ -912,6 +912,41 @@ function InvestorPortal() {
                         </div>
                       )}
                       <p className="mt-2 text-muted-foreground">أرسل المبلغ إلى العنوان أعلاه ثم ألصق hash المعاملة (TxID) في حقل المرجع. سيُضاف الرصيد بعد تأكيد الاستلام من الإدارة.</p>
+                      {depositMethod === "binance_pay" && (
+                        <div className="mt-3 rounded-lg border border-emerald-400/40 bg-emerald-500/[0.08] p-3">
+                          <div className="mb-2 text-[11px] font-semibold text-emerald-300">
+                            ⚡ الدفع الفوري عبر Binance Pay (اعتماد تلقائي)
+                          </div>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <Input
+                              type="number"
+                              min="10"
+                              step="0.01"
+                              inputMode="decimal"
+                              placeholder="المبلغ USD"
+                              value={instantPayAmount}
+                              onChange={(e) => setInstantPayAmount(e.target.value)}
+                              className="h-8 flex-1 text-xs"
+                            />
+                            <Button
+                              type="button"
+                              size="sm"
+                              onClick={startInstantBinancePay}
+                              disabled={instantPayBusy || !IS_BINANCE_PAY_ID_VALID}
+                              className="h-8 bg-emerald-600 text-white hover:bg-emerald-700"
+                            >
+                              {instantPayBusy ? (
+                                <><Loader2 className="mr-1 h-3 w-3 animate-spin" /> جارٍ...</>
+                              ) : (
+                                <>ادفع الآن</>
+                              )}
+                            </Button>
+                          </div>
+                          <p className="mt-2 text-[10px] text-muted-foreground">
+                            سيُفتح Binance Pay في تبويب جديد. بعد إتمام الدفع سيُعتمد الإيداع تلقائيًا خلال ثوانٍ دون الحاجة لرفع إيصال.
+                          </p>
+                        </div>
+                      )}
                     </>
                   )}
                 </div>
