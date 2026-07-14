@@ -285,9 +285,23 @@ function Auth() {
       if (error && !/user.*not.*found|no.*user/i.test(error.message)) throw error;
       setOtpPhase("code");
       setOtpCooldown(60);
-      // Sync any pre-existing verify-lock for this email so the UI reflects it.
-      const verifyLimiter = rateLimit(`auth:otpverify:${normalizedEmail}`, { max: 5, windowMs: 5 * 60_000 });
-      setOtpLockRemaining(verifyLimiter.remaining() <= 0 ? Math.ceil(verifyLimiter.resetIn() / 1000) : 0);
+      // A new OTP has been issued. Supabase invalidates any previously issued
+      // code for the same email server-side (only the latest one verifies),
+      // so mirror that on the client: bump the issued-at marker, wipe any
+      // typed code, and — on resend only — clear the verify-attempt counter
+      // and unlock the input, since prior failures were against a token that
+      // no longer exists.
+      const verifyKey = `auth:otpverify:${normalizedEmail}`;
+      const verifyLimiter = rateLimit(verifyKey, { max: 5, windowMs: 5 * 60_000 });
+      if (isResend) {
+        verifyLimiter.reset();
+        setOtpLockRemaining(0);
+        setOtpCode("");
+        setOtpIssuedAt(Date.now());
+      } else {
+        setOtpLockRemaining(verifyLimiter.remaining() <= 0 ? Math.ceil(verifyLimiter.resetIn() / 1000) : 0);
+        setOtpIssuedAt(Date.now());
+      }
       toast.success(isResend ? t("auth.otp.resent") : t("auth.otp.sent"));
     } catch (err) {
       const message = err instanceof Error ? err.message : t("auth.err.generic");
