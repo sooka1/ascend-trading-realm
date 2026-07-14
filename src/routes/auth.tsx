@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { ShieldCheck, Trophy, Zap, Loader2, Eye, EyeOff, AlertCircle, ArrowLeft, MailCheck } from "lucide-react";
+import { ShieldCheck, Trophy, Zap, Loader2, Eye, EyeOff, AlertCircle, ArrowLeft, MailCheck, KeyRound } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { toast } from "sonner";
@@ -30,13 +30,18 @@ export const Route = createFileRoute("/auth")({
 
 function Auth() {
   const { t } = useI18n();
-  const [mode, setMode] = useState<"login" | "register">("login");
+  const [mode, setMode] = useState<"login" | "register" | "otp">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPw, setShowPw] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string; fullName?: string; form?: string }>({});
+  // OTP (email code) sign-in state. Kept independent from the register-flow
+  // pending panel so switching tabs never leaks one flow's state into the other.
+  const [otpPhase, setOtpPhase] = useState<"email" | "code">("email");
+  const [otpCode, setOtpCode] = useState("");
+  const [otpCooldown, setOtpCooldown] = useState(0);
   const [pendingEmail, setPendingEmail] = useState<string | null>(null);
   const [resendState, setResendState] = useState<{ loading: boolean; cooldown: number; error?: string; sent?: boolean }>({
     loading: false,
@@ -183,6 +188,12 @@ function Auth() {
     return () => clearTimeout(t);
   }, [resendState.cooldown]);
 
+  useEffect(() => {
+    if (otpCooldown <= 0) return;
+    const t = setTimeout(() => setOtpCooldown((s) => s - 1), 1000);
+    return () => clearTimeout(t);
+  }, [otpCooldown]);
+
   // While the confirm-email screen is showing, watch for the user completing
   // confirmation in another tab and route them straight to the dashboard.
   useEffect(() => {
@@ -224,6 +235,81 @@ function Auth() {
       .regex(/[A-Za-z]/, t("auth.err.password.letter"))
       .regex(/[0-9]/, t("auth.err.password.number")),
   });
+
+  async function handleOtpRequest(e: React.FormEvent) {
+    e.preventDefault();
+    setErrors({});
+    const parsed = z
+      .object({ email: z.string().trim().email(t("auth.err.email.invalid")).max(255) })
+      .safeParse({ email });
+    if (!parsed.success) {
+      setErrors({ email: parsed.error.issues[0]?.message });
+      return;
+    }
+    // Same client-side limiter as password login — 5/min per email.
+    const key = `auth:otp:${email.toLowerCase().trim()}`;
+    const { rateLimit } = await import("@/lib/rate-limit");
+    const limiter = rateLimit(key, { max: 5, windowMs: 60_000 });
+    if (!limiter.tryConsume()) {
+      const secs = Math.ceil(limiter.resetIn() / 1000);
+      toast.error(t("auth.err.rate_limit").replace("{seconds}", String(secs)));
+      return;
+    }
+    setLoading(true);
+    try {
+      // shouldCreateUser=false → don't silently sign someone up via the code
+      // path; if they don't have an account, we still show a generic success
+      // to keep the response enumeration-safe.
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: { shouldCreateUser: false },
+      });
+      if (error && !/user.*not.*found|no.*user/i.test(error.message)) throw error;
+      setOtpPhase("code");
+      setOtpCooldown(60);
+      toast.success(t("auth.otp.sent"));
+    } catch (err) {
+      const message = err instanceof Error ? err.message : t("auth.err.generic");
+      setErrors({ form: message });
+      toast.error(message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleOtpVerify(e: React.FormEvent) {
+    e.preventDefault();
+    setErrors({});
+    const token = otpCode.replace(/\D/g, "");
+    if (token.length !== 6) {
+      setErrors({ form: t("auth.otp.err_length") });
+      return;
+    }
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.auth.verifyOtp({
+        email,
+        token,
+        type: "email",
+      });
+      if (error) throw error;
+      toast.success(t("auth.toast.signed_in"));
+      if (data.user) await goPostLogin(data.user.id);
+      else navigate({ to: "/portal", replace: true });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : t("auth.otp.err_invalid");
+      setErrors({ form: message });
+      toast.error(message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function resetOtp() {
+    setOtpPhase("email");
+    setOtpCode("");
+    setErrors({});
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -440,28 +526,108 @@ function Auth() {
             <>
             <div className="mb-4 lg:hidden">
               <h1 className="font-display text-2xl font-bold leading-tight">
-                {mode === "login" ? t("auth.mobile.welcome") : t("auth.mobile.open")}
+                {mode === "register" ? t("auth.mobile.open") : t("auth.mobile.welcome")}
               </h1>
               <p className="mt-1 text-sm text-muted-foreground">
-                {mode === "login" ? t("auth.mobile.welcome.sub") : t("auth.mobile.open.sub")}
+                {mode === "register" ? t("auth.mobile.open.sub") : t("auth.mobile.welcome.sub")}
               </p>
             </div>
-            <div className="grid grid-cols-2 gap-1 rounded-lg bg-white/[0.03] p-1">
-              {(["login", "register"] as const).map((m) => (
+            <div className="grid grid-cols-3 gap-1 rounded-lg bg-white/[0.03] p-1">
+              {(["login", "otp", "register"] as const).map((m) => (
                 <button
                   key={m}
                   type="button"
-                  onClick={() => { setMode(m); setErrors({}); }}
+                  onClick={() => { setMode(m); setErrors({}); if (m !== "otp") resetOtp(); }}
                   className={cn(
-                    "rounded-md py-2.5 text-sm font-medium capitalize transition",
+                    "rounded-md py-2.5 text-xs font-medium capitalize transition sm:text-sm",
                     mode === m ? "bg-[var(--gradient-brand)] text-white" : "text-muted-foreground hover:text-foreground",
                   )}
                 >
-                  {m === "login" ? t("auth.tab.login") : t("auth.tab.register")}
+                  {m === "login" ? t("auth.tab.login") : m === "otp" ? t("auth.tab.otp") : t("auth.tab.register")}
                 </button>
               ))}
             </div>
 
+            {mode === "otp" ? (
+            <form
+              className="mt-6 space-y-4"
+              onSubmit={otpPhase === "email" ? handleOtpRequest : handleOtpVerify}
+              noValidate
+            >
+              {errors.form && (
+                <div role="alert" className="flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
+                  <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+                  <span>{errors.form}</span>
+                </div>
+              )}
+              <div className="flex items-start gap-2 rounded-lg border border-gold/20 bg-gold/5 p-3 text-xs text-muted-foreground">
+                <KeyRound className="mt-0.5 h-4 w-4 shrink-0 text-gold" />
+                <span>{t("auth.otp.desc")}</span>
+              </div>
+              {otpPhase === "email" ? (
+                <div>
+                  <Label htmlFor="otp-email">{t("auth.field.email")}</Label>
+                  <Input
+                    id="otp-email"
+                    type="email"
+                    inputMode="email"
+                    placeholder={t("auth.field.email.ph")}
+                    className={cn("mt-1.5 h-12 bg-white/5 text-base sm:h-10 sm:text-sm", errors.email && "border-destructive focus-visible:ring-destructive")}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    autoComplete="email"
+                  />
+                  {errors.email && <p className="mt-1.5 text-xs text-destructive">{errors.email}</p>}
+                </div>
+              ) : (
+                <div>
+                  <Label htmlFor="otp-code">{t("auth.otp.code_label")}</Label>
+                  <Input
+                    id="otp-code"
+                    inputMode="numeric"
+                    autoComplete="one-time-code"
+                    maxLength={6}
+                    placeholder="••••••"
+                    className="mt-1.5 h-12 bg-white/5 text-center text-lg tracking-[0.5em] tabular-nums sm:h-11"
+                    value={otpCode}
+                    onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                  />
+                  <p className="mt-1.5 text-xs text-muted-foreground">
+                    {t("auth.otp.sent_to")} <span className="font-medium text-foreground">{email}</span>
+                  </p>
+                </div>
+              )}
+              <Button
+                type="submit"
+                disabled={loading || (otpPhase === "code" && otpCode.length !== 6)}
+                className="h-12 w-full bg-[var(--gradient-brand)] text-base text-white shadow-[var(--shadow-glow)] sm:h-10 sm:text-sm"
+              >
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {otpPhase === "email" ? t("auth.otp.send_btn") : t("auth.otp.verify_btn")}
+              </Button>
+              {otpPhase === "code" && (
+                <div className="flex items-center justify-between text-xs">
+                  <button
+                    type="button"
+                    onClick={resetOtp}
+                    className="text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+                  >
+                    {t("auth.otp.change_email")}
+                  </button>
+                  <button
+                    type="button"
+                    disabled={otpCooldown > 0 || loading}
+                    onClick={() => handleOtpRequest({ preventDefault: () => {} } as React.FormEvent)}
+                    className="text-muted-foreground underline-offset-4 hover:text-foreground hover:underline disabled:opacity-50"
+                  >
+                    {otpCooldown > 0
+                      ? t("auth.otp.resend_in").replace("{n}", String(otpCooldown))
+                      : t("auth.otp.resend")}
+                  </button>
+                </div>
+              )}
+            </form>
+            ) : (
             <form
               className="mt-6 space-y-4"
               onSubmit={handleSubmit}
@@ -585,6 +751,7 @@ function Auth() {
                 {t("auth.terms")}
               </p>
             </form>
+            )}
             </>
             )}
           </div>
