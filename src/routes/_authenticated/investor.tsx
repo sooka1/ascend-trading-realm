@@ -14,7 +14,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Checkbox } from "@/components/ui/checkbox";
 import trc20QrAsset from "@/assets/trc20-qr.png.asset.json";
 import { useServerFn } from "@tanstack/react-start";
-import { createBinancePayOrder } from "@/lib/binance-pay.functions";
+import { createBinanceDeposit } from "@/lib/binance-spot.functions";
 
 export const Route = createFileRoute("/_authenticated/investor")({
   head: () => ({
@@ -93,23 +93,36 @@ function InvestorPortal() {
   const [withdrawMethod, setWithdrawMethod] = useState<"binance_pay" | "usdt_trc20">("binance_pay");
   const [instantPayAmount, setInstantPayAmount] = useState("");
   const [instantPayBusy, setInstantPayBusy] = useState(false);
-  const createBpOrder = useServerFn(createBinancePayOrder);
+  const [instantDeposit, setInstantDeposit] = useState<{
+    uniqueAmount: number;
+    baseAmount: number;
+    address: string;
+    network: string;
+    expiresAt: string;
+  } | null>(null);
+  const createSpotDeposit = useServerFn(createBinanceDeposit);
 
   async function startInstantBinancePay() {
     const amt = Number(instantPayAmount);
     if (!Number.isFinite(amt) || amt < 10) {
-      return toast.error("الحد الأدنى للإيداع الفوري 10$");
+      return toast.error("الحد الأدنى للإيداع الفوري 10 USDT");
     }
     setInstantPayBusy(true);
     try {
-      const res = await createBpOrder({ data: { amount: amt } });
-      toast.success("سيتم تحويلك إلى Binance Pay لإكمال الدفع");
-      window.open(res.checkoutUrl, "_blank", "noopener,noreferrer");
+      const res = await createSpotDeposit({ data: { amount: amt, network: "TRC20" } });
+      setInstantDeposit({
+        uniqueAmount: res.uniqueAmount,
+        baseAmount: res.baseAmount,
+        address: res.address,
+        network: res.network,
+        expiresAt: res.expiresAt,
+      });
+      toast.success("تم إنشاء طلب إيداع فوري — أرسل المبلغ المحدد بدقة");
       setInstantPayAmount("");
       await load();
       void router.invalidate();
     } catch (e) {
-      toast.error((e as Error).message || "تعذّر إنشاء عملية الدفع");
+      toast.error((e as Error).message || "تعذّر إنشاء طلب الإيداع");
     } finally {
       setInstantPayBusy(false);
     }
