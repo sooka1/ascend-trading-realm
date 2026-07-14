@@ -107,6 +107,7 @@
   "auth.otp.send_btn": "إرسال الرمز",
   "auth.otp.verify_btn": "تحقّق ودخول",
   "auth.otp.sent": "تم إرسال الرمز إلى بريدك.",
+  "auth.otp.resent": "تم إرسال رمز جديد. الرمز القديم لم يعد صالحًا.",
   "auth.otp.sent_to": "أُرسل الرمز إلى",
   "auth.otp.change_email": "تغيير البريد",
   "auth.otp.resend": "إعادة الإرسال",
