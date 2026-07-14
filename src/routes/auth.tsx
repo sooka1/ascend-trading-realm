@@ -659,6 +659,11 @@ function Auth() {
                   <p className="mt-1.5 text-xs text-muted-foreground">
                     {t("auth.otp.sent_to")} <span className="font-medium text-foreground">{email}</span>
                   </p>
+                  {otpIssuedAt && (
+                    <p className="mt-1 text-[11px] text-muted-foreground/80">
+                      {t("auth.otp.latest_only")}
+                    </p>
+                  )}
                   {otpLockRemaining > 0 && (
                     <p className="mt-2 text-xs text-destructive">
                       {t("auth.otp.locked_in").replace("{seconds}", String(otpLockRemaining))}
