@@ -50,7 +50,7 @@ function AdminIndex() {
   });
 
   const checkRole = useServerFn(checkEmailHasRole);
-  const TARGET_EMAIL = "hassan.muorad@gmail.com";
+  const TARGET_EMAIL = "hkex.investment@gmail.com";
   const { data: superAdminCheck, isFetching: isCheckingRole } = useQuery({
     queryKey: ["admin", "verify-super-admin", TARGET_EMAIL],
     queryFn: () => checkRole({ data: { email: TARGET_EMAIL, role: "super_admin" } }),
