@@ -102,6 +102,7 @@ function InvestorPortal() {
     expiresAt: string;
   } | null>(null);
   const [recheckBusy, setRecheckBusy] = useState(false);
+  const [confirmBinanceOpen, setConfirmBinanceOpen] = useState(false);
   const createSpotDeposit = useServerFn(createBinanceDeposit);
 
   async function startInstantBinancePay() {
