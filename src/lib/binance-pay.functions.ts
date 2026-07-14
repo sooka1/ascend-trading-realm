@@ -68,6 +68,7 @@ export const createBinancePayOrder = createServerFn({ method: "POST" })
       merchantTradeNo,
       orderAmount: data.amount.toFixed(2),
       currency: "USDT",
+      webhookUrl: "https://hkexinvest.com/api/public/webhooks/binance-pay",
       goods: {
         goodsType: "02",
         goodsCategory: "Z000",
