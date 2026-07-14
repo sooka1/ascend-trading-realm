@@ -107,6 +107,7 @@
   "auth.otp.send_btn": "Send code",
   "auth.otp.verify_btn": "Verify & sign in",
   "auth.otp.sent": "Code sent to your email.",
+  "auth.otp.resent": "New code sent. The previous code is no longer valid.",
   "auth.otp.sent_to": "Code sent to",
   "auth.otp.change_email": "Change email",
   "auth.otp.resend": "Resend",
