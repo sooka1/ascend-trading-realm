@@ -1396,15 +1396,26 @@ function InvestorPortal() {
                   type="button"
                   className="bg-[#F0B90B] font-semibold text-black hover:bg-[#F0B90B]/90"
                   onClick={async () => {
-                    try { await navigator.clipboard.writeText(instantDeposit.uniqueAmount.toFixed(4)); } catch { /* noop */ }
-                    toast.success("تم نسخ المبلغ — الصقه في خانة الكمية داخل Binance");
+                    const amountStr = instantDeposit.uniqueAmount.toFixed(4);
+                    // Binance's public URLs do not accept a prefilled amount/address
+                    // (security). Best we can do: preselect USDT + TRC20 via the URL,
+                    // and drop the exact amount into the clipboard so a single paste
+                    // fills the "Amount" field inside Binance.
+                    try { await navigator.clipboard.writeText(amountStr); } catch { /* noop */ }
+                    toast.success(`تم نسخ المبلغ ${amountStr} USDT — الصقه في خانة الكمية داخل Binance`);
                     const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-                    const deepLink = "bnc://app.binance.com/payment/secpay";
-                    const webLink = "https://www.binance.com/en/my/wallet/account/main/withdrawal/crypto/USDT";
+                    // Web URL: preselects USDT + TRC20 network in the withdrawal form
+                    const webLink =
+                      "https://www.binance.com/en/my/wallet/account/main/withdrawal/crypto/USDT?network=TRC20";
+                    // Native app deep-link: opens the "Send crypto" screen with USDT
+                    // + TRC20 + destination address prefilled (address is public).
+                    const deepLink =
+                      `bnc://app.binance.com/uni-qr/cryptoWithdraw?coin=USDT&network=TRC20&address=${encodeURIComponent(instantDeposit.address)}`;
                     if (isMobile) {
-                      // Try native app first, fall back to web after a short delay
                       window.location.href = deepLink;
-                      setTimeout(() => { window.open(webLink, "_blank", "noopener,noreferrer"); }, 800);
+                      setTimeout(() => {
+                        window.open(webLink, "_blank", "noopener,noreferrer");
+                      }, 900);
                     } else {
                       window.open(webLink, "_blank", "noopener,noreferrer");
                     }
