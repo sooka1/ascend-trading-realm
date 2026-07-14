@@ -45,6 +45,9 @@ function Auth() {
   // Verification-attempt lockout: after 5 failed attempts within 5 min for
   // the same email, disable input and count down to retry.
   const [otpLockRemaining, setOtpLockRemaining] = useState(0);
+  // Timestamp of the most recently issued OTP for the current email. Used to
+  // show a "latest code only" hint after a resend.
+  const [otpIssuedAt, setOtpIssuedAt] = useState<number | null>(null);
   const [pendingEmail, setPendingEmail] = useState<string | null>(null);
   const [resendState, setResendState] = useState<{ loading: boolean; cooldown: number; error?: string; sent?: boolean }>({
     loading: false,
