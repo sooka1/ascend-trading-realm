@@ -52,12 +52,20 @@ export function SiteFooter() {
             <HKLogo size="lg" />
             <p className="mt-4 max-w-sm text-sm text-muted-foreground">{t("footer.tagline")}</p>
             <div className="mt-6 flex items-center gap-3">
-              {[Twitter, Linkedin, Youtube, Instagram, Facebook].map((Icon, i) => (
+              {[
+                { Icon: Twitter, href: "#", label: "Twitter" },
+                { Icon: Linkedin, href: "#", label: "LinkedIn" },
+                { Icon: Youtube, href: "#", label: "YouTube" },
+                { Icon: Instagram, href: "#", label: "Instagram" },
+                { Icon: Facebook, href: "https://www.facebook.com/profile.php?id=61591673261877", label: "Facebook" },
+              ].map(({ Icon, href, label }) => (
                 <a
-                  key={i}
-                  href="#"
+                  key={label}
+                  href={href}
+                  target={href.startsWith("http") ? "_blank" : undefined}
+                  rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
                   className="grid h-9 w-9 place-items-center rounded-full border border-white/10 text-muted-foreground transition hover:border-white/30 hover:text-foreground"
-                  aria-label="Social link"
+                  aria-label={label}
                 >
                   <Icon className="h-4 w-4" />
                 </a>
