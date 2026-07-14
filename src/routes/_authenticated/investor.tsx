@@ -91,6 +91,29 @@ function InvestorPortal() {
   const [busySub, setBusySub] = useState<string | null>(null);
   const [depositMethod, setDepositMethod] = useState<"binance_pay" | "usdt_trc20">("binance_pay");
   const [withdrawMethod, setWithdrawMethod] = useState<"binance_pay" | "usdt_trc20">("binance_pay");
+  const [instantPayAmount, setInstantPayAmount] = useState("");
+  const [instantPayBusy, setInstantPayBusy] = useState(false);
+  const createBpOrder = useServerFn(createBinancePayOrder);
+
+  async function startInstantBinancePay() {
+    const amt = Number(instantPayAmount);
+    if (!Number.isFinite(amt) || amt < 10) {
+      return toast.error("الحد الأدنى للإيداع الفوري 10$");
+    }
+    setInstantPayBusy(true);
+    try {
+      const res = await createBpOrder({ data: { amount: amt } });
+      toast.success("سيتم تحويلك إلى Binance Pay لإكمال الدفع");
+      window.open(res.checkoutUrl, "_blank", "noopener,noreferrer");
+      setInstantPayAmount("");
+      await load();
+      void router.invalidate();
+    } catch (e) {
+      toast.error((e as Error).message || "تعذّر إنشاء عملية الدفع");
+    } finally {
+      setInstantPayBusy(false);
+    }
+  }
   const [pkgAmounts, setPkgAmounts] = useState<Record<string, string>>({});
   const [confirmSub, setConfirmSub] = useState<{ pkg: Pkg; amount: number } | null>(null);
   const [editSub, setEditSub] = useState<{ id: string; value: string; reason: string } | null>(null);
