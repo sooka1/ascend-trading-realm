@@ -1481,7 +1481,7 @@ function InvestorPortal() {
                 <div className="rounded-xl border border-white/15 bg-white/5 p-3">
                   <div className="mb-1 text-[11px] text-muted-foreground">عنوان الإرسال ({instantDeposit.network})</div>
                   <div className="flex items-center gap-2">
-                    <div dir="ltr" className="flex-1 break-all font-mono text-[11px]">{instantDeposit.address}</div>
+                    <div dir="ltr" className="min-w-0 flex-1 break-all font-mono text-[11px] leading-relaxed">{instantDeposit.address}</div>
                     <Button
                       type="button" size="sm" variant="outline" className="h-8 shrink-0 px-2"
                       onClick={async () => {
