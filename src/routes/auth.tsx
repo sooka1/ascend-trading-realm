@@ -236,8 +236,7 @@ function Auth() {
       .regex(/[0-9]/, t("auth.err.password.number")),
   });
 
-  async function handleOtpRequest(e: React.FormEvent) {
-    e.preventDefault();
+  async function sendOtpCode() {
     setErrors({});
     const parsed = z
       .object({ email: z.string().trim().email(t("auth.err.email.invalid")).max(255) })
@@ -247,7 +246,9 @@ function Auth() {
       return;
     }
     // Same client-side limiter as password login — 5/min per email.
-    const key = `auth:otp:${email.toLowerCase().trim()}`;
+    const normalizedEmail = parsed.data.email.toLowerCase();
+    setEmail(normalizedEmail);
+    const key = `auth:otp:${normalizedEmail}`;
     const { rateLimit } = await import("@/lib/rate-limit");
     const limiter = rateLimit(key, { max: 5, windowMs: 60_000 });
     if (!limiter.tryConsume()) {
@@ -261,8 +262,11 @@ function Auth() {
       // path; if they don't have an account, we still show a generic success
       // to keep the response enumeration-safe.
       const { error } = await supabase.auth.signInWithOtp({
-        email,
-        options: { shouldCreateUser: false },
+        email: normalizedEmail,
+        options: {
+          shouldCreateUser: false,
+          emailRedirectTo: `${window.location.origin}/auth`,
+        },
       });
       if (error && !/user.*not.*found|no.*user/i.test(error.message)) throw error;
       setOtpPhase("code");
@@ -275,6 +279,11 @@ function Auth() {
     } finally {
       setLoading(false);
     }
+  }
+
+  async function handleOtpRequest(e: React.FormEvent) {
+    e.preventDefault();
+    await sendOtpCode();
   }
 
   async function handleOtpVerify(e: React.FormEvent) {
@@ -617,7 +626,7 @@ function Auth() {
                   <button
                     type="button"
                     disabled={otpCooldown > 0 || loading}
-                    onClick={() => handleOtpRequest({ preventDefault: () => {} } as React.FormEvent)}
+                    onClick={() => void sendOtpCode()}
                     className="text-muted-foreground underline-offset-4 hover:text-foreground hover:underline disabled:opacity-50"
                   >
                     {otpCooldown > 0
