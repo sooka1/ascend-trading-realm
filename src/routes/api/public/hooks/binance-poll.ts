@@ -83,8 +83,8 @@ export const Route = createFileRoute("/api/public/hooks/binance-poll")({
             if (row.status !== 1) continue; // only fully credited
             const paidAmount = Number(row.amount);
             if (!Number.isFinite(paidAmount)) continue;
-            // Binance returns amounts like "100.47280000" — round to 4 decimals for lookup
-            const roundedAmount = Math.round(paidAmount * 10000) / 10000;
+            // Binance returns amounts like "100.47281000" — round to 5 decimals for lookup
+            const roundedAmount = Math.round(paidAmount * 100000) / 100000;
             const network = String(row.network || "").toUpperCase();
 
             // Find matching pending deposit
