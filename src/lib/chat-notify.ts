@@ -100,7 +100,6 @@ async function showSystemNotification(title: string, body?: string, url?: string
       body: body ?? "",
       tag: "hk-chat",
       icon: "/android-chrome-192x192.png",
-      badge: "/favicon-32x32.png",
       data: { url: url ?? window.location.pathname },
     });
   } catch { /* ignore */ }
