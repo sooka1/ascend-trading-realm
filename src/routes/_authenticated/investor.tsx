@@ -1379,7 +1379,7 @@ function InvestorPortal() {
         </AlertDialogContent>
       </AlertDialog>
       <AlertDialog open={!!instantDeposit} onOpenChange={(o) => { if (!o) setInstantDeposit(null); }}>
-        <AlertDialogContent className="max-w-md">
+        <AlertDialogContent className="max-h-[92vh] max-w-md overflow-y-auto sm:max-w-md">
           {instantDeposit && (
             <>
               <AlertDialogHeader>
@@ -1401,7 +1401,7 @@ function InvestorPortal() {
                 <div>
                   <div className="mb-1 text-[11px] text-muted-foreground">عنوان المحفظة ({instantDeposit.network})</div>
                   <div className="flex items-center gap-2 rounded-lg border border-white/15 bg-white/5 p-2">
-                    <div dir="ltr" className="flex-1 break-all font-mono text-[11px]">{instantDeposit.address}</div>
+                    <div dir="ltr" className="min-w-0 flex-1 break-all font-mono text-[11px] leading-relaxed">{instantDeposit.address}</div>
                     <Button
                       type="button" size="sm" variant="outline" className="h-7 shrink-0 px-2"
                       onClick={async () => {
@@ -1413,43 +1413,45 @@ function InvestorPortal() {
                     </Button>
                   </div>
                 </div>
-                <div className="flex items-center justify-between rounded-lg border border-amber-400/30 bg-amber-500/[0.05] p-2 text-[11px]">
-                  <span className="text-amber-300">الشبكة</span>
-                  <span className="font-mono">{instantDeposit.network} (Tron)</span>
-                </div>
-                <div className="flex items-center justify-between rounded-lg border border-amber-400/30 bg-amber-500/[0.05] p-2 text-[11px]">
-                  <span className="text-amber-300">ينتهي في</span>
-                  <span className="font-mono" dir="ltr">{new Date(instantDeposit.expiresAt).toLocaleTimeString()}</span>
+                <div className="grid grid-cols-2 gap-2 text-[11px]">
+                  <div className="flex items-center justify-between rounded-lg border border-amber-400/30 bg-amber-500/[0.05] p-2">
+                    <span className="text-amber-300">الشبكة</span>
+                    <span className="font-mono">TRC20</span>
+                  </div>
+                  <div className="flex items-center justify-between rounded-lg border border-amber-400/30 bg-amber-500/[0.05] p-2">
+                    <span className="text-amber-300">ينتهي</span>
+                    <span className="font-mono" dir="ltr">{new Date(instantDeposit.expiresAt).toLocaleTimeString()}</span>
+                  </div>
                 </div>
                 <div className="rounded-lg border border-red-400/30 bg-red-500/[0.05] p-2 text-[10px] text-red-200">
                   ⚠️ أرسل المبلغ <strong>بالضبط</strong> بجميع الكسور ({instantDeposit.uniqueAmount.toFixed(4)}). أي مبلغ آخر لن يُطابق تلقائياً.
                 </div>
               </div>
-              <AlertDialogFooter className="flex-col gap-2 sm:flex-row">
-                <AlertDialogCancel onClick={() => setInstantDeposit(null)}>إغلاق</AlertDialogCancel>
+              <AlertDialogFooter className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:space-x-0">
+                <Button
+                  type="button"
+                  className="w-full bg-[#F0B90B] font-semibold text-black hover:bg-[#F0B90B]/90 sm:col-span-2"
+                  onClick={() => setConfirmBinanceOpen(true)}
+                >
+                  فتح محفظة Binance
+                </Button>
                 <Button
                   type="button"
                   variant="outline"
                   disabled={recheckBusy}
-                  className="border-emerald-400/40 bg-emerald-500/10 text-emerald-200 hover:bg-emerald-500/20"
+                  className="w-full border-emerald-400/40 bg-emerald-500/10 text-emerald-200 hover:bg-emerald-500/20"
                   onClick={recheckInstantDeposit}
                 >
-                  {recheckBusy ? "جارٍ التحقق..." : "لقد أتممت التحويل — تحقّق الآن"}
+                  {recheckBusy ? "جارٍ التحقق..." : "تحقّق الآن"}
                 </Button>
-                <Button
-                  type="button"
-                  className="bg-[#F0B90B] font-semibold text-black hover:bg-[#F0B90B]/90"
-                  onClick={() => setConfirmBinanceOpen(true)}
-                >
-                  فتح محفظة Binance لإتمام التحويل
-                </Button>
+                <AlertDialogCancel className="mt-0 w-full" onClick={() => setInstantDeposit(null)}>إغلاق</AlertDialogCancel>
               </AlertDialogFooter>
             </>
           )}
         </AlertDialogContent>
       </AlertDialog>
       <AlertDialog open={confirmBinanceOpen} onOpenChange={setConfirmBinanceOpen}>
-        <AlertDialogContent className="max-w-md border-white/10 bg-neutral-950/95 text-foreground backdrop-blur">
+        <AlertDialogContent className="max-h-[92vh] max-w-md overflow-y-auto border-white/10 bg-neutral-950/95 text-foreground backdrop-blur sm:max-w-md">
           {instantDeposit && (
             <>
               <AlertDialogHeader>
@@ -1462,7 +1464,7 @@ function InvestorPortal() {
                 <div className="rounded-xl border border-emerald-400/40 bg-emerald-500/[0.08] p-3">
                   <div className="mb-1 text-[11px] text-emerald-300">المبلغ الفريد (بالضبط)</div>
                   <div className="flex items-center gap-2">
-                    <div dir="ltr" className="flex-1 font-mono text-lg font-bold text-emerald-200">
+                    <div dir="ltr" className="min-w-0 flex-1 font-mono text-lg font-bold text-emerald-200">
                       {instantDeposit.uniqueAmount.toFixed(4)} USDT
                     </div>
                     <Button
@@ -1479,7 +1481,7 @@ function InvestorPortal() {
                 <div className="rounded-xl border border-white/15 bg-white/5 p-3">
                   <div className="mb-1 text-[11px] text-muted-foreground">عنوان الإرسال ({instantDeposit.network})</div>
                   <div className="flex items-center gap-2">
-                    <div dir="ltr" className="flex-1 break-all font-mono text-[11px]">{instantDeposit.address}</div>
+                    <div dir="ltr" className="min-w-0 flex-1 break-all font-mono text-[11px] leading-relaxed">{instantDeposit.address}</div>
                     <Button
                       type="button" size="sm" variant="outline" className="h-8 shrink-0 px-2"
                       onClick={async () => {
@@ -1495,11 +1497,10 @@ function InvestorPortal() {
                   ⚠️ تأكد من الشبكة <strong>TRC20</strong> والعملة <strong>USDT</strong> داخل Binance قبل الإرسال.
                 </div>
               </div>
-              <AlertDialogFooter className="flex-col gap-2 sm:flex-row">
-                <AlertDialogCancel onClick={() => setConfirmBinanceOpen(false)}>رجوع</AlertDialogCancel>
+              <AlertDialogFooter className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:space-x-0">
                 <Button
                   type="button"
-                  className="bg-[#F0B90B] font-semibold text-black hover:bg-[#F0B90B]/90"
+                  className="w-full bg-[#F0B90B] font-semibold text-black hover:bg-[#F0B90B]/90"
                   onClick={async () => {
                     const amountStr = instantDeposit.uniqueAmount.toFixed(4);
                     try { await navigator.clipboard.writeText(amountStr); } catch { /* noop */ }
@@ -1520,6 +1521,7 @@ function InvestorPortal() {
                 >
                   متابعة وفتح Binance
                 </Button>
+                <AlertDialogCancel className="mt-0 w-full" onClick={() => setConfirmBinanceOpen(false)}>رجوع</AlertDialogCancel>
               </AlertDialogFooter>
             </>
           )}
