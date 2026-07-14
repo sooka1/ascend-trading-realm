@@ -57,7 +57,7 @@ export function SiteFooter() {
                 { Icon: Linkedin, href: "#", label: "LinkedIn" },
                 { Icon: Youtube, href: "#", label: "YouTube" },
                 { Icon: Instagram, href: "#", label: "Instagram" },
-                { Icon: Facebook, href: "https://www.facebook.com/profile.php?id=61591673261877", label: "Facebook" },
+                { Icon: Facebook, href: "https://www.facebook.com/share/14htEwrJz5Y/", label: "Facebook" },
               ].map(({ Icon, href, label }) => (
                 <a
                   key={label}
