@@ -1505,19 +1505,16 @@ function InvestorPortal() {
                     const amountStr = instantDeposit.uniqueAmount.toFixed(5);
                     const addr = instantDeposit.address;
                     // Binance's public URLs officially only accept `coin` and
-                    // `network`. `address` + `amount` are unofficial params that
-                    // the native app (uni-qr/cryptoWithdraw) respects and the web
-                    // form ignores harmlessly. We pass all three so the app
-                    // path prefills everything, and the web path preselects the
-                    // coin + network.
+                    // `network`. The old `bnc://` deep link is no longer valid
+                    // and shows "this link does not work — is your app version
+                    // outdated?" on modern Binance apps, so we open the web
+                    // withdrawal page directly. On mobile, Binance's site
+                    // itself will offer to open the app when installed.
                     const params = new URLSearchParams({
                       coin: "USDT",
                       network: "TRC20",
-                      address: addr,
-                      amount: amountStr,
                     }).toString();
                     const webLink = `https://www.binance.com/en/my/wallet/account/main/withdrawal/crypto/USDT?${params}`;
-                    const deepLink = `bnc://app.binance.com/uni-qr/cryptoWithdraw?${params}`;
                     // Clipboard holds ONE value at a time, so we rotate:
                     // first copy the address (user pastes into "To"), then
                     // 4s later switch to the amount (user pastes into "Amount").
@@ -1530,13 +1527,7 @@ function InvestorPortal() {
                         () => { /* clipboard needs document focus; user can use manual copy button */ },
                       );
                     }, 4000);
-                    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-                    if (isMobile) {
-                      window.location.href = deepLink;
-                      setTimeout(() => { window.open(webLink, "_blank", "noopener,noreferrer"); }, 900);
-                    } else {
-                      window.open(webLink, "_blank", "noopener,noreferrer");
-                    }
+                    window.open(webLink, "_blank", "noopener,noreferrer");
                     setConfirmBinanceOpen(false);
                   }}
                 >
