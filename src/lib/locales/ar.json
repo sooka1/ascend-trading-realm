@@ -114,6 +114,8 @@
   "auth.otp.resend_in": "إعادة الإرسال خلال {n} ث",
   "auth.otp.err_length": "الرمز يجب أن يتكوّن من 6 أرقام.",
   "auth.otp.err_invalid": "الرمز غير صحيح أو انتهت صلاحيته.",
+  "auth.otp.err_locked": "تم تجاوز عدد المحاولات. أعد المحاولة بعد {seconds} ثانية.",
+  "auth.otp.locked_in": "تم إيقاف الإدخال مؤقتًا. أعد المحاولة بعد {seconds} ثانية.",
   "auth.mobile.welcome": "مرحبًا بعودتك",
   "auth.mobile.open": "افتح حسابك",
   "auth.mobile.welcome.sub": "سجّل الدخول للوصول إلى منصة التداول.",

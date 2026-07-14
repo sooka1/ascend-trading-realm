@@ -42,6 +42,9 @@ function Auth() {
   const [otpPhase, setOtpPhase] = useState<"email" | "code">("email");
   const [otpCode, setOtpCode] = useState("");
   const [otpCooldown, setOtpCooldown] = useState(0);
+  // Verification-attempt lockout: after 5 failed attempts within 5 min for
+  // the same email, disable input and count down to retry.
+  const [otpLockRemaining, setOtpLockRemaining] = useState(0);
   const [pendingEmail, setPendingEmail] = useState<string | null>(null);
   const [resendState, setResendState] = useState<{ loading: boolean; cooldown: number; error?: string; sent?: boolean }>({
     loading: false,
@@ -194,6 +197,12 @@ function Auth() {
     return () => clearTimeout(t);
   }, [otpCooldown]);
 
+  useEffect(() => {
+    if (otpLockRemaining <= 0) return;
+    const t = setTimeout(() => setOtpLockRemaining((s) => Math.max(0, s - 1)), 1000);
+    return () => clearTimeout(t);
+  }, [otpLockRemaining]);
+
   // While the confirm-email screen is showing, watch for the user completing
   // confirmation in another tab and route them straight to the dashboard.
   useEffect(() => {
@@ -276,6 +285,9 @@ function Auth() {
       if (error && !/user.*not.*found|no.*user/i.test(error.message)) throw error;
       setOtpPhase("code");
       setOtpCooldown(60);
+      // Sync any pre-existing verify-lock for this email so the UI reflects it.
+      const verifyLimiter = rateLimit(`auth:otpverify:${normalizedEmail}`, { max: 5, windowMs: 5 * 60_000 });
+      setOtpLockRemaining(verifyLimiter.remaining() <= 0 ? Math.ceil(verifyLimiter.resetIn() / 1000) : 0);
       toast.success(isResend ? t("auth.otp.resent") : t("auth.otp.sent"));
     } catch (err) {
       const message = err instanceof Error ? err.message : t("auth.err.generic");
@@ -299,6 +311,20 @@ function Auth() {
       setErrors({ form: t("auth.otp.err_length") });
       return;
     }
+    // Local attempt limit: 5 verifications per 5 minutes per email. Server
+    // still enforces its own limits; this prevents brute-force from the
+    // client and gives clear feedback when the ceiling is hit.
+    const verifyKey = `auth:otpverify:${email.toLowerCase().trim()}`;
+    const { rateLimit } = await import("@/lib/rate-limit");
+    const limiter = rateLimit(verifyKey, { max: 5, windowMs: 5 * 60_000 });
+    if (!limiter.tryConsume()) {
+      const secs = Math.ceil(limiter.resetIn() / 1000);
+      setOtpLockRemaining(secs);
+      const msg = t("auth.otp.err_locked").replace("{seconds}", String(secs));
+      setErrors({ form: msg });
+      toast.error(msg);
+      return;
+    }
     setLoading(true);
     try {
       const { data, error } = await supabase.auth.verifyOtp({
@@ -307,6 +333,8 @@ function Auth() {
         type: "email",
       });
       if (error) throw error;
+      limiter.reset();
+      setOtpLockRemaining(0);
       toast.success(t("auth.toast.signed_in"));
       if (data.user) await goPostLogin(data.user.id);
       else navigate({ to: "/portal", replace: true });
@@ -314,6 +342,10 @@ function Auth() {
       const message = err instanceof Error ? err.message : t("auth.otp.err_invalid");
       setErrors({ form: message });
       toast.error(message);
+      // If this attempt exhausted the bucket, lock the input immediately.
+      if (limiter.remaining() <= 0) {
+        setOtpLockRemaining(Math.ceil(limiter.resetIn() / 1000));
+      }
     } finally {
       setLoading(false);
     }
@@ -605,15 +637,21 @@ function Auth() {
                     className="mt-1.5 h-12 bg-white/5 text-center text-lg tracking-[0.5em] tabular-nums sm:h-11"
                     value={otpCode}
                     onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                    disabled={otpLockRemaining > 0}
                   />
                   <p className="mt-1.5 text-xs text-muted-foreground">
                     {t("auth.otp.sent_to")} <span className="font-medium text-foreground">{email}</span>
                   </p>
+                  {otpLockRemaining > 0 && (
+                    <p className="mt-2 text-xs text-destructive">
+                      {t("auth.otp.locked_in").replace("{seconds}", String(otpLockRemaining))}
+                    </p>
+                  )}
                 </div>
               )}
               <Button
                 type="submit"
-                disabled={loading || (otpPhase === "code" && otpCode.length !== 6)}
+                disabled={loading || (otpPhase === "code" && (otpCode.length !== 6 || otpLockRemaining > 0))}
                 className="h-12 w-full bg-[var(--gradient-brand)] text-base text-white shadow-[var(--shadow-glow)] sm:h-10 sm:text-sm"
               >
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
