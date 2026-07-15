@@ -14,6 +14,7 @@ export const Route = createFileRoute("/help")({
       { property: "og:url", content: "https://www.hkexinvest.com/help" },
     ],
     links: [{ rel: "canonical", href: "https://www.hkexinvest.com/help" }],
+    scripts: [breadcrumbScript([{ name: "Home", path: "/" }, { name: "Help Center", path: "/help" }])],
   }),
   component: HelpPage,
 });

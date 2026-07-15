@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { breadcrumbScript } from "@/lib/breadcrumbs";
 import { LegalDoc } from "@/components/legal-doc";
 
 export const Route = createFileRoute("/aml")({
@@ -15,6 +16,7 @@ export const Route = createFileRoute("/aml")({
       { property: "og:url", content: "https://www.hkexinvest.com/aml" },
     ],
     links: [{ rel: "canonical", href: "https://www.hkexinvest.com/aml" }],
+    scripts: [breadcrumbScript([{ name: "Home", path: "/" }, { name: "AML Policy", path: "/aml" }])],
   }),
   component: AmlPage,
 });

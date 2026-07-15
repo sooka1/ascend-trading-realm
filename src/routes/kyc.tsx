@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { breadcrumbScript } from "@/lib/breadcrumbs";
 import { LegalDoc } from "@/components/legal-doc";
 
 export const Route = createFileRoute("/kyc")({
@@ -14,6 +15,7 @@ export const Route = createFileRoute("/kyc")({
       { property: "og:url", content: "https://www.hkexinvest.com/kyc" },
     ],
     links: [{ rel: "canonical", href: "https://www.hkexinvest.com/kyc" }],
+    scripts: [breadcrumbScript([{ name: "Home", path: "/" }, { name: "KYC Policy", path: "/kyc" }])],
   }),
   component: KycPage,
 });

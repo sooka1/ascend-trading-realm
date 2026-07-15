@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { breadcrumbScript } from "@/lib/breadcrumbs";
 import { LegalDoc } from "@/components/legal-doc";
 
 export const Route = createFileRoute("/press")({
@@ -14,6 +15,7 @@ export const Route = createFileRoute("/press")({
       { property: "og:url", content: "https://www.hkexinvest.com/press" },
     ],
     links: [{ rel: "canonical", href: "https://www.hkexinvest.com/press" }],
+    scripts: [breadcrumbScript([{ name: "Home", path: "/" }, { name: "Press", path: "/press" }])],
   }),
   component: PressPage,
 });
