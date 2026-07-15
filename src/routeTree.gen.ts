@@ -59,6 +59,7 @@ import { Route as AuthenticatedPortalAccountsRouteImport } from './routes/_authe
 import { Route as AuthenticatedAppProfileRouteImport } from './routes/_authenticated/app.profile'
 import { Route as AuthenticatedAppPortfolioRouteImport } from './routes/_authenticated/app.portfolio'
 import { Route as AuthenticatedAppActivityRouteImport } from './routes/_authenticated/app.activity'
+import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AuthenticatedAdminAdminIndexRouteImport } from './routes/_authenticated/_admin/admin.index'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
@@ -358,6 +359,11 @@ const AuthenticatedAppActivityRoute =
     path: '/activity',
     getParentRoute: () => AuthenticatedAppRoute,
   } as any)
+const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
+  id: '/.lovable/oauth/consent',
+  path: '/.lovable/oauth/consent',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedAdminAdminIndexRoute =
   AuthenticatedAdminAdminIndexRouteImport.update({
     id: '/admin/',
@@ -555,6 +561,7 @@ export interface FileRoutesByFullPath {
   '/investor': typeof AuthenticatedInvestorRoute
   '/security': typeof AuthenticatedSecurityRoute
   '/markets/$symbol': typeof MarketsSymbolRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/app/activity': typeof AuthenticatedAppActivityRoute
   '/app/portfolio': typeof AuthenticatedAppPortfolioRoute
   '/app/profile': typeof AuthenticatedAppProfileRoute
@@ -634,6 +641,7 @@ export interface FileRoutesByTo {
   '/investor': typeof AuthenticatedInvestorRoute
   '/security': typeof AuthenticatedSecurityRoute
   '/markets/$symbol': typeof MarketsSymbolRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/app/activity': typeof AuthenticatedAppActivityRoute
   '/app/portfolio': typeof AuthenticatedAppPortfolioRoute
   '/app/profile': typeof AuthenticatedAppProfileRoute
@@ -716,6 +724,7 @@ export interface FileRoutesById {
   '/_authenticated/investor': typeof AuthenticatedInvestorRoute
   '/_authenticated/security': typeof AuthenticatedSecurityRoute
   '/markets/$symbol': typeof MarketsSymbolRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/_authenticated/app/activity': typeof AuthenticatedAppActivityRoute
   '/_authenticated/app/portfolio': typeof AuthenticatedAppPortfolioRoute
   '/_authenticated/app/profile': typeof AuthenticatedAppProfileRoute
@@ -797,6 +806,7 @@ export interface FileRouteTypes {
     | '/investor'
     | '/security'
     | '/markets/$symbol'
+    | '/.lovable/oauth/consent'
     | '/app/activity'
     | '/app/portfolio'
     | '/app/profile'
@@ -876,6 +886,7 @@ export interface FileRouteTypes {
     | '/investor'
     | '/security'
     | '/markets/$symbol'
+    | '/.lovable/oauth/consent'
     | '/app/activity'
     | '/app/portfolio'
     | '/app/profile'
@@ -957,6 +968,7 @@ export interface FileRouteTypes {
     | '/_authenticated/investor'
     | '/_authenticated/security'
     | '/markets/$symbol'
+    | '/.lovable/oauth/consent'
     | '/_authenticated/app/activity'
     | '/_authenticated/app/portfolio'
     | '/_authenticated/app/profile'
@@ -1033,6 +1045,7 @@ export interface RootRouteChildren {
   RiskRoute: typeof RiskRoute
   TermsRoute: typeof TermsRoute
   VerifyEmailRoute: typeof VerifyEmailRoute
+  DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   ApiPublicHealthRoute: typeof ApiPublicHealthRoute
   ApiPublicOpsRoute: typeof ApiPublicOpsRoute
   ApiPublicHooksBinancePollRoute: typeof ApiPublicHooksBinancePollRoute
@@ -1392,6 +1405,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/activity'
       preLoaderRoute: typeof AuthenticatedAppActivityRouteImport
       parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/.lovable/oauth/consent': {
+      id: '/.lovable/oauth/consent'
+      path: '/.lovable/oauth/consent'
+      fullPath: '/.lovable/oauth/consent'
+      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/_admin/admin/': {
       id: '/_authenticated/_admin/admin/'
@@ -1776,6 +1796,7 @@ const rootRouteChildren: RootRouteChildren = {
   RiskRoute: RiskRoute,
   TermsRoute: TermsRoute,
   VerifyEmailRoute: VerifyEmailRoute,
+  DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   ApiPublicHealthRoute: ApiPublicHealthRoute,
   ApiPublicOpsRoute: ApiPublicOpsRoute,
   ApiPublicHooksBinancePollRoute: ApiPublicHooksBinancePollRoute,
