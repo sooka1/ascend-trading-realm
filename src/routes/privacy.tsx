@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageShell, PageHero } from "@/components/page-shell";
 import { useStatic } from "@/lib/i18n";
+import { breadcrumbScript } from "@/lib/breadcrumbs";
 
 export const Route = createFileRoute("/privacy")({
   head: () => ({
@@ -8,6 +9,16 @@ export const Route = createFileRoute("/privacy")({
       { title: "Privacy Policy — HKEX Invest" },
       { name: "description", content: "How HKEX Invest collects, uses and protects your personal information." },
       { property: "og:title", content: "Privacy Policy" },
+      { property: "og:description", content: "How HKEX Invest collects, uses and protects your personal information." },
+      { property: "og:url", content: "https://www.hkexinvest.com/privacy" },
+      { property: "og:type", content: "article" },
+    ],
+    links: [{ rel: "canonical", href: "https://www.hkexinvest.com/privacy" }],
+    scripts: [
+      breadcrumbScript([
+        { name: "Home", path: "/" },
+        { name: "Privacy Policy", path: "/privacy" },
+      ]),
     ],
   }),
   component: PrivacyPage,
