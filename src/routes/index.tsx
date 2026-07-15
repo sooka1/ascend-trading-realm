@@ -90,7 +90,6 @@ function Home() {
         <MarketTicker />
         <TrustStrip c={c} />
         <CustodyBanks />
-        <SolutionsPreview c={c} />
         <Features c={c} />
         <PerformanceBand c={c} />
         <RiskFramework c={c} />
