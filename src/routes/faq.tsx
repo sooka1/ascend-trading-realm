@@ -2,16 +2,38 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageShell, PageHero } from "@/components/page-shell";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { usePage } from "@/lib/i18n";
+import { pageContent } from "@/lib/page-content";
 
 export const Route = createFileRoute("/faq")({
-  head: () => ({
-    meta: [
-      { title: "FAQ — Frequently asked questions | HKEX" },
-      { name: "description", content: "Answers to the most common questions." },
-      { property: "og:title", content: "HKEX FAQ" },
-      { property: "og:description", content: "Straight answers." },
-    ],
-  }),
+  head: () => {
+    const items = pageContent("en").faq.groups.flatMap((g) => g.items);
+    return {
+      meta: [
+        { title: "FAQ — Frequently asked questions | HKEX Invest" },
+        { name: "description", content: "Answers to the most common questions about HKEX Invest — account, deposits, security and platform." },
+        { property: "og:title", content: "HKEX Invest — FAQ" },
+        { property: "og:description", content: "Straight answers." },
+        { property: "og:url", content: "https://www.hkexinvest.com/faq" },
+      ],
+      links: [{ rel: "canonical", href: "https://www.hkexinvest.com/faq" }],
+      scripts: items.length
+        ? [
+            {
+              type: "application/ld+json",
+              children: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "FAQPage",
+                mainEntity: items.map((it: any) => ({
+                  "@type": "Question",
+                  name: it.q,
+                  acceptedAnswer: { "@type": "Answer", text: it.a },
+                })),
+              }),
+            },
+          ]
+        : [],
+    };
+  },
   component: FAQ,
 });
 
