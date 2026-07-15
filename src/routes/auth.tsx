@@ -14,6 +14,7 @@ import { z } from "zod";
 import { useI18n } from "@/lib/i18n";
 import { useServerFn } from "@tanstack/react-start";
 import { requestVerificationResend } from "@/lib/auth-resend.functions";
+import { notifyLoginAlert } from "@/lib/login-alert.functions";
 import { parseVerificationError, scrubVerificationErrorFromUrl } from "@/lib/auth-hash-errors";
 
 export const Route = createFileRoute("/auth")({
@@ -365,6 +366,7 @@ function Auth() {
       limiter.reset();
       setOtpLockRemaining(0);
       toast.success(t("auth.toast.signed_in"));
+      notifyLoginAlert().catch(() => {});
       if (data.user) await goPostLogin(data.user.id);
       else navigate({ to: "/portal", replace: true });
     } catch (err) {
@@ -418,6 +420,7 @@ function Auth() {
         const { data: signIn, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         toast.success(t("auth.toast.signed_in"));
+        notifyLoginAlert().catch(() => {});
         if (signIn.user) await goPostLogin(signIn.user.id);
         else navigate({ to: "/portal", replace: true });
       } else {
