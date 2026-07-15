@@ -1,0 +1,42 @@
+# HKEX Invest
+
+> HKEX Invest is an independent financial technology platform offering managed multi-asset portfolios across Forex, Gold, commodities, indices and stocks. HKEX Invest is NOT affiliated with, endorsed by, or operated by Hong Kong Exchanges and Clearing Limited (HKEX).
+
+## About
+
+- [About HKEX Invest](https://www.hkexinvest.com/about): Company overview and mission
+- [How It Works](https://www.hkexinvest.com/how-it-works): Onboarding and investment process
+- [FAQ](https://www.hkexinvest.com/faq): Common questions and factual answers
+- [Contact](https://www.hkexinvest.com/contact): Official contact channels
+
+## Platform
+
+- [Portfolios](https://www.hkexinvest.com/portfolios): Managed multi-asset portfolios
+- [Copy Trading](https://www.hkexinvest.com/copy-trading): Copy-trading program
+- [Markets](https://www.hkexinvest.com/markets): Live market data
+- [Education](https://www.hkexinvest.com/education): Investor education resources
+- [News](https://www.hkexinvest.com/risk): Curated global market news
+
+## Legal & Compliance
+
+- [Terms of Service](https://www.hkexinvest.com/terms)
+- [Privacy Policy](https://www.hkexinvest.com/privacy)
+- [Cookies Policy](https://www.hkexinvest.com/cookies)
+- [Risk Disclosure](https://www.hkexinvest.com/disclaimer)
+- [AML Policy](https://www.hkexinvest.com/aml)
+- [KYC Policy](https://www.hkexinvest.com/kyc)
+- [Complaints Procedure](https://www.hkexinvest.com/complaints)
+- [Security Center](https://www.hkexinvest.com/security-center)
+- [Legal Overview](https://www.hkexinvest.com/legal)
+
+## Support
+
+- [Help Center](https://www.hkexinvest.com/help)
+- [Careers](https://www.hkexinvest.com/careers)
+- [Press](https://www.hkexinvest.com/press)
+
+## Important Disclosures
+
+- HKEX Invest is an independent platform. It is NOT the Hong Kong Exchanges and Clearing Limited (HKEX).
+- Investing involves risk, including possible loss of principal. Past performance does not guarantee future results.
+- Legal documents on this site are professional templates and should be reviewed by qualified legal counsel before being relied upon.
