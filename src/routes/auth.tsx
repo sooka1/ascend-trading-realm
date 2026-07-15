@@ -331,7 +331,8 @@ function Auth() {
     // Local attempt limit: 5 verifications per 5 minutes per email. Server
     // still enforces its own limits; this prevents brute-force from the
     // client and gives clear feedback when the ceiling is hit.
-    const verifyKey = `auth:otpverify:${email.toLowerCase().trim()}`;
+    const normalizedEmail = email.toLowerCase().trim();
+    const verifyKey = `auth:otpverify:${normalizedEmail}`;
     const { rateLimit } = await import("@/lib/rate-limit");
     const limiter = rateLimit(verifyKey, { max: 5, windowMs: 5 * 60_000 });
     if (!limiter.tryConsume()) {
@@ -344,11 +345,26 @@ function Auth() {
     }
     setLoading(true);
     try {
-      const { data, error } = await supabase.auth.verifyOtp({
-        email,
+      // Try 'email' first (6-digit OTP for existing users via signInWithOtp).
+      // If that path returns "token expired/invalid" for a fresh code, fall
+      // back to 'magiclink' — Supabase accepts either type name for the same
+      // OTP depending on how the auth email template was scaffolded.
+      let { data, error } = await supabase.auth.verifyOtp({
+        email: normalizedEmail,
         token,
         type: "email",
       });
+      if (error) {
+        const retry = await supabase.auth.verifyOtp({
+          email: normalizedEmail,
+          token,
+          type: "magiclink",
+        });
+        if (!retry.error) {
+          data = retry.data;
+          error = null;
+        }
+      }
       if (error) throw error;
       limiter.reset();
       setOtpLockRemaining(0);
@@ -356,7 +372,8 @@ function Auth() {
       if (data.user) await goPostLogin(data.user.id);
       else navigate({ to: "/portal", replace: true });
     } catch (err) {
-      const message = err instanceof Error ? err.message : t("auth.otp.err_invalid");
+      const raw = err instanceof Error ? err.message : "";
+      const message = /expired|invalid|otp/i.test(raw) ? t("auth.otp.err_invalid") : raw || t("auth.otp.err_invalid");
       setErrors({ form: message });
       toast.error(message);
       // If this attempt exhausted the bucket, lock the input immediately.
