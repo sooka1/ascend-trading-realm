@@ -1,7 +1,13 @@
 import { Link } from "@tanstack/react-router";
 import { HKLogo } from "./hk-logo";
-import { Facebook, Instagram, Linkedin, Twitter, Youtube } from "lucide-react";
+import { Facebook, Instagram, Youtube } from "lucide-react";
 import { useT } from "@/lib/i18n";
+
+const TikTokIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" {...props}>
+    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5.8 20.1a6.34 6.34 0 0 0 10.86-4.43V9.01a8.16 8.16 0 0 0 4.77 1.52V7.1a4.85 4.85 0 0 1-1.84-.41Z" />
+  </svg>
+);
 
 const COLS = [
   {
@@ -53,8 +59,7 @@ export function SiteFooter() {
             <p className="mt-4 max-w-sm text-sm text-muted-foreground">{t("footer.tagline")}</p>
             <div className="mt-6 flex items-center gap-3">
               {[
-                { Icon: Twitter, href: "#", label: "Twitter" },
-                { Icon: Linkedin, href: "#", label: "LinkedIn" },
+                { Icon: TikTokIcon, href: "#", label: "TikTok" },
                 { Icon: Youtube, href: "#", label: "YouTube" },
                 { Icon: Instagram, href: "#", label: "Instagram" },
                 { Icon: Facebook, href: "https://www.facebook.com/share/14htEwrJz5Y/", label: "Facebook" },
