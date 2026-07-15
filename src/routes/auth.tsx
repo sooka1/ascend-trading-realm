@@ -345,27 +345,23 @@ function Auth() {
     }
     setLoading(true);
     try {
-      // Try 'email' first (6-digit OTP for existing users via signInWithOtp).
-      // If that path returns "token expired/invalid" for a fresh code, fall
-      // back to 'magiclink' — Supabase accepts either type name for the same
-      // OTP depending on how the auth email template was scaffolded.
-      let { data, error } = await supabase.auth.verifyOtp({
-        email: normalizedEmail,
-        token,
-        type: "email",
-      });
-      if (error) {
-        const retry = await supabase.auth.verifyOtp({
+      // signInWithOtp can issue the token under different internal types
+      // depending on user state: `email`/`magiclink` for passwordless users,
+      // and `recovery` for users that already have a password (GoTrue logs
+      // this as `user_recovery_requested`). We try each until one succeeds.
+      const types = ["email", "magiclink", "recovery"] as const;
+      let data: Awaited<ReturnType<typeof supabase.auth.verifyOtp>>["data"] | null = null;
+      let error: Awaited<ReturnType<typeof supabase.auth.verifyOtp>>["error"] | null = null;
+      for (const type of types) {
+        const res = await supabase.auth.verifyOtp({
           email: normalizedEmail,
           token,
-          type: "magiclink",
+          type,
         });
-        if (!retry.error) {
-          data = retry.data;
-          error = null;
-        }
+        if (!res.error) { data = res.data; error = null; break; }
+        error = res.error;
       }
-      if (error) throw error;
+      if (error || !data) throw error ?? new Error(t("auth.otp.err_invalid"));
       limiter.reset();
       setOtpLockRemaining(0);
       toast.success(t("auth.toast.signed_in"));
