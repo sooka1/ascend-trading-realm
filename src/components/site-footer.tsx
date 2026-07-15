@@ -26,12 +26,16 @@ const COLS = [
       { label: "footer.link.education", to: "/education" },
       { label: "footer.link.faq", to: "/faq" },
       { label: "footer.link.contact", to: "/contact" },
+      { label: "How it works", to: "/how-it-works" },
+      { label: "Help Center", to: "/help" },
     ],
   },
   {
     title: "footer.col.company",
     links: [
       { label: "footer.link.about", to: "/about" },
+      { label: "Careers", to: "/careers" },
+      { label: "Press", to: "/press" },
       { label: "footer.link.legal", to: "/legal" },
       { label: "footer.link.privacy", to: "/privacy" },
       { label: "footer.link.terms", to: "/terms" },
