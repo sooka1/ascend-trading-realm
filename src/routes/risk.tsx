@@ -5,14 +5,24 @@ import { useMemo, useState } from "react";
 import { PageShell, PageHero } from "@/components/page-shell";
 import { Newspaper, Radio, RefreshCw, ExternalLink, Globe2 } from "lucide-react";
 import { getMarketNews, type NewsItem } from "@/lib/news.functions";
+import { breadcrumbScript } from "@/lib/breadcrumbs";
 
 export const Route = createFileRoute("/risk")({
   head: () => ({
     meta: [
-      { title: "الأخبار العالمية — أسواق واستثمار وبورصات | HK Investment" },
+      { title: "الأخبار العالمية — أسواق واستثمار وبورصات | HKEX Invest" },
       { name: "description", content: "بث لحظي للأخبار السياسية والاقتصادية العالمية المؤثرة على الاستثمار والتداول والبورصات، من مصادر غربية وصينية." },
       { property: "og:title", content: "الأخبار العالمية — الاستثمار والبورصات" },
       { property: "og:description", content: "بث لحظي للأخبار المؤثرة على الأسواق من مصادر غربية وصينية." },
+      { property: "og:url", content: "https://www.hkexinvest.com/risk" },
+      { property: "og:type", content: "website" },
+    ],
+    links: [{ rel: "canonical", href: "https://www.hkexinvest.com/risk" }],
+    scripts: [
+      breadcrumbScript([
+        { name: "Home", path: "/" },
+        { name: "News", path: "/risk" },
+      ]),
     ],
   }),
   component: NewsPage,
