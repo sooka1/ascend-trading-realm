@@ -204,7 +204,7 @@ function Contact() {
           <div className="glass rounded-2xl p-6">
             <Mail className="h-5 w-5 text-gold" />
             <div className="mt-3 font-medium">{p.emailT}</div>
-            <div className="mt-1 text-sm text-muted-foreground">info@hkexinvest.com</div>
+            <div className="mt-1 text-sm text-muted-foreground">support@hkexinvest.com</div>
           </div>
           <div className="glass rounded-2xl p-6">
             <div className="font-medium">{p.officesT}</div>
