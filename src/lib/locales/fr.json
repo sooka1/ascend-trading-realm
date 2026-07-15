@@ -56,7 +56,7 @@
   "footer.link.faq": "FAQ",
   "footer.risk.label": "Avertissement sur les risques :",
   "footer.risk.body": "Le trading de produits à effet de levier tels que les CFD, le forex et la crypto comporte un niveau de risque élevé et peut ne pas convenir à tous les investisseurs. Vous pouvez perdre plus que votre dépôt initial. Assurez-vous de bien comprendre les risques encourus et demandez conseil de manière indépendante si nécessaire. Les performances passées ne préjugent pas des résultats futurs.",
-  "footer.copyright": "© {year} HKEX. Tous droits réservés.",
+  "footer.copyright": "© {year} HKEX Invest. Tous droits réservés.",
   "footer.compliance": "Régulé à l'international · Fonds clients ségrégués · Sécurisé SSL",
   "inv.eyebrow": "Investissement géré",
   "inv.title.a": "Nous tradons",
@@ -189,5 +189,6 @@
   "about.val.excT": "Excellence",
   "about.val.excB": "Une équipe senior avec des décennies d'expérience institutionnelle.",
   "about.cta.portfolios": "Voir les portefeuilles gérés",
-  "about.cta.advisor": "Parler à un conseiller"
+  "about.cta.advisor": "Parler à un conseiller",
+  "footer.disclaimer": "HKEX Invest is an independent financial technology platform and is not affiliated with, endorsed by, or operated by Hong Kong Exchanges and Clearing Limited (HKEX)."
 }

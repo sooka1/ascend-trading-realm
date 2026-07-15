@@ -60,7 +60,7 @@
   "footer.link.faq": "Întrebări Frecvente",
   "footer.risk.label": "Avertisment de Risc:",
   "footer.risk.body": "Tranzacționarea produselor cu efect de levier cum ar fi CFD-urile, forex și criptomonedele implică un nivel ridicat de risc și poate să nu fie potrivită pentru toți investitorii. Puteți pierde mai mult decât depozitul inițial. Asigurați-vă că înțelegeți pe deplin riscurile implicate și solicitați sfaturi independente dacă este necesar. Performanțele anterioare nu sunt un indicator al rezultatelor viitoare.",
-  "footer.copyright": "© {year} HKEX. Toate drepturile rezervate.",
+  "footer.copyright": "© {year} HKEX Invest. Toate drepturile rezervate.",
   "footer.compliance": "Reglementat la nivel global · Fonduri ale clienților segregate · Securizat prin SSL",
   "inv.eyebrow": "Investiții Gestionate",
   "inv.title.a": "Tranzacționăm",
@@ -193,5 +193,6 @@
   "about.val.excT": "Excelență",
   "about.val.excB": "O echipă de seniori cu decenii de experiență instituțională.",
   "about.cta.portfolios": "Explorați portofoliile gestionate",
-  "about.cta.advisor": "Discutați cu un consultant"
+  "about.cta.advisor": "Discutați cu un consultant",
+  "footer.disclaimer": "HKEX Invest is an independent financial technology platform and is not affiliated with, endorsed by, or operated by Hong Kong Exchanges and Clearing Limited (HKEX)."
 }

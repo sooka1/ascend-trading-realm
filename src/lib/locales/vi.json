@@ -60,7 +60,7 @@
   "footer.link.faq": "Câu hỏi thường gặp",
   "footer.risk.label": "Cảnh báo Rủi ro:",
   "footer.risk.body": "Giao dịch các sản phẩm đòn bẩy như CFDs, ngoại hối và tiền điện tử có mức độ rủi ro cao và có thể không phù hợp với tất cả các nhà đầu tư. Bạn có thể bị mất nhiều hơn số tiền ban đầu. Hãy đảm bảo bạn hiểu rõ hoàn toàn các rủi ro liên quan và tìm kiếm lời khuyên độc lập nếu cần. Hiệu suất trong quá khứ không phải là chỉ báo cho kết quả trong tương lai.",
-  "footer.copyright": "© {year} HKEX. Mọi quyền được bảo lưu.",
+  "footer.copyright": "© {year} HKEX Invest. Mọi quyền được bảo lưu.",
   "footer.compliance": "Được quản lý toàn cầu · Quỹ khách hàng tách biệt · Được bảo mật bằng SSL",
   "inv.eyebrow": "Khoản đầu tư được quản lý",
   "inv.title.a": "Chúng tôi giao dịch",
@@ -193,5 +193,6 @@
   "about.val.excT": "Xuất sắc",
   "about.val.excB": "Một đội ngũ cấp cao với nhiều thập kỷ kinh nghiệm trong lĩnh vực tổ chức.",
   "about.cta.portfolios": "Khám phá các danh mục đầu tư được quản lý",
-  "about.cta.advisor": "Nói chuyện với một cố vấn"
+  "about.cta.advisor": "Nói chuyện với một cố vấn",
+  "footer.disclaimer": "HKEX Invest is an independent financial technology platform and is not affiliated with, endorsed by, or operated by Hong Kong Exchanges and Clearing Limited (HKEX)."
 }

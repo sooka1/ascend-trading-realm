@@ -60,7 +60,7 @@
   "footer.link.faq": "अक्सर पूछे जाने वाले प्रश्न",
   "footer.risk.label": "जोखिम चेतावनी:",
   "footer.risk.body": "CFDs, फॉरेक्स और क्रिप्टो जैसे लीवरेज्ड उत्पादों का व्यापार उच्च स्तर का जोखिम रखता है और सभी निवेशकों के लिए उपयुक्त नहीं हो सकता है। आप अपनी प्रारंभिक जमा राशि से अधिक खो सकते हैं। सुनिश्चित करें कि आप इसमें शामिल जोखिमों को पूरी तरह से समझते हैं और यदि आवश्यक हो तो स्वतंत्र सलाह लें। पिछला प्रदर्शन भविष्य के परिणामों का संकेत नहीं है।",
-  "footer.copyright": "© {year} HKEX। सभी अधिकार सुरक्षित।",
+  "footer.copyright": "© {year} HKEX Invest। सभी अधिकार सुरक्षित।",
   "footer.compliance": "विश्व स्तर पर विनियमित · ग्राहक निधि पृथक · SSL सुरक्षित",
   "inv.eyebrow": "प्रबंधित निवेश",
   "inv.title.a": "हम व्यापार करते हैं",
@@ -193,5 +193,6 @@
   "about.val.excT": "उत्कृष्टता",
   "about.val.excB": "संस्थागत अनुभव के दशकों वाली एक वरिष्ठ टीम।",
   "about.cta.portfolios": "प्रबंधित पोर्टफोलियो का अन्वेषण करें",
-  "about.cta.advisor": "एक सलाहकार से बात करें"
+  "about.cta.advisor": "एक सलाहकार से बात करें",
+  "footer.disclaimer": "HKEX Invest is an independent financial technology platform and is not affiliated with, endorsed by, or operated by Hong Kong Exchanges and Clearing Limited (HKEX)."
 }

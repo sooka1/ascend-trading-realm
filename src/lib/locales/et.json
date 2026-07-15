@@ -60,7 +60,7 @@
   "footer.link.faq": "KKK",
   "footer.risk.label": "Riskihoiatus:",
   "footer.risk.body": "Finantsvõimendusega toodetega, nagu CFD-d, forex ja krüpto, kauplemine kätkeb endas suurt riski ja ei pruugi sobida kõigile investoritele. Võite kaotada rohkem kui esialgse sissemakse. Veenduge, et mõistate täielikult sellega kaasnevaid riske ja vajadusel küsige sõltumatut nõu. Varasem tootlus ei viita tulevastele tulemustele.",
-  "footer.copyright": "© {year} HKEX. Kõik õigused reserveeritud.",
+  "footer.copyright": "© {year} HKEX Invest. Kõik õigused reserveeritud.",
   "footer.compliance": "Globaalselt reguleeritud · Kliendi varad eraldi hoitud · SSL-turvatud",
   "inv.eyebrow": "Hallatud investeering",
   "inv.title.a": "Me kaupleme",
@@ -193,5 +193,6 @@
   "about.val.excT": "Tipptase",
   "about.val.excB": "Kogenud meeskond aastakümnete pikkuse institutsionaalse kogemusega.",
   "about.cta.portfolios": "Avasta hallatavaid portfelle",
-  "about.cta.advisor": "Rääkige nõustajaga"
+  "about.cta.advisor": "Rääkige nõustajaga",
+  "footer.disclaimer": "HKEX Invest is an independent financial technology platform and is not affiliated with, endorsed by, or operated by Hong Kong Exchanges and Clearing Limited (HKEX)."
 }

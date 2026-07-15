@@ -60,7 +60,7 @@
   "footer.link.faq": "Česta pitanja",
   "footer.risk.label": "Upozorenje o riziku:",
   "footer.risk.body": "Trgovanje proizvodima s financijskom polugom kao što su CFD-ovi, forex i kriptovalute nosi visok nivo rizika i možda nije prikladno za sve ulagače. Mogli biste izgubiti više od početnog pologa. Provjerite jeste li u potpunosti razumjeli uključene rizike i potražite neovisan savjet ako je potrebno. Prošli rezultati nisu pokazatelj budućih rezultata.",
-  "footer.copyright": "© {year} HKEX. Sva prava pridržana.",
+  "footer.copyright": "© {year} HKEX Invest. Sva prava pridržana.",
   "footer.compliance": "Globalno regulirano · Odvojena sredstva klijenata · SSL osigurano",
   "inv.eyebrow": "Upravljana investicija",
   "inv.title.a": "Mi trgujemo",
@@ -193,5 +193,6 @@
   "about.val.excT": "Izvrsnost",
   "about.val.excB": "Stariji tim s desetljećima institucionalnog iskustva.",
   "about.cta.portfolios": "Istražite upravljane portfelje",
-  "about.cta.advisor": "Razgovarajte sa savjetnikom"
+  "about.cta.advisor": "Razgovarajte sa savjetnikom",
+  "footer.disclaimer": "HKEX Invest is an independent financial technology platform and is not affiliated with, endorsed by, or operated by Hong Kong Exchanges and Clearing Limited (HKEX)."
 }

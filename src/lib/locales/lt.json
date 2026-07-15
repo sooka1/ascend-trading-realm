@@ -60,7 +60,7 @@
   "footer.link.faq": "DUK",
   "footer.risk.label": "Įspėjimas apie riziką:",
   "footer.risk.body": "Prekyba svertiniais produktais, tokiais kaip CFD, forex ir kriptovaliutos, yra susijusi su didele rizika ir gali būti netinkama visiems investuotojams. Galite prarasti daugiau nei pradinis įnašas. Įsitikinkite, kad visiškai suprantate susijusią riziką, ir, jei reikia, kreipkitės nepriklausomos konsultacijos. Praeities rezultatai negarantuoja ateities rezultatų.",
-  "footer.copyright": "© {year} HKEX. Visos teisės saugomos.",
+  "footer.copyright": "© {year} HKEX Invest. Visos teisės saugomos.",
   "footer.compliance": "Reguliuojama visame pasaulyje · Atskirtos klientų lėšos · SSL saugumas",
   "inv.eyebrow": "Valdoma investicija",
   "inv.title.a": "Mes prekiaujame",
@@ -193,5 +193,6 @@
   "about.val.excT": "Kompetencija",
   "about.val.excB": "Aukščiausio lygio komanda, turinti dešimtmečių institucinę patirtį.",
   "about.cta.portfolios": "Naršyti valdomus portfelius",
-  "about.cta.advisor": "Pasikalbėti su patarėju"
+  "about.cta.advisor": "Pasikalbėti su patarėju",
+  "footer.disclaimer": "HKEX Invest is an independent financial technology platform and is not affiliated with, endorsed by, or operated by Hong Kong Exchanges and Clearing Limited (HKEX)."
 }

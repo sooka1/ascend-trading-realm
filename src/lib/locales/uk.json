@@ -60,7 +60,7 @@
   "footer.link.faq": "Запитання й відповіді",
   "footer.risk.label": "Попередження про ризики:",
   "footer.risk.body": "Торгівля продуктами з кредитним плечем, такими як CFD, форекс і криптовалюта, пов'язана з високим рівнем ризику і може підходити не для всіх інвесторів. Ви можете втратити більше, ніж початковий депозит. Переконайтеся, що ви повністю розумієте пов'язані ризики, і зверніться за незалежною консультацією, якщо це необхідно. Минулі результати не є показником майбутніх результатів.",
-  "footer.copyright": "© {year} HKEX. Всі права захищені.",
+  "footer.copyright": "© {year} HKEX Invest. Всі права захищені.",
   "footer.compliance": "Регулювання в усьому світі · Сегреговані кошти клієнтів · Захищено SSL",
   "inv.eyebrow": "Керовані інвестиції",
   "inv.title.a": "Ми торгуємо",
@@ -193,5 +193,6 @@
   "about.val.excT": "Висока якість",
   "about.val.excB": "Досвідчена команда з десятиліттями інституційного досвіду.",
   "about.cta.portfolios": "Ознайомтеся з керованими портфелями",
-  "about.cta.advisor": "Поспілкуйтеся з консультантом"
+  "about.cta.advisor": "Поспілкуйтеся з консультантом",
+  "footer.disclaimer": "HKEX Invest is an independent financial technology platform and is not affiliated with, endorsed by, or operated by Hong Kong Exchanges and Clearing Limited (HKEX)."
 }

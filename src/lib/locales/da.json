@@ -60,7 +60,7 @@
   "footer.link.faq": "Ofte stillede spørgsmål",
   "footer.risk.label": "Risikoadvarsel:",
   "footer.risk.body": "Handel med gearede produkter som CFDer, forex og krypto indebærer en høj risiko og er muligvis ikke egnet for alle investorer. Du kan tabe mere end dit oprindelige indskud. Sørg for, at du fuldt ud forstår de involverede risici, og søg uafhængig rådgivning om nødvendigt. Tidligere resultater er ikke vejledende for fremtidige resultater.",
-  "footer.copyright": "© {year} HKEX. Alle rettigheder forbeholdes.",
+  "footer.copyright": "© {year} HKEX Invest. Alle rettigheder forbeholdes.",
   "footer.compliance": "Globalt reguleret · Segregerede klientmidler · SSL-sikret",
   "inv.eyebrow": "Administreret investering",
   "inv.title.a": "Vi handler",
@@ -193,5 +193,6 @@
   "about.val.excT": "Fremragende",
   "about.val.excB": "Et erfarent team med årtiers institutionel erfaring.",
   "about.cta.portfolios": "Udforsk administrerede porteføljer",
-  "about.cta.advisor": "Tal med en rådgiver"
+  "about.cta.advisor": "Tal med en rådgiver",
+  "footer.disclaimer": "HKEX Invest is an independent financial technology platform and is not affiliated with, endorsed by, or operated by Hong Kong Exchanges and Clearing Limited (HKEX)."
 }

@@ -60,7 +60,7 @@
   "footer.link.faq": "FAQ",
   "footer.risk.label": "Aviso de Risco:",
   "footer.risk.body": "A negociação de produtos alavancados, como CFDs, forex e cripto, acarreta um alto nível de risco e pode não ser adequada para todos os investidores. Você pode perder mais do que o seu depósito inicial. Certifique-se de compreender totalmente os riscos envolvidos e procure aconselhamento independente, se necessário. O desempenho passado não é indicativo de resultados futuros.",
-  "footer.copyright": "© {year} HKEX. Todos os direitos reservados.",
+  "footer.copyright": "© {year} HKEX Invest. Todos os direitos reservados.",
   "footer.compliance": "Regulado globalmente · Fundos de clientes segregados · SSL seguro",
   "inv.eyebrow": "Investimento Gerenciado",
   "inv.title.a": "Nós negociamos",
@@ -193,5 +193,6 @@
   "about.val.excT": "Excelência",
   "about.val.excB": "Uma equipe sênior com décadas de experiência institucional.",
   "about.cta.portfolios": "Explorar portfólios gerenciados",
-  "about.cta.advisor": "Fale com um consultor"
+  "about.cta.advisor": "Fale com um consultor",
+  "footer.disclaimer": "HKEX Invest is an independent financial technology platform and is not affiliated with, endorsed by, or operated by Hong Kong Exchanges and Clearing Limited (HKEX)."
 }

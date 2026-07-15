@@ -60,7 +60,7 @@
   "footer.link.faq": "ЧЗВ",
   "footer.risk.label": "Предупреждение за риск:",
   "footer.risk.body": "Търговията с продукти с ливъридж като CFD-та, форекс и криптовалути носи високo ниво на риск и може да не е подходяща за всички инвеститори. Можете да загубите повече от първоначалния си депозит. Уверете се, че напълно разбирате свързаните рискове и потърсете независим съвет, ако е необходимо. Минали резултати не са показателни за бъдещи резултати.",
-  "footer.copyright": "© {year} HKEX. Всички права запазени.",
+  "footer.copyright": "© {year} HKEX Invest. Всички права запазени.",
   "footer.compliance": "Регулиран в световен мащаб · Сегрегирани клиентски средства · SSL защита",
   "inv.eyebrow": "Управлявана инвестиция",
   "inv.title.a": "Ние търгуваме",
@@ -193,5 +193,6 @@
   "about.val.excT": "Превъзходство",
   "about.val.excB": "Екип от високопоставени специалисти с десетилетия институционален опит.",
   "about.cta.portfolios": "Разгледайте управляваните портфейли",
-  "about.cta.advisor": "Разговаряйте със съветник"
+  "about.cta.advisor": "Разговаряйте със съветник",
+  "footer.disclaimer": "HKEX Invest is an independent financial technology platform and is not affiliated with, endorsed by, or operated by Hong Kong Exchanges and Clearing Limited (HKEX)."
 }

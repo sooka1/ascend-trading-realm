@@ -60,7 +60,7 @@
   "footer.link.faq": "FAQ",
   "footer.risk.label": "Ostrzeżenie o ryzyku:",
   "footer.risk.body": "Handel produktami lewarowanymi, takimi jak kontrakty CFD, forex i krypto, wiąże się z wysokim ryzykiem i może nie być odpowiedni dla wszystkich inwestorów. Możesz stracić więcej niż początkowy depozyt. Upewnij się, że w pełni rozumiesz związane z tym ryzyko i w razie potrzeby zasięgnij niezależnej porady. Wyniki osiągnięte w przeszłości nie wskazują na przyszłe rezultaty.",
-  "footer.copyright": "© {year} HKEX. Wszelkie prawa zastrzeżone.",
+  "footer.copyright": "© {year} HKEX Invest. Wszelkie prawa zastrzeżone.",
   "footer.compliance": "Globalne regulacje · Wydzielone środki klientów · Zabezpieczone protokołem SSL",
   "inv.eyebrow": "Zarządzane inwestycje",
   "inv.title.a": "Handlujemy",
@@ -193,5 +193,6 @@
   "about.val.excT": "Doskonałość",
   "about.val.excB": "Starszy zespół z dziesięcioleciami doświadczenia instytucjonalnego.",
   "about.cta.portfolios": "Przeglądaj zarządzane portfele",
-  "about.cta.advisor": "Porozmawiaj z doradcą"
+  "about.cta.advisor": "Porozmawiaj z doradcą",
+  "footer.disclaimer": "HKEX Invest is an independent financial technology platform and is not affiliated with, endorsed by, or operated by Hong Kong Exchanges and Clearing Limited (HKEX)."
 }

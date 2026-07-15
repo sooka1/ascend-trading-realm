@@ -60,7 +60,7 @@
   "footer.link.faq": "คำถามที่พบบ่อย",
   "footer.risk.label": "คำเตือนความเสี่ยง:",
   "footer.risk.body": "การซื้อขายผลิตภัณฑ์ที่มีเลเวอเรจ เช่น CFD, ฟอเร็กซ์ และคริปโตเคอร์เรนซี มีความเสี่ยงสูงและอาจไม่เหมาะสำหรับนักลงทุนทุกคน คุณอาจสูญเสียเงินลงทุนมากกว่าเงินฝากเริ่มต้นของคุณ โปรดตรวจสอบให้แน่ใจว่าคุณเข้าใจถึงความเสี่ยงที่เกี่ยวข้องอย่างถ่องแท้ และขอคำแนะนำที่เป็นอิสระหากจำเป็น ผลการดำเนินงานในอดีตไม่สามารถบ่งชี้ผลลัพธ์ในอนาคตได้",
-  "footer.copyright": "© {year} HKEX. สงวนลิขสิทธิ์ทั้งหมด",
+  "footer.copyright": "© {year} HKEX Invest. สงวนลิขสิทธิ์ทั้งหมด",
   "footer.compliance": "อยู่ภายใต้การกำกับดูแลทั่วโลก · แยกเงินทุนลูกค้า · ปลอดภัยด้วย SSL",
   "inv.eyebrow": "การลงทุนที่มีการจัดการ",
   "inv.title.a": "เราจะเทรด",
@@ -193,5 +193,6 @@
   "about.val.excT": "ความเป็นเลิศ",
   "about.val.excB": "ทีมผู้บริหารมากประสบการณ์หลายทศวรรษในสถาบัน",
   "about.cta.portfolios": "สำรวจพอร์ตการลงทุนที่มีการจัดการ",
-  "about.cta.advisor": "พูดคุยกับที่ปรึกษา"
+  "about.cta.advisor": "พูดคุยกับที่ปรึกษา",
+  "footer.disclaimer": "HKEX Invest is an independent financial technology platform and is not affiliated with, endorsed by, or operated by Hong Kong Exchanges and Clearing Limited (HKEX)."
 }

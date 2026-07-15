@@ -60,7 +60,7 @@
   "footer.link.faq": "Pirsên Pir Tên Pirsîn (FAQ)",
   "footer.risk.label": "Hişyariya Metirsiyê:",
   "footer.risk.body": "Bazirganiya hilberên bi lebat ên wekî CFD, forex û krîpto xeterek mezin hildigire û dibe ku ji bo hemî veberhêneran ne guncaw be. Hûn dikarin ji depoya xwe ya destpêkê zêdetir winda bikin. Piştrast bikin ku hûn xetereyên têkildar bi tevahî fam dikin û ger hewce be şîreta serbixwe bigerin. Performansa berê ne nîşana encamên pêşerojê ye.",
-  "footer.copyright": "© {year} HKEX. Hemû maf parastî ne.",
+  "footer.copyright": "© {year} HKEX Invest. Hemû maf parastî ne.",
   "footer.compliance": "Li seranserê cîhanê rêkirî ye · Fonên mişteriyan yên veqetandî · SSL ewle ye",
   "inv.eyebrow": "Veberhênana Rêvekirî",
   "inv.title.a": "Em bazirganiyê dikin",
@@ -193,5 +193,6 @@
   "about.val.excT": "Pêşketin",
   "about.val.excB": "Tîmek payebilind ku bi dehan sal tecrûbeya sazûmanî heye.",
   "about.cta.portfolios": "Portfolyoyên birêvekirî bigerin",
-  "about.cta.advisor": "Bi şêwirmendek re bipeyivin"
+  "about.cta.advisor": "Bi şêwirmendek re bipeyivin",
+  "footer.disclaimer": "HKEX Invest is an independent financial technology platform and is not affiliated with, endorsed by, or operated by Hong Kong Exchanges and Clearing Limited (HKEX)."
 }

@@ -60,7 +60,7 @@
   "footer.link.faq": "よくある質問",
   "footer.risk.label": "リスク警告:",
   "footer.risk.body": "CFDs、外国為替、仮想通貨のようなレバレッジ商品の取引は高いリスクを伴い、すべての投資家に適しているわけではありません。初回入金額を超える損失を被る可能性があります。関わるリスクを完全に理解し、必要であれば独立した助言を求めてください。過去の実績は将来の結果を示すものではありません。",
-  "footer.copyright": "© {year} HKEX. 全著作権所有。",
+  "footer.copyright": "© {year} HKEX Invest. 全著作権所有。",
   "footer.compliance": "グローバルに規制 · クライアント資金の分別管理 · SSLセキュリティ",
   "inv.eyebrow": "マネージド投資",
   "inv.title.a": "お客様に代わって",
@@ -193,5 +193,6 @@
   "about.val.excT": "卓越性",
   "about.val.excB": "数十年の機関投資経験を持つシニアチーム。",
   "about.cta.portfolios": "マネージドポートフォリオを探す",
-  "about.cta.advisor": "アドバイザーに相談する"
+  "about.cta.advisor": "アドバイザーに相談する",
+  "footer.disclaimer": "HKEX Invest is an independent financial technology platform and is not affiliated with, endorsed by, or operated by Hong Kong Exchanges and Clearing Limited (HKEX)."
 }

@@ -60,7 +60,7 @@
   "footer.link.faq": "Často kladené dotazy",
   "footer.risk.label": "Upozornění na rizika:",
   "footer.risk.body": "Obchodování s pákovými produkty, jako jsou CFD, forex a krypto, s sebou nese vysokou míru rizika a nemusí být vhodné pro všechny investory. Můžete prohrát více než svůj počáteční vklad. Ujistěte se, že plně rozumíte souvisejícím rizikům, a v případě potřeby vyhledejte nezávislé poradenství. Minulá výkonnost nenaznačuje budoucí výsledky.",
-  "footer.copyright": "© {year} HKEX. Všechna práva vyhrazena.",
+  "footer.copyright": "© {year} HKEX Invest. Všechna práva vyhrazena.",
   "footer.compliance": "Globálně regulováno · Oddělené klientské prostředky · Zabezpečeno pomocí SSL",
   "inv.eyebrow": "Řízená investice",
   "inv.title.a": "Obchodujeme",
@@ -193,5 +193,6 @@
   "about.val.excT": "Excelence",
   "about.val.excB": "Seniorský tým s desítkami let institucionálních zkušeností.",
   "about.cta.portfolios": "Prozkoumat spravovaná portfolia",
-  "about.cta.advisor": "Mluvit s poradcem"
+  "about.cta.advisor": "Mluvit s poradcem",
+  "footer.disclaimer": "HKEX Invest is an independent financial technology platform and is not affiliated with, endorsed by, or operated by Hong Kong Exchanges and Clearing Limited (HKEX)."
 }
