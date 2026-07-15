@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { usePage } from "@/lib/i18n";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { sendSupportInquiry } from "@/lib/support-inquiry.functions";
 import { toast } from "sonner";
@@ -27,7 +27,9 @@ function Contact() {
   const p = usePage().contact;
   const send = useServerFn(sendSupportInquiry);
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
+  const [hp, setHp] = useState(""); // honeypot
   const [sending, setSending] = useState(false);
+  const mountedAtRef = useRef<number>(Date.now());
 
   const offices: Array<{
     key: string;
@@ -83,10 +85,14 @@ function Contact() {
           subject: form.subject || undefined,
           message: form.message,
           source: "contact",
+          website: hp,
+          elapsedMs: Date.now() - mountedAtRef.current,
         },
       });
       toast.success(p.sent);
       setForm({ name: "", email: "", subject: "", message: "" });
+      setHp("");
+      mountedAtRef.current = Date.now();
     } catch (err: any) {
       toast.error(err?.message ?? "تعذّر الإرسال");
     } finally {
@@ -132,6 +138,19 @@ function Contact() {
             <Textarea id="msg" rows={6} className="mt-1.5 bg-white/5" required
               value={form.message}
               onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))} />
+          </div>
+          {/* Honeypot — hidden from real users, filled by bots. */}
+          <div aria-hidden="true" className="absolute left-[-9999px] top-[-9999px] h-0 w-0 overflow-hidden opacity-0" style={{ position: "absolute" }}>
+            <label htmlFor="website">Website</label>
+            <input
+              id="website"
+              name="website"
+              type="text"
+              tabIndex={-1}
+              autoComplete="off"
+              value={hp}
+              onChange={(e) => setHp(e.target.value)}
+            />
           </div>
           <Button type="submit" disabled={sending} className="mt-6 bg-[var(--gradient-brand)] text-white">
             {sending ? "جارٍ الإرسال…" : p.send}
