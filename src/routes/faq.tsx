@@ -1,18 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageShell, PageHero } from "@/components/page-shell";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { usePage, getStaticPage } from "@/lib/i18n";
+import { usePage } from "@/lib/i18n";
+import { pageContent } from "@/lib/page-content";
 
 export const Route = createFileRoute("/faq")({
   head: () => {
-    const faq = (() => {
-      try {
-        return getStaticPage?.("en")?.faq ?? null;
-      } catch {
-        return null;
-      }
-    })();
-    const items = faq?.groups?.flatMap((g: any) => g.items) ?? [];
+    const items = pageContent("en").faq.groups.flatMap((g) => g.items);
     return {
       meta: [
         { title: "FAQ — Frequently asked questions | HKEX Invest" },
