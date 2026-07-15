@@ -530,8 +530,15 @@ function Auth() {
   async function handleGoogle() {
     setLoading(true);
     try {
+      // Preserve any ?redirect=<path> across a full-page OAuth redirect so
+      // the OAuth consent flow can bring users back to the pending
+      // authorization after they sign in with Google.
+      const redirectParam = readRedirectTarget();
+      const returnUrl = redirectParam
+        ? `${window.location.origin}/auth?redirect=${encodeURIComponent(redirectParam)}`
+        : window.location.origin;
       const result = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: window.location.origin,
+        redirect_uri: returnUrl,
       });
       if (result.error) {
         toast.error(result.error.message ?? t("auth.toast.google_fail"));
