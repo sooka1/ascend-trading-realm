@@ -1,0 +1,11 @@
+Contact: mailto:security@hkexinvest.com
+Contact: https://www.hkexinvest.com/contact
+Expires: 2027-07-15T00:00:00.000Z
+Preferred-Languages: ar, en
+Canonical: https://www.hkexinvest.com/.well-known/security.txt
+Policy: https://www.hkexinvest.com/security-center
+
+# HKEX Invest is an independent financial technology platform.
+# Not affiliated with Hong Kong Exchanges and Clearing Limited (HKEX).
+# We appreciate responsible disclosure. Please include a technical
+# description and reproduction steps.
