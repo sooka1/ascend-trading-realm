@@ -1,13 +1,24 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageShell, PageHero } from "@/components/page-shell";
 import { useStatic } from "@/lib/i18n";
+import { breadcrumbScript } from "@/lib/breadcrumbs";
 
 export const Route = createFileRoute("/terms")({
   head: () => ({
     meta: [
-      { title: "Terms of Service — HK Investment Management" },
-      { name: "description", content: "Terms of service governing use of HK Investment Management's website and platform." },
+      { title: "Terms of Service — HKEX Invest" },
+      { name: "description", content: "Terms of service governing use of HKEX Invest's website and platform." },
       { property: "og:title", content: "Terms of Service" },
+      { property: "og:description", content: "Terms of service governing use of HKEX Invest's website and platform." },
+      { property: "og:url", content: "https://www.hkexinvest.com/terms" },
+      { property: "og:type", content: "article" },
+    ],
+    links: [{ rel: "canonical", href: "https://www.hkexinvest.com/terms" }],
+    scripts: [
+      breadcrumbScript([
+        { name: "Home", path: "/" },
+        { name: "Terms of Service", path: "/terms" },
+      ]),
     ],
   }),
   component: TermsPage,

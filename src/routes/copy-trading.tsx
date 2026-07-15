@@ -40,9 +40,9 @@ export const Route = createFileRoute("/copy-trading")({
   validateSearch: zodValidator(searchSchema),
   head: () => ({
     meta: [
-      { title: "نسخ الصفقات — HK Investment Management" },
+      { title: "نسخ الصفقات — HKEX Invest" },
       { name: "description", content: "انسخ صفقات نخبة من المتداولين العالميين. باقات بأسماء متداولين أجانب، نتائج شهرية موثقة على مدى سنتين، حد أدنى للإيداع ونسبة أرباح واضحة." },
-      { property: "og:title", content: "نسخ الصفقات — HK Investment Management" },
+      { property: "og:title", content: "نسخ الصفقات — HKEX Invest" },
       { property: "og:description", content: "باقات نسخ صفقات لمتداولين عالميين، مع سجل أداء شهري على مدى 24 شهراً." },
     ],
   }),

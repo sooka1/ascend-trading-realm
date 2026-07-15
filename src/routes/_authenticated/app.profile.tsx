@@ -69,7 +69,7 @@ function ProfileMobile() {
       </Button>
 
       <p className="mt-6 flex items-center justify-center gap-1 text-[10px] uppercase tracking-widest text-muted-foreground">
-        <UserIcon className="h-3 w-3" /> HK Investment Management · v1.0
+        <UserIcon className="h-3 w-3" /> HKEX Invest · v1.0
       </p>
     </div>
   );

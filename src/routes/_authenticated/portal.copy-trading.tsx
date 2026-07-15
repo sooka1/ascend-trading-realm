@@ -25,7 +25,7 @@ import {
 export const Route = createFileRoute("/_authenticated/portal/copy-trading")({
   head: () => ({
     meta: [
-      { title: "نسخ الصفقات — HK Investment Management" },
+      { title: "نسخ الصفقات — HKEX Invest" },
       { name: "description", content: "اشترك في نسخ صفقات محترفينا تلقائيًا من رصيدك." },
     ],
   }),

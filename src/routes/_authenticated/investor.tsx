@@ -19,7 +19,7 @@ import { createBinanceDeposit } from "@/lib/binance-spot.functions";
 export const Route = createFileRoute("/_authenticated/investor")({
   head: () => ({
     meta: [
-      { title: "Investor Portal — HK Investment Management" },
+      { title: "Investor Portal — HKEX Invest" },
       { name: "description", content: "Manage deposits, withdrawals, and package subscriptions in one place." },
     ],
   }),

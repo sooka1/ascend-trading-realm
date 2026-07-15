@@ -18,7 +18,7 @@ import * as React from "react";
 export const Route = createFileRoute("/portfolios")({
   head: () => ({
     meta: [
-      { title: "باقات الاستثمار — HK Investment Management" },
+      { title: "باقات الاستثمار — HKEX Invest" },
       { name: "description", content: "ثلاث باقات استثمار مُدارة — المحافظة والمتوازنة والنمو — تناسب أهدافك ومستوى المخاطرة." },
       { property: "og:title", content: "باقات الاستثمار" },
       { property: "og:description", content: "المحافظة والمتوازنة والنمو — إدارة مخاطر منضبطة." },

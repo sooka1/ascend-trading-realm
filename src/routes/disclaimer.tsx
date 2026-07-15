@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { breadcrumbScript } from "@/lib/breadcrumbs";
 import { LegalDoc } from "@/components/legal-doc";
 
 export const Route = createFileRoute("/disclaimer")({
@@ -14,6 +15,7 @@ export const Route = createFileRoute("/disclaimer")({
       { property: "og:url", content: "https://www.hkexinvest.com/disclaimer" },
     ],
     links: [{ rel: "canonical", href: "https://www.hkexinvest.com/disclaimer" }],
+    scripts: [breadcrumbScript([{ name: "Home", path: "/" }, { name: "Disclaimer", path: "/disclaimer" }])],
   }),
   component: DisclaimerPage,
 });

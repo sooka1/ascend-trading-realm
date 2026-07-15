@@ -8,7 +8,7 @@ export const Route = createFileRoute("/_authenticated/portal/updates")({
   head: () => ({
     meta: [
       { title: "التحديثات — بوابة العميل" },
-      { name: "description", content: "آخر الإعلانات والتحديثات من HK Investment Management." },
+      { name: "description", content: "آخر الإعلانات والتحديثات من HKEX Invest." },
     ],
   }),
   component: UpdatesPage,

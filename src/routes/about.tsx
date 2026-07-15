@@ -7,9 +7,9 @@ import { usePage, useT } from "@/lib/i18n";
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "About HK — HK Investment Management" },
-      { name: "description", content: "Learn about HK Investment Management: our mission, values and experienced team of portfolio managers." },
-      { property: "og:title", content: "About HK Investment Management" },
+      { title: "About HK — HKEX Invest" },
+      { name: "description", content: "Learn about HKEX Invest: our mission, values and experienced team of portfolio managers." },
+      { property: "og:title", content: "About HKEX Invest" },
       { property: "og:description", content: "Our mission is to help investors access professionally managed investment strategies." },
     ],
   }),
