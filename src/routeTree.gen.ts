@@ -31,6 +31,7 @@ import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as ComplaintsRouteImport } from './routes/complaints'
 import { Route as CompetitionsRouteImport } from './routes/competitions'
+import { Route as CareersRouteImport } from './routes/careers'
 import { Route as BrandRouteImport } from './routes/brand'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AmlRouteImport } from './routes/aml'
@@ -210,6 +211,11 @@ const ComplaintsRoute = ComplaintsRouteImport.update({
 const CompetitionsRoute = CompetitionsRouteImport.update({
   id: '/competitions',
   path: '/competitions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CareersRoute = CareersRouteImport.update({
+  id: '/careers',
+  path: '/careers',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BrandRoute = BrandRouteImport.update({
@@ -618,6 +624,7 @@ export interface FileRoutesByFullPath {
   '/aml': typeof AmlRoute
   '/auth': typeof AuthRoute
   '/brand': typeof BrandRoute
+  '/careers': typeof CareersRoute
   '/competitions': typeof CompetitionsRoute
   '/complaints': typeof ComplaintsRoute
   '/contact': typeof ContactRoute
@@ -710,6 +717,7 @@ export interface FileRoutesByTo {
   '/aml': typeof AmlRoute
   '/auth': typeof AuthRoute
   '/brand': typeof BrandRoute
+  '/careers': typeof CareersRoute
   '/competitions': typeof CompetitionsRoute
   '/complaints': typeof ComplaintsRoute
   '/contact': typeof ContactRoute
@@ -804,6 +812,7 @@ export interface FileRoutesById {
   '/aml': typeof AmlRoute
   '/auth': typeof AuthRoute
   '/brand': typeof BrandRoute
+  '/careers': typeof CareersRoute
   '/competitions': typeof CompetitionsRoute
   '/complaints': typeof ComplaintsRoute
   '/contact': typeof ContactRoute
@@ -899,6 +908,7 @@ export interface FileRouteTypes {
     | '/aml'
     | '/auth'
     | '/brand'
+    | '/careers'
     | '/competitions'
     | '/complaints'
     | '/contact'
@@ -991,6 +1001,7 @@ export interface FileRouteTypes {
     | '/aml'
     | '/auth'
     | '/brand'
+    | '/careers'
     | '/competitions'
     | '/complaints'
     | '/contact'
@@ -1084,6 +1095,7 @@ export interface FileRouteTypes {
     | '/aml'
     | '/auth'
     | '/brand'
+    | '/careers'
     | '/competitions'
     | '/complaints'
     | '/contact'
@@ -1179,6 +1191,7 @@ export interface RootRouteChildren {
   AmlRoute: typeof AmlRoute
   AuthRoute: typeof AuthRoute
   BrandRoute: typeof BrandRoute
+  CareersRoute: typeof CareersRoute
   CompetitionsRoute: typeof CompetitionsRoute
   ComplaintsRoute: typeof ComplaintsRoute
   ContactRoute: typeof ContactRoute
@@ -1367,6 +1380,13 @@ declare module '@tanstack/react-router' {
       path: '/competitions'
       fullPath: '/competitions'
       preLoaderRoute: typeof CompetitionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/careers': {
+      id: '/careers'
+      path: '/careers'
+      fullPath: '/careers'
+      preLoaderRoute: typeof CareersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/brand': {
@@ -2026,6 +2046,7 @@ const rootRouteChildren: RootRouteChildren = {
   AmlRoute: AmlRoute,
   AuthRoute: AuthRoute,
   BrandRoute: BrandRoute,
+  CareersRoute: CareersRoute,
   CompetitionsRoute: CompetitionsRoute,
   ComplaintsRoute: ComplaintsRoute,
   ContactRoute: ContactRoute,
