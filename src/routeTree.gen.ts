@@ -15,6 +15,7 @@ import { Route as SecurityCenterRouteImport } from './routes/security-center'
 import { Route as RiskRouteImport } from './routes/risk'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as PressRouteImport } from './routes/press'
 import { Route as PortfoliosRouteImport } from './routes/portfolios'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as MarketsRouteImport } from './routes/markets'
@@ -131,6 +132,11 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PressRoute = PressRouteImport.update({
+  id: '/press',
+  path: '/press',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PortfoliosRoute = PortfoliosRouteImport.update({
@@ -641,6 +647,7 @@ export interface FileRoutesByFullPath {
   '/markets': typeof MarketsRouteWithChildren
   '/mcp': typeof McpRoute
   '/portfolios': typeof PortfoliosRoute
+  '/press': typeof PressRoute
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/risk': typeof RiskRoute
@@ -734,6 +741,7 @@ export interface FileRoutesByTo {
   '/markets': typeof MarketsRouteWithChildren
   '/mcp': typeof McpRoute
   '/portfolios': typeof PortfoliosRoute
+  '/press': typeof PressRoute
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/risk': typeof RiskRoute
@@ -829,6 +837,7 @@ export interface FileRoutesById {
   '/markets': typeof MarketsRouteWithChildren
   '/mcp': typeof McpRoute
   '/portfolios': typeof PortfoliosRoute
+  '/press': typeof PressRoute
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/risk': typeof RiskRoute
@@ -925,6 +934,7 @@ export interface FileRouteTypes {
     | '/markets'
     | '/mcp'
     | '/portfolios'
+    | '/press'
     | '/privacy'
     | '/reset-password'
     | '/risk'
@@ -1018,6 +1028,7 @@ export interface FileRouteTypes {
     | '/markets'
     | '/mcp'
     | '/portfolios'
+    | '/press'
     | '/privacy'
     | '/reset-password'
     | '/risk'
@@ -1112,6 +1123,7 @@ export interface FileRouteTypes {
     | '/markets'
     | '/mcp'
     | '/portfolios'
+    | '/press'
     | '/privacy'
     | '/reset-password'
     | '/risk'
@@ -1208,6 +1220,7 @@ export interface RootRouteChildren {
   MarketsRoute: typeof MarketsRouteWithChildren
   McpRoute: typeof McpRoute
   PortfoliosRoute: typeof PortfoliosRoute
+  PressRoute: typeof PressRoute
   PrivacyRoute: typeof PrivacyRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   RiskRoute: typeof RiskRoute
@@ -1268,6 +1281,13 @@ declare module '@tanstack/react-router' {
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/press': {
+      id: '/press'
+      path: '/press'
+      fullPath: '/press'
+      preLoaderRoute: typeof PressRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/portfolios': {
@@ -2063,6 +2083,7 @@ const rootRouteChildren: RootRouteChildren = {
   MarketsRoute: MarketsRouteWithChildren,
   McpRoute: McpRoute,
   PortfoliosRoute: PortfoliosRoute,
+  PressRoute: PressRoute,
   PrivacyRoute: PrivacyRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   RiskRoute: RiskRoute,
