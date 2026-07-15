@@ -35,6 +35,12 @@ const COLS = [
       { label: "footer.link.legal", to: "/legal" },
       { label: "footer.link.privacy", to: "/privacy" },
       { label: "footer.link.terms", to: "/terms" },
+      { label: "AML", to: "/aml" },
+      { label: "KYC", to: "/kyc" },
+      { label: "Cookies", to: "/cookies" },
+      { label: "Complaints", to: "/complaints" },
+      { label: "Disclaimer", to: "/disclaimer" },
+      { label: "Security", to: "/security-center" },
     ],
   },
   {
