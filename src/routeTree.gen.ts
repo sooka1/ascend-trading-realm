@@ -21,6 +21,7 @@ import { Route as MarketsRouteImport } from './routes/markets'
 import { Route as LegalRouteImport } from './routes/legal'
 import { Route as KycRouteImport } from './routes/kyc'
 import { Route as HowItWorksRouteImport } from './routes/how-it-works'
+import { Route as HelpRouteImport } from './routes/help'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as EducationRouteImport } from './routes/education'
@@ -159,6 +160,11 @@ const KycRoute = KycRouteImport.update({
 const HowItWorksRoute = HowItWorksRouteImport.update({
   id: '/how-it-works',
   path: '/how-it-works',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HelpRoute = HelpRouteImport.update({
+  id: '/help',
+  path: '/help',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
@@ -621,6 +627,7 @@ export interface FileRoutesByFullPath {
   '/education': typeof EducationRoute
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/help': typeof HelpRoute
   '/how-it-works': typeof HowItWorksRoute
   '/kyc': typeof KycRoute
   '/legal': typeof LegalRoute
@@ -712,6 +719,7 @@ export interface FileRoutesByTo {
   '/education': typeof EducationRoute
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/help': typeof HelpRoute
   '/how-it-works': typeof HowItWorksRoute
   '/kyc': typeof KycRoute
   '/legal': typeof LegalRoute
@@ -805,6 +813,7 @@ export interface FileRoutesById {
   '/education': typeof EducationRoute
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/help': typeof HelpRoute
   '/how-it-works': typeof HowItWorksRoute
   '/kyc': typeof KycRoute
   '/legal': typeof LegalRoute
@@ -899,6 +908,7 @@ export interface FileRouteTypes {
     | '/education'
     | '/faq'
     | '/forgot-password'
+    | '/help'
     | '/how-it-works'
     | '/kyc'
     | '/legal'
@@ -990,6 +1000,7 @@ export interface FileRouteTypes {
     | '/education'
     | '/faq'
     | '/forgot-password'
+    | '/help'
     | '/how-it-works'
     | '/kyc'
     | '/legal'
@@ -1082,6 +1093,7 @@ export interface FileRouteTypes {
     | '/education'
     | '/faq'
     | '/forgot-password'
+    | '/help'
     | '/how-it-works'
     | '/kyc'
     | '/legal'
@@ -1176,6 +1188,7 @@ export interface RootRouteChildren {
   EducationRoute: typeof EducationRoute
   FaqRoute: typeof FaqRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
+  HelpRoute: typeof HelpRoute
   HowItWorksRoute: typeof HowItWorksRoute
   KycRoute: typeof KycRoute
   LegalRoute: typeof LegalRoute
@@ -1284,6 +1297,13 @@ declare module '@tanstack/react-router' {
       path: '/how-it-works'
       fullPath: '/how-it-works'
       preLoaderRoute: typeof HowItWorksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/help': {
+      id: '/help'
+      path: '/help'
+      fullPath: '/help'
+      preLoaderRoute: typeof HelpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/forgot-password': {
@@ -2015,6 +2035,7 @@ const rootRouteChildren: RootRouteChildren = {
   EducationRoute: EducationRoute,
   FaqRoute: FaqRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
+  HelpRoute: HelpRoute,
   HowItWorksRoute: HowItWorksRoute,
   KycRoute: KycRoute,
   LegalRoute: LegalRoute,
