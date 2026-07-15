@@ -23,6 +23,28 @@ export const Route = createFileRoute("/risk")({
         { name: "Home", path: "/" },
         { name: "News", path: "/risk" },
       ]),
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          name: "الأخبار العالمية — الاستثمار والبورصات",
+          description:
+            "بث لحظي للأخبار السياسية والاقتصادية العالمية المؤثرة على الاستثمار والتداول والبورصات من مصادر غربية وصينية موثوقة.",
+          url: "https://www.hkexinvest.com/risk",
+          inLanguage: "ar",
+          isPartOf: {
+            "@type": "WebSite",
+            name: "HKEX Invest",
+            url: "https://www.hkexinvest.com",
+          },
+          about: [
+            { "@type": "Thing", name: "Financial Markets" },
+            { "@type": "Thing", name: "Investment News" },
+            { "@type": "Thing", name: "Global Stock Exchanges" },
+          ],
+        }),
+      },
     ],
   }),
   component: NewsPage,
