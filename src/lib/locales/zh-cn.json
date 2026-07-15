@@ -60,7 +60,7 @@
   "footer.link.faq": "常见问题",
   "footer.risk.label": "风险提示：",
   "footer.risk.body": "交易差价合约、外汇和加密货币等杠杆产品具有高风险，可能不适合所有投资者。您可能会损失超过您的初始存款。请确保您完全了解所涉及的风险，并在必要时寻求独立建议。过往业绩不代表未来表现。",
-  "footer.copyright": "© {year} HKEX。保留所有权利。",
+  "footer.copyright": "© {year} HKEX Invest。保留所有权利。",
   "footer.compliance": "受全球监管 · 客户资金隔离存放 · SSL安全加密",
   "inv.eyebrow": "管理式投资",
   "inv.title.a": "我们代您",
@@ -193,5 +193,6 @@
   "about.val.excT": "追求卓越",
   "about.val.excB": "由拥有数十年机构经验的高级团队组成。",
   "about.cta.portfolios": "探索管理投资组合",
-  "about.cta.advisor": "咨询理财顾问"
+  "about.cta.advisor": "咨询理财顾问",
+  "footer.disclaimer": "HKEX Invest is an independent financial technology platform and is not affiliated with, endorsed by, or operated by Hong Kong Exchanges and Clearing Limited (HKEX)."
 }

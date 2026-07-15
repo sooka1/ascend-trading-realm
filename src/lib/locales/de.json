@@ -60,7 +60,7 @@
   "footer.link.faq": "FAQ",
   "footer.risk.label": "Risikowarnung:",
   "footer.risk.body": "Der Handel mit gehebelten Produkten wie CFDs, Forex und Krypto ist mit einem hohen Risiko verbunden und möglicherweise nicht für alle Anleger geeignet. Sie könnten mehr als Ihre ursprüngliche Einzahlung verlieren. Stellen Sie sicher, dass Sie die damit verbundenen Risiken vollständig verstehen und holen Sie gegebenenfalls unabhängigen Rat ein. Die Performance in der Vergangenheit ist kein Indikator für zukünftige Ergebnisse.",
-  "footer.copyright": "© {year} HKEX. Alle Rechte vorbehalten.",
+  "footer.copyright": "© {year} HKEX Invest. Alle Rechte vorbehalten.",
   "footer.compliance": "Global reguliert · Getrennte Kundengelder · SSL-gesichert",
   "inv.eyebrow": "Verwaltete Investition",
   "inv.title.a": "Wir handeln",
@@ -193,5 +193,6 @@
   "about.val.excT": "Exzellenz",
   "about.val.excB": "Ein erfahrenes Team mit jahrzehntelanger institutioneller Erfahrung.",
   "about.cta.portfolios": "Verwaltete Portfolios erkunden",
-  "about.cta.advisor": "Sprechen Sie mit einem Berater"
+  "about.cta.advisor": "Sprechen Sie mit einem Berater",
+  "footer.disclaimer": "HKEX Invest is an independent financial technology platform and is not affiliated with, endorsed by, or operated by Hong Kong Exchanges and Clearing Limited (HKEX)."
 }

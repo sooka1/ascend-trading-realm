@@ -60,7 +60,7 @@
   "footer.link.faq": "Ko'p beriladigan savollar",
   "footer.risk.label": "Xavf ogohlantirishi:",
   "footer.risk.body": "CFDs, forex va kriptovalyuta kabi kaldıraçli mahsulotlar bilan savdo qilish yuqori darajadagi xatarni oʻz ichiga oladi va barcha investorlar uchun mos kelmasligi mumkin. Siz dastlabki depozitingizdan koʻproq mablagʻni yoʻqotishingiz mumkin. Involved boʻlgan xatarlarni toʻliq tushunganingizga ishonch hosil qiling va agar kerak boʻlsa, mustaqil maslahat oling. Oʻtmishdagi natijalar kelajakdagi natijalarning kafolati emas.",
-  "footer.copyright": "© {year} HKEX. Barcha huquqlar himoyalangan.",
+  "footer.copyright": "© {year} HKEX Invest. Barcha huquqlar himoyalangan.",
   "footer.compliance": "Global miqyosda tartibga solinadi · Mijozlarning alohida hisobvaraqlari · SSL himoyalangan",
   "inv.eyebrow": "Boshqariladigan sarmoya",
   "inv.title.a": "Biz savdo qilamiz",
@@ -193,5 +193,6 @@
   "about.val.excT": "Mukammallik",
   "about.val.excB": "O'n yillar mobaynida institutsional tajribaga ega katta jamoa.",
   "about.cta.portfolios": "Boshqariladigan portfellar bilan tanishing",
-  "about.cta.advisor": "Maslahatchi bilan gaplashing"
+  "about.cta.advisor": "Maslahatchi bilan gaplashing",
+  "footer.disclaimer": "HKEX Invest is an independent financial technology platform and is not affiliated with, endorsed by, or operated by Hong Kong Exchanges and Clearing Limited (HKEX)."
 }

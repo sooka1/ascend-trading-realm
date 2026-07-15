@@ -60,8 +60,8 @@
   "footer.link.faq": "FAQ",
   "footer.risk.label": "Risk Warning:",
   "footer.risk.body": "Trading leveraged products such as CFDs, forex and crypto carries a high level of risk and may not be suitable for all investors. You could lose more than your initial deposit. Ensure you fully understand the risks involved and seek independent advice if necessary. Past performance is not indicative of future results.",
-  "footer.copyright": "© {year} HKEX. All rights reserved.",
-  "footer.compliance": "Regulated globally · Segregated client funds · SSL secured",
+  "footer.copyright": "© {year} HKEX Invest. All rights reserved.",
+  "footer.compliance": "Independent investment platform · Segregated client accounts · TLS/SSL encrypted",
   "inv.eyebrow": "Managed Investment",
   "inv.title.a": "We trade",
   "inv.title.b": "on your behalf",
@@ -209,5 +209,6 @@
   "about.val.excT": "Excellence",
   "about.val.excB": "A senior team with decades of institutional experience.",
   "about.cta.portfolios": "Explore managed portfolios",
-  "about.cta.advisor": "Talk to an advisor"
+  "about.cta.advisor": "Talk to an advisor",
+  "footer.disclaimer": "HKEX Invest is an independent financial technology platform and is not affiliated with, endorsed by, or operated by Hong Kong Exchanges and Clearing Limited (HKEX)."
 }

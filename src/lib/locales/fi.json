@@ -60,7 +60,7 @@
   "footer.link.faq": "UKK",
   "footer.risk.label": "Riskivaroitus:",
   "footer.risk.body": "Velkaantuotteilla, kuten CFD:illä, forexilla ja kryptovaluutoilla käytävään kaupankäyntiin liittyy korkea riski, eivätkä ne välttämättä sovi kaikille sijoittajille. Voit menettää enemmän kuin alkuperäisen talletuksesi. Varmista, että ymmärrät täysin riskit ja hakeudu tarvittaessa riippumattomaan neuvontaan. Aiempi tuotto ei takaa tulevaa tuottoa.",
-  "footer.copyright": "© {year} HKEX. Kaikki oikeudet pidätetään.",
+  "footer.copyright": "© {year} HKEX Invest. Kaikki oikeudet pidätetään.",
   "footer.compliance": "Globaalisti säännelty · Erotellut asiakasvarat · SSL-suojattu",
   "inv.eyebrow": "Hallinnoitu sijoitus",
   "inv.title.a": "Me käymme kauppaa",
@@ -193,5 +193,6 @@
   "about.val.excT": "Erinomaisuus",
   "about.val.excB": "Kokenut tiimi, jolla on vuosikymmenten institutionaalinen kokemus.",
   "about.cta.portfolios": "Tutustu hallinnoituihin salkkuihin",
-  "about.cta.advisor": "Keskustele neuvonantajan kanssa"
+  "about.cta.advisor": "Keskustele neuvonantajan kanssa",
+  "footer.disclaimer": "HKEX Invest is an independent financial technology platform and is not affiliated with, endorsed by, or operated by Hong Kong Exchanges and Clearing Limited (HKEX)."
 }

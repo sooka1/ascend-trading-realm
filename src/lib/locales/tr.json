@@ -56,7 +56,7 @@
   "footer.link.faq": "SSS",
   "footer.risk.label": "Risk Uyarısı:",
   "footer.risk.body": "CFD, forex ve kripto gibi kaldıraçlı ürünlerin ticareti yüksek düzeyde risk içerir ve tüm yatırımcılar için uygun olmayabilir. İlk yatırımınızdan daha fazlasını kaybedebilirsiniz. İlgili riskleri tam olarak anladığınızdan emin olun ve gerekirse bağımsız tavsiye alın. Geçmiş performans, gelecekteki sonuçların göstergesi değildir.",
-  "footer.copyright": "© {year} HKEX. Tüm hakları saklıdır.",
+  "footer.copyright": "© {year} HKEX Invest. Tüm hakları saklıdır.",
   "footer.compliance": "Küresel düzenlemeye tabi · Ayrılmış müşteri fonları · SSL korumalı",
   "inv.eyebrow": "Yönetilen Yatırım",
   "inv.title.a": "Sizin adınıza",
@@ -189,5 +189,6 @@
   "about.val.excT": "Mükemmellik",
   "about.val.excB": "Onlarca yıllık kurumsal deneyime sahip kıdemli bir ekip.",
   "about.cta.portfolios": "Yönetilen portföyleri keşfedin",
-  "about.cta.advisor": "Danışmanla görüşün"
+  "about.cta.advisor": "Danışmanla görüşün",
+  "footer.disclaimer": "HKEX Invest is an independent financial technology platform and is not affiliated with, endorsed by, or operated by Hong Kong Exchanges and Clearing Limited (HKEX)."
 }

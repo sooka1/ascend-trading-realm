@@ -60,7 +60,7 @@
   "footer.link.faq": "Veelgestelde vragen",
   "footer.risk.label": "Risicowaarschuwing:",
   "footer.risk.body": "Handel in producten met hefboomwerking, zoals CFD's, forex en crypto, brengt een hoog risico met zich mee en is mogelijk niet geschikt voor alle beleggers. U kunt meer verliezen dan uw oorspronkelijke inleg. Zorg ervoor dat u de betrokken risico's volledig begrijpt en vraag zo nodig onafhankelijk advies. In het verleden behaalde resultaten bieden geen garantie voor de toekomst.",
-  "footer.copyright": "© {year} HKEX. Alle rechten voorbehouden.",
+  "footer.copyright": "© {year} HKEX Invest. Alle rechten voorbehouden.",
   "footer.compliance": "Wereldwijd gereguleerd · Gescheiden klanttegoeden · SSL beveiligd",
   "inv.eyebrow": "Beleggingen Beheerd",
   "inv.title.a": "Wij handelen",
@@ -193,5 +193,6 @@
   "about.val.excT": "Uitmuntendheid",
   "about.val.excB": "Een senior team met tientallen jaren institutionele ervaring.",
   "about.cta.portfolios": "Ontdek beheerde portefeuilles",
-  "about.cta.advisor": "Praat met een adviseur"
+  "about.cta.advisor": "Praat met een adviseur",
+  "footer.disclaimer": "HKEX Invest is an independent financial technology platform and is not affiliated with, endorsed by, or operated by Hong Kong Exchanges and Clearing Limited (HKEX)."
 }

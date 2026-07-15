@@ -60,7 +60,7 @@
   "footer.link.faq": "FAQ",
   "footer.risk.label": "Riskvarning:",
   "footer.risk.body": "Handel med hävstångsprodukter som CFDs, valutor och krypto innebär en hög risknivå och kanske inte är lämplig för alla investerare. Du kan förlora mer än din initiala insättning. Se till att du till fullo förstår riskerna och sök oberoende råd vid behov. Tidigare resultat är ingen indikation på framtida resultat.",
-  "footer.copyright": "© {year} HKEX. Alla rättigheter förbehållna.",
+  "footer.copyright": "© {year} HKEX Invest. Alla rättigheter förbehållna.",
   "footer.compliance": "Globalt reglerad · Segregerade kundmedel · SSL-säkrad",
   "inv.eyebrow": "Förvaltad investering",
   "inv.title.a": "Vi handlar",
@@ -193,5 +193,6 @@
   "about.val.excT": "Spetskompetens",
   "about.val.excB": "Ett senior team med årtionden av institutionell erfarenhet.",
   "about.cta.portfolios": "Utforska förvaltade portföljer",
-  "about.cta.advisor": "Prata med en rådgivare"
+  "about.cta.advisor": "Prata med en rådgivare",
+  "footer.disclaimer": "HKEX Invest is an independent financial technology platform and is not affiliated with, endorsed by, or operated by Hong Kong Exchanges and Clearing Limited (HKEX)."
 }

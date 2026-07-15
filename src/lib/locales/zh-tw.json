@@ -60,7 +60,7 @@
   "footer.link.faq": "常見問題",
   "footer.risk.label": "風險警告：",
   "footer.risk.body": "交易槓桿產品（如差價合約、外匯和加密貨幣）具有高風險，可能不適合所有投資者。您可能損失超過您的初始存款。請確保您完全了解所涉及的風險，並在必要時尋求獨立建議。過往表現並不代表未來結果。",
-  "footer.copyright": "© {year} HKEX. 版權所有。",
+  "footer.copyright": "© {year} HKEX Invest. 版權所有。",
   "footer.compliance": "全球受監管 · 客戶資金獨立分離 · SSL 安全加密",
   "inv.eyebrow": "管理式投資",
   "inv.title.a": "我們為您",
@@ -193,5 +193,6 @@
   "about.val.excT": "卓越非凡",
   "about.val.excB": "由擁有數十年機構經驗的資深團隊組成。",
   "about.cta.portfolios": "探索託管投資組合",
-  "about.cta.advisor": "與顧問交談"
+  "about.cta.advisor": "與顧問交談",
+  "footer.disclaimer": "HKEX Invest is an independent financial technology platform and is not affiliated with, endorsed by, or operated by Hong Kong Exchanges and Clearing Limited (HKEX)."
 }

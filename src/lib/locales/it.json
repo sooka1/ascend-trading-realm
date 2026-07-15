@@ -60,7 +60,7 @@
   "footer.link.faq": "FAQ",
   "footer.risk.label": "Avviso sui rischi:",
   "footer.risk.body": "Il trading di prodotti con leva come CFD, forex e criptovalute comporta un alto livello di rischio e potrebbe non essere adatto a tutti gli investitori. Potresti perdere più del tuo deposito iniziale. Assicurati di comprendere appieno i rischi coinvolti e cerca una consulenza indipendente se necessario. Le performance passate non sono indicative dei risultati futuri.",
-  "footer.copyright": "© {year} HKEX. Tutti i diritti riservati.",
+  "footer.copyright": "© {year} HKEX Invest. Tutti i diritti riservati.",
   "footer.compliance": "Regolamentato a livello globale · Fondi dei clienti segregati · Sicurezza SSL",
   "inv.eyebrow": "Investimento Gestito",
   "inv.title.a": "Noi facciamo trading",
@@ -193,5 +193,6 @@
   "about.val.excT": "Eccellenza",
   "about.val.excB": "Un team senior con decenni di esperienza istituzionale.",
   "about.cta.portfolios": "Esplora i portafogli gestiti",
-  "about.cta.advisor": "Parla con un consulente"
+  "about.cta.advisor": "Parla con un consulente",
+  "footer.disclaimer": "HKEX Invest is an independent financial technology platform and is not affiliated with, endorsed by, or operated by Hong Kong Exchanges and Clearing Limited (HKEX)."
 }

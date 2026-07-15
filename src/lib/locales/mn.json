@@ -60,7 +60,7 @@
   "footer.link.faq": "Түгээмэл асуултууд",
   "footer.risk.label": "Эрсдлийн анхааруулга:",
   "footer.risk.body": "CFDs, форекс болон криптовалют гэх мэт хөшүүрэгтэй бүтээгдэхүүнээр арилжаа хийх нь өндөр эрсдэлтэй бөгөөд бүх хөрөнгө оруулагчдад тохиромжгүй байж болно. Та анхны хадгаламжаасаа илүү ихийг алдаж болзошгүй. Эрсдлийн талаар бүрэн ойлголттой эсэхээ шалгаж, шаардлагатай бол бие даасан зөвлөгөө аваарай. Өмнөх үр дүн нь ирээдүйн үр дүнг илтгэхгүй.",
-  "footer.copyright": "© {year} HKEX. Бүх эрх хуулиар хамгаалагдсан.",
+  "footer.copyright": "© {year} HKEX Invest. Бүх эрх хуулиар хамгаалагдсан.",
   "footer.compliance": "Олон улсын хэмжээнд зохицуулагддаг · Үйлчлүүлэгчийн хөрөнгийг тусад нь хадгалдаг · SSL-ээр хамгаалагдсан",
   "inv.eyebrow": "Удирдлагатай хөрөнгө оруулалт",
   "inv.title.a": "Бид таны өмнөөс",
@@ -193,5 +193,6 @@
   "about.val.excT": "Шилдэг байдал",
   "about.val.excB": "Олон арван жилийн туршлагатай ахлах баг.",
   "about.cta.portfolios": "Удирдлагатай багцуудыг судлах",
-  "about.cta.advisor": "Зөвлөхтэй ярилцах"
+  "about.cta.advisor": "Зөвлөхтэй ярилцах",
+  "footer.disclaimer": "HKEX Invest is an independent financial technology platform and is not affiliated with, endorsed by, or operated by Hong Kong Exchanges and Clearing Limited (HKEX)."
 }

@@ -100,8 +100,12 @@ export function SiteFooter() {
           <strong className="text-foreground">{t("footer.risk.label")}</strong> {t("footer.risk.body")}
         </div>
 
+        <div className="mt-4 rounded-2xl border border-amber-400/20 bg-amber-500/[0.04] p-5 text-xs leading-relaxed text-muted-foreground">
+          <strong className="text-foreground">HKEX Invest —</strong> {t("footer.disclaimer")}
+        </div>
+
         <div className="mt-8 flex flex-col items-start justify-between gap-3 text-xs text-muted-foreground sm:flex-row sm:items-center">
-          <p>©2017-26 Hong Kong Exchanges and Clearing Limited. All rights reserved.</p>
+          <p>{t("footer.copyright").replace("{year}", String(new Date().getFullYear()))}</p>
           <p>{t("footer.compliance")}</p>
         </div>
       </div>

@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VerifyEmailRouteImport } from './routes/verify-email'
 import { Route as TermsRouteImport } from './routes/terms'
+import { Route as SecurityCenterRouteImport } from './routes/security-center'
 import { Route as RiskRouteImport } from './routes/risk'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as PrivacyRouteImport } from './routes/privacy'
@@ -18,14 +19,19 @@ import { Route as PortfoliosRouteImport } from './routes/portfolios'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as MarketsRouteImport } from './routes/markets'
 import { Route as LegalRouteImport } from './routes/legal'
+import { Route as KycRouteImport } from './routes/kyc'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as EducationRouteImport } from './routes/education'
+import { Route as DisclaimerRouteImport } from './routes/disclaimer'
 import { Route as CopyTradingRouteImport } from './routes/copy-trading'
+import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as ComplaintsRouteImport } from './routes/complaints'
 import { Route as CompetitionsRouteImport } from './routes/competitions'
 import { Route as BrandRouteImport } from './routes/brand'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AmlRouteImport } from './routes/aml'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -104,6 +110,11 @@ const TermsRoute = TermsRouteImport.update({
   path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SecurityCenterRoute = SecurityCenterRouteImport.update({
+  id: '/security-center',
+  path: '/security-center',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RiskRoute = RiskRouteImport.update({
   id: '/risk',
   path: '/risk',
@@ -139,6 +150,11 @@ const LegalRoute = LegalRouteImport.update({
   path: '/legal',
   getParentRoute: () => rootRouteImport,
 } as any)
+const KycRoute = KycRouteImport.update({
+  id: '/kyc',
+  path: '/kyc',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
   id: '/forgot-password',
   path: '/forgot-password',
@@ -154,14 +170,29 @@ const EducationRoute = EducationRouteImport.update({
   path: '/education',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DisclaimerRoute = DisclaimerRouteImport.update({
+  id: '/disclaimer',
+  path: '/disclaimer',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CopyTradingRoute = CopyTradingRouteImport.update({
   id: '/copy-trading',
   path: '/copy-trading',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CookiesRoute = CookiesRouteImport.update({
+  id: '/cookies',
+  path: '/cookies',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ComplaintsRoute = ComplaintsRouteImport.update({
+  id: '/complaints',
+  path: '/complaints',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CompetitionsRoute = CompetitionsRouteImport.update({
@@ -177,6 +208,11 @@ const BrandRoute = BrandRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AmlRoute = AmlRouteImport.update({
+  id: '/aml',
+  path: '/aml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -567,14 +603,19 @@ const AuthenticatedAdminAdminAccountingRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/aml': typeof AmlRoute
   '/auth': typeof AuthRoute
   '/brand': typeof BrandRoute
   '/competitions': typeof CompetitionsRoute
+  '/complaints': typeof ComplaintsRoute
   '/contact': typeof ContactRoute
+  '/cookies': typeof CookiesRoute
   '/copy-trading': typeof CopyTradingRoute
+  '/disclaimer': typeof DisclaimerRoute
   '/education': typeof EducationRoute
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/kyc': typeof KycRoute
   '/legal': typeof LegalRoute
   '/markets': typeof MarketsRouteWithChildren
   '/mcp': typeof McpRoute
@@ -582,6 +623,7 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/risk': typeof RiskRoute
+  '/security-center': typeof SecurityCenterRoute
   '/terms': typeof TermsRoute
   '/verify-email': typeof VerifyEmailRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
@@ -651,14 +693,19 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/aml': typeof AmlRoute
   '/auth': typeof AuthRoute
   '/brand': typeof BrandRoute
   '/competitions': typeof CompetitionsRoute
+  '/complaints': typeof ComplaintsRoute
   '/contact': typeof ContactRoute
+  '/cookies': typeof CookiesRoute
   '/copy-trading': typeof CopyTradingRoute
+  '/disclaimer': typeof DisclaimerRoute
   '/education': typeof EducationRoute
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/kyc': typeof KycRoute
   '/legal': typeof LegalRoute
   '/markets': typeof MarketsRouteWithChildren
   '/mcp': typeof McpRoute
@@ -666,6 +713,7 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/risk': typeof RiskRoute
+  '/security-center': typeof SecurityCenterRoute
   '/terms': typeof TermsRoute
   '/verify-email': typeof VerifyEmailRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
@@ -737,14 +785,19 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/about': typeof AboutRoute
+  '/aml': typeof AmlRoute
   '/auth': typeof AuthRoute
   '/brand': typeof BrandRoute
   '/competitions': typeof CompetitionsRoute
+  '/complaints': typeof ComplaintsRoute
   '/contact': typeof ContactRoute
+  '/cookies': typeof CookiesRoute
   '/copy-trading': typeof CopyTradingRoute
+  '/disclaimer': typeof DisclaimerRoute
   '/education': typeof EducationRoute
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/kyc': typeof KycRoute
   '/legal': typeof LegalRoute
   '/markets': typeof MarketsRouteWithChildren
   '/mcp': typeof McpRoute
@@ -752,6 +805,7 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/risk': typeof RiskRoute
+  '/security-center': typeof SecurityCenterRoute
   '/terms': typeof TermsRoute
   '/verify-email': typeof VerifyEmailRoute
   '/_authenticated/_admin': typeof AuthenticatedAdminRouteRouteWithChildren
@@ -824,14 +878,19 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/aml'
     | '/auth'
     | '/brand'
     | '/competitions'
+    | '/complaints'
     | '/contact'
+    | '/cookies'
     | '/copy-trading'
+    | '/disclaimer'
     | '/education'
     | '/faq'
     | '/forgot-password'
+    | '/kyc'
     | '/legal'
     | '/markets'
     | '/mcp'
@@ -839,6 +898,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/reset-password'
     | '/risk'
+    | '/security-center'
     | '/terms'
     | '/verify-email'
     | '/.mcp/list-tools'
@@ -908,14 +968,19 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/aml'
     | '/auth'
     | '/brand'
     | '/competitions'
+    | '/complaints'
     | '/contact'
+    | '/cookies'
     | '/copy-trading'
+    | '/disclaimer'
     | '/education'
     | '/faq'
     | '/forgot-password'
+    | '/kyc'
     | '/legal'
     | '/markets'
     | '/mcp'
@@ -923,6 +988,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/reset-password'
     | '/risk'
+    | '/security-center'
     | '/terms'
     | '/verify-email'
     | '/.mcp/list-tools'
@@ -993,14 +1059,19 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/about'
+    | '/aml'
     | '/auth'
     | '/brand'
     | '/competitions'
+    | '/complaints'
     | '/contact'
+    | '/cookies'
     | '/copy-trading'
+    | '/disclaimer'
     | '/education'
     | '/faq'
     | '/forgot-password'
+    | '/kyc'
     | '/legal'
     | '/markets'
     | '/mcp'
@@ -1008,6 +1079,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/reset-password'
     | '/risk'
+    | '/security-center'
     | '/terms'
     | '/verify-email'
     | '/_authenticated/_admin'
@@ -1080,14 +1152,19 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
+  AmlRoute: typeof AmlRoute
   AuthRoute: typeof AuthRoute
   BrandRoute: typeof BrandRoute
   CompetitionsRoute: typeof CompetitionsRoute
+  ComplaintsRoute: typeof ComplaintsRoute
   ContactRoute: typeof ContactRoute
+  CookiesRoute: typeof CookiesRoute
   CopyTradingRoute: typeof CopyTradingRoute
+  DisclaimerRoute: typeof DisclaimerRoute
   EducationRoute: typeof EducationRoute
   FaqRoute: typeof FaqRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
+  KycRoute: typeof KycRoute
   LegalRoute: typeof LegalRoute
   MarketsRoute: typeof MarketsRouteWithChildren
   McpRoute: typeof McpRoute
@@ -1095,6 +1172,7 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   RiskRoute: typeof RiskRoute
+  SecurityCenterRoute: typeof SecurityCenterRoute
   TermsRoute: typeof TermsRoute
   VerifyEmailRoute: typeof VerifyEmailRoute
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
@@ -1123,6 +1201,13 @@ declare module '@tanstack/react-router' {
       path: '/terms'
       fullPath: '/terms'
       preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/security-center': {
+      id: '/security-center'
+      path: '/security-center'
+      fullPath: '/security-center'
+      preLoaderRoute: typeof SecurityCenterRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/risk': {
@@ -1174,6 +1259,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LegalRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/kyc': {
+      id: '/kyc'
+      path: '/kyc'
+      fullPath: '/kyc'
+      preLoaderRoute: typeof KycRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/forgot-password': {
       id: '/forgot-password'
       path: '/forgot-password'
@@ -1195,6 +1287,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EducationRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/disclaimer': {
+      id: '/disclaimer'
+      path: '/disclaimer'
+      fullPath: '/disclaimer'
+      preLoaderRoute: typeof DisclaimerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/copy-trading': {
       id: '/copy-trading'
       path: '/copy-trading'
@@ -1202,11 +1301,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CopyTradingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/cookies': {
+      id: '/cookies'
+      path: '/cookies'
+      fullPath: '/cookies'
+      preLoaderRoute: typeof CookiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/contact': {
       id: '/contact'
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/complaints': {
+      id: '/complaints'
+      path: '/complaints'
+      fullPath: '/complaints'
+      preLoaderRoute: typeof ComplaintsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/competitions': {
@@ -1228,6 +1341,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/aml': {
+      id: '/aml'
+      path: '/aml'
+      fullPath: '/aml'
+      preLoaderRoute: typeof AmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -1863,14 +1983,19 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AboutRoute: AboutRoute,
+  AmlRoute: AmlRoute,
   AuthRoute: AuthRoute,
   BrandRoute: BrandRoute,
   CompetitionsRoute: CompetitionsRoute,
+  ComplaintsRoute: ComplaintsRoute,
   ContactRoute: ContactRoute,
+  CookiesRoute: CookiesRoute,
   CopyTradingRoute: CopyTradingRoute,
+  DisclaimerRoute: DisclaimerRoute,
   EducationRoute: EducationRoute,
   FaqRoute: FaqRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
+  KycRoute: KycRoute,
   LegalRoute: LegalRoute,
   MarketsRoute: MarketsRouteWithChildren,
   McpRoute: McpRoute,
@@ -1878,6 +2003,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   RiskRoute: RiskRoute,
+  SecurityCenterRoute: SecurityCenterRoute,
   TermsRoute: TermsRoute,
   VerifyEmailRoute: VerifyEmailRoute,
   Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
@@ -1895,13 +2021,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

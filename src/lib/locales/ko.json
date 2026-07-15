@@ -60,7 +60,7 @@
   "footer.link.faq": "자주 묻는 질문",
   "footer.risk.label": "위험 경고:",
   "footer.risk.body": "CFD, 외환, 암호화폐와 같은 레버리지 상품 거래는 높은 수준의 위험을 수반하며 모든 투자자에게 적합하지 않을 수 있습니다. 초기 예치금 이상을 잃을 수 있습니다. 관련된 위험을 완전히 이해하고 필요한 경우 독립적인 조언을 구하십시오. 과거의 실적은 미래의 결과를 나타내지 않습니다.",
-  "footer.copyright": "© {year} HKEX. 모든 권리 보유.",
+  "footer.copyright": "© {year} HKEX Invest. 모든 권리 보유.",
   "footer.compliance": "전 세계적으로 규제됨 · 분리된 고객 자금 · SSL 보안",
   "inv.eyebrow": "관리형 투자",
   "inv.title.a": "저희가 고객님을",
@@ -193,5 +193,6 @@
   "about.val.excT": "탁월함",
   "about.val.excB": "수십 년의 기관 경험을 가진 고위 팀원이 있습니다.",
   "about.cta.portfolios": "관리 포트폴리오 살펴보기",
-  "about.cta.advisor": "어드바이저와 상담하기"
+  "about.cta.advisor": "어드바이저와 상담하기",
+  "footer.disclaimer": "HKEX Invest is an independent financial technology platform and is not affiliated with, endorsed by, or operated by Hong Kong Exchanges and Clearing Limited (HKEX)."
 }

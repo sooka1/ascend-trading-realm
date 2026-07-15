@@ -60,7 +60,7 @@
   "footer.link.faq": "FAQ",
   "footer.risk.label": "Peringatan Risiko:",
   "footer.risk.body": "Perdagangan produk leverage seperti CFD, forex, dan kripto memiliki tingkat risiko yang tinggi dan mungkin tidak cocok untuk semua investor. Anda bisa kehilangan lebih dari deposit awal Anda. Pastikan Anda sepenuhnya memahami risiko yang ada dan carilah saran independen jika diperlukan. Kinerja masa lalu tidak menjamin hasil di masa depan.",
-  "footer.copyright": "© {year} HKEX. Semua hak dilindungi.",
+  "footer.copyright": "© {year} HKEX Invest. Semua hak dilindungi.",
   "footer.compliance": "Diatur secara global · Dana klien terpisah · Diamankan dengan SSL",
   "inv.eyebrow": "Investasi Terkelola",
   "inv.title.a": "Kami melakukan trading",
@@ -193,5 +193,6 @@
   "about.val.excT": "Keunggulan",
   "about.val.excB": "Tim senior dengan pengalaman institusional puluhan tahun.",
   "about.cta.portfolios": "Jelajahi portofolio terkelola",
-  "about.cta.advisor": "Bicara dengan penasihat"
+  "about.cta.advisor": "Bicara dengan penasihat",
+  "footer.disclaimer": "HKEX Invest is an independent financial technology platform and is not affiliated with, endorsed by, or operated by Hong Kong Exchanges and Clearing Limited (HKEX)."
 }

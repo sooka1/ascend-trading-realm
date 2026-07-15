@@ -132,7 +132,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "HK Investment Management — Professional Portfolio Management" },
+      { title: "HKEX Invest — Independent Multi-Asset Investment Platform" },
       {
         name: "google-site-verification",
         content: "YVyWqXIuzwvX8za5RUQKDEnXp6kCUjSamY_YyOS5GIE",
@@ -140,19 +140,19 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "Professionally managed investment portfolios across Forex, Gold, Commodities, Indices and Stocks. Disciplined risk management, transparent reporting, secure client portal.",
+          "HKEX Invest is an independent financial technology platform offering managed multi-asset portfolios across Forex, Gold, commodities, indices and stocks — with disciplined risk management, transparent reporting, and a secure client portal. Not affiliated with Hong Kong Exchanges and Clearing Limited (HKEX).",
       },
       { name: "theme-color", content: "#0B1220" },
-      { property: "og:title", content: "HK Investment Management — Professional Portfolio Management" },
+      { property: "og:title", content: "HKEX Invest — Independent Multi-Asset Investment Platform" },
       {
         property: "og:description",
-        content: "Professionally managed investment portfolios across Forex, Gold, Commodities, Indices and Stocks. Disciplined risk management, transparent reporting, secure client portal.",
+        content: "Independent fintech platform for managed multi-asset portfolios with disciplined risk controls and transparent reporting. Not affiliated with HKEX.",
       },
       { property: "og:type", content: "website" },
-      { property: "og:site_name", content: "HK Investment Management" },
+      { property: "og:site_name", content: "HKEX Invest" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "HK Investment Management — Professional Portfolio Management" },
-      { name: "twitter:description", content: "Professionally managed investment portfolios across Forex, Gold, Commodities, Indices and Stocks. Disciplined risk management, transparent reporting, secure client portal." },
+      { name: "twitter:title", content: "HKEX Invest — Independent Multi-Asset Investment Platform" },
+      { name: "twitter:description", content: "Independent fintech platform for managed multi-asset portfolios. Not affiliated with HKEX." },
       { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/3FIQZ9ScAmeywbcsB5A8g6IHRPQ2/social-images/social-1783688127961-d59af371-98db-4456-a427-ca87dcfbae10.webp" },
       { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/3FIQZ9ScAmeywbcsB5A8g6IHRPQ2/social-images/social-1783688127961-d59af371-98db-4456-a427-ca87dcfbae10.webp" },
     ],
@@ -183,16 +183,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         type: "application/ld+json",
         children: JSON.stringify({
           "@context": "https://schema.org",
-          "@type": "FinancialService",
-          name: "HK Investment Management",
+          "@type": "Organization",
+          name: "HKEX Invest",
+          alternateName: "HKEX Invest Platform",
+          url: "https://www.hkexinvest.com",
+          slogan: "Independent multi-asset investment platform",
           description:
-            "Professionally managed multi-asset portfolios across Forex, Gold, Commodities, Indices and Stocks with disciplined risk controls and transparent reporting.",
-          areaServed: "Global",
-          serviceType: [
-            "Portfolio Management",
-            "Investment Management",
-            "Wealth Management",
-          ],
+            "HKEX Invest is an independent financial technology platform offering managed multi-asset portfolios. HKEX Invest is not affiliated with, endorsed by, or operated by Hong Kong Exchanges and Clearing Limited (HKEX).",
+          disambiguatingDescription:
+            "HKEX Invest is an independent platform and is not related to Hong Kong Exchanges and Clearing Limited (HKEX).",
         }),
       },
     ],
