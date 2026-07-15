@@ -10,7 +10,7 @@ import { ShieldCheck, Trash2, KeyRound, Smartphone, ArrowRight } from "lucide-re
 export const Route = createFileRoute("/_authenticated/portal/mfa")({
   head: () => ({
     meta: [
-      { title: "المصادقة الثنائية | HK Investment Management" },
+      { title: "المصادقة الثنائية | HKEX Invest" },
       { name: "description", content: "تفعيل وإدارة المصادقة الثنائية عبر تطبيق TOTP." },
       { name: "robots", content: "noindex" },
     ],

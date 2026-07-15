@@ -10,7 +10,7 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/_authenticated/portal/")({
   head: () => ({
     meta: [
-      { title: "بوابة العميل — HK Investment Management" },
+      { title: "بوابة العميل — HKEX Invest" },
       { name: "description", content: "الكشوف، سجل العمليات، المراسلات الآمنة، والإشعارات لعملاء HK." },
     ],
   }),

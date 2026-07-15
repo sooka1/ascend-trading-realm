@@ -10,8 +10,8 @@ import blackCircle from "@/assets/social/hk-social-black-circle.png";
 export const Route = createFileRoute("/brand")({
   head: () => ({
     meta: [
-      { title: "Brand Assets — HK Investment Management" },
-      { name: "description", content: "Download HK Investment Management social profile logos in gold, white, and black — square and circular variants." },
+      { title: "Brand Assets — HKEX Invest" },
+      { name: "description", content: "Download HKEX Invest social profile logos in gold, white, and black — square and circular variants." },
     ],
   }),
   component: BrandPage,
@@ -39,7 +39,7 @@ function BrandPage() {
             <div className="flex aspect-square items-center justify-center overflow-hidden rounded-xl bg-[#0B1120]">
               <img
                 src={a.src}
-                alt={`HK Investment Management logo — ${a.label}`}
+                alt={`HKEX Invest logo — ${a.label}`}
                 width={1024}
                 height={1024}
                 loading="lazy"

@@ -71,7 +71,7 @@
 }
 
 :root {
-  /* HK Investment Management — Noir / Navy / Burgundy institutional palette */
+  /* HKEX Invest — Noir / Navy / Burgundy institutional palette */
   --radius: 0.5rem;
   /* Steel Blue: #0a1929 / #132f4c / #66b2ff / #e3f2fd */
   --background: oklch(0.16 0.04 220);         /* #0a1929 deep steel navy */

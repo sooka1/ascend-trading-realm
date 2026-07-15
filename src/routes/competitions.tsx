@@ -14,7 +14,7 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/competitions")({
   head: () => ({
     meta: [
-      { title: "المسابقات — HK Investment Management" },
+      { title: "المسابقات — HKEX Invest" },
       { name: "description", content: "مسابقات تداول دورية برسم اشتراك رمزي وحساب تجريبي. حقق أعلى عائد واحصل على جائزة نقدية حقيقية حسب باقة اشتراكك." },
       { property: "og:title", content: "مسابقات التداول — HK" },
       { property: "og:description", content: "اشترك بـ 10$ ونافس على جائزة 1000$، أو ارفع الاشتراك لمضاعفة الجائزة." },

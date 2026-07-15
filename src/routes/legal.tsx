@@ -5,8 +5,8 @@ import { useStatic } from "@/lib/i18n";
 export const Route = createFileRoute("/legal")({
   head: () => ({
     meta: [
-      { title: "Legal & Compliance — HK Investment Management" },
-      { name: "description", content: "Legal and compliance information for HK Investment Management, including risk disclosures and regulatory approach." },
+      { title: "Legal & Compliance — HKEX Invest" },
+      { name: "description", content: "Legal and compliance information for HKEX Invest, including risk disclosures and regulatory approach." },
       { property: "og:title", content: "Legal & Compliance" },
     ],
   }),

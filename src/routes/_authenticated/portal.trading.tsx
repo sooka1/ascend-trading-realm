@@ -18,7 +18,7 @@ import type { Timeframe } from "@/features/terminal/adapters/market-data/types";
 export const Route = createFileRoute("/_authenticated/portal/trading")({
   head: () => ({
     meta: [
-      { title: "منصة التداول — HK Investment Management" },
+      { title: "منصة التداول — HKEX Invest" },
       { name: "description", content: "محطة تداول احترافية بأسعار حية وتنفيذ فوري." },
     ],
   }),

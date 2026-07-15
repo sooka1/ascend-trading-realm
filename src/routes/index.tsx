@@ -61,13 +61,13 @@ import custodyBanksImg from "@/assets/custody-banks.png.asset.json";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "HK Investment Management — Professional Portfolio Management" },
+      { title: "HKEX Invest — Professional Portfolio Management" },
       {
         name: "description",
         content:
           "Professionally managed investment portfolios across Forex, Gold, Commodities, Indices and Stocks. Disciplined risk management, transparent reporting, secure client portal.",
       },
-      { property: "og:title", content: "HK Investment Management — Professional Portfolio Management" },
+      { property: "og:title", content: "HKEX Invest — Professional Portfolio Management" },
       {
         property: "og:description",
         content: "Professionally managed investment portfolios across Forex, Gold, Commodities, Indices and Stocks. Disciplined risk management, transparent reporting, secure client portal.",

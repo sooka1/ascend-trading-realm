@@ -22,7 +22,7 @@ export const Route = createFileRoute("/_authenticated/portal/support")({
   head: () => ({
     meta: [
       { title: "الدعم — بوابة العميل" },
-      { name: "description", content: "افتح تذكرة دعم وتابع الردود من فريق HK Investment Management." },
+      { name: "description", content: "افتح تذكرة دعم وتابع الردود من فريق HKEX Invest." },
     ],
   }),
   component: SupportPage,

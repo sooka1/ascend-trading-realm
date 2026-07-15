@@ -5,8 +5,8 @@ import { useStatic } from "@/lib/i18n";
 export const Route = createFileRoute("/privacy")({
   head: () => ({
     meta: [
-      { title: "Privacy Policy — HK Investment Management" },
-      { name: "description", content: "How HK Investment Management collects, uses and protects your personal information." },
+      { title: "Privacy Policy — HKEX Invest" },
+      { name: "description", content: "How HKEX Invest collects, uses and protects your personal information." },
       { property: "og:title", content: "Privacy Policy" },
     ],
   }),
