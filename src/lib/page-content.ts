@@ -92,9 +92,9 @@ const en: PageContent = {
         { q: "When are prizes paid?", a: "Prizes are credited within 72 hours of results being finalized." },
       ]},
       { title: "Security & compliance", items: [
-        { q: "Is HKEX regulated?", a: "Yes, we hold licenses across multiple leading global jurisdictions." },
-        { q: "How are client funds protected?", a: "Client funds are segregated in tier-1 banks with internal insurance." },
-        { q: "Do you support 2FA?", a: "Yes — TOTP and hardware key 2FA is available on every account." },
+        { q: "Is HKEX Invest affiliated with Hong Kong Exchanges (HKEX)?", a: "No. HKEX Invest is an independent financial technology platform and is not affiliated with, endorsed by, or operated by Hong Kong Exchanges and Clearing Limited (HKEX)." },
+        { q: "How are client accounts kept separate?", a: "Client balances are tracked in dedicated accounts, kept operationally separate from company operating funds. Details available on our Security page." },
+        { q: "Do you support 2FA?", a: "Yes — TOTP two-factor authentication is available from your account security settings." },
       ]},
     ],
   },
