@@ -143,7 +143,7 @@ function TradingTerminal() {
               </div>
             </div>
           </Panel>
-          <PanelResizeHandle className="w-px bg-white/10 hover:bg-amber-400/40 transition-colors" />
+          <PanelResizeHandle className="w-px bg-[#2a2e39] hover:bg-[#d4af37]/60 transition-colors" />
 
           {/* CENTER: chart + bottom tabs */}
           <Panel defaultSize={56} minSize={30}>
@@ -194,10 +194,10 @@ function TradingTerminal() {
                   </div>
                 </div>
               </Panel>
-              <PanelResizeHandle className="h-px bg-white/10 hover:bg-amber-400/40 transition-colors" />
+              <PanelResizeHandle className="h-px bg-[#2a2e39] hover:bg-[#d4af37]/60 transition-colors" />
               <Panel defaultSize={35} minSize={15}>
                 <Tabs defaultValue="positions" className="h-full flex flex-col">
-                  <TabsList className="h-8 mx-2 mt-2 self-start bg-white/[0.03] border border-white/10">
+                  <TabsList className="h-8 mx-2 mt-2 self-start bg-[#1e222d] border border-[#2a2e39]">
                     <TabsTrigger value="positions" className="text-xs">الصفقات ({positions.length})</TabsTrigger>
                     <TabsTrigger value="pending" className="text-xs">المعلّقة ({pending.length})</TabsTrigger>
                     <TabsTrigger value="history" className="text-xs">السجل</TabsTrigger>
