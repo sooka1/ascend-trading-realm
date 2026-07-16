@@ -125,19 +125,19 @@ function TradingTerminal() {
               <div className="flex-1 overflow-y-auto">
                 <OrderTicket instrument={selInst} bid={bid} ask={ask} balance={freeMargin > 0 ? freeMargin : balance} leverage={leverage} />
                 <div className="px-3 pb-3 space-y-1 text-[11px]">
-                  <div className="rounded-lg border border-white/10 bg-gradient-to-b from-white/[0.04] to-white/[0.01] p-2.5 space-y-1 shadow-inner shadow-black/40">
-                    <div className="mb-1 flex items-center justify-between border-b border-white/[0.06] pb-1">
+                  <div className="rounded-md border border-[#2a2e39] bg-[#1e222d] p-2.5 space-y-1 shadow-inner shadow-black/50">
+                    <div className="mb-1 flex items-center justify-between border-b border-[#2a2e39] pb-1">
                       <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/50">ملخّص الحساب</span>
-                      <span className="font-mono text-[10px] text-amber-300/80">1:{leverage}</span>
+                      <span className="font-mono text-[10px] text-[#d4af37]">1:{leverage}</span>
                     </div>
                     <Row label="الرصيد" v={`$${balance.toFixed(2)}`} />
                     <Row label="حقوق الملكية" v={`$${equity.toFixed(2)}`} />
                     <Row label="الهامش المستخدم" v={`$${usedMargin.toFixed(2)}`} />
                     <Row label="الهامش الحر" v={`$${freeMargin.toFixed(2)}`} />
                     <Row label="مستوى الهامش" v={`${marginLevel.toFixed(1)}%`} />
-                    <Row label="الربح العائم" v={`$${floating.toFixed(2)}`} vClass={floating >= 0 ? "text-emerald-400" : "text-red-400"} />
-                    <Row label="ربح محقق" v={`$${realized.toFixed(2)}`} vClass={realized >= 0 ? "text-emerald-400" : "text-red-400"} />
-                    <Row label="الإجمالي (محقق + عائم)" v={`$${totalPnl.toFixed(2)}`} vClass={totalPnl >= 0 ? "text-emerald-400" : "text-red-400"} />
+                    <Row label="الربح العائم" v={`$${floating.toFixed(2)}`} vClass={floating >= 0 ? "text-emerald-500" : "text-rose-500"} />
+                    <Row label="ربح محقق" v={`$${realized.toFixed(2)}`} vClass={realized >= 0 ? "text-emerald-500" : "text-rose-500"} />
+                    <Row label="الإجمالي (محقق + عائم)" v={`$${totalPnl.toFixed(2)}`} vClass={totalPnl >= 0 ? "text-emerald-500" : "text-rose-500"} />
                   </div>
                 </div>
               </div>
