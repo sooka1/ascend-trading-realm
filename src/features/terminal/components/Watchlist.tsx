@@ -14,11 +14,12 @@ const CATEGORIES = [
   { key: "commodities", label: "سلع" },
 ];
 
-export function Watchlist({ instruments, quotes, selected, onSelect }: {
+export function Watchlist({ instruments, quotes, selected, onSelect, loading }: {
   instruments: Instrument[];
   quotes: Record<string, Quote>;
   selected: string;
   onSelect: (symbol: string) => void;
+  loading?: boolean;
 }) {
   const [q, setQ] = useState("");
   const [cat, setCat] = useState("all");
@@ -49,6 +50,20 @@ export function Watchlist({ instruments, quotes, selected, onSelect }: {
         </div>
       </div>
       <div className="flex-1 overflow-y-auto bg-[#131722]">
+        {loading && filtered.length === 0 &&
+          Array.from({ length: 6 }).map((_, idx) => (
+            <div key={idx} className="flex items-center justify-between gap-2 px-3 py-2.5 border-b border-[#2a2e39]/50">
+              <div className="flex items-center gap-2">
+                <div className="h-3 w-3 rounded-sm bg-[#1e222d] animate-pulse" />
+                <div className="h-3 w-16 rounded bg-[#1e222d] animate-pulse" />
+              </div>
+              <div className="flex flex-col items-end gap-1">
+                <div className="h-3 w-24 rounded bg-[#1e222d] animate-pulse" />
+                <div className="h-2 w-16 rounded bg-[#1e222d] animate-pulse" />
+              </div>
+            </div>
+          ))
+        }
         {filtered.map((i) => {
           const isSel = selected === i.symbol;
           return (
