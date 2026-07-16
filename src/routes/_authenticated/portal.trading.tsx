@@ -12,7 +12,7 @@ import { PositionsTable } from "@/features/terminal/components/PositionsTable";
 import { PriceAlerts } from "@/features/terminal/components/PriceAlerts";
 import { EconomicCalendar } from "@/features/terminal/components/EconomicCalendar";
 import { PerformancePanel } from "@/features/terminal/components/PerformancePanel";
-import { ConnectionStatusBadge } from "@/features/terminal/components/ConnectionStatus";
+import { ConnectionStatusBadge, useConnectionStatus } from "@/features/terminal/components/ConnectionStatus";
 import { useAccount, useHistory, useInstruments, usePendingOrders, usePositions, useQuotes, useWatchlist } from "@/features/terminal/hooks/use-terminal-data";
 import type { Timeframe } from "@/features/terminal/adapters/market-data/types";
 
