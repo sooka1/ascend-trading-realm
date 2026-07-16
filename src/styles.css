@@ -68,6 +68,10 @@
   --color-surface-2: var(--surface-2);
   --color-bull: oklch(0.78 0.13 190);   /* aqua sea-green for gains */
   --color-bear: oklch(0.62 0.14 25);    /* muted coral for losses */
+  --color-terminal-bg: var(--terminal-bg);
+  --color-terminal-panel: var(--terminal-panel);
+  --color-terminal-border: var(--terminal-border);
+  --color-terminal-accent: var(--terminal-accent);
 }
 
 :root {
@@ -120,6 +124,11 @@
   --shadow-elegant: 0 24px 60px -24px oklch(0.06 0.025 220 / 0.85), 0 2px 6px -2px oklch(0.03 0 0 / 0.55);
   --shadow-glow: 0 20px 60px -20px oklch(0.60 0.22 27 / 0.40);
   --shadow-gold: 0 20px 60px -20px oklch(0.60 0.22 27 / 0.45);
+  /* Terminal (TradingView-style) surface tokens */
+  --terminal-bg: #131722;
+  --terminal-panel: #1e222d;
+  --terminal-border: #2a2e39;
+  --terminal-accent: #d4af37;
 }
 
 @layer base {
