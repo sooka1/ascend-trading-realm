@@ -120,22 +120,22 @@ function TradingTerminal() {
 
   return (
     <PortalShell fullscreen eyebrow="بوابة المتداول" title="منصة التداول" subtitle="بيانات حيّة وتنفيذ فوري">
-      <div className="h-[calc(100vh-10rem)] min-h-[600px] w-full rounded-lg border border-[#2a2e39] bg-[#131722] shadow-[0_30px_80px_-40px_rgba(0,0,0,0.9)] overflow-hidden">
+      <div className="h-[calc(100vh-10rem)] min-h-[600px] w-full rounded-lg border border-[var(--terminal-border)] bg-[var(--terminal-bg)] shadow-[0_30px_80px_-40px_rgba(0,0,0,0.9)] overflow-hidden">
         <PanelGroup orientation="horizontal" className="flex h-full w-full">
           {/* LEFT: order ticket + account */}
           <Panel defaultSize={22} minSize={16}>
-            <div className="flex h-full flex-col border-l border-[#2a2e39] bg-[#131722]">
-              <div className="px-3 py-2 border-b border-[#2a2e39] bg-[#1e222d]/40 flex items-center justify-between">
+            <div className="flex h-full flex-col border-l border-[var(--terminal-border)] bg-[var(--terminal-bg)]">
+              <div className="px-3 py-2 border-b border-[var(--terminal-border)] bg-[var(--terminal-panel)]/40 flex items-center justify-between">
                 <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/70">أمر جديد</span>
                 <ConnectionStatusBadge />
               </div>
               <div className="flex-1 overflow-y-auto">
                 <OrderTicket instrument={selInst} bid={bid} ask={ask} balance={freeMargin > 0 ? freeMargin : balance} leverage={leverage} />
                 <div className="px-3 pb-3 space-y-1 text-[11px]">
-                  <div className="rounded-md border border-[#2a2e39] bg-[#1e222d] p-2.5 space-y-1 shadow-inner shadow-black/50">
-                    <div className="mb-1 flex items-center justify-between border-b border-[#2a2e39] pb-1">
+                  <div className="rounded-md border border-[var(--terminal-border)] bg-[var(--terminal-panel)] p-2.5 space-y-1 shadow-inner shadow-black/50">
+                    <div className="mb-1 flex items-center justify-between border-b border-[var(--terminal-border)] pb-1">
                       <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/50">ملخّص الحساب</span>
-                      <span className="font-mono text-[10px] text-[#d4af37]">1:{leverage}</span>
+                      <span className="font-mono text-[10px] text-[var(--terminal-accent)]">1:{leverage}</span>
                     </div>
                     <Row label="الرصيد" v={`$${balance.toFixed(2)}`} />
                     <Row label="حقوق الملكية" v={`$${equity.toFixed(2)}`} />
@@ -150,19 +150,19 @@ function TradingTerminal() {
               </div>
             </div>
           </Panel>
-          <PanelResizeHandle className="w-px bg-[#2a2e39] hover:bg-[#d4af37]/60 transition-colors" />
+          <PanelResizeHandle className="w-px bg-[var(--terminal-border)] hover:bg-[var(--terminal-accent)]/60 transition-colors" />
 
           {/* CENTER: chart + bottom tabs */}
           <Panel defaultSize={56} minSize={30}>
             <PanelGroup orientation="vertical" className="flex h-full w-full flex-col">
               <Panel defaultSize={65} minSize={30}>
                 <div className="flex h-full flex-col">
-                  <div className="flex items-center gap-3 px-3 py-2 border-b border-[#2a2e39] bg-[#131722] flex-wrap">
+                  <div className="flex items-center gap-3 px-3 py-2 border-b border-[var(--terminal-border)] bg-[var(--terminal-bg)] flex-wrap">
                     <div className="flex items-baseline gap-2">
-                      <span className="text-base font-bold tracking-wide text-[#d4af37]">{selected}</span>
+                      <span className="text-base font-bold tracking-wide text-[var(--terminal-accent)]">{selected}</span>
                       <span
                         title="سوق OTC خاص بالمنصة — الأسعار تتبع حركة السوق العالمي"
-                        className="inline-flex items-center gap-1 rounded-full border border-[#d4af37]/50 bg-[#d4af37]/10 px-1.5 py-0.5 text-[9px] font-semibold tracking-wider text-[#d4af37]"
+                        className="inline-flex items-center gap-1 rounded-full border border-[var(--terminal-accent)]/50 bg-[var(--terminal-accent)]/10 px-1.5 py-0.5 text-[9px] font-semibold tracking-wider text-[var(--terminal-accent)]"
                       >OTC</span>
                     </div>
                     {selQ && (
@@ -196,11 +196,11 @@ function TradingTerminal() {
                     )}
                     {!selQ && (
                       <div className="flex items-baseline gap-2" dir="ltr">
-                        <div className="h-5 w-24 rounded bg-[#1e222d] animate-pulse" />
-                        <div className="h-4 w-14 rounded bg-[#1e222d] animate-pulse" />
+                        <div className="h-5 w-24 rounded bg-[var(--terminal-panel)] animate-pulse" />
+                        <div className="h-4 w-14 rounded bg-[var(--terminal-panel)] animate-pulse" />
                       </div>
                     )}
-                    <div className="hidden md:flex items-center gap-3 text-[10px] font-mono tabular-nums text-white/60 border-r border-[#2a2e39] pr-3 mr-1" dir="ltr">
+                    <div className="hidden md:flex items-center gap-3 text-[10px] font-mono tabular-nums text-white/60 border-r border-[var(--terminal-border)] pr-3 mr-1" dir="ltr">
                       <span><span className="text-white/40">B </span><span className="text-rose-500">{bid.toFixed(selInst?.price_precision ?? 2)}</span></span>
                       <span><span className="text-white/40">A </span><span className="text-emerald-500">{ask.toFixed(selInst?.price_precision ?? 2)}</span></span>
                       {selInst && <span><span className="text-white/40">S </span>{((ask - bid) / (selInst.pip_size || 1)).toFixed(1)}</span>}
@@ -210,8 +210,8 @@ function TradingTerminal() {
                         <button key={t} onClick={() => setTf(t)}
                           className={cn("px-2 py-0.5 rounded text-[11px] border font-mono tabular-nums transition-colors",
                             tf === t
-                              ? "border-[#d4af37]/60 bg-[#d4af37]/10 text-[#d4af37] shadow-[0_0_10px_-4px_rgba(212,175,55,0.7)]"
-                              : "border-[#2a2e39] text-white/60 hover:bg-[#1e222d] hover:text-white/85")}>{t}</button>
+                              ? "border-[var(--terminal-accent)]/60 bg-[var(--terminal-accent)]/10 text-[var(--terminal-accent)] shadow-[0_0_10px_-4px_rgba(212,175,55,0.7)]"
+                              : "border-[var(--terminal-border)] text-white/60 hover:bg-[var(--terminal-panel)] hover:text-white/85")}>{t}</button>
                       ))}
                     </div>
                     <div className="flex gap-1">
@@ -219,23 +219,23 @@ function TradingTerminal() {
                         <button key={ct.key} onClick={() => setChartType(ct.key)}
                           className={cn("px-2 py-0.5 rounded text-[11px] border transition-colors",
                             chartType === ct.key
-                              ? "border-[#d4af37]/60 bg-[#d4af37]/10 text-[#d4af37]"
-                              : "border-[#2a2e39] text-white/60 hover:bg-[#1e222d] hover:text-white/85")}>{ct.label}</button>
+                              ? "border-[var(--terminal-accent)]/60 bg-[var(--terminal-accent)]/10 text-[var(--terminal-accent)]"
+                              : "border-[var(--terminal-border)] text-white/60 hover:bg-[var(--terminal-panel)] hover:text-white/85")}>{ct.label}</button>
                       ))}
                     </div>
                   </div>
                   <div className="flex-1 min-h-0 relative">
                     {selInst && <TerminalChart symbol={selected} timeframe={tf} chartType={chartType} precision={selInst.price_precision} positions={positions} bid={bid} ask={ask} contractSize={selInst.contract_size} focusedTrade={focusedTrade ? { id: focusedTrade.id, symbol: focusedTrade.symbol, side: focusedTrade.side as "buy"|"sell", entry_price: focusedTrade.entry_price, close_price: focusedTrade.close_price, profit: focusedTrade.profit } : null} />}
                     {chartLoading && (
-                      <div className="absolute inset-0 flex flex-col gap-2 p-4 bg-[#131722]/90 backdrop-blur-sm">
-                        <div className="h-6 w-40 rounded bg-[#1e222d] animate-pulse" />
-                        <div className="flex-1 rounded bg-[#1e222d] animate-pulse" />
-                        <div className="h-4 w-64 rounded bg-[#1e222d] animate-pulse" />
+                      <div className="absolute inset-0 flex flex-col gap-2 p-4 bg-[var(--terminal-bg)]/90 backdrop-blur-sm">
+                        <div className="h-6 w-40 rounded bg-[var(--terminal-panel)] animate-pulse" />
+                        <div className="flex-1 rounded bg-[var(--terminal-panel)] animate-pulse" />
+                        <div className="h-4 w-64 rounded bg-[var(--terminal-panel)] animate-pulse" />
                       </div>
                     )}
                     {!chartLoading && chartOffline && (
-                      <div className="absolute inset-0 flex items-center justify-center bg-[#131722]/70 backdrop-blur-[2px] pointer-events-none">
-                        <div className="pointer-events-auto flex flex-col items-center gap-3 rounded-lg border border-amber-400/30 bg-[#1e222d]/95 px-6 py-4 shadow-xl">
+                      <div className="absolute inset-0 flex items-center justify-center bg-[var(--terminal-bg)]/70 backdrop-blur-[2px] pointer-events-none">
+                        <div className="pointer-events-auto flex flex-col items-center gap-3 rounded-lg border border-amber-400/30 bg-[var(--terminal-panel)]/95 px-6 py-4 shadow-xl">
                           <ConnectionStatusBadge />
                           <div className="text-xs text-white/70 font-medium">
                             {stale ? "لا توجد تحديثات أسعار حديثة" : "بيانات السوق غير متصلة"}
@@ -249,10 +249,10 @@ function TradingTerminal() {
                   </div>
                 </div>
               </Panel>
-              <PanelResizeHandle className="h-px bg-[#2a2e39] hover:bg-[#d4af37]/60 transition-colors" />
+              <PanelResizeHandle className="h-px bg-[var(--terminal-border)] hover:bg-[var(--terminal-accent)]/60 transition-colors" />
               <Panel defaultSize={35} minSize={15}>
                 <Tabs defaultValue="positions" className="h-full flex flex-col">
-                  <TabsList className="h-8 mx-2 mt-2 self-start bg-[#1e222d] border border-[#2a2e39]">
+                  <TabsList className="h-8 mx-2 mt-2 self-start bg-[var(--terminal-panel)] border border-[var(--terminal-border)]">
                     <TabsTrigger value="positions" className="text-xs">الصفقات ({positions.length})</TabsTrigger>
                     <TabsTrigger value="pending" className="text-xs">المعلّقة ({pending.length})</TabsTrigger>
                     <TabsTrigger value="history" className="text-xs">السجل</TabsTrigger>
@@ -271,7 +271,7 @@ function TradingTerminal() {
                         </thead>
                         <tbody>
                           {pending.map(o => (
-                            <tr key={o.id} className="border-t border-[#2a2e39]/50 hover:bg-[#1e222d]">
+                            <tr key={o.id} className="border-t border-[var(--terminal-border)]/50 hover:bg-[var(--terminal-panel)]">
                               <td className="px-2 py-2">{o.symbol}</td>
                               <td className="px-2 py-2 uppercase">{o.order_type}</td>
                               <td className={`px-2 py-2 ${o.side === "buy" ? "text-emerald-500" : "text-rose-500"}`}>{o.side}</td>
@@ -290,7 +290,7 @@ function TradingTerminal() {
                       {(["all","buy","sell"] as const).map(v => (
                         <button key={v} onClick={() => setHistSide(v)}
                           className={cn("px-2 py-0.5 rounded border text-[10px]",
-                            histSide === v ? "border-[#d4af37]/60 bg-[#d4af37]/10 text-[#d4af37]" : "border-[#2a2e39] text-white/60 hover:bg-[#1e222d]")}>
+                            histSide === v ? "border-[var(--terminal-accent)]/60 bg-[var(--terminal-accent)]/10 text-[var(--terminal-accent)]" : "border-[var(--terminal-border)] text-white/60 hover:bg-[var(--terminal-panel)]")}>
                           {v === "all" ? "الكل" : v === "buy" ? "شراء" : "بيع"}
                         </button>
                       ))}
@@ -298,13 +298,13 @@ function TradingTerminal() {
                       {(["all","win","loss"] as const).map(v => (
                         <button key={v} onClick={() => setHistResult(v)}
                           className={cn("px-2 py-0.5 rounded border text-[10px]",
-                            histResult === v ? "border-[#d4af37]/60 bg-[#d4af37]/10 text-[#d4af37]" : "border-[#2a2e39] text-white/60 hover:bg-[#1e222d]")}>
+                            histResult === v ? "border-[var(--terminal-accent)]/60 bg-[var(--terminal-accent)]/10 text-[var(--terminal-accent)]" : "border-[var(--terminal-border)] text-white/60 hover:bg-[var(--terminal-panel)]")}>
                           {v === "all" ? "الكل" : v === "win" ? "رابحة" : "خاسرة"}
                         </button>
                       ))}
                       {focusedHistoryId && (
                         <button onClick={() => setFocusedHistoryId(null)}
-                          className="ms-auto px-2 py-0.5 rounded border border-[#2a2e39] text-[10px] text-white/60 hover:bg-[#1e222d]">
+                          className="ms-auto px-2 py-0.5 rounded border border-[var(--terminal-border)] text-[10px] text-white/60 hover:bg-[var(--terminal-panel)]">
                           إلغاء التمييز
                         </button>
                       )}
@@ -318,8 +318,8 @@ function TradingTerminal() {
                           {filteredHistory.map(h => (
                             <tr key={h.id}
                               onClick={() => { setSelected(h.symbol); setFocusedHistoryId(focusedHistoryId === h.id ? null : h.id); }}
-                              className={cn("border-t border-[#2a2e39]/50 cursor-pointer hover:bg-[#1e222d]",
-                                focusedHistoryId === h.id && "bg-[#d4af37]/10")}>
+                              className={cn("border-t border-[var(--terminal-border)]/50 cursor-pointer hover:bg-[var(--terminal-panel)]",
+                                focusedHistoryId === h.id && "bg-[var(--terminal-accent)]/10")}>
                               <td className="px-2 py-2">{h.symbol}</td>
                               <td className={`px-2 py-2 ${h.side === "buy" ? "text-emerald-500" : "text-rose-500"}`}>{h.side}</td>
                               <td className="px-2 py-2 font-mono">{Number(h.volume).toFixed(2)}</td>
@@ -346,17 +346,17 @@ function TradingTerminal() {
               </Panel>
             </PanelGroup>
           </Panel>
-          <PanelResizeHandle className="w-px bg-[#2a2e39] hover:bg-[#d4af37]/60 transition-colors" />
+          <PanelResizeHandle className="w-px bg-[var(--terminal-border)] hover:bg-[var(--terminal-accent)]/60 transition-colors" />
 
           {/* RIGHT: watchlist */}
           <Panel defaultSize={22} minSize={16}>
-            <div className="flex h-full flex-col border-r border-[#2a2e39] bg-[#131722]">
-              <div className="px-3 py-2 border-b border-[#2a2e39] bg-[#1e222d]/40 flex items-center justify-between">
+            <div className="flex h-full flex-col border-r border-[var(--terminal-border)] bg-[var(--terminal-bg)]">
+              <div className="px-3 py-2 border-b border-[var(--terminal-border)] bg-[var(--terminal-panel)]/40 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/70">قائمة المتابعة</span>
                   <ConnectionStatusBadge />
                 </div>
-                <span className="font-mono text-[10px] text-[#d4af37] tabular-nums">{shownInstruments.length || instruments.length}</span>
+                <span className="font-mono text-[10px] text-[var(--terminal-accent)] tabular-nums">{shownInstruments.length || instruments.length}</span>
               </div>
               <div className="flex-1 overflow-hidden">
                 <Watchlist instruments={shownInstruments.length ? shownInstruments : instruments} quotes={quotes} selected={selected} onSelect={setSelected} loading={instrumentsLoading} />
