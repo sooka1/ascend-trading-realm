@@ -283,6 +283,18 @@ html.light ::selection {
 .animate-shimmer-x {
   animation: shimmer-x 1.4s linear infinite;
 }
+
+/* Price tick flash — TradingView Pro dark blue palette */
+@keyframes price-flash-up {
+  0% { background-color: rgba(16, 185, 129, 0.28); }
+  100% { background-color: transparent; }
+}
+@keyframes price-flash-down {
+  0% { background-color: rgba(244, 63, 94, 0.28); }
+  100% { background-color: transparent; }
+}
+.price-flash-up { animation: price-flash-up 600ms ease-out; }
+.price-flash-down { animation: price-flash-down 600ms ease-out; }
 /* iOS notch / Android gesture-bar aware helpers. */
 @utility safe-pt { padding-top: env(safe-area-inset-top); }
 @utility safe-pb { padding-bottom: env(safe-area-inset-bottom); }
