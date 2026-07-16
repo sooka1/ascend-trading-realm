@@ -235,7 +235,7 @@ function TradingTerminal() {
                       {(["all","buy","sell"] as const).map(v => (
                         <button key={v} onClick={() => setHistSide(v)}
                           className={cn("px-2 py-0.5 rounded border text-[10px]",
-                            histSide === v ? "border-amber-400/40 bg-amber-400/10 text-amber-200" : "border-white/10 text-white/60 hover:bg-white/[0.04]")}>
+                            histSide === v ? "border-[#d4af37]/60 bg-[#d4af37]/10 text-[#d4af37]" : "border-[#2a2e39] text-white/60 hover:bg-[#1e222d]")}>
                           {v === "all" ? "الكل" : v === "buy" ? "شراء" : "بيع"}
                         </button>
                       ))}
@@ -243,13 +243,13 @@ function TradingTerminal() {
                       {(["all","win","loss"] as const).map(v => (
                         <button key={v} onClick={() => setHistResult(v)}
                           className={cn("px-2 py-0.5 rounded border text-[10px]",
-                            histResult === v ? "border-amber-400/40 bg-amber-400/10 text-amber-200" : "border-white/10 text-white/60 hover:bg-white/[0.04]")}>
+                            histResult === v ? "border-[#d4af37]/60 bg-[#d4af37]/10 text-[#d4af37]" : "border-[#2a2e39] text-white/60 hover:bg-[#1e222d]")}>
                           {v === "all" ? "الكل" : v === "win" ? "رابحة" : "خاسرة"}
                         </button>
                       ))}
                       {focusedHistoryId && (
                         <button onClick={() => setFocusedHistoryId(null)}
-                          className="ms-auto px-2 py-0.5 rounded border border-white/10 text-[10px] text-white/60 hover:bg-white/[0.04]">
+                          className="ms-auto px-2 py-0.5 rounded border border-[#2a2e39] text-[10px] text-white/60 hover:bg-[#1e222d]">
                           إلغاء التمييز
                         </button>
                       )}
@@ -263,14 +263,14 @@ function TradingTerminal() {
                           {filteredHistory.map(h => (
                             <tr key={h.id}
                               onClick={() => { setSelected(h.symbol); setFocusedHistoryId(focusedHistoryId === h.id ? null : h.id); }}
-                              className={cn("border-t border-white/[0.04] cursor-pointer hover:bg-white/[0.03]",
-                                focusedHistoryId === h.id && "bg-amber-400/[0.08]")}>
+                              className={cn("border-t border-[#2a2e39]/50 cursor-pointer hover:bg-[#1e222d]",
+                                focusedHistoryId === h.id && "bg-[#d4af37]/10")}>
                               <td className="px-2 py-2">{h.symbol}</td>
-                              <td className={`px-2 py-2 ${h.side === "buy" ? "text-emerald-400" : "text-red-400"}`}>{h.side}</td>
+                              <td className={`px-2 py-2 ${h.side === "buy" ? "text-emerald-500" : "text-rose-500"}`}>{h.side}</td>
                               <td className="px-2 py-2 font-mono">{Number(h.volume).toFixed(2)}</td>
                               <td className="px-2 py-2 font-mono">{Number(h.entry_price).toFixed(4)}</td>
                               <td className="px-2 py-2 font-mono">{Number(h.close_price).toFixed(4)}</td>
-                              <td className={`px-2 py-2 font-mono ${Number(h.profit) >= 0 ? "text-emerald-400" : "text-red-400"}`}>${Number(h.profit).toFixed(2)}</td>
+                              <td className={`px-2 py-2 font-mono ${Number(h.profit) >= 0 ? "text-emerald-500" : "text-rose-500"}`}>${Number(h.profit).toFixed(2)}</td>
                               <td className="px-2 py-2 text-white/50">{new Date(h.closed_at).toLocaleString("ar-EG")}</td>
                             </tr>
                           ))}
