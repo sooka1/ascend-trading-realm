@@ -216,10 +216,10 @@ function TradingTerminal() {
                         </thead>
                         <tbody>
                           {pending.map(o => (
-                            <tr key={o.id} className="border-t border-white/[0.04]">
+                            <tr key={o.id} className="border-t border-[#2a2e39]/50 hover:bg-[#1e222d]">
                               <td className="px-2 py-2">{o.symbol}</td>
                               <td className="px-2 py-2 uppercase">{o.order_type}</td>
-                              <td className={`px-2 py-2 ${o.side === "buy" ? "text-emerald-400" : "text-red-400"}`}>{o.side}</td>
+                              <td className={`px-2 py-2 ${o.side === "buy" ? "text-emerald-500" : "text-rose-500"}`}>{o.side}</td>
                               <td className="px-2 py-2 font-mono">{o.volume}</td>
                               <td className="px-2 py-2 font-mono">{o.price ?? "—"}</td>
                               <td className="px-2 py-2 text-left"><Button size="sm" variant="outline" className="h-6 text-[10px]" onClick={async () => { const { getBroker } = await import("@/features/terminal/adapters/broker"); await getBroker().cancelOrder(o.id); }}>إلغاء</Button></td>
