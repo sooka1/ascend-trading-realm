@@ -20,6 +20,7 @@ import { ImpersonationBanner } from "@/components/impersonation-banner";
 import { ThemeProvider } from "@/hooks/use-theme";
 import { initNativeShell } from "@/lib/native-shell";
 import { OfflineBanner } from "@/components/mobile/offline-banner";
+import { GlobalBackButton } from "@/components/global-back-button";
 
 function NotFoundComponent() {
   const suggestions: Array<{ to: string; label: string; hint: string }> = [
@@ -307,6 +308,7 @@ function RootComponent() {
         <Toaster theme="dark" position="top-right" richColors />
         <ImpersonationBanner />
         <OfflineBanner />
+        <GlobalBackButton />
       </ThemeProvider>
     </QueryClientProvider>
   );
