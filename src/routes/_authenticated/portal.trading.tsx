@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Group as PanelGroup, Panel, Separator as PanelResizeHandle } from "react-resizable-panels";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -110,12 +110,12 @@ function TradingTerminal() {
 
   return (
     <PortalShell fullscreen eyebrow="بوابة المتداول" title="منصة التداول" subtitle="بيانات حيّة وتنفيذ فوري">
-      <div className="h-[calc(100vh-10rem)] min-h-[600px] w-full rounded-xl border border-white/10 bg-gradient-to-br from-slate-950/80 via-black/60 to-slate-950/80 shadow-[0_30px_80px_-40px_rgba(0,0,0,0.9)] overflow-hidden">
+      <div className="h-[calc(100vh-10rem)] min-h-[600px] w-full rounded-lg border border-[#2a2e39] bg-[#131722] shadow-[0_30px_80px_-40px_rgba(0,0,0,0.9)] overflow-hidden">
         <PanelGroup orientation="horizontal" className="flex h-full w-full">
           {/* LEFT: order ticket + account */}
           <Panel defaultSize={22} minSize={16}>
-            <div className="flex h-full flex-col border-l border-white/10">
-              <div className="px-3 py-2 border-b border-white/10 bg-gradient-to-b from-white/[0.03] to-transparent flex items-center justify-between">
+            <div className="flex h-full flex-col border-l border-[#2a2e39] bg-[#131722]">
+              <div className="px-3 py-2 border-b border-[#2a2e39] bg-[#1e222d]/40 flex items-center justify-between">
                 <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/70">أمر جديد</span>
                 <span className="inline-flex items-center gap-1 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-2 py-0.5 text-[9px] font-semibold text-emerald-300">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.9)]" />
