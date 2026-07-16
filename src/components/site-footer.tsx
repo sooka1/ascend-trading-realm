@@ -72,7 +72,7 @@ export function SiteFooter() {
                 { Icon: TikTokIcon, href: "#", label: "TikTok" },
                 { Icon: Youtube, href: "#", label: "YouTube" },
                 { Icon: Instagram, href: "#", label: "Instagram" },
-                { Icon: Facebook, href: "https://www.facebook.com/share/14htEwrJz5Y/", label: "Facebook" },
+                { Icon: Facebook, href: "https://www.facebook.com/share/1BusNXMsNb/", label: "Facebook" },
               ].map(({ Icon, href, label }) => (
                 <a
                   key={label}
