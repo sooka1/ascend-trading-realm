@@ -150,30 +150,24 @@ function TradingTerminal() {
             <PanelGroup orientation="vertical" className="flex h-full w-full flex-col">
               <Panel defaultSize={65} minSize={30}>
                 <div className="flex h-full flex-col">
-                  <div className="flex items-center gap-3 px-3 py-2 border-b border-white/10 bg-gradient-to-b from-white/[0.03] via-transparent to-transparent flex-wrap">
+                  <div className="flex items-center gap-3 px-3 py-2 border-b border-[#2a2e39] bg-[#131722] flex-wrap">
                     <div className="flex items-baseline gap-2">
-                      <span className="text-base font-bold tracking-wide text-white">{selected}</span>
+                      <span className="text-base font-bold tracking-wide text-[#d4af37]">{selected}</span>
                       <span
                         title="سوق OTC خاص بالمنصة — الأسعار تتبع حركة السوق العالمي"
-                        className="inline-flex items-center gap-1 rounded-full border border-amber-400/40 bg-amber-400/10 px-1.5 py-0.5 text-[9px] font-semibold tracking-wider text-amber-200"
+                        className="inline-flex items-center gap-1 rounded-full border border-[#d4af37]/50 bg-[#d4af37]/10 px-1.5 py-0.5 text-[9px] font-semibold tracking-wider text-[#d4af37]"
                       >OTC</span>
                     </div>
                     {selQ && (
-                      <div className="flex items-baseline gap-2" dir="ltr">
-                        <span className={cn("font-mono text-lg font-bold tabular-nums leading-none", (selQ.changePct24h ?? 0) >= 0 ? "text-emerald-400" : "text-red-400")}>
-                          {selQ.last?.toFixed(selInst?.price_precision ?? 2)}
-                        </span>
-                        {typeof selQ.changePct24h === "number" && (
-                          <span className={cn("rounded px-1.5 py-0.5 font-mono text-[10px] font-semibold tabular-nums",
-                            selQ.changePct24h >= 0 ? "bg-emerald-400/10 text-emerald-300" : "bg-red-400/10 text-red-300")}>
-                            {selQ.changePct24h >= 0 ? "▲" : "▼"} {Math.abs(selQ.changePct24h).toFixed(2)}%
-                          </span>
-                        )}
-                      </div>
+                      <HeaderPrice
+                        last={selQ.last ?? 0}
+                        precision={selInst?.price_precision ?? 2}
+                        changePct={selQ.changePct24h}
+                      />
                     )}
-                    <div className="hidden md:flex items-center gap-3 text-[10px] font-mono tabular-nums text-white/60 border-r border-white/10 pr-3 mr-1" dir="ltr">
-                      <span><span className="text-white/40">B </span><span className="text-red-400">{bid.toFixed(selInst?.price_precision ?? 2)}</span></span>
-                      <span><span className="text-white/40">A </span><span className="text-emerald-400">{ask.toFixed(selInst?.price_precision ?? 2)}</span></span>
+                    <div className="hidden md:flex items-center gap-3 text-[10px] font-mono tabular-nums text-white/60 border-r border-[#2a2e39] pr-3 mr-1" dir="ltr">
+                      <span><span className="text-white/40">B </span><span className="text-rose-500">{bid.toFixed(selInst?.price_precision ?? 2)}</span></span>
+                      <span><span className="text-white/40">A </span><span className="text-emerald-500">{ask.toFixed(selInst?.price_precision ?? 2)}</span></span>
                       {selInst && <span><span className="text-white/40">S </span>{((ask - bid) / (selInst.pip_size || 1)).toFixed(1)}</span>}
                     </div>
                     <div className="flex gap-1 mr-auto">
@@ -181,8 +175,8 @@ function TradingTerminal() {
                         <button key={t} onClick={() => setTf(t)}
                           className={cn("px-2 py-0.5 rounded text-[11px] border font-mono tabular-nums transition-colors",
                             tf === t
-                              ? "border-amber-400/50 bg-amber-400/15 text-amber-200 shadow-[0_0_10px_-4px_rgba(251,191,36,0.7)]"
-                              : "border-white/10 text-white/60 hover:bg-white/[0.05] hover:text-white/80")}>{t}</button>
+                              ? "border-[#d4af37]/60 bg-[#d4af37]/10 text-[#d4af37] shadow-[0_0_10px_-4px_rgba(212,175,55,0.7)]"
+                              : "border-[#2a2e39] text-white/60 hover:bg-[#1e222d] hover:text-white/85")}>{t}</button>
                       ))}
                     </div>
                     <div className="flex gap-1">
@@ -190,8 +184,8 @@ function TradingTerminal() {
                         <button key={ct.key} onClick={() => setChartType(ct.key)}
                           className={cn("px-2 py-0.5 rounded text-[11px] border transition-colors",
                             chartType === ct.key
-                              ? "border-amber-400/50 bg-amber-400/15 text-amber-200"
-                              : "border-white/10 text-white/60 hover:bg-white/[0.05] hover:text-white/80")}>{ct.label}</button>
+                              ? "border-[#d4af37]/60 bg-[#d4af37]/10 text-[#d4af37]"
+                              : "border-[#2a2e39] text-white/60 hover:bg-[#1e222d] hover:text-white/85")}>{ct.label}</button>
                       ))}
                     </div>
                   </div>
