@@ -32,34 +32,34 @@ export function Watchlist({ instruments, quotes, selected, onSelect, loading }: 
 
   return (
     <div className="flex h-full flex-col">
-      <div className="p-2 border-b border-[#2a2e39] bg-[#131722]">
+      <div className="p-2 border-b border-[var(--terminal-border)] bg-[var(--terminal-bg)]">
         <div className="relative">
           <Search className="absolute right-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-white/40" />
-          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="بحث عن أداة…" className="h-8 pr-7 text-xs bg-[#1e222d] border-[#2a2e39] focus-visible:ring-[#d4af37]/40" />
+          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="بحث عن أداة…" className="h-8 pr-7 text-xs bg-[var(--terminal-panel)] border-[var(--terminal-border)] focus-visible:ring-[var(--terminal-accent)]/40" />
         </div>
         <div className="mt-2 flex gap-1 overflow-x-auto no-scrollbar">
           {CATEGORIES.map((c) => (
             <button key={c.key} onClick={() => setCat(c.key)}
               className={cn("px-2 py-0.5 rounded-md text-[10px] whitespace-nowrap border transition-colors",
                 cat === c.key
-                  ? "border-[#d4af37]/60 bg-[#d4af37]/10 text-[#d4af37] shadow-[0_0_10px_-4px_rgba(212,175,55,0.6)]"
-                  : "border-[#2a2e39] text-white/60 hover:bg-[#1e222d] hover:text-white/85")}>
+                  ? "border-[var(--terminal-accent)]/60 bg-[var(--terminal-accent)]/10 text-[var(--terminal-accent)] shadow-[0_0_10px_-4px_rgba(212,175,55,0.6)]"
+                  : "border-[var(--terminal-border)] text-white/60 hover:bg-[var(--terminal-panel)] hover:text-white/85")}>
               {c.label}
             </button>
           ))}
         </div>
       </div>
-      <div className="flex-1 overflow-y-auto bg-[#131722]">
+      <div className="flex-1 overflow-y-auto bg-[var(--terminal-bg)]">
         {loading && filtered.length === 0 &&
           Array.from({ length: 6 }).map((_, idx) => (
-            <div key={idx} className="flex items-center justify-between gap-2 px-3 py-2.5 border-b border-[#2a2e39]/50">
+            <div key={idx} className="flex items-center justify-between gap-2 px-3 py-2.5 border-b border-[var(--terminal-border)]/50">
               <div className="flex items-center gap-2">
-                <div className="h-3 w-3 rounded-sm bg-[#1e222d] animate-pulse" />
-                <div className="h-3 w-16 rounded bg-[#1e222d] animate-pulse" />
+                <div className="h-3 w-3 rounded-sm bg-[var(--terminal-panel)] animate-pulse" />
+                <div className="h-3 w-16 rounded bg-[var(--terminal-panel)] animate-pulse" />
               </div>
               <div className="flex flex-col items-end gap-1">
-                <div className="h-3 w-24 rounded bg-[#1e222d] animate-pulse" />
-                <div className="h-2 w-16 rounded bg-[#1e222d] animate-pulse" />
+                <div className="h-3 w-24 rounded bg-[var(--terminal-panel)] animate-pulse" />
+                <div className="h-2 w-16 rounded bg-[var(--terminal-panel)] animate-pulse" />
               </div>
             </div>
           ))
@@ -106,15 +106,15 @@ function WatchRow({ inst, quote, isSel, onSelect }: {
   return (
     <button onClick={() => onSelect(inst.symbol)}
       className={cn(
-        "group relative w-full flex items-center justify-between gap-2 px-3 py-2.5 border-b border-[#2a2e39]/50 text-right transition-colors",
-        isSel ? "bg-[#1e222d]" : "hover:bg-[#1e222d]/70",
+        "group relative w-full flex items-center justify-between gap-2 px-3 py-2.5 border-b border-[var(--terminal-border)]/50 text-right transition-colors",
+        isSel ? "bg-[var(--terminal-panel)]" : "hover:bg-[var(--terminal-panel)]/70",
         flash === "up" && "price-flash-up",
         flash === "down" && "price-flash-down",
       )}>
-      {isSel && <span aria-hidden className="absolute inset-y-0 right-0 w-[2px] bg-[#d4af37] shadow-[0_0_8px_0_rgba(212,175,55,0.7)]" />}
+      {isSel && <span aria-hidden className="absolute inset-y-0 right-0 w-[2px] bg-[var(--terminal-accent)] shadow-[0_0_8px_0_rgba(212,175,55,0.7)]" />}
       <div className="flex min-w-0 items-center gap-2">
-        <Star className={cn("h-3 w-3 shrink-0", isSel ? "text-[#d4af37] fill-[#d4af37]/70" : "text-white/25 group-hover:text-white/40")} />
-        <span className={cn("truncate text-xs font-semibold tracking-wide", isSel ? "text-[#d4af37]" : "text-white/85")}>{inst.symbol}</span>
+        <Star className={cn("h-3 w-3 shrink-0", isSel ? "text-[var(--terminal-accent)] fill-[var(--terminal-accent)]/70" : "text-white/25 group-hover:text-white/40")} />
+        <span className={cn("truncate text-xs font-semibold tracking-wide", isSel ? "text-[var(--terminal-accent)]" : "text-white/85")}>{inst.symbol}</span>
       </div>
       <div className="flex shrink-0 flex-col items-end leading-tight">
         <div className="flex items-baseline gap-2 font-mono tabular-nums text-[11px]">
