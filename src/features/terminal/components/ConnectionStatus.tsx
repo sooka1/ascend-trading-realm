@@ -13,14 +13,7 @@ const META: Record<Status, { label: string; className: string; Icon: typeof Wifi
 };
 
 export function ConnectionStatusBadge() {
-  const [status, setStatus] = useState<Status>("idle");
-
-  useEffect(() => {
-    const p = getMarketDataProvider();
-    const unsub = p.onStatus(setStatus);
-    return () => unsub();
-  }, []);
-
+  const status = useConnectionStatus();
   const { label, className, Icon } = META[status];
   const spin = status === "connecting" || status === "closed";
   return (
@@ -35,4 +28,14 @@ export function ConnectionStatusBadge() {
       <span>{label}</span>
     </div>
   );
+}
+
+export function useConnectionStatus(): Status {
+  const [status, setStatus] = useState<Status>("idle");
+  useEffect(() => {
+    const p = getMarketDataProvider();
+    const unsub = p.onStatus(setStatus);
+    return () => unsub();
+  }, []);
+  return status;
 }
