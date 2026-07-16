@@ -72,6 +72,8 @@ export const Route = createFileRoute("/")({
         property: "og:description",
         content: "Professionally managed investment portfolios across Forex, Gold, Commodities, Indices and Stocks. Disciplined risk management, transparent reporting, secure client portal.",
       },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/3FIQZ9ScAmeywbcsB5A8g6IHRPQ2/social-images/social-1783688127961-d59af371-98db-4456-a427-ca87dcfbae10.webp" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/3FIQZ9ScAmeywbcsB5A8g6IHRPQ2/social-images/social-1783688127961-d59af371-98db-4456-a427-ca87dcfbae10.webp" },
     ],
   }),
   component: Home,
