@@ -13,9 +13,9 @@ export const Route = createFileRoute("/education")({
   head: () => ({
     meta: [
       { title: "Trading Academy — Courses, videos and webinars | HKEX" },
-      { name: "description", content: "Learn to trade like a pro." },
+      { name: "description", content: "Master the markets with the HKEX Trading Academy — free courses, expert-led webinars, video lessons and trading calculators for every experience level." },
       { property: "og:title", content: "HK Trading Academy" },
-      { property: "og:description", content: "Free trading education — courses, webinars, calculators." },
+      { property: "og:description", content: "Free courses, live webinars, video lessons and calculators from the HKEX Trading Academy." },
     ],
   }),
   component: Education,

@@ -9,9 +9,9 @@ export const Route = createFileRoute("/markets")({
   head: () => ({
     meta: [
       { title: "Markets — Forex, Crypto, Stocks, Indices | HKEX" },
-      { name: "description", content: "Trade 10,000+ instruments." },
+      { name: "description", content: "Explore 10,000+ instruments across Forex, crypto, stocks, indices and commodities with live pricing, deep charts and professional research on HKEX Invest." },
       { property: "og:title", content: "HKEX Markets" },
-      { property: "og:description", content: "10,000+ instruments across every major asset class." },
+      { property: "og:description", content: "Live prices, charts and research across 10,000+ instruments in every major asset class on HKEX Invest." },
     ],
   }),
   component: Markets,

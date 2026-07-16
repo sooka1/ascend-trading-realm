@@ -154,8 +154,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "HKEX Invest — Independent Multi-Asset Investment Platform" },
       { name: "twitter:description", content: "Independent fintech platform for managed multi-asset portfolios. Not affiliated with HKEX." },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/3FIQZ9ScAmeywbcsB5A8g6IHRPQ2/social-images/social-1783688127961-d59af371-98db-4456-a427-ca87dcfbae10.webp" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/3FIQZ9ScAmeywbcsB5A8g6IHRPQ2/social-images/social-1783688127961-d59af371-98db-4456-a427-ca87dcfbae10.webp" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
