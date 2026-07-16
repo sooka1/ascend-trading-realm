@@ -70,6 +70,15 @@ function TradingTerminal() {
   const selQ = quotes[selected];
   const bid = selQ?.bid ?? 0, ask = selQ?.ask ?? 0;
 
+  const connStatus = useConnectionStatus();
+  const [lastTickAt, setLastTickAt] = useState<number>(0);
+  const [nowTs, setNowTs] = useState<number>(() => Date.now());
+  useEffect(() => { if (selQ) setLastTickAt(Date.now()); }, [selQ?.bid, selQ?.ask, selQ?.last, selected]);
+  useEffect(() => { const id = setInterval(() => setNowTs(Date.now()), 1000); return () => clearInterval(id); }, []);
+  const stale = lastTickAt > 0 && nowTs - lastTickAt > 8000;
+  const chartOffline = connStatus !== "open" || stale;
+  const chartLoading = !selInst || !selQ;
+
   const shownInstruments = useMemo(() => {
     const set = new Set(watchSymbols);
     return instruments.filter(i => set.has(i.symbol) || instruments.length < 15);
