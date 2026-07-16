@@ -110,16 +110,26 @@ function TradingTerminal() {
 
   return (
     <PortalShell fullscreen eyebrow="بوابة المتداول" title="منصة التداول" subtitle="بيانات حيّة وتنفيذ فوري">
-      <div className="h-[calc(100vh-10rem)] min-h-[600px] w-full rounded-xl border border-white/10 bg-slate-950/60 overflow-hidden">
+      <div className="h-[calc(100vh-10rem)] min-h-[600px] w-full rounded-xl border border-white/10 bg-gradient-to-br from-slate-950/80 via-black/60 to-slate-950/80 shadow-[0_30px_80px_-40px_rgba(0,0,0,0.9)] overflow-hidden">
         <PanelGroup orientation="horizontal" className="flex h-full w-full">
           {/* LEFT: order ticket + account */}
           <Panel defaultSize={22} minSize={16}>
             <div className="flex h-full flex-col border-l border-white/10">
-              <div className="px-3 py-2 border-b border-white/10 text-xs font-semibold text-white/70">أمر جديد</div>
+              <div className="px-3 py-2 border-b border-white/10 bg-gradient-to-b from-white/[0.03] to-transparent flex items-center justify-between">
+                <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/70">أمر جديد</span>
+                <span className="inline-flex items-center gap-1 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-2 py-0.5 text-[9px] font-semibold text-emerald-300">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.9)]" />
+                  LIVE
+                </span>
+              </div>
               <div className="flex-1 overflow-y-auto">
                 <OrderTicket instrument={selInst} bid={bid} ask={ask} balance={freeMargin > 0 ? freeMargin : balance} leverage={leverage} />
                 <div className="px-3 pb-3 space-y-1 text-[11px]">
-                  <div className="rounded-md border border-white/10 bg-white/[0.02] p-2 space-y-1">
+                  <div className="rounded-lg border border-white/10 bg-gradient-to-b from-white/[0.04] to-white/[0.01] p-2.5 space-y-1 shadow-inner shadow-black/40">
+                    <div className="mb-1 flex items-center justify-between border-b border-white/[0.06] pb-1">
+                      <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/50">ملخّص الحساب</span>
+                      <span className="font-mono text-[10px] text-amber-300/80">1:{leverage}</span>
+                    </div>
                     <Row label="الرصيد" v={`$${balance.toFixed(2)}`} />
                     <Row label="حقوق الملكية" v={`$${equity.toFixed(2)}`} />
                     <Row label="الهامش المستخدم" v={`$${usedMargin.toFixed(2)}`} />
@@ -128,7 +138,6 @@ function TradingTerminal() {
                     <Row label="الربح العائم" v={`$${floating.toFixed(2)}`} vClass={floating >= 0 ? "text-emerald-400" : "text-red-400"} />
                     <Row label="ربح محقق" v={`$${realized.toFixed(2)}`} vClass={realized >= 0 ? "text-emerald-400" : "text-red-400"} />
                     <Row label="الإجمالي (محقق + عائم)" v={`$${totalPnl.toFixed(2)}`} vClass={totalPnl >= 0 ? "text-emerald-400" : "text-red-400"} />
-                    <Row label="الرافعة" v={`1:${leverage}`} />
                   </div>
                 </div>
               </div>
@@ -141,26 +150,48 @@ function TradingTerminal() {
             <PanelGroup orientation="vertical" className="flex h-full w-full flex-col">
               <Panel defaultSize={65} minSize={30}>
                 <div className="flex h-full flex-col">
-                  <div className="flex items-center gap-2 px-3 py-2 border-b border-white/10 flex-wrap">
-                    <div className="font-semibold text-sm">{selected}</div>
-                    <span
-                      title="سوق OTC خاص بالمنصة — الأسعار تتبع حركة السوق العالمي"
-                      className="inline-flex items-center gap-1 rounded-full border border-amber-400/30 bg-amber-400/10 px-2 py-0.5 text-[10px] font-semibold text-amber-200"
-                    >
-                      OTC
-                    </span>
-                    <div className="flex gap-1 ml-2">
-                      {TIMEFRAMES.map(t => (
-                        <button key={t} onClick={() => setTf(t)}
-                          className={cn("px-2 py-0.5 rounded text-[11px] border",
-                            tf === t ? "border-amber-400/40 bg-amber-400/10 text-amber-200" : "border-white/10 text-white/60 hover:bg-white/[0.04]")}>{t}</button>
-                      ))}
+                  <div className="flex items-center gap-3 px-3 py-2 border-b border-white/10 bg-gradient-to-b from-white/[0.03] via-transparent to-transparent flex-wrap">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-base font-bold tracking-wide text-white">{selected}</span>
+                      <span
+                        title="سوق OTC خاص بالمنصة — الأسعار تتبع حركة السوق العالمي"
+                        className="inline-flex items-center gap-1 rounded-full border border-amber-400/40 bg-amber-400/10 px-1.5 py-0.5 text-[9px] font-semibold tracking-wider text-amber-200"
+                      >OTC</span>
+                    </div>
+                    {selQ && (
+                      <div className="flex items-baseline gap-2" dir="ltr">
+                        <span className={cn("font-mono text-lg font-bold tabular-nums leading-none", (selQ.changePct24h ?? 0) >= 0 ? "text-emerald-400" : "text-red-400")}>
+                          {selQ.last?.toFixed(selInst?.price_precision ?? 2)}
+                        </span>
+                        {typeof selQ.changePct24h === "number" && (
+                          <span className={cn("rounded px-1.5 py-0.5 font-mono text-[10px] font-semibold tabular-nums",
+                            selQ.changePct24h >= 0 ? "bg-emerald-400/10 text-emerald-300" : "bg-red-400/10 text-red-300")}>
+                            {selQ.changePct24h >= 0 ? "▲" : "▼"} {Math.abs(selQ.changePct24h).toFixed(2)}%
+                          </span>
+                        )}
+                      </div>
+                    )}
+                    <div className="hidden md:flex items-center gap-3 text-[10px] font-mono tabular-nums text-white/60 border-r border-white/10 pr-3 mr-1" dir="ltr">
+                      <span><span className="text-white/40">B </span><span className="text-red-400">{bid.toFixed(selInst?.price_precision ?? 2)}</span></span>
+                      <span><span className="text-white/40">A </span><span className="text-emerald-400">{ask.toFixed(selInst?.price_precision ?? 2)}</span></span>
+                      {selInst && <span><span className="text-white/40">S </span>{((ask - bid) / (selInst.pip_size || 1)).toFixed(1)}</span>}
                     </div>
                     <div className="flex gap-1 mr-auto">
+                      {TIMEFRAMES.map(t => (
+                        <button key={t} onClick={() => setTf(t)}
+                          className={cn("px-2 py-0.5 rounded text-[11px] border font-mono tabular-nums transition-colors",
+                            tf === t
+                              ? "border-amber-400/50 bg-amber-400/15 text-amber-200 shadow-[0_0_10px_-4px_rgba(251,191,36,0.7)]"
+                              : "border-white/10 text-white/60 hover:bg-white/[0.05] hover:text-white/80")}>{t}</button>
+                      ))}
+                    </div>
+                    <div className="flex gap-1">
                       {CHART_TYPES.map(ct => (
                         <button key={ct.key} onClick={() => setChartType(ct.key)}
-                          className={cn("px-2 py-0.5 rounded text-[11px] border",
-                            chartType === ct.key ? "border-amber-400/40 bg-amber-400/10 text-amber-200" : "border-white/10 text-white/60 hover:bg-white/[0.04]")}>{ct.label}</button>
+                          className={cn("px-2 py-0.5 rounded text-[11px] border transition-colors",
+                            chartType === ct.key
+                              ? "border-amber-400/50 bg-amber-400/15 text-amber-200"
+                              : "border-white/10 text-white/60 hover:bg-white/[0.05] hover:text-white/80")}>{ct.label}</button>
                       ))}
                     </div>
                   </div>
@@ -172,7 +203,7 @@ function TradingTerminal() {
               <PanelResizeHandle className="h-px bg-white/10 hover:bg-amber-400/40 transition-colors" />
               <Panel defaultSize={35} minSize={15}>
                 <Tabs defaultValue="positions" className="h-full flex flex-col">
-                  <TabsList className="h-8 mx-2 mt-2 self-start">
+                  <TabsList className="h-8 mx-2 mt-2 self-start bg-white/[0.03] border border-white/10">
                     <TabsTrigger value="positions" className="text-xs">الصفقات ({positions.length})</TabsTrigger>
                     <TabsTrigger value="pending" className="text-xs">المعلّقة ({pending.length})</TabsTrigger>
                     <TabsTrigger value="history" className="text-xs">السجل</TabsTrigger>
@@ -271,7 +302,10 @@ function TradingTerminal() {
           {/* RIGHT: watchlist */}
           <Panel defaultSize={22} minSize={16}>
             <div className="flex h-full flex-col border-r border-white/10">
-              <div className="px-3 py-2 border-b border-white/10 text-xs font-semibold text-white/70">قائمة المتابعة</div>
+              <div className="px-3 py-2 border-b border-white/10 bg-gradient-to-b from-white/[0.03] to-transparent flex items-center justify-between">
+                <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/70">قائمة المتابعة</span>
+                <span className="font-mono text-[10px] text-white/40 tabular-nums">{shownInstruments.length || instruments.length}</span>
+              </div>
               <div className="flex-1 overflow-hidden">
                 <Watchlist instruments={shownInstruments.length ? shownInstruments : instruments} quotes={quotes} selected={selected} onSelect={setSelected} />
               </div>
