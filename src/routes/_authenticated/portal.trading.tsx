@@ -12,6 +12,7 @@ import { PositionsTable } from "@/features/terminal/components/PositionsTable";
 import { PriceAlerts } from "@/features/terminal/components/PriceAlerts";
 import { EconomicCalendar } from "@/features/terminal/components/EconomicCalendar";
 import { PerformancePanel } from "@/features/terminal/components/PerformancePanel";
+import { ConnectionStatusBadge } from "@/features/terminal/components/ConnectionStatus";
 import { useAccount, useHistory, useInstruments, usePendingOrders, usePositions, useQuotes, useWatchlist } from "@/features/terminal/hooks/use-terminal-data";
 import type { Timeframe } from "@/features/terminal/adapters/market-data/types";
 
@@ -35,7 +36,7 @@ const CHART_TYPES = [
 type ChartType = typeof CHART_TYPES[number]["key"];
 
 function TradingTerminal() {
-  const { data: instruments = [] } = useInstruments();
+  const { data: instruments = [], isPending: instrumentsLoading } = useInstruments();
   const { data: watchSymbols = [] } = useWatchlist();
   const { data: account } = useAccount();
   const { data: positions = [] } = usePositions();
@@ -117,10 +118,7 @@ function TradingTerminal() {
             <div className="flex h-full flex-col border-l border-[#2a2e39] bg-[#131722]">
               <div className="px-3 py-2 border-b border-[#2a2e39] bg-[#1e222d]/40 flex items-center justify-between">
                 <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/70">أمر جديد</span>
-                <span className="inline-flex items-center gap-1 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-2 py-0.5 text-[9px] font-semibold text-emerald-300">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.9)]" />
-                  LIVE
-                </span>
+                <ConnectionStatusBadge />
               </div>
               <div className="flex-1 overflow-y-auto">
                 <OrderTicket instrument={selInst} bid={bid} ask={ask} balance={freeMargin > 0 ? freeMargin : balance} leverage={leverage} />
@@ -164,6 +162,12 @@ function TradingTerminal() {
                         precision={selInst?.price_precision ?? 2}
                         changePct={selQ.changePct24h}
                       />
+                    )}
+                    {!selQ && (
+                      <div className="flex items-baseline gap-2" dir="ltr">
+                        <div className="h-5 w-24 rounded bg-[#1e222d] animate-pulse" />
+                        <div className="h-4 w-14 rounded bg-[#1e222d] animate-pulse" />
+                      </div>
                     )}
                     <div className="hidden md:flex items-center gap-3 text-[10px] font-mono tabular-nums text-white/60 border-r border-[#2a2e39] pr-3 mr-1" dir="ltr">
                       <span><span className="text-white/40">B </span><span className="text-rose-500">{bid.toFixed(selInst?.price_precision ?? 2)}</span></span>
@@ -297,11 +301,14 @@ function TradingTerminal() {
           <Panel defaultSize={22} minSize={16}>
             <div className="flex h-full flex-col border-r border-[#2a2e39] bg-[#131722]">
               <div className="px-3 py-2 border-b border-[#2a2e39] bg-[#1e222d]/40 flex items-center justify-between">
-                <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/70">قائمة المتابعة</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/70">قائمة المتابعة</span>
+                  <ConnectionStatusBadge />
+                </div>
                 <span className="font-mono text-[10px] text-[#d4af37] tabular-nums">{shownInstruments.length || instruments.length}</span>
               </div>
               <div className="flex-1 overflow-hidden">
-                <Watchlist instruments={shownInstruments.length ? shownInstruments : instruments} quotes={quotes} selected={selected} onSelect={setSelected} />
+                <Watchlist instruments={shownInstruments.length ? shownInstruments : instruments} quotes={quotes} selected={selected} onSelect={setSelected} loading={instrumentsLoading} />
               </div>
             </div>
           </Panel>
