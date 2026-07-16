@@ -67,7 +67,7 @@ export function GlobalBackButton() {
       aria-label="رجوع"
       style={{
         bottom: "max(1rem, env(safe-area-inset-bottom))",
-        left: "max(1rem, env(safe-area-inset-left))",
+        right: "max(1rem, env(safe-area-inset-right))",
         touchAction: "manipulation",
         WebkitTapHighlightColor: "transparent",
       }}
