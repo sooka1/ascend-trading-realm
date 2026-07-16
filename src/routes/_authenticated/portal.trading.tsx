@@ -172,6 +172,28 @@ function TradingTerminal() {
                         changePct={selQ.changePct24h}
                       />
                     )}
+                    {selQ && lastTickAt > 0 && (
+                      <div
+                        className="flex flex-col items-start leading-tight font-mono tabular-nums"
+                        dir="ltr"
+                        title={new Date(lastTickAt).toLocaleString()}
+                      >
+                        <span className={cn(
+                          "inline-flex items-center gap-1 text-[9px] uppercase tracking-wider",
+                          stale ? "text-amber-300" : "text-white/40",
+                        )}>
+                          <span className={cn(
+                            "inline-block h-1.5 w-1.5 rounded-full",
+                            stale ? "bg-amber-400" : "bg-emerald-400 animate-pulse",
+                          )} />
+                          {stale ? "stale" : "live"}
+                        </span>
+                        <span className="text-[10px] text-white/60">
+                          {new Date(lastTickAt).toLocaleTimeString([], { hour12: false })}
+                          <span className="text-white/35"> · {Math.max(0, Math.round((nowTs - lastTickAt) / 1000))}s</span>
+                        </span>
+                      </div>
+                    )}
                     {!selQ && (
                       <div className="flex items-baseline gap-2" dir="ltr">
                         <div className="h-5 w-24 rounded bg-[#1e222d] animate-pulse" />
