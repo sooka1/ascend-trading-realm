@@ -291,14 +291,14 @@ function TradingTerminal() {
               </Panel>
             </PanelGroup>
           </Panel>
-          <PanelResizeHandle className="w-px bg-white/10 hover:bg-amber-400/40 transition-colors" />
+          <PanelResizeHandle className="w-px bg-[#2a2e39] hover:bg-[#d4af37]/60 transition-colors" />
 
           {/* RIGHT: watchlist */}
           <Panel defaultSize={22} minSize={16}>
-            <div className="flex h-full flex-col border-r border-white/10">
-              <div className="px-3 py-2 border-b border-white/10 bg-gradient-to-b from-white/[0.03] to-transparent flex items-center justify-between">
+            <div className="flex h-full flex-col border-r border-[#2a2e39] bg-[#131722]">
+              <div className="px-3 py-2 border-b border-[#2a2e39] bg-[#1e222d]/40 flex items-center justify-between">
                 <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/70">قائمة المتابعة</span>
-                <span className="font-mono text-[10px] text-white/40 tabular-nums">{shownInstruments.length || instruments.length}</span>
+                <span className="font-mono text-[10px] text-[#d4af37] tabular-nums">{shownInstruments.length || instruments.length}</span>
               </div>
               <div className="flex-1 overflow-hidden">
                 <Watchlist instruments={shownInstruments.length ? shownInstruments : instruments} quotes={quotes} selected={selected} onSelect={setSelected} />
@@ -316,6 +316,34 @@ function Row({ label, v, vClass }: { label: string; v: string; vClass?: string }
     <div className="flex justify-between">
       <span className="text-white/50">{label}</span>
       <span className={`font-mono ${vClass ?? "text-white/90"}`}>{v}</span>
+    </div>
+  );
+}
+
+function HeaderPrice({ last, precision, changePct }: { last: number; precision: number; changePct?: number }) {
+  const prev = useRef<number | undefined>(last);
+  const [flash, setFlash] = useState<"up" | "down" | null>(null);
+  useEffect(() => {
+    if (prev.current != null && last !== prev.current) {
+      setFlash(last > prev.current ? "up" : "down");
+      const t = window.setTimeout(() => setFlash(null), 600);
+      prev.current = last;
+      return () => window.clearTimeout(t);
+    }
+    prev.current = last;
+  }, [last]);
+  const up = (changePct ?? 0) >= 0;
+  return (
+    <div className={cn("flex items-baseline gap-2 rounded px-2 -mx-1", flash === "up" && "price-flash-up", flash === "down" && "price-flash-down")} dir="ltr">
+      <span className={cn("font-mono text-lg font-bold tabular-nums leading-none", up ? "text-emerald-500" : "text-rose-500")}>
+        {last.toFixed(precision)}
+      </span>
+      {typeof changePct === "number" && (
+        <span className={cn("rounded px-1.5 py-0.5 font-mono text-[10px] font-semibold tabular-nums",
+          up ? "bg-emerald-500/10 text-emerald-400" : "bg-rose-500/10 text-rose-400")}>
+          {up ? "▲" : "▼"} {Math.abs(changePct).toFixed(2)}%
+        </span>
+      )}
     </div>
   );
 }
