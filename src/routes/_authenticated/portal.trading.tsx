@@ -202,8 +202,28 @@ function TradingTerminal() {
                       ))}
                     </div>
                   </div>
-                  <div className="flex-1 min-h-0">
+                  <div className="flex-1 min-h-0 relative">
                     {selInst && <TerminalChart symbol={selected} timeframe={tf} chartType={chartType} precision={selInst.price_precision} positions={positions} bid={bid} ask={ask} contractSize={selInst.contract_size} focusedTrade={focusedTrade ? { id: focusedTrade.id, symbol: focusedTrade.symbol, side: focusedTrade.side as "buy"|"sell", entry_price: focusedTrade.entry_price, close_price: focusedTrade.close_price, profit: focusedTrade.profit } : null} />}
+                    {chartLoading && (
+                      <div className="absolute inset-0 flex flex-col gap-2 p-4 bg-[#131722]/90 backdrop-blur-sm">
+                        <div className="h-6 w-40 rounded bg-[#1e222d] animate-pulse" />
+                        <div className="flex-1 rounded bg-[#1e222d] animate-pulse" />
+                        <div className="h-4 w-64 rounded bg-[#1e222d] animate-pulse" />
+                      </div>
+                    )}
+                    {!chartLoading && chartOffline && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-[#131722]/70 backdrop-blur-[2px] pointer-events-none">
+                        <div className="pointer-events-auto flex flex-col items-center gap-3 rounded-lg border border-amber-400/30 bg-[#1e222d]/95 px-6 py-4 shadow-xl">
+                          <ConnectionStatusBadge />
+                          <div className="text-xs text-white/70 font-medium">
+                            {stale ? "لا توجد تحديثات أسعار حديثة" : "بيانات السوق غير متصلة"}
+                          </div>
+                          <div className="text-[10px] text-white/40 font-mono">
+                            {lastTickAt ? `آخر تحديث: ${Math.round((nowTs - lastTickAt) / 1000)}s` : "في انتظار البيانات…"}
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </Panel>
