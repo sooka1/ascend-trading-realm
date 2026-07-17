@@ -92,11 +92,9 @@ function Home() {
         <MarketTicker />
         <TrustStrip c={c} />
         <Features c={c} />
-        <PerformanceBand c={c} />
         <RiskFramework c={c} />
         <SecurityBlock c={c} />
         <Testimonials />
-        <Credentials />
         <PortalPreview c={c} />
         <FinalCTA c={c} />
     </PageShell>
