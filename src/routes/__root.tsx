@@ -186,6 +186,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           name: "HKEX Invest",
           alternateName: "HKEX Invest Platform",
           url: "https://www.hkexinvest.com",
+          logo: "https://www.hkexinvest.com/android-chrome-512x512.png",
+          image: "https://www.hkexinvest.com/android-chrome-512x512.png",
           slogan: "Independent multi-asset investment platform",
           description:
             "HKEX Invest is an independent financial technology platform offering managed multi-asset portfolios. HKEX Invest is not affiliated with, endorsed by, or operated by Hong Kong Exchanges and Clearing Limited (HKEX).",
